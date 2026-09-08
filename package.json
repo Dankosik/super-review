@@ -1,0 +1,19 @@
+{
+  "name": "super-review",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A focused, read-only Go PR review skill with an OpenCode adapter",
+  "license": "MIT",
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "validate": "bun scripts/validate.ts",
+    "package": "python3 scripts/package.py"
+  },
+  "devDependencies": {
+    "@opencode-ai/plugin": "1.18.29",
+    "@types/bun": "1.4.2",
+    "typescript": "7.0.2"
+  }
+}

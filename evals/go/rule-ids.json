@@ -1,0 +1,11 @@
+[
+  "go.naming.intent",
+  "go.flow.show-main-path",
+  "go.functions.extract-for-clarity",
+  "go.functions.coherent-purpose",
+  "go.data.make-transformations-visible",
+  "go.abstractions.earn-the-boundary",
+  "go.duplication.share-knowledge",
+  "go.api.express-the-call",
+  "go.change.localize-existing-variation"
+]

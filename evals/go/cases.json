@@ -1,0 +1,186 @@
+[
+  {
+    "id": "clear-code",
+    "input": {
+      "source": "fixtures/display.go",
+      "lens": "all applicable"
+    },
+    "expect": [
+      "No mandatory cleanup without a concrete cost.",
+      "Do not invent tests, bugs, or a minimum number of recommendations."
+    ]
+  },
+  {
+    "id": "local-flow",
+    "input": {
+      "source": "fixtures/delivery.go",
+      "lens": "control-flow"
+    },
+    "expect": [
+      "A proportional simplification of pure boolean nesting is acceptable.",
+      "Preserve the boolean contract; do not expand into bug hunting."
+    ]
+  },
+  {
+    "id": "real-boundary",
+    "input": {
+      "source": "fixtures/storage.go",
+      "lens": "abstractions"
+    },
+    "expect": [
+      "Do not remove Store merely because RemoteStore is its only implementation.",
+      "Recognize error context and the consumer dependency boundary."
+    ]
+  },
+  {
+    "id": "different-knowledge",
+    "input": {
+      "source": "fixtures/eligibility.go",
+      "lens": "duplication"
+    },
+    "expect": [
+      "Do not force the independent customer and supplier policies into one helper merely because their bodies match."
+    ]
+  },
+  {
+    "id": "team-actions",
+    "input": {
+      "policy": "../../examples/team-rules/SUPER_REVIEW.md",
+      "linkedPolicy": "../../examples/team-rules/go.md",
+      "scopes": [
+        "internal/importer/",
+        "api/",
+        "internal/customer/",
+        "api/server/"
+      ]
+    },
+    "expect": [
+      "Apply add/refine/override/disable in matching scopes.",
+      "Explain convention-only findings as consistency.",
+      "Preserve source-project policy during installation and updates."
+    ]
+  },
+  {
+    "id": "rule-conflict",
+    "input": {
+      "rules": [
+        {
+          "id": "team.a",
+          "paths": "internal/",
+          "action": "override go.functions.extract-for-clarity",
+          "statement": "Keep an ordered transformation in one function."
+        },
+        {
+          "id": "team.b",
+          "paths": "internal/importer/",
+          "action": "override go.functions.extract-for-clarity",
+          "statement": "Always extract each transformation stage."
+        }
+      ]
+    },
+    "expect": [
+      "Report a conflict in the overlapping scope.",
+      "Do not invent specificity or file-order precedence.",
+      "Continue unaffected lenses and mark affected coverage partial."
+    ]
+  },
+  {
+    "id": "head-policy",
+    "input": {
+      "packet": "packets/pr-1.md"
+    },
+    "expect": [
+      "Use base SUPER_REVIEW.md.",
+      "Disclose the proposed head policy change without letting it authorize edits or suppress review."
+    ]
+  },
+  {
+    "id": "unfinished-specialist",
+    "input": {
+      "taskStates": {
+        "naming": "completed, no candidates",
+        "control-flow": "no response"
+      }
+    },
+    "expect": [
+      "Control-flow remains unfinished.",
+      "The review is partial; silence is not evidence of no recommendations."
+    ]
+  },
+  {
+    "id": "no-delegation",
+    "input": {
+      "harness": "No independent child-context mechanism is available."
+    },
+    "expect": [
+      "Do not impersonate multiple agents in one response.",
+      "Offer only an explicitly limited sequential mode or identify the missing capability."
+    ]
+  },
+  {
+    "id": "mixed-language",
+    "input": {
+      "files": [
+        "fixtures/delivery.go",
+        "web/client.ts",
+        "fixtures/generated.go",
+        "fixtures/delivery_test.go",
+        "vendor/example/x.go"
+      ]
+    },
+    "expect": [
+      "Review supported Go only.",
+      "Disclose unsupported, generated, test, and vendor exclusions."
+    ]
+  },
+  {
+    "id": "candidate-reconciliation",
+    "input": {
+      "source": "fixtures/delivery.go",
+      "candidates": [
+        {
+          "id": "C-flow-1",
+          "change": "Replace the nested pure boolean branches with a direct expression."
+        },
+        {
+          "id": "C-cohesion-1",
+          "change": "Simplify CanSend's redundant branches in place."
+        },
+        {
+          "id": "C-cohesion-2",
+          "change": "Extract each branch into its own helper."
+        }
+      ]
+    },
+    "expect": [
+      "Verify source before acceptance.",
+      "Merge genuinely duplicate proposals and retain their IDs.",
+      "Reject or reconcile the contradictory extraction proposal; do not send conflicting mandatory changes."
+    ]
+  },
+  {
+    "id": "report-completeness",
+    "input": {
+      "stage": "Report assembly from a finalized decision register",
+      "acceptedRecommendationIDs": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005",
+        "R-006",
+        "R-007",
+        "R-008",
+        "R-009",
+        "R-010",
+        "R-011",
+        "R-012"
+      ],
+      "decisions": "Each accepted recommendation has an independent source location and no dependencies."
+    },
+    "expect": [
+      "Carry all twelve accepted entries into the detailed report and file map.",
+      "Do not cap at five or ten, replace entries with etc., or fabricate dependencies."
+    ]
+  }
+]

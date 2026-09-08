@@ -1,0 +1,66 @@
+name: Validate and release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: super-review-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.1
+      - run: bun install --frozen-lockfile
+      - run: bun test
+      - run: bun run typecheck
+      - run: bun run validate
+      - run: bun run package
+      - run: bun audit
+      - name: Install pinned OpenCode for native configuration checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/super-review-opencode"
+          gh release download v1.18.29 --repo anomalyco/opencode \
+            --pattern opencode-linux-x64.tar.gz --dir "$RUNNER_TEMP/super-review-opencode"
+          tar -xzf "$RUNNER_TEMP/super-review-opencode/opencode-linux-x64.tar.gz" \
+            -C "$RUNNER_TEMP/super-review-opencode"
+      - name: Verify native skill, command, and tool restrictions
+        run: bun scripts/check-opencode.ts "$RUNNER_TEMP/super-review-opencode/opencode"
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.1
+      - name: Check tag identity
+        run: |
+          test "$GITHUB_REF_NAME" = "v$(bun -p 'require("./package.json").version')"
+      - run: bun run package
+      - name: Publish the exact tagged build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/*.zip dist/manifest.json dist/SHA256SUMS \
+            --verify-tag --title "Super Review $GITHUB_REF_NAME" --notes-file CHANGELOG.md

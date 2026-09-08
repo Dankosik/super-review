@@ -1,0 +1,274 @@
+{
+  "version": "1.0.0",
+  "harness": "OpenCode 1.18.29",
+  "model": "xai/grok-4.6",
+  "parentSession": "ses_f7d0ed311ffe3Te1QNfWofB01L",
+  "result": {
+    "exit_code": 0,
+    "elapsed_seconds": 519.2
+  },
+  "scope": "internal/infra/httpclient/propagation.go and required source context",
+  "pr": "https://github.com/Dankosik/go-service-template-rest/pull/300",
+  "B": "6cffd8cc5cd269899021c7205d99e3982beb1c5d",
+  "H": "4c6311c87f888108d27520a075990c823edd1d52",
+  "D": "6cffd8cc5cd269899021c7205d99e3982beb1c5d",
+  "stepCaps": {
+    "primary": 96,
+    "specialist": 18
+  },
+  "tasks": [
+    {
+      "description": "Control-flow lens review",
+      "state": "completed",
+      "childSession": "ses_f7d0d5406ffeXqqu1FgtNRjuT8",
+      "stepLimitReached": false
+    },
+    {
+      "description": "Function-cohesion lens review",
+      "state": "completed",
+      "childSession": "ses_f7d0d29bcffeiga8pI4XF87MsQ",
+      "stepLimitReached": false
+    },
+    {
+      "description": "Naming lens review",
+      "state": "completed",
+      "childSession": "ses_f7d0d78caffeP4KGdhypa6PhO1",
+      "stepLimitReached": false
+    },
+    {
+      "description": "Data-flow lens review",
+      "state": "completed",
+      "childSession": "ses_f7d0d29abffeV1U0gL3uzG57kw",
+      "stepLimitReached": false
+    },
+    {
+      "description": "API-clarity lens review",
+      "state": "completed",
+      "childSession": "ses_f7d0a84e5ffenj8i37euIVsSUb",
+      "stepLimitReached": false
+    },
+    {
+      "description": "Change-locality lens review",
+      "state": "completed",
+      "childSession": "ses_f7d0a8408ffebPY9GQ27Ltnks0",
+      "stepLimitReached": false
+    },
+    {
+      "description": "Abstractions lens review",
+      "state": "completed",
+      "childSession": "ses_f7d0acdebffeRy54bHK2ssYDZn",
+      "stepLimitReached": true
+    },
+    {
+      "description": "Duplication lens review",
+      "state": "completed",
+      "childSession": "ses_f7d0aa291ffes8jJLIE9iiu0Iw",
+      "stepLimitReached": false
+    }
+  ],
+  "observedIssue": "Native skill output omitted frontmatter; report could not read version. Fixed afterward by allowing and requesting SKILL.md through the existing resource tool; verified separately.",
+  "runtimeFilesBeforeVersionFix": [
+    {
+      "path": "skills/super-review/LICENSE",
+      "sha256": "c7074984876872b0b37f9a26c8c9afe67740ef3099903262beb64b4e96097e2a"
+    },
+    {
+      "path": "skills/super-review/SKILL.md",
+      "sha256": "fe0db4f14f00e108835574c6875d09249d10cc39764ca8a3c80c1a8e8bc99f14"
+    },
+    {
+      "path": "skills/super-review/agents/openai.yaml",
+      "sha256": "d098933348dd6db103184a630961584d76b86f168cfe6a3719d0aaf55c477d96"
+    },
+    {
+      "path": "skills/super-review/assets/finding-template.md",
+      "sha256": "0a9ec7ebbaffd5516f869df2463f7c5342dbf3441561e7d9ec2f8404e4da506c"
+    },
+    {
+      "path": "skills/super-review/assets/report-template.md",
+      "sha256": "083e21aa973fd6d5bd15b3b8982b79de9490864afb0cb675ddff00aaaba05287"
+    },
+    {
+      "path": "skills/super-review/references/languages/go.md",
+      "sha256": "9e90944e2631cf8fb496ce29dae9d7ff7ca6a9da560f2813b55c475cfabee0ca"
+    },
+    {
+      "path": "skills/super-review/references/lenses/abstractions.md",
+      "sha256": "5912f1ccc370433395e29cff3a6a1ba16f6210ff5d297ff2e0a17732d46a07e8"
+    },
+    {
+      "path": "skills/super-review/references/lenses/api-clarity.md",
+      "sha256": "b61c61b79b91b9e6b01b3f66e9f938201e39df9220443303fa964ea01d0aff61"
+    },
+    {
+      "path": "skills/super-review/references/lenses/change-locality.md",
+      "sha256": "693abe8fa70e2612f78e2de068b4ff29cb702494ca1fc3854be3c11b9b1a6162"
+    },
+    {
+      "path": "skills/super-review/references/lenses/control-flow.md",
+      "sha256": "0eb04f3cef37ec088807cc1764936cbabc542163fa660fba7fad8e9bba935a3d"
+    },
+    {
+      "path": "skills/super-review/references/lenses/data-flow.md",
+      "sha256": "529671a5f3d3937d85ea2cd9bfb98e54e9fc94daa4aa8087d41909c4ac44ea93"
+    },
+    {
+      "path": "skills/super-review/references/lenses/duplication.md",
+      "sha256": "cf5b7c7bb010f2703ba52b47ee05816750ffbc0f8f20807083bf20f5799e4f5e"
+    },
+    {
+      "path": "skills/super-review/references/lenses/function-cohesion.md",
+      "sha256": "e4f9fcb661bcd4232a113ff300f3b04ca62b9f304377a689b32d87411b42c0f4"
+    },
+    {
+      "path": "skills/super-review/references/lenses/naming.md",
+      "sha256": "c0bc915202478f91030e8c67a4dc2ed7af19d9f9b06dae695e19be7706f1263f"
+    },
+    {
+      "path": "skills/super-review/references/review-contract.md",
+      "sha256": "254d651f64e082afe78f687f4beb42022a9b8a7c97a13902c5a80f667e2f0024"
+    },
+    {
+      "path": "skills/super-review/references/team-rules.md",
+      "sha256": "17ed62f0206ec50f44b5393e1c73638d8f56732be1f870821d05b5b2ac7dccb6"
+    },
+    {
+      "path": "skills/super-review/references/verification.md",
+      "sha256": "23a7a85cbdeac7319e3a8b320dc9f99570ce3fc680cd23ce086df79bb469fee5"
+    },
+    {
+      "path": "skills/super-review/references/workflow.md",
+      "sha256": "be528c086bff42145d8f7f6f62499b2030bb21b3fcf38b85984a4eff04a414c1"
+    },
+    {
+      "path": "adapters/opencode/agents/super-review-specialist.md",
+      "sha256": "6a729d6bc151e89ef54cf0e8f39c59601532a5648b13491eec36f95a2fc8d0b6"
+    },
+    {
+      "path": "adapters/opencode/agents/super-review.md",
+      "sha256": "77a3c12bd9675fcbeae6f795a6e5376b0d2804ec981cde67aca0816327c7d4d3"
+    },
+    {
+      "path": "adapters/opencode/commands/super-review.md",
+      "sha256": "c8fdbfe3a1a268653802873ef9031b9fd1b8f4e84b3aca22f6c6f0ed9137e097"
+    },
+    {
+      "path": "adapters/opencode/lib/github.ts",
+      "sha256": "b9481449d0d0aa57b74bb548e3673ef0bcba99444c320214b34e570f18525cd4"
+    },
+    {
+      "path": "adapters/opencode/package.json",
+      "sha256": "1cf5a1e46586f9d471f051f60230a51cbacdda3acdf10e2302258de4aac5589d"
+    },
+    {
+      "path": "adapters/opencode/tools/super_review.ts",
+      "sha256": "21b754996906429f806dabbd8082c7eff363d50dfb4ad319a5bd7197ebe2f5a3"
+    }
+  ],
+  "versionCheck": {
+    "result": {
+      "exit_code": 0,
+      "elapsed_seconds": 22.4
+    },
+    "output": "**Super Review skill version: `1.0.0`**\n\nLoaded from installed `SKILL.md` metadata (`name: super-review`). Native skill output omitted frontmatter; the version came from `super_review_resource`. No PR review was run.",
+    "resource": "SKILL.md",
+    "runtimeFiles": [
+      {
+        "path": "skills/super-review/LICENSE",
+        "sha256": "c7074984876872b0b37f9a26c8c9afe67740ef3099903262beb64b4e96097e2a"
+      },
+      {
+        "path": "skills/super-review/SKILL.md",
+        "sha256": "fe0db4f14f00e108835574c6875d09249d10cc39764ca8a3c80c1a8e8bc99f14"
+      },
+      {
+        "path": "skills/super-review/agents/openai.yaml",
+        "sha256": "d098933348dd6db103184a630961584d76b86f168cfe6a3719d0aaf55c477d96"
+      },
+      {
+        "path": "skills/super-review/assets/finding-template.md",
+        "sha256": "0a9ec7ebbaffd5516f869df2463f7c5342dbf3441561e7d9ec2f8404e4da506c"
+      },
+      {
+        "path": "skills/super-review/assets/report-template.md",
+        "sha256": "083e21aa973fd6d5bd15b3b8982b79de9490864afb0cb675ddff00aaaba05287"
+      },
+      {
+        "path": "skills/super-review/references/languages/go.md",
+        "sha256": "9e90944e2631cf8fb496ce29dae9d7ff7ca6a9da560f2813b55c475cfabee0ca"
+      },
+      {
+        "path": "skills/super-review/references/lenses/abstractions.md",
+        "sha256": "5912f1ccc370433395e29cff3a6a1ba16f6210ff5d297ff2e0a17732d46a07e8"
+      },
+      {
+        "path": "skills/super-review/references/lenses/api-clarity.md",
+        "sha256": "b61c61b79b91b9e6b01b3f66e9f938201e39df9220443303fa964ea01d0aff61"
+      },
+      {
+        "path": "skills/super-review/references/lenses/change-locality.md",
+        "sha256": "693abe8fa70e2612f78e2de068b4ff29cb702494ca1fc3854be3c11b9b1a6162"
+      },
+      {
+        "path": "skills/super-review/references/lenses/control-flow.md",
+        "sha256": "0eb04f3cef37ec088807cc1764936cbabc542163fa660fba7fad8e9bba935a3d"
+      },
+      {
+        "path": "skills/super-review/references/lenses/data-flow.md",
+        "sha256": "529671a5f3d3937d85ea2cd9bfb98e54e9fc94daa4aa8087d41909c4ac44ea93"
+      },
+      {
+        "path": "skills/super-review/references/lenses/duplication.md",
+        "sha256": "cf5b7c7bb010f2703ba52b47ee05816750ffbc0f8f20807083bf20f5799e4f5e"
+      },
+      {
+        "path": "skills/super-review/references/lenses/function-cohesion.md",
+        "sha256": "e4f9fcb661bcd4232a113ff300f3b04ca62b9f304377a689b32d87411b42c0f4"
+      },
+      {
+        "path": "skills/super-review/references/lenses/naming.md",
+        "sha256": "c0bc915202478f91030e8c67a4dc2ed7af19d9f9b06dae695e19be7706f1263f"
+      },
+      {
+        "path": "skills/super-review/references/review-contract.md",
+        "sha256": "254d651f64e082afe78f687f4beb42022a9b8a7c97a13902c5a80f667e2f0024"
+      },
+      {
+        "path": "skills/super-review/references/team-rules.md",
+        "sha256": "17ed62f0206ec50f44b5393e1c73638d8f56732be1f870821d05b5b2ac7dccb6"
+      },
+      {
+        "path": "skills/super-review/references/verification.md",
+        "sha256": "23a7a85cbdeac7319e3a8b320dc9f99570ce3fc680cd23ce086df79bb469fee5"
+      },
+      {
+        "path": "skills/super-review/references/workflow.md",
+        "sha256": "be528c086bff42145d8f7f6f62499b2030bb21b3fcf38b85984a4eff04a414c1"
+      },
+      {
+        "path": "adapters/opencode/agents/super-review-specialist.md",
+        "sha256": "6a729d6bc151e89ef54cf0e8f39c59601532a5648b13491eec36f95a2fc8d0b6"
+      },
+      {
+        "path": "adapters/opencode/agents/super-review.md",
+        "sha256": "e006efb45eb41387fef58ce8820192393c15389f489f5f14165050a914cd1364"
+      },
+      {
+        "path": "adapters/opencode/commands/super-review.md",
+        "sha256": "c8fdbfe3a1a268653802873ef9031b9fd1b8f4e84b3aca22f6c6f0ed9137e097"
+      },
+      {
+        "path": "adapters/opencode/lib/github.ts",
+        "sha256": "b9481449d0d0aa57b74bb548e3673ef0bcba99444c320214b34e570f18525cd4"
+      },
+      {
+        "path": "adapters/opencode/package.json",
+        "sha256": "1cf5a1e46586f9d471f051f60230a51cbacdda3acdf10e2302258de4aac5589d"
+      },
+      {
+        "path": "adapters/opencode/tools/super_review.ts",
+        "sha256": "e54d513d2f14ff89e8c61ad66e863c5fb7ff44103e218522504e4b2c5b72a75f"
+      }
+    ]
+  }
+}
