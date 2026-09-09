@@ -5,6 +5,8 @@ review decisions are product behavior, even when they only edit Markdown.
 
 ## Unreleased
 
+- Clarify the MCP resource description: reuse complete supplied materials and load missing shared role resources, the assigned lens, and selected profiles rather than the full catalog.
+- Audit model-visible tool metadata alongside role instructions; add selective resource-delivery checks for canonical, Claude, and Codex skill roots. Record blocked model comparisons separately from mechanical validation.
 - Distinguish trusted instruction revision/digest from SemVer and reviewed source identity; do not treat a missing digest alone as a source-coverage gap or a reason for redundant reads.
 - Support selectively loaded, explicitly labeled code illustrations in team rules at the pinned policy revision, without new authority, rule fields or permissions.
 - Align unresolved remedy fields around the exact missing evidence or necessary team decision; preserve ordinary reviewer judgment.

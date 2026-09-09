@@ -1,0 +1,41 @@
+{
+  "recorded_on": "2026-09-10",
+  "status": "blocked; model-backed comparisons not executed",
+  "scope": "The new prompt/context integration comparisons only; historical model runs remain valid within their documented limits.",
+  "capability_check": {
+    "local_executables": { "codex": "not found", "claude": "not found", "opencode": "not found" },
+    "connected_executor": "No general model-evaluation executor was exposed by available tools or relevant plugin discovery.",
+    "access_action": "No credentials inspected, external account connected, paid model client added, or security-only executor repurposed."
+  },
+  "planned_comparisons": [
+    {
+      "id": "followup-only",
+      "baseline": "5865a2f570fc89e71e0dcc528c3206e9cb8a4041",
+      "candidate": "03df006bec4187dd7dba874538f3d4bf92c2146f",
+      "purpose": "Compare the actual main policy with the prepared PR #5 follow-up, before combining it with tool-description changes."
+    },
+    {
+      "id": "resource-description-only",
+      "baseline": "03df006bec4187dd7dba874538f3d4bf92c2146f",
+      "candidate": "Resolve the integration PR head to an immutable commit before running.",
+      "purpose": "Inspect resource acquisition with fixed role materials and source availability; do not infer actual model reuse from mechanical interface tests."
+    },
+    {
+      "id": "routing-only",
+      "baseline": "Resolve the integration PR head to an immutable commit before running.",
+      "candidate_transform": "evals/go/experiments/routing-first.json",
+      "purpose": "Change only the preparation paragraph. Preserve specialist inspection, candidate verification, and scope; check missed aspects as well as time and context."
+    },
+    {
+      "id": "team-reference-only",
+      "baseline": "Same written team rule without its optional illustration.",
+      "candidate": "Same rule and source snapshot with a relevant illustration at the pinned policy revision.",
+      "purpose": "Isolate the example from the rule; hold model, effort, permissions, source availability, and user scope fixed."
+    }
+  ],
+  "protocol": "evals/go/context-followup-evaluation.md",
+  "runs": [],
+  "measured_gains": null,
+  "routing_promoted": false,
+  "next_required_capability": "An authorized native harness or general evaluation executor with fresh contexts, the selected model/effort, permitted source access, and retrievable outputs/traces."
+}

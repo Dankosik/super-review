@@ -14,6 +14,12 @@ local implication, such as Go's defer boundary. Adapt model tendencies only for 
 actual tested configuration, not every model using the same harness. Preserve
 shared scope, defaults and coverage.
 
+Treat tool descriptions as model-visible instructions too: audit them against role
+contracts when editing context requirements. Keep interface guidance accurate without
+copying workflow policy into schemas. Remove repetition only when it adds no decision
+criterion; independent child contracts and transformation-specific Go constraints
+are not redundant. Generated install copies are delivery artifacts, not extra context.
+
 Exercise changed judgments with contrasting evaluation cases, separate from runtime
 instructions. Prefer clear tool interfaces to repetitive usage demonstrations;
 add few-shot contrasts only for an observed recurring failure. Team-selected code
