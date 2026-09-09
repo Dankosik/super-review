@@ -11,7 +11,7 @@ const scratch = await mkdtemp(join(tmpdir(), "super-review-native-"));
 const config = join(scratch, "config");
 await cp(join(root, "dist/opencode"), config, { recursive: true });
 await writeFile(join(config, "tools/untrusted_probe.ts"), 'import { tool } from "@opencode-ai/plugin"; export default tool({description:"Permission probe; must be unavailable to review roles.",args:{},async execute(){return "probe";}});\n');
-const env = { ...process.env, OPENCODE_CONFIG_DIR: config };
+const env = { ...process.env, OPENCODE_CONFIG_DIR: config, SUPER_REVIEW_SPECIALIST_MODEL: "xai/grok-build-0.1" };
 async function json(args: string[]) {
   const result = await exec(binary, [...args, "--pure"], { cwd: scratch, env, maxBuffer: 8 * 1024 * 1024, timeout: 90_000 });
   return JSON.parse(result.stdout);
@@ -21,6 +21,7 @@ try {
   const result: Record<string, unknown> = { version: version.trim(), roles: {} };
   for (const name of ["super-review", "super-review-specialist"]) {
     const agent = await json(["debug", "agent", name]);
+    if (name.endsWith("-specialist") && (agent.model?.providerID !== "xai" || agent.model?.modelID !== "grok-build-0.1")) throw new Error("Specialist model is not explicit.");
     const allowed = Object.entries(agent.tools).filter(([, enabled]) => enabled).map(([tool]) => tool).sort();
     const forbidden = ["bash", "read", "glob", "grep", "edit", "write", "webfetch", "untrusted_probe"];
     if (name.endsWith("-specialist")) forbidden.push("task", "skill", "super_review_snapshot", "super_review_files");

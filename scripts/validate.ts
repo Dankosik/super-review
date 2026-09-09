@@ -57,9 +57,14 @@ const claudeEntry = frontmatter(await readFile(join(root, "adapters/claude/plugi
 if (claudeEntry.context !== "fork" || claudeEntry.background !== false || claudeEntry.agent !== "super-review:orchestrator" || claudeEntry["disable-model-invocation"] !== true) errors.push("Claude command routing differs from the explicit isolated review.");
 for (const role of ["orchestrator", "specialist"]) {
   const agent = frontmatter(await readFile(join(root, "adapters/claude/plugin/agents/" + role + ".md"), "utf8"));
+  if (role === "orchestrator" && (agent.model !== "inherit" || agent.effort)) errors.push("Claude orchestrator must inherit the user selection.");
+  if (role === "specialist" && (agent.model !== "sonnet" || agent.effort !== "medium")) errors.push("Claude specialist profile changed without updating validation.");
   const allowed = agent.tools.split(",").map((s: string) => s.trim());
   if (allowed.some((name: string) => !name.startsWith("mcp__plugin_super-review_reader__") && !(role === "orchestrator" && name === "Agent"))) errors.push("Unexpected Claude tool: " + role);
 }
+if (claudeEntry.model !== "inherit" || claudeEntry.effort) errors.push("Claude command must inherit the user model and effort.");
+const openCodeModels = JSON.parse(await readFile(join(root, "adapters/opencode/opencode.json"), "utf8"));
+if (openCodeModels.agent?.["super-review-specialist"]?.model !== "{env:SUPER_REVIEW_SPECIALIST_MODEL}" || openCodeModels.model) errors.push("OpenCode must require an explicit specialist without overriding the orchestrator.");
 const catalog = JSON.parse(await readFile(join(root, ".agents/plugins/marketplace.json"), "utf8"));
 if (catalog.plugins[0]?.source?.path !== "./") errors.push("The project catalog must point at the normalized plugin root ./.");
 if (!(await readFile(join(root, "runtime/mcp.mjs"))).equals(await readFile(join(root, "adapters/claude/plugin/runtime/mcp.mjs")))) errors.push("Native readers differ.");

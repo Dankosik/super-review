@@ -13,16 +13,18 @@ change the effective environment, so the adapter is not an OS sandbox.
 
 ## Install and launch
 
-Download the versioned OpenCode ZIP and extract it once:
+Select the specialist model once using [model profiles](model-profiles.md).
+Version 2 requires this choice instead of silently inheriting the primary model.
+Then download the versioned OpenCode ZIP and extract it once:
 
 ```sh
-mkdir -p "$HOME/.local/share/super-review/1.1.0"
-gh release download v1.1.0 --repo Dankosik/super-review \
-  --pattern super-review-1.1.0-opencode.zip \
-  --dir "$HOME/.local/share/super-review/1.1.0"
-unzip "$HOME/.local/share/super-review/1.1.0/super-review-1.1.0-opencode.zip" \
-  -d "$HOME/.local/share/super-review/1.1.0"
-"$HOME/.local/share/super-review/1.1.0/opencode/super-review" https://github.com/OWNER/REPO/pull/123
+mkdir -p "$HOME/.local/share/super-review/2.0.0"
+gh release download v2.0.0 --repo Dankosik/super-review \
+  --pattern super-review-2.0.0-opencode.zip \
+  --dir "$HOME/.local/share/super-review/2.0.0"
+unzip "$HOME/.local/share/super-review/2.0.0/super-review-2.0.0-opencode.zip" \
+  -d "$HOME/.local/share/super-review/2.0.0"
+"$HOME/.local/share/super-review/2.0.0/opencode/super-review" https://github.com/OWNER/REPO/pull/123
 ```
 
 The launcher selects the review agent, config directory, and a trusted launch
@@ -67,8 +69,9 @@ The primary role has the source tools, its skill, question, and Task limited to
 Unlisted tools are denied, including shell, edit/write, arbitrary file reading,
 MCP tools, web access, and recursive delegation.
 
-The command uses a primary agent with `subtask: false`. No model is hardcoded.
-Use your own OpenCode model settings. There are no model HTTP clients or
+The command uses a primary agent with `subtask: false`. The orchestrator keeps
+the user's primary model. The specialist model is explicitly supplied through
+`SUPER_REVIEW_SPECIALIST_MODEL`, from the saved selection or launch environment. There are no model HTTP clients or
 subscription adapters in Super Review.
 
 Native harness/session caches and dependency setup may write in the trusted

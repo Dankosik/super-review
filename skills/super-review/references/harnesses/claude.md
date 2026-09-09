@@ -11,6 +11,9 @@ not an inline duplicate server. The session shares its reader connection.
 Load common resources in one `resources` call and only the assigned lens for a
 specialist. Return the full report to the invoking conversation.
 
-Leave model and effort selection to the user's Claude Code configuration. A
+The orchestrator inherits the user's session model and effort. Specialists use
+the native `sonnet` model selection at `medium` effort; do not override them
+with the orchestrator's model. User or managed harness overrides retain their
+native precedence. Report the selected specialist profile with coverage. A
 missing reader, failed child, or unavailable nested delegation is a coverage
 gap, not permission to use a different agent or pretend completion.

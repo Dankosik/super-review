@@ -3,6 +3,24 @@ set -eu
 
 review_root=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 review_state=${XDG_STATE_HOME:-"$HOME/.local/state"}/super-review/reviews
+worker_file=${XDG_CONFIG_HOME:-"$HOME/.config"}/super-review/opencode-specialist-model
+worker_model=${SUPER_REVIEW_SPECIALIST_MODEL:-}
+if [ -z "$worker_model" ] && [ -f "$worker_file" ]; then
+  worker_model=$(cat "$worker_file")
+fi
+case "$worker_model" in
+  ''|*[!A-Za-z0-9._:/-]*)
+    printf '%s\n' 'Choose a specialist model from your configured provider first.' \
+      'Set SUPER_REVIEW_SPECIALIST_MODEL=provider/model-id, or save that ID in:' \
+      "$worker_file" >&2
+    exit 64
+    ;;
+esac
+case "$worker_model" in
+  */*) ;;
+  *) printf '%s\n' 'The specialist model must use provider/model-id format.' >&2; exit 64 ;;
+esac
+export SUPER_REVIEW_SPECIALIST_MODEL="$worker_model"
 opencode_bin=${OPENCODE_BIN:-opencode}
 if ! command -v "$opencode_bin" >/dev/null 2>&1; then
   printf '%s\n' 'OpenCode is not available. Install OpenCode or set OPENCODE_BIN to its executable.' >&2

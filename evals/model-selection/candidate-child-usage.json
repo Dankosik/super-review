@@ -1,0 +1,106 @@
+[
+  {
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/abstractions",
+    "usage": {
+      "input_tokens": 158634,
+      "cached_input_tokens": 144128,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1141,
+      "reasoning_output_tokens": 459,
+      "total_tokens": 159775
+    }
+  },
+  {
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/control_flow",
+    "usage": {
+      "input_tokens": 261031,
+      "cached_input_tokens": 245760,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1184,
+      "reasoning_output_tokens": 450,
+      "total_tokens": 262215
+    }
+  },
+  {
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/data_flow",
+    "usage": {
+      "input_tokens": 173067,
+      "cached_input_tokens": 130048,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1606,
+      "reasoning_output_tokens": 916,
+      "total_tokens": 174673
+    }
+  },
+  {
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/naming",
+    "usage": {
+      "input_tokens": 195965,
+      "cached_input_tokens": 154368,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1356,
+      "reasoning_output_tokens": 485,
+      "total_tokens": 197321
+    }
+  },
+  {
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/duplication",
+    "usage": {
+      "input_tokens": 249117,
+      "cached_input_tokens": 229632,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1412,
+      "reasoning_output_tokens": 367,
+      "total_tokens": 250529
+    }
+  },
+  {
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/api_clarity",
+    "usage": {
+      "input_tokens": 198728,
+      "cached_input_tokens": 169472,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1294,
+      "reasoning_output_tokens": 491,
+      "total_tokens": 200022
+    }
+  },
+  {
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/function_cohesion",
+    "usage": {
+      "input_tokens": 284066,
+      "cached_input_tokens": 261120,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1496,
+      "reasoning_output_tokens": 370,
+      "total_tokens": 285562
+    }
+  },
+  {
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/change_locality",
+    "usage": {
+      "input_tokens": 175537,
+      "cached_input_tokens": 156416,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1178,
+      "reasoning_output_tokens": 466,
+      "total_tokens": 176715
+    }
+  }
+]

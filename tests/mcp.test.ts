@@ -17,10 +17,14 @@ describe("native source bridge", () => {
       expect(list.tools.every(t => t.annotations?.readOnlyHint && t.annotations?.destructiveHint === false)).toBe(true);
       const response = await client.callTool({ name: "resources", arguments: { paths: ["SKILL.md", "references/lenses/naming.md"] } });
       const content = JSON.parse((response.content as any)[0].text);
-      expect(content.version).toBe("1.1.0");
+      expect(content.version).toBe("2.0.0");
       expect(content.resources).toHaveLength(2);
       expect(content.resources[0].content).toContain("name: super-review");
       expect(content.resources[1].content).toContain("go.naming.intent");
+      const sharedPaths = ["SKILL.md", "references/harnesses/codex.md", "references/review-contract.md", "references/workflow.md", "references/team-rules.md", "references/verification.md", "references/languages/go.md", "assets/finding-template.md", "assets/report-template.md"];
+      const shared = await client.callTool({ name: "resources", arguments: { paths: sharedPaths } });
+      expect(shared.isError).not.toBe(true);
+      expect(JSON.parse((shared.content as any)[0].text).resources.map((r: any) => r.path)).toEqual(sharedPaths);
       const escaping = await client.callTool({ name: "resources", arguments: { paths: ["../../auth.json"] } });
       expect(escaping.isError).toBe(true);
       const unknown = await client.callTool({ name: "source", arguments: { snapshot: "invented", revision: "head", path: "main.go" } });

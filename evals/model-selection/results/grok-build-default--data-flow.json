@@ -1,0 +1,65 @@
+{
+  "exit_code": 0,
+  "profile": "grok-build-default",
+  "model": "xai/grok-build-0.1",
+  "case": "data-flow",
+  "effort": "provider default",
+  "elapsed_seconds": 72.01,
+  "steps": [
+    {
+      "id": "prt_0860aeb85001QtZ4ZRnKGAV4M6",
+      "reason": "tool-calls",
+      "messageID": "msg_0860abf3a001sL2xWvp4aftbgo",
+      "sessionID": "ses_f79f54265ffecbZuYu4tQZ3XAq",
+      "type": "step-finish",
+      "tokens": {
+        "total": 3952,
+        "input": 3172,
+        "output": 48,
+        "reasoning": 604,
+        "cache": {
+          "write": 0,
+          "read": 128
+        }
+      },
+      "cost": 0.0045016
+    },
+    {
+      "id": "prt_0860b31e9001KlVpoPP6G8zxOv",
+      "reason": "tool-calls",
+      "messageID": "msg_0860aeb8d001Dg10obFOpUgmO5",
+      "sessionID": "ses_f79f54265ffecbZuYu4tQZ3XAq",
+      "type": "step-finish",
+      "tokens": {
+        "total": 6556,
+        "input": 870,
+        "output": 37,
+        "reasoning": 1809,
+        "cache": {
+          "write": 0,
+          "read": 3840
+        }
+      },
+      "cost": 0.00533
+    },
+    {
+      "id": "prt_0860bd275001B0swO8FBvoCxqv",
+      "reason": "stop",
+      "messageID": "msg_0860b3203001AoG5sFEtO06LNI",
+      "sessionID": "ses_f79f54265ffecbZuYu4tQZ3XAq",
+      "type": "step-finish",
+      "tokens": {
+        "total": 10999,
+        "input": 182,
+        "output": 393,
+        "reasoning": 4024,
+        "cache": {
+          "write": 0,
+          "read": 6400
+        }
+      },
+      "cost": 0.010296
+    }
+  ],
+  "tool_calls": 4
+}

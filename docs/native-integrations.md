@@ -14,8 +14,8 @@ older versions without those capabilities need an update.
 
 Install from the author catalog as shown in the README. The only user-facing
 skill is `/super-review:review`. A dedicated orchestrator runs in a separate
-context; each specialist gets a fresh context with one lens. Model/effort choices
-remain the user's. The orchestrator exposes native delegation and the reader;
+context; each specialist gets a fresh context with one lens. The orchestrator
+inherits the user's model and effort; specialists explicitly use Sonnet/medium. The orchestrator exposes native delegation and the reader;
 specialists expose only source, diff, search, and resource reads. No review role
 exposes Bash, file editing, web tools, or unrelated MCP tools.
 
@@ -35,6 +35,10 @@ an active Claude Code subscription or API credit.
 
 Select Super Review from installed plugins in a new task, or use
 `$super-review` with a PR URL. The current task coordinates native child agents.
+The balanced worker profile explicitly selects Terra/medium; economy explicitly
+selects Luna/medium. The orchestrator's current model and effort are preserved.
+See [model profiles](model-profiles.md) for overrides and limitations.
+
 The plugin does not add an alternative agent runtime or create new sidebar tasks
 through the app's task-creation API.
 

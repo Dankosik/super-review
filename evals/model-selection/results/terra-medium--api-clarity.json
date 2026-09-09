@@ -1,0 +1,18 @@
+{
+  "exit_code": 0,
+  "profile": "terra-medium",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "case": "api-clarity",
+  "elapsed_seconds": 14.68,
+  "prompt_sha256": "edf90272fa45e6beabc6831c33e35cb1579739ff4606860bd7e68189edeb682f",
+  "usage": {
+    "input_tokens": 17742,
+    "cached_input_tokens": 12032,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 341,
+    "reasoning_output_tokens": 28
+  },
+  "answer_sha256": "642e192e2d782f558350362c0dc4a7609212aa3e3b591c5d7b3b2583705bab24",
+  "tool_events": []
+}

@@ -1,5 +1,20 @@
 # Validation
 
+## 2.0.0 — explicit specialist profiles
+
+The [model study](model-study.md) records 24 blind-graded Codex screen replies,
+two complete live smaller-worker reviews, the final Terra/medium candidate
+review, and the Claude nested routing probe. All eight candidate child records
+confirm Terra/medium; the parent retains Astra/medium. The candidate completed
+in 338.23 seconds. Claude model inference remains unverified. The OpenCode
+launcher rejects missing/malformed worker IDs and preserves saved/overridden
+selections. Native OpenCode discovery confirms the supplied worker model.
+
+Mechanical checks: 21 tests, 84 assertions, TypeScript diagnostics, native
+payload/link checks, shellcheck, and native MCP/OpenCode configuration checks
+pass. These checks do not prove model recommendation quality.
+
+
 ## 1.1.0 — native installation and workflow
 
 Recorded 2026-09-09. The runtime reader and core workflow used by the completed

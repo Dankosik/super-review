@@ -20367,7 +20367,7 @@ class GitHubReader {
   }
 }
 // package.json
-var version2 = "1.1.0";
+var version2 = "2.0.0";
 
 // src/snapshot-cache.ts
 import { constants, closeSync, fstatSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
@@ -20535,7 +20535,7 @@ async function createServer(skillRoot, reader = new GitHubReader) {
   }, async ({ snapshot, literal, prefix, offset }) => result(await reader.search(snapshot, literal, prefix, offset)));
   server.registerTool("resources", {
     description: "Read one or several installed Super Review resources. Batch the shared context; specialists load only their assigned lens.",
-    inputSchema: { paths: array(_enum(paths)).min(1).max(6) },
+    inputSchema: { paths: array(_enum(paths)).min(1).max(12) },
     annotations: { ...readOnly, openWorldHint: false }
   }, async ({ paths: requested }) => {
     const resources = await Promise.all(requested.map(async (path) => {

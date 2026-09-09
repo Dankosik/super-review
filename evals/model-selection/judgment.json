@@ -1,0 +1,558 @@
+{
+  "schema_version": 1,
+  "study": "Super Review blinded specialist-output screen",
+  "assessment_scope": "Substantive recommendation quality in eight supplied offline cases. Labels A/B/C are independently randomized per case and have no cross-case identity.",
+  "evidence_read": [
+    "work/super-review/model-study/blind/*.md (all eight files)",
+    "work/super-review/model-study/rubric.json",
+    "outputs/super-review/skills/super-review/references/review-contract.md",
+    "outputs/super-review/skills/super-review/assets/finding-template.md",
+    "outputs/super-review/skills/super-review/references/team-rules.md",
+    "outputs/super-review/skills/super-review/references/lenses/*.md (all eight assigned lenses)"
+  ],
+  "method": {
+    "rubric_treatment": "Proposed opportunities were checked against source and the released lens. They were not treated as mandatory findings irrespective of proportionality.",
+    "status_meaning": {
+      "pass": "Supported, proportional advice with no material semantic, evidence, or scope defect.",
+      "concern": "Plausible advice with a material unresolved limitation.",
+      "fail": "Unsupported or unsafe advice, a material scope violation, or a missed clearly supported opportunity without a credible reason."
+    },
+    "evaluation_limits": [
+      "No identities, prices, mapping, results, or development history were inspected.",
+      "No source changes, implementation checks, or runtime verification were performed.",
+      "A suggestion with an accurate preserve clause is not proof that a future patch preserves behavior.",
+      "Minor formatting omissions are recorded separately and do not determine the substantive status."
+    ]
+  },
+  "summary": {
+    "cases": 8,
+    "replies": 24,
+    "substantive_status_counts": {
+      "pass": 24,
+      "concern": 0,
+      "fail": 0
+    },
+    "unsafe_advice_count": 0,
+    "unjustified_advice_count": 0,
+    "scope_violation_count": 0,
+    "defensible_three_way_ties": 8,
+    "conclusion": "All replies identify the supported local opportunity and avoid the protected unsafe alternatives. This saturated screen does not justify a substantive ranking or production quality certification."
+  },
+  "cases": [
+    {
+      "case_id": "naming",
+      "opportunity_assessment": "Renaming data to lookupKey is a small, supported improvement: LookupEmail supplies lookupKey and Resolve returns a separate customer record. The short declaration limits the size of the benefit.",
+      "weak_or_leading_case": "The context directly supplies the lookup-key role and vocabulary. The source is tiny, and the distractor uses conventional short names; this is a low-difficulty screen.",
+      "defensible_ties": [
+        {
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "rationale": "All recommend the same local parameter rename and leave behavior and conventional names alone. C explicitly names the caller evidence, improving traceability without changing the substantive result."
+        }
+      ],
+      "replies": {
+        "A": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Clarify the customer lookup-key parameter",
+              "disposition": "found",
+              "rationale": "Renames only data and its store.Find use to lookupKey or customerLookupKey."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate Resolve location and relationship between its input and returned record. Caller corroboration exists in LookupEmail, although the reply does not name that caller.",
+          "rationale": "A proportional local rename with the right business meaning, no API-type change, and explicit preservation of value, error, and call order."
+        },
+        "B": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Clarify the customer lookup-key parameter",
+              "disposition": "found",
+              "rationale": "Uses lookupKey at the declaration and store call."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate Resolve declaration/use locations and customer-record distinction. The supplied LookupEmail caller supports the claimed key role but is not explicitly cited.",
+          "rationale": "Matches the observed caller vocabulary, stays within naming, and preserves behavior. No material difference from the other replies."
+        },
+        "C": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Clarify the customer lookup-key parameter",
+              "disposition": "found",
+              "rationale": "Matches LookupEmail's lookupKey vocabulary without changing callers or signature types."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Connects Resolve, store.Find, and LookupEmail directly and accurately.",
+          "rationale": "Well-grounded and narrowly scoped; its extra caller explanation makes the evidence especially easy to follow, but the recommendation is substantively equivalent to A and B."
+        }
+      }
+    },
+    {
+      "case_id": "control-flow",
+      "opportunity_assessment": "A guard after Audit removes redundant nesting and identical nil branches. The mandatory audit must remain unconditional.",
+      "weak_or_leading_case": "The effect-order requirement is explicitly stated, and the remaining function is a very small positive guard-clause example with an obvious no-change predicate.",
+      "defensible_ties": [
+        {
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "rationale": "All describe the same guard in the correct place and preserve emission conditions and error behavior."
+        }
+      ],
+      "replies": {
+        "A": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Flatten Publish after its mandatory audit",
+              "disposition": "found",
+              "rationale": "Gives the exact !enabled || body == empty guard after Audit."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate Publish range and explicit Audit/Emit sequence.",
+          "rationale": "Preserves one audit per attempt, at most one emission under the original conditions, and unchanged emission errors. Leaves IsAllowed alone."
+        },
+        "B": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Flatten Publish after its mandatory audit",
+              "disposition": "found",
+              "rationale": "Clearly specifies return nil after Audit when disabled or empty, then Emit."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Identifies the nested Publish branches and mandatory audit preceding them.",
+          "rationale": "The prose is actionable without a code snippet and preserves the same effects and errors. No helper extraction or other scope expansion."
+        },
+        "C": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Flatten Publish after its mandatory audit",
+              "disposition": "found",
+              "rationale": "Uses the same combined guard and direct emission return after Audit."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate Publish location and no-op alternatives.",
+          "rationale": "A safe, proportional flow suggestion. The hypothetical distinct future handling is only a counterargument, not advice to add machinery."
+        }
+      }
+    },
+    {
+      "case_id": "function-cohesion",
+      "opportunity_assessment": "A row-to-Customer parser is a coherent format boundary; Load can retain per-row parsing immediately followed by ordered persistence. NormalizeRegion has the same supplied semantics as the inline region conversion.",
+      "weak_or_leading_case": "The context explicitly declares the intended format boundary and loop ownership. Without that ownership statement, the compact linear function could also support a credible decision to keep the conversion inline.",
+      "defensible_ties": [
+        {
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "rationale": "All extract one coherent conversion operation and preserve ordered fail-fast persistence. C spells out parse/save interleaving most explicitly, but A and B do not suggest pre-parsing or reordering."
+        }
+      ],
+      "replies": {
+        "A": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Separate row interpretation from ordered persistence",
+              "disposition": "found",
+              "rationale": "Proposes parseCustomer returning Customer/error while Load iterates and saves."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurately identifies Load's arity, normalization, conversion/defaults, and persistence responsibilities.",
+          "rationale": "One coherent helper, with exact validation, wrapping, normalization, save order, and immediate-error behavior preserved. Conditional reuse of NormalizeRegion is conservative and does not invent a new boundary.",
+          "contract_notes": [
+            "No explicit terminal completed status; this is a reporting-format omission, not a substantive recommendation defect."
+          ]
+        },
+        "B": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Separate row interpretation from ordered persistence",
+              "disposition": "found",
+              "rationale": "Proposes parseCustomer and reuse of the supplied equivalent NormalizeRegion operation."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Identifies Load's conversion region and the existing NormalizeRegion helper.",
+          "rationale": "The extraction is supported by the format boundary. Reusing normalization is grounded in the shown equivalent operations and remains part of the same cohesive change.",
+          "contract_notes": [
+            "No explicit terminal completed status; this is a reporting-format omission, not a substantive recommendation defect."
+          ]
+        },
+        "C": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Separate row interpretation from ordered persistence",
+              "disposition": "found",
+              "rationale": "Extracts an unexported parseCustomer, keeps Save and iteration in Load, and reuses NormalizeRegion."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate conversion location, normalization helper, and parse-then-save sequence.",
+          "rationale": "Explicitly preserves validation before indexing and saving each parsed customer before interpreting the next row. This is especially precise preservation evidence, with the same supported recommendation as A and B."
+        }
+      }
+    },
+    {
+      "case_id": "data-flow",
+      "opportunity_assessment": "Stage-specific address names expose representation changes without changing normalization or query escaping. The benefit is modest because the pipeline is short and adjacent.",
+      "weak_or_leading_case": "The context explicitly tells the reviewer that stages have different representations and that slice mutation is intentional. A reasoned no-change answer could be defensible on this short pipeline, although all three actual suggestions remain proportional.",
+      "defensible_ties": [
+        {
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "rationale": "All use simple meaningful intermediates and retain the original transform/write pipeline. B and C explicitly decline sorting changes; A's silence is not unsafe advice."
+        }
+      ],
+      "replies": {
+        "A": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Make address representations visible",
+              "disposition": "found",
+              "rationale": "Introduces trimmed, normalized, and escaped intermediates before writing."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate Export location and sequence of successive data assignments.",
+          "rationale": "A small representational clarity change with preserved values, order, and final effect. Its ownership wording is loose for local immutable strings, but it does not lead to a harmful transformation.",
+          "contract_notes": [
+            "No explicit terminal completed status; this is a reporting-format omission, not a substantive recommendation defect."
+          ]
+        },
+        "B": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Make address representations visible",
+              "disposition": "found",
+              "rationale": "Uses trimmedAddress, upperAddress, and escapedAddress for distinct stages."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate Export operations and explicit reference to the SortInPlace/FirstSortedKey shared backing-array contract.",
+          "rationale": "Preserves transformation and error behavior, and correctly rejects an immutable-copy change to the intentional in-place sort."
+        },
+        "C": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Make address representations visible",
+              "disposition": "found",
+              "rationale": "Starts from row.Address and names trimmed, uppercase, and escaped values."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate Export location and exact trim/uppercase/query-escape/write sequence; explicitly reviews sorting declarations.",
+          "rationale": "A clear proportional pipeline, with unchanged writer error propagation and no extra framework or business-rule alteration."
+        }
+      }
+    },
+    {
+      "case_id": "abstractions",
+      "opportunity_assessment": "UsersFacade adds only a forwarding hop at a caller already accepting Repository. The document Store/RemoteStore boundary has a separate consumer/adaptation purpose and actual wrapping behavior.",
+      "weak_or_leading_case": "The context expressly rules out every usual justification for UsersFacade and expressly supplies the adapter's justification. This strongly cues the intended decision and is weak evidence of independent boundary discovery.",
+      "defensible_ties": [
+        {
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "rationale": "All remove the same behaviorless facade with the same direct call. A and C explain why document boundaries stay; B makes no recommendation to remove them."
+        }
+      ],
+      "replies": {
+        "A": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Remove the unearned UsersFacade hop",
+              "disposition": "found",
+              "rationale": "Calls repository.Find directly in Lookup and removes the facade."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate UsersFacade/Lookup relationship and explicit explanation of the remote adapter's error-context role.",
+          "rationale": "Removes only the unsupported layer and preserves results, nil behavior, and call order. Retains consumer and remote-adaptation boundaries."
+        },
+        "B": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Remove the unearned UsersFacade hop",
+              "disposition": "found",
+              "rationale": "Removes the wrapper after observing that callers already depend on Repository."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Correct path and symbols, forwarding behavior, and caller dependency.",
+          "rationale": "A supported local simplification preserving receiver/effect semantics. It does not discuss the remote boundary explicitly, but does not propose changing it; no negative finding is required merely to prove restraint."
+        },
+        "C": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Remove the unearned UsersFacade hop",
+              "disposition": "found",
+              "rationale": "Removes the facade and method while retaining Lookup's API and single direct repository call."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate UsersFacade/Lookup lines, nil receiver considerations, and RemoteStore's %w wrapping.",
+          "rationale": "Precisely bounds the simplification and correctly retains both remote adaptation and error identity. The additional precision supports auditability, not a different substantive outcome."
+        }
+      }
+    },
+    {
+      "case_id": "duplication",
+      "opportunity_assessment": "Both 15000 literals represent one explicitly shared pricing threshold, so a package-private constant is sufficient. The eligibility expressions are independently owned policies.",
+      "weak_or_leading_case": "The context directly supplies shared versus independent ownership, which is the central judgment the lens would otherwise have to establish.",
+      "defensible_ties": [
+        {
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "rationale": "All centralize the genuine shared value and decline coupling independent eligibility policies. A permits a small helper or constant; both are proportional here."
+        }
+      ],
+      "replies": {
+        "A": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Share the existing free-shipping threshold",
+              "disposition": "found",
+              "rationale": "Uses one small named shipping/pricing operation or constant in both functions."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Correct Fee/CartMessage relationship, literal, inclusive boundary, and separate eligibility ownership.",
+          "rationale": "Shares actual policy knowledge without generic machinery or merging the independent predicates; preserves threshold and outputs."
+        },
+        "B": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Share the existing free-shipping threshold",
+              "disposition": "found",
+              "rationale": "Names the threshold once within shipping and uses it in both comparisons."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate function locations and shared pricing ownership; explicitly declines eligibility extraction.",
+          "rationale": "The proposed local constant is sufficient and preserves public contracts, boundary comparison, fees, and messages.",
+          "contract_notes": [
+            "No explicit terminal completed status; this is a reporting-format omission, not a substantive recommendation defect."
+          ]
+        },
+        "C": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Share the existing free-shipping threshold",
+              "disposition": "found",
+              "rationale": "Introduces one package-private freeShippingThreshold constant referenced by both comparisons."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate comparison locations and explicit contrast between shared pricing knowledge and independently owned eligibility decisions.",
+          "rationale": "The smallest concrete sharing proposal, with all relevant semantics preserved. Its greater naming specificity does not make the alternatives materially worse."
+        }
+      }
+    },
+    {
+      "case_id": "api-clarity",
+      "opportunity_assessment": "The existing DeliveryOptions type can replace two ambiguous positional booleans at both supplied internal callers without adding a new abstraction. Keeping the forwarding helper is allowed by this lens.",
+      "weak_or_leading_case": "The source already contains the desired value type, and the context declares the booleans obscure and explicitly warns against generalizing options to every function.",
+      "defensible_ties": [
+        {
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "rationale": "All accept the existing options type and use named fields at both callers. All retain the exact choices and sender behavior without changing NewClient."
+        }
+      ],
+      "replies": {
+        "A": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Use DeliveryOptions at the internal call boundary",
+              "disposition": "found",
+              "rationale": "Changes sendInvoice's arguments and uses named fields at each supplied call site."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate helper and caller lines; uses the existing DeliveryOptions contract.",
+          "rationale": "A grounded internal API change that preserves both booleans, zero values, errors, and effect ordering. No unnecessary builder or new type."
+        },
+        "B": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Use DeliveryOptions at the internal call boundary",
+              "disposition": "found",
+              "rationale": "Passes existing DeliveryOptions through sendInvoice and uses keyed literals at both callers."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate helper/caller locations and explicit true/false versus false/true ambiguity.",
+          "rationale": "Preserves exact choices and the single synchronous Send/error behavior. Explicitly leaving NewClient alone is justified; the overall recommendation matches A and C."
+        },
+        "C": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Use DeliveryOptions at the internal call boundary",
+              "disposition": "found",
+              "rationale": "Names OnCheckout and RetryManually as the callers to update with named-field options."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Verified helper and both caller symbols, existing HTTP-boundary vocabulary, and actual boolean-call ambiguity.",
+          "rationale": "A usable source-grounded suggestion with the original options, zero values, one sender call, and error behavior preserved."
+        }
+      }
+    },
+    {
+      "case_id": "change-locality",
+      "opportunity_assessment": "A single Settings-producing decision localizes the existing queue policy even though the current dispatch helpers share one file. Queue, authorization, and loyalty ownership remain separate.",
+      "weak_or_leading_case": "The context explicitly supplies the common owner and independence of other labels. The three parallel switches are straightforward. This tests basic consolidation and restraint more than discovery of a difficult cross-file owner.",
+      "defensible_ties": [
+        {
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "rationale": "All consolidate the actual queue-tier mapping and preserve the default while excluding access/loyalty. C chooses one concrete switch and enumerates all mappings; A/B's alternatives are still clear and safe suggestions."
+        }
+      ],
+      "replies": {
+        "A": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Resolve a tier into one complete Settings value",
+              "disposition": "found",
+              "rationale": "Uses a small table or switching function containing the full policy for each tier."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate queue helper/ForTier locations, related settings, default values, and independent label consumers.",
+          "rationale": "Localizes one present decision without inventing a registry or shared domain enum. Explicitly preserves fallback and non-shared returned value semantics."
+        },
+        "B": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Resolve a tier into one complete Settings value",
+              "disposition": "found",
+              "rationale": "Replaces three switches with one tier-to-Settings decision."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate paths/symbols and observation that no supplied consumer requests fields independently.",
+          "rationale": "The proposal preserves the existing mappings by replacing their organization, explicitly retains unknown-tier defaults, and leaves unrelated ownership separate."
+        },
+        "C": {
+          "status": "pass",
+          "opportunity_disposition": [
+            {
+              "opportunity": "Resolve a tier into one complete Settings value",
+              "disposition": "found",
+              "rationale": "Puts a single switch in ForTier, returns keyed Settings values, and removes the three helpers."
+            }
+          ],
+          "unsafe_advice": [],
+          "unjustified_advice": [],
+          "scope_violations": [],
+          "source_evidence": "Accurate helper/ForTier location, caller use, and all three complete mappings.",
+          "rationale": "A particularly concrete expression of the same valid consolidation, preserving exported API, concrete values, every mapping, and independent access/loyalty concepts."
+        }
+      }
+    }
+  ],
+  "study_limitations": [
+    "Every case has one signposted positive opportunity and explicit protected alternatives. There are no wholly negative cases requiring a justified no-candidate outcome.",
+    "Ownership, external callers, and effect constraints are supplied directly rather than discovered through repository navigation.",
+    "The strongest leading contexts are abstractions, duplication, function-cohesion, API clarity, and change locality; naming, data flow, and control flow are also strongly scaffolded.",
+    "The findings test local recommendation quality under rich context, not acquisition reliability, missing-context handling, multi-file discovery, noisy real-PR judgment, or behavior of implemented patches.",
+    "Small traceability and reporting differences exist, but no reply has a material substantive defect that supports breaking any of the eight ties."
+  ]
+}

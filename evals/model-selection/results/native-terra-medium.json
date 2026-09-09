@@ -1,0 +1,17 @@
+{
+  "exit_code": 0,
+  "profile": "terra-medium",
+  "orchestrator_model": "gpt-6-astra",
+  "orchestrator_effort": "medium",
+  "specialist_model": "gpt-5.6-terra",
+  "specialist_effort": "medium",
+  "elapsed_seconds": 399.2,
+  "thread_id": "01a08603-3a7f-7f30-90d7-ec77e65fb876",
+  "usage": {
+    "input_tokens": 1238953,
+    "cached_input_tokens": 1186048,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 4583,
+    "reasoning_output_tokens": 180
+  }
+}

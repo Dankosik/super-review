@@ -1,0 +1,42 @@
+{
+  "naming": {
+    "A": "terra-medium",
+    "B": "luna-medium",
+    "C": "astra-medium"
+  },
+  "control-flow": {
+    "A": "astra-medium",
+    "B": "luna-medium",
+    "C": "terra-medium"
+  },
+  "function-cohesion": {
+    "A": "terra-medium",
+    "B": "luna-medium",
+    "C": "astra-medium"
+  },
+  "data-flow": {
+    "A": "luna-medium",
+    "B": "terra-medium",
+    "C": "astra-medium"
+  },
+  "abstractions": {
+    "A": "terra-medium",
+    "B": "luna-medium",
+    "C": "astra-medium"
+  },
+  "duplication": {
+    "A": "luna-medium",
+    "B": "terra-medium",
+    "C": "astra-medium"
+  },
+  "api-clarity": {
+    "A": "luna-medium",
+    "B": "astra-medium",
+    "C": "terra-medium"
+  },
+  "change-locality": {
+    "A": "terra-medium",
+    "B": "luna-medium",
+    "C": "astra-medium"
+  }
+}

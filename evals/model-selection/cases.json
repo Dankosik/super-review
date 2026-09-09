@@ -1,0 +1,71 @@
+[
+  {
+    "id": "naming",
+    "lens": "naming",
+    "context": "All declarations below are newly added in this synthetic PR. The caller uses a customer lookup key and the returned customer record in the same flow. No external callers exist. Team vocabulary: customer is the business entity; client is an outbound protocol client.",
+    "files": {
+      "internal/customer/lookup.go": "package customer\nimport \"context\"\ntype Customer struct { ID, Email string }\ntype Store interface { Find(context.Context, string) (Customer, error) }\nfunc Resolve(ctx context.Context, store Store, data string) (Customer, error) {\n    record, err := store.Find(ctx, data)\n    if err != nil { return Customer{}, err }\n    return record, nil\n}\nfunc LookupEmail(ctx context.Context, store Store, lookupKey string) (string, error) {\n    record, err := Resolve(ctx, store, lookupKey)\n    if err != nil { return \"\", err }\n    return record.Email, nil\n}\n",
+      "internal/report/names.go": "package report\nfunc JoinNames(names []string) string {\n    out := \"\"\n    for i, name := range names {\n        if i > 0 { out += \", \" }\n        out += name\n    }\n    return out\n}\n"
+    }
+  },
+  {
+    "id": "control-flow",
+    "lens": "control-flow",
+    "context": "All listed functions are new. Audit records every attempt, including disabled ones. Emit returns its error unchanged. Calls may have observable effects; preserve order and call counts.",
+    "files": {
+      "internal/delivery/publish.go": "package delivery\ntype Sink interface { Audit(string); Emit(string) error }\nfunc Publish(s Sink, enabled bool, body string) error {\n    s.Audit(body)\n    if enabled {\n        if body != \"\" {\n            return s.Emit(body)\n        } else {\n            return nil\n        }\n    } else {\n        return nil\n    }\n}\nfunc IsAllowed(enabled, paused bool) bool {\n    return enabled && !paused\n}\n"
+    }
+  },
+  {
+    "id": "function-cohesion",
+    "lens": "function-cohesion",
+    "context": "This new import loop both interprets the CSV row format and persists each customer. The row-to-customer interpretation is a distinct format boundary; the loop owns iteration/persistence. Store.Save order and fail-fast behavior are intentional. These are all callers.",
+    "files": {
+      "internal/importer/load.go": "package importer\nimport (\"context\"; \"fmt\"; \"strconv\"; \"strings\")\ntype Customer struct { Name, Email, Region string; Age int }\ntype Store interface { Save(context.Context, Customer) error }\nfunc Load(ctx context.Context, rows [][]string, store Store) error {\n    for _, row := range rows {\n        if len(row) != 4 { return fmt.Errorf(\"expected four fields\") }\n        name := strings.TrimSpace(row[0])\n        email := strings.ToLower(strings.TrimSpace(row[1]))\n        age, err := strconv.Atoi(strings.TrimSpace(row[2]))\n        if err != nil { return fmt.Errorf(\"parse age: %w\", err) }\n        region := strings.ToUpper(strings.TrimSpace(row[3]))\n        if region == \"\" { region = \"UNKNOWN\" }\n        customer := Customer{Name: name, Email: email, Age: age, Region: region}\n        if err := store.Save(ctx, customer); err != nil { return err }\n    }\n    return nil\n}\nfunc NormalizeRegion(raw string) string {\n    value := strings.TrimSpace(raw)\n    value = strings.ToUpper(value)\n    if value == \"\" { return \"UNKNOWN\" }\n    return value\n}\n"
+    }
+  },
+  {
+    "id": "data-flow",
+    "lens": "data-flow",
+    "context": "New functions. Each address pipeline stage returns a string with a different representation. For SortInPlace the caller deliberately observes the input slice's reordered backing array; the in-place behavior is part of its API.",
+    "files": {
+      "internal/exporter/address.go": "package exporter\nimport (\"net/url\"; \"sort\"; \"strings\")\ntype Row struct { Address string }\ntype Writer interface { WriteAddress(string) error }\nfunc Export(row Row, writer Writer) error {\n    data := row.Address\n    data = strings.TrimSpace(data)\n    data = strings.ToUpper(data)\n    data = url.QueryEscape(data)\n    return writer.WriteAddress(data)\n}\nfunc SortInPlace(keys []string) {\n    sort.Strings(keys)\n}\nfunc FirstSortedKey(keys []string) string {\n    SortInPlace(keys)\n    if len(keys) == 0 { return \"\" }\n    return keys[0]\n}\n"
+    }
+  },
+  {
+    "id": "abstractions",
+    "lens": "abstractions",
+    "context": "The adapter and consumer code shown is the complete source universe. Everything is internal to this repository. UsersFacade adds no behavior, compatibility, ownership, or substitution boundary; its callers already depend on Repository. RemoteStore wraps a network dependency and deliberately adds error context.",
+    "files": {
+      "internal/users/lookup.go": "package users\ntype Repository struct {}\nfunc (r *Repository) Find(key string) string { return key }\ntype UsersFacade struct { Repository *Repository }\nfunc (f UsersFacade) Find(key string) string { return f.Repository.Find(key) }\nfunc Lookup(repository *Repository, key string) string {\n    facade := UsersFacade{Repository: repository}\n    return facade.Find(key)\n}\n",
+      "internal/document/load.go": "package document\nimport (\"context\"; \"fmt\")\ntype Store interface { Read(context.Context, string) ([]byte, error) }\ntype RemoteClient interface { Get(context.Context, string) ([]byte, error) }\ntype RemoteStore struct { Client RemoteClient }\nfunc (s RemoteStore) Read(ctx context.Context, key string) ([]byte, error) {\n    data, err := s.Client.Get(ctx, key)\n    if err != nil { return nil, fmt.Errorf(\"read document %q: %w\", key, err) }\n    return data, nil\n}\nfunc Load(ctx context.Context, store Store, key string) ([]byte, error) { return store.Read(ctx, key) }\n"
+    }
+  },
+  {
+    "id": "duplication",
+    "lens": "duplication",
+    "context": "All functions are newly added. Pricing owns one shared free-shipping threshold, used in checkout and the cart message; they must change together. Purchasing and supplier onboarding own independent credit policies and can evolve separately.",
+    "files": {
+      "internal/shipping/fees.go": "package shipping\nfunc Fee(subtotal int64) int64 {\n    if subtotal >= 15000 { return 0 }\n    return 500\n}\nfunc CartMessage(subtotal int64) string {\n    if subtotal >= 15000 { return \"Free shipping\" }\n    return \"Shipping added at checkout\"\n}\n",
+      "internal/eligibility/policies.go": "package eligibility\nfunc CustomerCanBuy(enabled bool, credit int64) bool { return enabled && credit > 0 }\nfunc SupplierCanJoin(enabled bool, credit int64) bool { return enabled && credit > 0 }\n"
+    }
+  },
+  {
+    "id": "api-clarity",
+    "lens": "api-clarity",
+    "context": "All callers are included. The module already uses DeliveryOptions to express these two independent delivery choices at its HTTP boundary. sendInvoice is internal; its positional booleans obscure the same contract at its call sites. No rule requires options for every function.",
+    "files": {
+      "internal/invoice/send.go": "package invoice\nimport (\"context\"; \"time\")\ntype Invoice struct { ID string }\ntype DeliveryOptions struct { NotifyCustomer, ForceResend bool }\ntype Sender interface { Send(context.Context, Invoice, DeliveryOptions) error }\nfunc sendInvoice(ctx context.Context, sender Sender, invoice Invoice, notify bool, force bool) error {\n    return sender.Send(ctx, invoice, DeliveryOptions{NotifyCustomer: notify, ForceResend: force})\n}\nfunc OnCheckout(ctx context.Context, sender Sender, invoice Invoice) error {\n    return sendInvoice(ctx, sender, invoice, true, false)\n}\nfunc RetryManually(ctx context.Context, sender Sender, invoice Invoice) error {\n    return sendInvoice(ctx, sender, invoice, false, true)\n}\ntype Client struct { BaseURL string; Timeout time.Duration }\nfunc NewClient(baseURL string, timeout time.Duration) Client { return Client{BaseURL: baseURL, Timeout: timeout} }\n"
+    }
+  },
+  {
+    "id": "change-locality",
+    "lens": "change-locality",
+    "context": "A single queue-tier policy owns the queue name, retry limit, and burst size below. Adding or changing an already-supported tier requires coordinated edits in all three switches. All consumers are shown. Independent loyalty and authorization concepts may use the same words but are not owned by that policy.",
+    "files": {
+      "internal/queue/policy.go": "package queue\ntype Settings struct { Queue string; Retries, Burst int }\nfunc queueName(tier string) string {\n    switch tier { case \"priority\": return \"fast\"; case \"standard\": return \"normal\"; default: return \"slow\" }\n}\nfunc retryLimit(tier string) int {\n    switch tier { case \"priority\": return 6; case \"standard\": return 3; default: return 1 }\n}\nfunc burstSize(tier string) int {\n    switch tier { case \"priority\": return 20; case \"standard\": return 10; default: return 2 }\n}\nfunc ForTier(tier string) Settings { return Settings{queueName(tier), retryLimit(tier), burstSize(tier)} }\n",
+      "internal/access/roles.go": "package access\nfunc CanView(role string) bool { return role == \"standard\" || role == \"priority\" }\n",
+      "internal/loyalty/labels.go": "package loyalty\nfunc Label(level string) string {\n    if level == \"priority\" { return \"Gold member\" }\n    return \"Member\"\n}\n"
+    }
+  }
+]

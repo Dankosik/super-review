@@ -5,6 +5,7 @@ argument-hint: "<PR URL> [scope or review aspects]"
 disable-model-invocation: true
 context: fork
 agent: super-review:orchestrator
+model: inherit
 background: false
 ---
 

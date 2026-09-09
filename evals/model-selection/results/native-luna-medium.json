@@ -1,0 +1,17 @@
+{
+  "exit_code": 0,
+  "profile": "luna-medium",
+  "orchestrator_model": "gpt-6-astra",
+  "orchestrator_effort": "medium",
+  "specialist_model": "gpt-5.6-luna",
+  "specialist_effort": "medium",
+  "elapsed_seconds": 367.71,
+  "thread_id": "01a08603-3a96-7a10-9163-ae1d479d6116",
+  "usage": {
+    "input_tokens": 1146825,
+    "cached_input_tokens": 1091968,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 4722,
+    "reasoning_output_tokens": 103
+  }
+}

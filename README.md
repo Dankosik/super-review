@@ -64,6 +64,15 @@ Invoke Super Review without a PR URL to get launch guidance and a reader check.
 Missing GitHub access or unavailable delegation is reported directly. Installation
 does not supply a paid Claude subscription or change your model/provider settings.
 
+## Models and cost
+
+The orchestrator keeps your current model and effort. Codex specialists use
+**Terra/medium** by default; request the **economy** profile for **Luna/medium**.
+Claude specialists use **Sonnet/medium**. OpenCode asks you to select a specialist
+model from your configured provider once. No global model setting is changed.
+See [profiles](docs/model-profiles.md) and the [measured study](docs/model-study.md)
+for exact behavior and the limits of the available quality evidence.
+
 ## Read and use the report
 
 The outcome comes first. Each accepted recommendation then explains:

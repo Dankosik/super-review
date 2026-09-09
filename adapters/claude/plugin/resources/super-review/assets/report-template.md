@@ -11,7 +11,8 @@ were found under the completed plan; do not claim the code is perfect.
 ## Context and status
 
 PR URL; B, H, D; Super Review version; `complete` or `partial`; independent or
-explicitly limited sequential execution. Explain any missing identity or scope.
+explicitly limited sequential execution; selected specialist model/profile and
+reasoning effort when available. Explain any missing identity or scope.
 
 ## Applied rules
 

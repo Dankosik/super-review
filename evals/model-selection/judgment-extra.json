@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "study": "Super Review additional anonymized specialist-output screen",
+  "assessment_scope": "One additional reply for each of the same eight offline cases. No model identity or cost inference was made.",
+  "evidence_read": [
+    "work/super-review/model-study/blind-grok/*.md (all eight additional replies and their supplied source/context)",
+    "work/super-review/model-study/rubric.json (retained from the initial assessment)",
+    "outputs/super-review/skills/super-review/references/review-contract.md (retained)",
+    "outputs/super-review/skills/super-review/assets/finding-template.md (retained)",
+    "outputs/super-review/skills/super-review/references/lenses/*.md (all eight assigned lenses, retained)"
+  ],
+  "method": {
+    "rubric_treatment": "Evaluator opportunities are proposed expectations, not mandatory findings. A supported proportional decline can pass. Ambiguity in the released lens is considered before calling a no-candidate response a material miss.",
+    "status_meaning": {
+      "pass": "Supported proportional advice or a supported proportional decline, with no material recommendation defect.",
+      "concern": "A substantive limitation remains, but the evidence or contract does not support a definitive failure judgment.",
+      "fail": "An unsafe or unsupported recommendation, material scope violation, or clearly established material miss."
+    },
+    "limits": [
+      "No results, pricing, identities, mapping, or development history were read.",
+      "No product files were changed and no implementation checks were run.",
+      "Proposed code was assessed from the supplied text; it was not executed.",
+      "Factual wording and reporting omissions are separated from the safety and quality of the actual proposed transformation."
+    ]
+  },
+  "summary": {
+    "cases": 8,
+    "replies": 8,
+    "substantive_status_counts": {
+      "pass": 7,
+      "concern": 1,
+      "fail": 0
+    },
+    "opportunities_found": 7,
+    "no_candidate_replies": 1,
+    "unsafe_advice_count": 0,
+    "unjustified_advice_count": 0,
+    "scope_violation_count": 0,
+    "conclusion": "Seven replies make supported local recommendations. The change-locality decline warrants a concern: it rests on file count without evaluating the coordination among three policy switches. The lens's cross-file wording makes this a contract-sensitive result rather than a definitive material failure."
+  },
+  "cases": [
+    {
+      "case_id": "abstractions",
+      "label": "additional",
+      "status": "pass",
+      "opportunity_disposition": [
+        {
+          "opportunity": "Remove the unearned UsersFacade hop",
+          "disposition": "found",
+          "rationale": "Deletes the forwarding type/method and changes Lookup to call repository.Find directly; the supplied caller already depends on Repository."
+        }
+      ],
+      "unsafe_advice": [],
+      "unjustified_advice": [],
+      "scope_violations": [],
+      "source_evidence": "Accurate paths, UsersFacade and Lookup locations, direct dependency, and preserved RemoteStore adaptation.",
+      "rationale": "The concrete change removes only the behaviorless hop. It retains the method receiver behavior and leaves document storage and error wrapping intact.",
+      "evidence_notes": [
+        "The claimed extra allocation is not established by the supplied source as a runtime or heap-allocation cost. The recommendation is independently justified by the type and call indirection, so this does not invalidate it.",
+        "The statement that no contracts or lifetime are involved is overbroad; the concrete proposed call nevertheless preserves the shown API and receiver semantics."
+      ],
+      "weak_or_leading_case": "The context expressly rules out compatibility, ownership, substitution, and behavior as reasons to retain UsersFacade and states why RemoteStore is useful.",
+      "relation_to_initial_blinded_replies": "Substantively equivalent to the supported facade-removal recommendations; the allocation claim is less precise evidence."
+    },
+    {
+      "case_id": "api-clarity",
+      "label": "additional",
+      "status": "pass",
+      "opportunity_disposition": [
+        {
+          "opportunity": "Use existing DeliveryOptions at both internal callers",
+          "disposition": "found",
+          "rationale": "Changes sendInvoice to accept the existing type, passes it directly to Sender.Send, and explicitly preserves true/false at checkout and false/true at manual retry."
+        }
+      ],
+      "unsafe_advice": [],
+      "unjustified_advice": [],
+      "scope_violations": [],
+      "source_evidence": "Correct helper and caller symbols, positional values, existing options fields, and supplied HTTP-boundary convention.",
+      "rationale": "A concrete and proportional signature/caller update with unchanged sender invocation, error behavior, and zero-value choices. It introduces no builder and leaves NewClient alone.",
+      "contract_notes": [
+        "No explicit terminal completed status.",
+        "No explicit standard exclusion list."
+      ],
+      "weak_or_leading_case": "The context identifies the ambiguous contract and already provides the intended existing value type.",
+      "relation_to_initial_blinded_replies": "Defensible substantive tie: the same supported local API change with explicit caller literals."
+    },
+    {
+      "case_id": "change-locality",
+      "label": "additional",
+      "status": "concern",
+      "opportunity_disposition": [
+        {
+          "opportunity": "Resolve each queue tier into one complete Settings value",
+          "disposition": "declined_with_incomplete_rationale",
+          "rationale": "The reply recognizes the shared queue policy but dismisses a finding because the three switches reside in one file/package. It does not evaluate the existing need to coordinate three branches for one tier decision."
+        }
+      ],
+      "unsafe_advice": [],
+      "unjustified_advice": [],
+      "scope_violations": [],
+      "source_evidence": "Accurately identifies the queue helpers and independent access/loyalty ownership. Its statement that the mapping occupies one file is true, but does not settle semantic locality.",
+      "rationale": "This is not an adequately supported proportional decline on its stated reasoning. The response substitutes file count for the maintenance question: one existing tier mapping is split into three decisions even though every shown consumer wants complete Settings. A small switch in ForTier would localize that decision. However, the released lens explicitly frames its primary recommendation around decisions scattered across files; that narrower wording supports some scope restraint and prevents a definitive fail judgment here.",
+      "decline_assessment": {
+        "verdict": "Concern, not a definitive material miss",
+        "support_for_declining": [
+          "The lens says to recommend a boundary when one decision is scattered across files that must change together, and to show those files. This fixture has only one participating queue file.",
+          "The helpers are small, named, and colocated; retaining them can be a defensible tradeoff if the review explicitly weighs that readability against coordinating the three switches."
+        ],
+        "weakness_in_actual_decline": [
+          "The reply gives no proportional comparison of the existing helpers with a Settings-producing switch.",
+          "It treats touching only one file as decisive despite the lens also saying locality is semantic rather than the smallest possible file count.",
+          "It does not address the supplied observation that one policy change requires coordinated edits in all three switches."
+        ],
+        "calibration": "The rubric should not convert this single-file fixture into an automatic must-find result while the released lens foregrounds cross-file coordination. Equally, the actual response should not be counted as an unqualified demonstration of good proportional restraint."
+      },
+      "evidence_notes": [
+        "The limitations paragraph says three declarations were supplied, although it previously lists three files containing several declarations. This is a minor scope-description error."
+      ],
+      "contract_notes": [
+        "No explicit standard exclusion list."
+      ],
+      "weak_or_leading_case": "The context directly supplies common ownership and intended coordination cost. The fixture is also ambiguous against the lens's explicit cross-file recommendation wording, making this a weak basis for ranking a no-candidate reply.",
+      "relation_to_initial_blinded_replies": "The earlier consolidation advice remains supported. This decline is not a clean substantive tie because its reasoning omits semantic coordination, but the contract ambiguity limits the strength of the distinction."
+    },
+    {
+      "case_id": "control-flow",
+      "label": "additional",
+      "status": "pass",
+      "opportunity_disposition": [
+        {
+          "opportunity": "Flatten redundant Publish nesting while preserving unconditional audit",
+          "disposition": "found",
+          "rationale": "Combines the enabled/nonempty condition into one branch after Audit and returns nil afterward. This is an equally clear flow rather than the inverse no-op guard."
+        }
+      ],
+      "unsafe_advice": [],
+      "unjustified_advice": [],
+      "scope_violations": [],
+      "source_evidence": "Accurate Publish range, nested conditions, and mandatory Audit placement. The proposed code keeps the exact original Emit predicate.",
+      "rationale": "The positive condition is a valid equivalent simplification: audit always occurs first, Emit occurs once only for enabled nonempty input, and its result is returned unchanged. IsAllowed is left alone.",
+      "evidence_notes": [
+        "The counterargument says all paths have no side effects after Audit. That is inaccurate for the path calling Emit. The concrete transformation and preserve clause correctly retain the effect, so this is an explanatory flaw rather than unsafe advice."
+      ],
+      "contract_notes": [
+        "No explicit terminal completed status.",
+        "No explicit standard exclusion list."
+      ],
+      "weak_or_leading_case": "The source is tiny and the context explicitly supplies the audit ordering and error-return requirements.",
+      "relation_to_initial_blinded_replies": "Defensible substantive tie: the positive combined condition achieves the same supported flattening as the earlier inverse guards. Exact wording or guard direction should not determine the grade."
+    },
+    {
+      "case_id": "data-flow",
+      "label": "additional",
+      "status": "pass",
+      "opportunity_disposition": [
+        {
+          "opportunity": "Make address representations visible",
+          "disposition": "found",
+          "rationale": "Names address, trimmed, upper, and escaped values while retaining the original string operations and final writer call."
+        }
+      ],
+      "unsafe_advice": [],
+      "unjustified_advice": [],
+      "scope_violations": [],
+      "source_evidence": "Accurate Export location and exact raw/trimmed/uppercase/query-escaped sequence.",
+      "rationale": "The code suggestion is local and proportional, preserves transformation order and writer errors, and makes no change to the intentionally mutating sort API. Explicitly listing a no-change sorting decision is not required for the proposed advice to be safe.",
+      "evidence_notes": [
+        "The parenthetical equation of string immutability with no shared storage is inaccurate: immutability does not imply independent backing storage. The proposed operations do not introduce copying or change the slice API, so this factual imprecision does not make the recommendation unsafe."
+      ],
+      "contract_notes": [
+        "No explicit terminal completed status.",
+        "No explicit standard exclusion list."
+      ],
+      "weak_or_leading_case": "The context gives the desired representation distinction and explicitly protects slice mutation. Since the pipeline is short, a reasoned no-change decision could also have been proportional.",
+      "relation_to_initial_blinded_replies": "Defensible substantive tie on the transformation; the shared-storage statement is less precise explanation."
+    },
+    {
+      "case_id": "duplication",
+      "label": "additional",
+      "status": "pass",
+      "opportunity_disposition": [
+        {
+          "opportunity": "Share the existing free-shipping threshold",
+          "disposition": "found",
+          "rationale": "Adds an unexported int64 freeShippingThreshold constant equal to 15000 and uses it in both inclusive comparisons."
+        }
+      ],
+      "unsafe_advice": [],
+      "unjustified_advice": [],
+      "scope_violations": [],
+      "source_evidence": "Accurate Fee/CartMessage locations, literal values, comparison boundary, and explicit pricing ownership.",
+      "rationale": "The smallest useful sharing change preserves current values and public APIs and correctly leaves independently owned eligibility predicates separate.",
+      "contract_notes": [
+        "No explicit standard exclusion list."
+      ],
+      "weak_or_leading_case": "The context directly tells the reviewer which repeated knowledge shares an owner and which syntactically identical policies do not.",
+      "relation_to_initial_blinded_replies": "Defensible substantive tie: the same small constant-based extraction."
+    },
+    {
+      "case_id": "function-cohesion",
+      "label": "additional",
+      "status": "pass",
+      "opportunity_disposition": [
+        {
+          "opportunity": "Separate row interpretation from ordered persistence",
+          "disposition": "found",
+          "rationale": "Extracts rowToCustomer with the complete format conversion and keeps immediate parse-then-save iteration in Load."
+        }
+      ],
+      "unsafe_advice": [],
+      "unjustified_advice": [],
+      "scope_violations": [],
+      "source_evidence": "Accurate Load and NormalizeRegion locations, field order, validation, error wrapping, and equivalent region normalization.",
+      "rationale": "The concrete suggested helper preserves validation before indexing, exact parsing errors, normalization/defaults, context propagation, and stopping at the first parse or Save error. It neither pre-parses all rows nor splits every string operation into a separate helper.",
+      "contract_notes": [
+        "No explicit terminal completed status.",
+        "No explicit standard exclusion list."
+      ],
+      "weak_or_leading_case": "The context explicitly identifies row conversion as a separate format boundary and persistence as the loop's responsibility, making the intended extraction unusually clear.",
+      "relation_to_initial_blinded_replies": "Defensible substantive tie: the supplied code realizes the same coherent extraction and preserves the relevant interleaving."
+    },
+    {
+      "case_id": "naming",
+      "label": "additional",
+      "status": "pass",
+      "opportunity_disposition": [
+        {
+          "opportunity": "Clarify the customer lookup-key parameter",
+          "disposition": "found",
+          "rationale": "Renames only Resolve's data parameter and its store.Find use to lookupKey, directly supported by LookupEmail."
+        }
+      ],
+      "unsafe_advice": [],
+      "unjustified_advice": [],
+      "scope_violations": [],
+      "source_evidence": "Accurate declaration/use lines and explicit linkage to the supplied LookupEmail caller.",
+      "rationale": "A narrowly scoped role-based rename with unchanged argument types, callers, Find invocation, zero Customer on error, and returned value. It correctly leaves conventional names and report-loop behavior alone.",
+      "evidence_notes": [
+        "The reply attributes one supplied contextual statement to the PR description, which is not separately present in the blind file. The actual caller independently corroborates the recommendation."
+      ],
+      "contract_notes": [
+        "No explicit terminal completed status.",
+        "No explicit standard exclusion list."
+      ],
+      "weak_or_leading_case": "The tiny source and context directly provide the key role and vocabulary, leaving little ambiguity to resolve.",
+      "relation_to_initial_blinded_replies": "Defensible substantive tie: the same supported local rename, with explicit caller evidence."
+    }
+  ],
+  "study_limitations": [
+    "The fixtures provide rich source and unusually explicit ownership and preservation requirements. Passing them does not establish production review quality.",
+    "Each case is constructed around one intended positive opportunity with strongly protected alternatives; this is a weak discriminator among otherwise competent replies.",
+    "The queue-policy case contains a real evaluator/lens ambiguity: the rubric expects same-file consolidation while the primary lens wording emphasizes decisions scattered across files.",
+    "Several additional replies contain imprecise factual or reporting statements, but their actual proposed changes remain supported. Those statements should not be inflated into unsafe-transformation claims.",
+    "This additional screen supports seven substantive ties to the earlier recommendations and one qualified concern; it does not support identity, model-cost, or general quality ranking."
+  ]
+}

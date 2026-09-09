@@ -80,7 +80,7 @@ export async function createServer(skillRoot: string, reader = new GitHubReader(
 
   server.registerTool("resources", {
     description: "Read one or several installed Super Review resources. Batch the shared context; specialists load only their assigned lens.",
-    inputSchema: { paths: z.array(z.enum(paths as [string, ...string[]])).min(1).max(6) },
+    inputSchema: { paths: z.array(z.enum(paths as [string, ...string[]])).min(1).max(12) },
     annotations: { ...readOnly, openWorldHint: false },
   }, async ({ paths: requested }) => {
     const resources = await Promise.all(requested.map(async path => {

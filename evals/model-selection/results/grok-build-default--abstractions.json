@@ -1,0 +1,29 @@
+{
+  "exit_code": 0,
+  "profile": "grok-build-default",
+  "model": "xai/grok-build-0.1",
+  "case": "abstractions",
+  "effort": "provider default",
+  "elapsed_seconds": 63.87,
+  "steps": [
+    {
+      "id": "prt_0860a7298001GnnTDaQsCIeVPf",
+      "reason": "stop",
+      "messageID": "msg_0860985c6001D1RSd2leDbnQNa",
+      "sessionID": "ses_f79f67dccffeqSejIVMIGMye2l",
+      "type": "step-finish",
+      "tokens": {
+        "total": 8463,
+        "input": 3295,
+        "output": 424,
+        "reasoning": 4616,
+        "cache": {
+          "write": 0,
+          "read": 128
+        }
+      },
+      "cost": 0.0134006
+    }
+  ],
+  "tool_calls": 0
+}

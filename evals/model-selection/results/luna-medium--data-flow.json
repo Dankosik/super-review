@@ -1,0 +1,18 @@
+{
+  "exit_code": 0,
+  "profile": "luna-medium",
+  "model": "gpt-5.6-luna",
+  "effort": "medium",
+  "case": "data-flow",
+  "elapsed_seconds": 14.86,
+  "prompt_sha256": "28aef26a836e7025bb6cc750addeafe65437eab2b23486d0977350e2710563b6",
+  "usage": {
+    "input_tokens": 16121,
+    "cached_input_tokens": 8960,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 400,
+    "reasoning_output_tokens": 153
+  },
+  "answer_sha256": "812e5021b977f8b293da845d69f6d165845a461b34a486731d0033ccd9d4253e",
+  "tool_events": []
+}

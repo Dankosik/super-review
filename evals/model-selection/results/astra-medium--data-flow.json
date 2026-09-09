@@ -1,0 +1,18 @@
+{
+  "exit_code": 0,
+  "profile": "astra-medium",
+  "model": "gpt-6-astra",
+  "effort": "medium",
+  "case": "data-flow",
+  "elapsed_seconds": 21.49,
+  "prompt_sha256": "28aef26a836e7025bb6cc750addeafe65437eab2b23486d0977350e2710563b6",
+  "usage": {
+    "input_tokens": 18579,
+    "cached_input_tokens": 6784,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 327,
+    "reasoning_output_tokens": 0
+  },
+  "answer_sha256": "0565ca56a42c1474b71872f93b676409b5f6155a406aff24c600441cd487af8b",
+  "tool_events": []
+}

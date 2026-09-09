@@ -1,0 +1,47 @@
+{
+  "exit_code": 0,
+  "profile": "grok-build-default",
+  "model": "xai/grok-build-0.1",
+  "case": "duplication",
+  "effort": "provider default",
+  "elapsed_seconds": 66.5,
+  "steps": [
+    {
+      "id": "prt_0860c3a60001tEgozR6kvSl40G",
+      "reason": "tool-calls",
+      "messageID": "msg_0860b824e001yAPojLh6iqPAPd",
+      "sessionID": "ses_f79f47f63ffeKZvhHCLZ9X7m43",
+      "type": "step-finish",
+      "tokens": {
+        "total": 7561,
+        "input": 704,
+        "output": 48,
+        "reasoning": 4249,
+        "cache": {
+          "write": 0,
+          "read": 2560
+        }
+      },
+      "cost": 0.00981
+    },
+    {
+      "id": "prt_0860c8022001QZjh7x37oHe1mD",
+      "reason": "stop",
+      "messageID": "msg_0860c3a6d0011Rh99hi8VwEpt2",
+      "sessionID": "ses_f79f47f63ffeKZvhHCLZ9X7m43",
+      "type": "step-finish",
+      "tokens": {
+        "total": 9835,
+        "input": 886,
+        "output": 376,
+        "reasoning": 1149,
+        "cache": {
+          "write": 0,
+          "read": 7424
+        }
+      },
+      "cost": 0.0054208
+    }
+  ],
+  "tool_calls": 3
+}

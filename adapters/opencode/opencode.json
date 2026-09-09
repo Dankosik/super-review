@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "super-review-specialist": {
+      "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
+    }
+  }
+}

@@ -1,0 +1,114 @@
+[
+  {
+    "id": "01a08605-8afe-7712-91da-ce46c084168a",
+    "parent": "01a08603-3a96-7a10-9163-ae1d479d6116",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "agent_path": "/root/abstractions"
+  },
+  {
+    "id": "01a08605-cad2-7173-b136-623fb0a0ec6b",
+    "parent": "01a08603-3a7f-7f30-90d7-ec77e65fb876",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/abstractions"
+  },
+  {
+    "id": "01a08604-45c1-7353-bbea-e14cee8559de",
+    "parent": "01a08603-3a7f-7f30-90d7-ec77e65fb876",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/naming"
+  },
+  {
+    "id": "01a08604-2aee-7592-b345-a24c659b7fd0",
+    "parent": "01a08603-3a96-7a10-9163-ae1d479d6116",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "agent_path": "/root/naming"
+  },
+  {
+    "id": "01a08606-210d-73c2-ab74-1d84e7d54abc",
+    "parent": "01a08603-3a7f-7f30-90d7-ec77e65fb876",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/duplication"
+  },
+  {
+    "id": "01a08604-a1bd-7f11-8f3a-9622aa8c24c5",
+    "parent": "01a08603-3a7f-7f30-90d7-ec77e65fb876",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/function_cohesion"
+  },
+  {
+    "id": "01a08606-f9f8-7ab2-81d6-28596afe46cc",
+    "parent": "01a08603-3a7f-7f30-90d7-ec77e65fb876",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/api_clarity"
+  },
+  {
+    "id": "01a08607-46c6-7433-a7d0-622deb49addf",
+    "parent": "01a08603-3a96-7a10-9163-ae1d479d6116",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "agent_path": "/root/change_locality"
+  },
+  {
+    "id": "01a08605-5623-7593-8db5-2ba39b6fb953",
+    "parent": "01a08603-3a96-7a10-9163-ae1d479d6116",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "agent_path": "/root/data_flow"
+  },
+  {
+    "id": "01a08604-7359-7fc0-9fac-68c9bde3f9cc",
+    "parent": "01a08603-3a7f-7f30-90d7-ec77e65fb876",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/control_flow"
+  },
+  {
+    "id": "01a08607-1174-70a2-b28c-8a45d44f3115",
+    "parent": "01a08603-3a96-7a10-9163-ae1d479d6116",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "agent_path": "/root/api_clarity"
+  },
+  {
+    "id": "01a08607-4a25-7d02-b962-e5eca376dbf4",
+    "parent": "01a08603-3a7f-7f30-90d7-ec77e65fb876",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/change_locality"
+  },
+  {
+    "id": "01a08604-5df6-7971-9891-9652cf7634bb",
+    "parent": "01a08603-3a96-7a10-9163-ae1d479d6116",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "agent_path": "/root/control_flow"
+  },
+  {
+    "id": "01a08605-9bcf-7cd1-986d-60afddb62933",
+    "parent": "01a08603-3a7f-7f30-90d7-ec77e65fb876",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "agent_path": "/root/data_flow"
+  },
+  {
+    "id": "01a08604-9e7c-7993-94ad-82931559d096",
+    "parent": "01a08603-3a96-7a10-9163-ae1d479d6116",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "agent_path": "/root/function_cohesion"
+  },
+  {
+    "id": "01a08605-dd4f-7741-a523-9fe44654a9dd",
+    "parent": "01a08603-3a96-7a10-9163-ae1d479d6116",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "agent_path": "/root/duplication"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "naming",
+    "required": [
+      "Identify the ambiguous data parameter by its customer-lookup-key role, with caller evidence; a proportional rename is supported."
+    ],
+    "protected": [
+      "Do not expand conventional ctx/err/i just for verbosity.",
+      "Do not turn the report loop into performance or correctness review."
+    ]
+  },
+  {
+    "id": "control-flow",
+    "required": [
+      "Flatten Publish's redundant nesting using an in-place guard or equivalent clear flow."
+    ],
+    "protected": [
+      "Audit must remain before the guard and run for disabled/empty attempts.",
+      "Do not split the already-clear IsAllowed predicate into helpers."
+    ]
+  },
+  {
+    "id": "function-cohesion",
+    "required": [
+      "Propose a coherent row-to-customer conversion boundary (or equally grounded separation), while the Load loop retains ordered persistence."
+    ],
+    "protected": [
+      "Do not extract every string operation into its own helper merely to shorten Load.",
+      "Preserve parse errors, default region, Store.Save order, and stopping at the first error."
+    ]
+  },
+  {
+    "id": "data-flow",
+    "required": [
+      "Make raw/normalized/encoded address representations visible through meaningful intermediates or an equally clear proportional pipeline."
+    ],
+    "protected": [
+      "Do not introduce a copy/immutable collection in SortInPlace or remove its observable mutation.",
+      "Do not propose changing QueryEscape or address business rules as a bug fix."
+    ]
+  },
+  {
+    "id": "abstractions",
+    "required": [
+      "Identify UsersFacade as unearned forwarding at the shown callers and propose removing the redundant hop."
+    ],
+    "protected": [
+      "Retain the consumer Store boundary and RemoteStore's context-preserving adaptation; one implementation is not a removal reason.",
+      "Preserve wrapping and %w identity/context."
+    ]
+  },
+  {
+    "id": "duplication",
+    "required": [
+      "Share the actual free-shipping threshold knowledge, through a named constant/helper proportional to the code."
+    ],
+    "protected": [
+      "Do not merge CustomerCanBuy and SupplierCanJoin just because their expressions match.",
+      "Do not invent a policy engine or generics for two conditions."
+    ]
+  },
+  {
+    "id": "api-clarity",
+    "required": [
+      "Replace the ambiguous boolean call contract with the existing DeliveryOptions (possibly by removing the needless forwarding function) and update both shown callers."
+    ],
+    "protected": [
+      "Do not introduce an options builder for NewClient just because it has two arguments.",
+      "Preserve notify/force choices and existing sender behavior."
+    ]
+  },
+  {
+    "id": "change-locality",
+    "required": [
+      "Localize the single existing queue-tier decision into a Settings-producing switch/table, preserving all three settings and the default."
+    ],
+    "protected": [
+      "Do not unify queue, access, and loyalty words into one shared enum/policy owner merely because strings match.",
+      "Do not invent future tier machinery or alter the default configuration."
+    ]
+  }
+]

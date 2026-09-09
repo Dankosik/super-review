@@ -1,0 +1,48 @@
+{
+  "method": "Native CLI against local synthetic Messages endpoint; no real model inference, credential, or quality evaluation.",
+  "results": [
+    {
+      "role": "orchestrator",
+      "exit_code": 0,
+      "requests": [
+        {
+          "model": "claude-opus-5",
+          "effort": "high",
+          "thinking": {
+            "type": "adaptive",
+            "display": "omitted"
+          },
+          "stream": true
+        },
+        {
+          "model": "claude-sonnet-5",
+          "effort": "medium",
+          "thinking": {
+            "type": "adaptive",
+            "display": "omitted"
+          },
+          "stream": true
+        },
+        {
+          "model": "claude-opus-5",
+          "effort": "high",
+          "thinking": {
+            "type": "adaptive",
+            "display": "omitted"
+          },
+          "stream": true
+        },
+        {
+          "model": "claude-opus-5",
+          "effort": "high",
+          "thinking": {
+            "type": "adaptive",
+            "display": "omitted"
+          },
+          "stream": true
+        }
+      ],
+      "stderr": ""
+    }
+  ]
+}

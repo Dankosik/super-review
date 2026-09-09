@@ -1,0 +1,72 @@
+{
+  "status": {
+    "exit_code": 0,
+    "elapsed_seconds": 338.23,
+    "thread_id": "01a0861c-788d-7661-894f-0460f7763e33",
+    "usage": {
+      "input_tokens": 992555,
+      "cached_input_tokens": 939520,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 4334,
+      "reasoning_output_tokens": 28
+    }
+  },
+  "waits": [
+    60000,
+    60000,
+    60000,
+    60000,
+    60000,
+    60000
+  ],
+  "spawns": [
+    {
+      "task_name": "naming",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    },
+    {
+      "task_name": "control_flow",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    },
+    {
+      "task_name": "function_cohesion",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    },
+    {
+      "task_name": "data_flow",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    },
+    {
+      "task_name": "abstractions",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    },
+    {
+      "task_name": "duplication",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    },
+    {
+      "task_name": "api_clarity",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    },
+    {
+      "task_name": "change_locality",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    }
+  ]
+}
