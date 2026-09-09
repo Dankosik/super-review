@@ -1,0 +1,107 @@
+{
+  "status": "proposed; not executed",
+  "baseline_commit": "87e3252da85b0f5b52032c860371a5bf063cfe01",
+  "inputs": "packets/instruction-quality.md",
+  "cases": [
+    {
+      "id": "Q01",
+      "contrast_with": "Q02",
+      "input_section": "Q01",
+      "expect": [
+        "Recognize the reconstruction burden of fragmentary helpers.",
+        "An in-place cohesive rendering, preserving the output, is a supported remedy.",
+        "Do not require extraction merely to meet function-size preferences."
+      ]
+    },
+    {
+      "id": "Q02",
+      "contrast_with": "Q01",
+      "input_section": "Q02",
+      "expect": [
+        "Retain the one-line key operation when it owns a representation shared by callers.",
+        "Do not inline merely because its body is short."
+      ]
+    },
+    {
+      "id": "Q03",
+      "contrast_with": "Q04",
+      "input_section": "Q03",
+      "expect": [
+        "Recognize independent documented policy ownership despite the shared parameterized helper.",
+        "Direct, separately owned transformations can remove mode knowledge without introducing layers.",
+        "Do not assess whether trimming or quoting is the correct business policy."
+      ]
+    },
+    {
+      "id": "Q04",
+      "contrast_with": "Q03",
+      "input_section": "Q04",
+      "expect": [
+        "Keep the shared canonical representation instead of splitting it by caller name.",
+        "Do not expand a duplication assignment into an unrelated wrapper review."
+      ]
+    },
+    {
+      "id": "Q05",
+      "contrast_with": "Q06",
+      "input_section": "Q05",
+      "expect": [
+        "A supported strings.Join replacement can remove custom joining mechanics.",
+        "Explain the clearer operation and preserved behavior rather than citing line count alone.",
+        "Keep the existing private function boundary or separately justify any removal."
+      ]
+    },
+    {
+      "id": "Q06",
+      "contrast_with": "Q05",
+      "input_section": "Q06",
+      "expect": [
+        "Recognize that CSV encoding is not plain joining and retain its adaptation/error contract.",
+        "Do not replace it with strings.Join for brevity; do not invent a correctness audit."
+      ]
+    },
+    {
+      "id": "Q07",
+      "contrast_with": "Q08",
+      "input_section": "Q07",
+      "expect": [
+        "Identify the shared current format-to-media-type decision and both inspected sites.",
+        "A small common owner is proportional; do not invent a plugin registry."
+      ]
+    },
+    {
+      "id": "Q08",
+      "contrast_with": "Q07",
+      "input_section": "Q08",
+      "expect": [
+        "Distinguish extension and media-type representations despite matching case labels.",
+        "Do not mandate centralization merely to reduce coordinated file count."
+      ]
+    },
+    {
+      "id": "Q09",
+      "input_section": "Q09",
+      "expect": [
+        "Reject correctness-only advice as out of scope rather than accepting it as maintainability.",
+        "Do not prescribe empty-input behavior, tests, or a replacement bug-finding pass."
+      ]
+    },
+    {
+      "id": "Q10",
+      "input_section": "Q10",
+      "expect": [
+        "Include review-contract, languages/go, assigned data-flow lens, and finding-template.",
+        "Carry exact scope, receipt, revisions, effective policy, and source anchors.",
+        "Use a neutral question; do not transmit an expected map-copy finding or peer verdict."
+      ]
+    },
+    {
+      "id": "Q11",
+      "input_section": "Q11",
+      "expect": [
+        "Reject unrelated existing cleanup despite a possibly useful standalone simplification.",
+        "Keep the PR boundary explicit; do not turn supporting context into a global backlog."
+      ]
+    }
+  ]
+}

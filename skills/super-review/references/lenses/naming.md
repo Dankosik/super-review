@@ -2,18 +2,21 @@
 
 ## go.naming.intent
 
-Names should distinguish the concepts a reader must track. Identify a concrete
-ambiguity at a declaration and its uses before proposing a rename. Consider the
-package qualifier and scope: `invoice.Total` is clearer than
-`invoice.InvoiceTotal`; a short loop index rarely needs a domain name.
+**Vocabulary.** Read the declaration and representative uses as one expression
+of intent. Which concepts must the reader distinguish, and where does the naming
+force them to reconstruct that distinction? Look for different roles sharing a
+name, one concept changing names, or names hiding units, state, or effect.
 
-Useful: in a function handling both a stored order and an incoming request,
-rename two indistinguishable `data` values by their roles.
-Insufficient: expand every `ctx`, `err`, receiver, or loop variable.
+Recommend the smallest rename that resolves a demonstrated ambiguity. Evaluate
+it with the package qualifier, receiver, scope, and established domain vocabulary;
+`invoice.Total` needs no repeated package name. In a conversion, distinguishing
+an incoming request from a stored record can matter more than longer names.
 
-Check exported callers before proposing public renames. Do not turn naming into
-an API migration without a proportional reason. Follow an explicit team vocabulary
-even if another spelling is equally readable. Comments that explain *why* can
-remain; comments merely repeating a misleading name do not repair it.
+Keep ordinary `ctx`, `err`, receivers, and loop indices when their scope makes
+them clear. Do not homogenize deliberately different concepts. Follow explicit
+team vocabulary; otherwise another equally understandable spelling is not a
+finding. Preserve comments explaining why; renaming does not replace that context.
 
-Return only naming candidates; leave flow and responsibility changes to their lenses.
+Inspect callers and compatibility before an exported rename. A naming benefit
+must justify its migration scope. Own the ambiguous vocabulary, not an unrelated
+flow or responsibility rewrite.

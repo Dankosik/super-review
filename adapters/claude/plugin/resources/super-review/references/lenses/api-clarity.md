@@ -2,20 +2,23 @@
 
 ## go.api.express-the-call
 
-Evaluate the declaration and representative calls together. The API should make
-the operation, units, significant options, ownership, and results understandable
-without repeatedly reading its implementation.
+**Contracts.** Read the declaration and representative calls together. Can a
+caller understand the operation, units, significant options, ownership, results,
+and required sequencing without reconstructing the implementation? Identify the
+specific knowledge that the call leaves implicit.
 
-Useful: a domain-specific parameter name or small existing value type resolves
-two ambiguous arguments with the same primitive type.
-Insufficient: create an options struct or builder for every function with several
-arguments, or add a type for every primitive value.
+Prefer the smallest clarification: a meaningful name, an existing value type,
+or a narrower operation before a new options structure or builder. Distinguish
+real alternatives without wrapping every primitive. A boolean may be clear in
+a well-named local call; several independent mode flags can conceal different
+operations. Judge actual uses, not hypothetical future callers.
 
-A boolean can be clear with a well-named operation and local call; several
-unrelated mode flags may hide separate operations. Examine existing uses rather
-than designing hypothetical ones. Keep meaningful Go zero values and error
-contracts visible.
+Keep meaningful zero values, error contracts, and mutation ownership visible.
+Do not add product capabilities or validate business requirements. For exported
+changes, inspect compatibility and available consumers; an unobserved external
+caller is not evidence that a migration is harmless. When necessary context is
+unavailable, narrow the advice to an independently useful compatible change or
+withhold the signature change.
 
-For exported changes, inspect callers and compatibility constraints. If callers
-are unavailable, qualify or withhold the signature change. Do not introduce new
-product capabilities or assess whether business requirements are correct.
+Show a representative call before and after, or describe the equivalent concrete
+change, and explain which implementation detail callers no longer need to know.

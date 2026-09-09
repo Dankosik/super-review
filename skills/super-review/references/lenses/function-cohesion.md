@@ -2,21 +2,25 @@
 
 ## go.functions.extract-for-clarity
 
-Extract when the helper names a coherent operation, removes repeated knowledge,
-or separates genuinely different levels of detail. Judge the call and the
-remaining function together; a reader should gain more than another jump.
+**Cohesion.** Read the function, its immediate helpers, and their calls as one
+operation. Extract when a helper names an independently meaningful responsibility,
+centralizes shared knowledge, or hides a level of detail the caller need not
+understand. Judge the resulting call and remaining body together.
 
-Useful: a substantial repeated normalization operation has one clear contract.
-Insufficient: extract three ordered field assignments into three one-line helpers
-because the containing function exceeds a line limit.
+A helper earns its place when readers can use its contract without immediately
+opening it. Account for parameters, returned bookkeeping, and hidden effects;
+moving the same mental work behind a call is not decomposition. Neither function
+length nor a separate verb justifies extraction.
 
 ## go.functions.coherent-purpose
 
-Keep a function's steps connected to its task. A command handler may legitimately
-read, validate, act, and render in sequence. Separation helps when an independently
-meaningful responsibility obscures that sequence; a separate function is not
-required for every verb.
+A handler may coherently read, validate, act, and render. Keep such a sequence
+together when it tells one story. Conversely, inline or regroup fragmentary
+helpers when they force readers to reconstruct that sequence across declarations
+without hiding useful knowledge. Keep even a one-line helper when it names a
+real concept or owns a meaningful boundary.
 
-Preserve necessary values, lifetime, and effect ordering when discussing a split.
-Do not invent a new service or interface to make the resulting function shorter.
-This lens owns extraction/cohesion, not all package architecture.
+Compare keeping, extracting, and inlining only where the observed burden warrants
+it. Preserve contracts, needed values, resource lifetime, and effect ordering.
+Do not invent a service or interface to shorten a function. This lens owns local
+cohesion, not a replacement package architecture.

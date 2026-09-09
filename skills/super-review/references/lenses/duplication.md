@@ -2,19 +2,21 @@
 
 ## go.duplication.share-knowledge
 
-Unify repetitions of the same rule that should change together. Similar syntax
-alone is not shared knowledge. Conversely, a parameterized helper can be a false
-abstraction if callers use it for unrelated policies.
+**Shared knowledge.** Compare the repeated implementations and their actual
+consumers. Establish which existing decision they encode, who owns it, and why
+they should change together. Similar text, fields, or types do not establish a
+shared rule; do not infer policy ownership from appearance alone.
 
-Useful: two newly added paths implement the same established currency rounding
-policy with the same contract and ownership.
-Counterexample: customer eligibility and supplier eligibility happen to compare
-the same fields today but have independent policy owners.
+Centralize demonstrated shared knowledge in the smallest meaningful operation.
+Conversely, separate a shared helper when flags, callbacks, or divergent caller
+contracts show that unrelated decisions have been forced together. Account for
+the coupling created or removed, not the number of repeated statements.
 
-Read both uses and their reasons to change. Prefer a small domain operation when
-it centralizes real knowledge. Do not add flags, callbacks, or a utility package
-to force unrelated paths through one function. A few repeated statements can be
-cheaper to maintain than an artificial shared dependency.
+Keep coincidentally similar customer and supplier predicates separate when their
+policies have independent owners. Keep ordinary local repetition when sharing
+would require callers to understand more machinery than it hides. Do not decide
+whether the underlying business rules are correct.
 
-Coordinate a proposed extraction with function-cohesion; do not issue a second
-copy of the same recommendation.
+Identify every inspected participating use and the evidence for shared or
+independent reasons to change. Return your duplication rationale even when the
+remedy involves extraction; the parent reconciles overlapping lens candidates.

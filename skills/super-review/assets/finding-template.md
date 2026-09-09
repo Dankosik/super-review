@@ -1,20 +1,27 @@
 # Candidate format
 
-Return compact Markdown. For no candidates, state `completed`, the task and
-scope inspected, and any limitations. Otherwise use one block per candidate:
+Return compact Markdown. For no candidates, state `completed`, the task, files
+and symbols actually inspected, and any limitations. Missing required evidence
+means `unfinished`, not a clean result. Otherwise use one block per candidate:
 
 ## C-<task>-<number>: <concrete improvement>
 
 - Lens and task:
 - Snapshot: PR, H, comparison D.
-- Location: path, symbol, exact lines at H if known.
-- Rules: effective default/team IDs.
-- Observation and cost: what is present and why reading or changing it suffers.
-- Transformation and benefit: the smallest useful change and its intended effect.
-- Counterargument: why the current code might deserve to stay.
+- Change anchor: path, symbol, verified lines at H; how D..H introduces, worsens,
+  or makes the burden relevant. Distinguish supporting unchanged context.
+- Basis: effective default/team IDs; say when consistency alone is the reason.
+- Evidence and cost: inspected declarations/uses and the specific knowledge,
+  state tracking, or coordinated editing that burdens the reader or maintainer.
+- Transformation and net benefit: the smallest useful change; what becomes
+  unnecessary to understand, and any new indirection, concepts, or obligations.
+- Keep alternative: the strongest reason to leave the code as it is, and why
+  the proposed benefit outweighs it; state an unresolved tradeoff honestly.
 - Preserve: relevant contracts, ownership, lifetime, and effect order.
-- Affected files: verified paths; distinguish a local change from a cross-file one.
+- Affected files: verified paths; local or cross-file, with real dependencies.
 - Missing context: required source not yet read, or `none`.
 
-Do not invent line numbers. A verified path and symbol are better than a guessed
-range. Suggestions are not patches or proof that behavior is preserved.
+Prefer a verified path and symbol to guessed line numbers. A small before/after
+example can clarify the change; a full patch is unnecessary. Suggestions do not
+prove equivalence. Explain source evidence, not a checklist score or a narrative
+of the review process.

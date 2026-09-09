@@ -50,12 +50,21 @@ assuming the child inherits them:
 
 > Task ID and lens; PR identity and B/H/D; exact files/symbols and relevant diff;
 > source-access receipt; Go versions; effective team rules and conflicts;
-> contract and lens resource locations; permitted context and excluded checks;
+> [contract](review-contract.md), [Go context](languages/go.md), and assigned
+> lens resource locations; permitted context and excluded checks;
 > [candidate format](../assets/finding-template.md).
+
+Require these four resources to be read in the child context. Send a neutral
+question and source anchors, not an expected finding or another child's verdict.
 
 Ask for candidates or an explicit completed result with none. The child may
 read supporting declarations and callers within this snapshot. It cannot expand
 into another lens or turn an unverified possibility into a required change.
+Stop expanding context when the assigned question and candidate evidence are
+resolved; missing required context still makes the affected work unfinished.
+Report independently useful observations even when another lens may overlap.
+Leave cross-lens coordination and deduplication to the parent; do not inspect
+peer reports or suppress a candidate in anticipation of another specialist.
 
 ## Decide and report
 
