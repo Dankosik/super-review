@@ -16,8 +16,6 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -27,26 +25,6 @@ jobs:
           bun-version: 1.4.1
       - run: bun install --frozen-lockfile
       - run: bun run build
-      - name: Prepare reader blob for this integration only
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'improve/context-engineering-main'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          node --input-type=module > "$RUNNER_TEMP/super-review-reader-blob.json" <<'NODE'
-          import { readFileSync } from 'node:fs';
-          import { execFileSync } from 'node:child_process';
-          const before = 'Read one or several installed Super Review resources. Batch the shared context; specialists load only their assigned lens.';
-          const after = 'Read missing installed Super Review resources in one batch. Reuse complete matching resources already supplied to this context. Specialists need shared role resources, their assigned lens, and selected profiles, not the full lens/profile catalog.';
-          const original = execFileSync('git', ['show', 'HEAD:runtime/mcp.mjs'], { encoding: 'utf8' });
-          const built = readFileSync('runtime/mcp.mjs', 'utf8');
-          if (original.split(before).length !== 2 || built !== original.replace(before, after)) {
-            throw new Error('The rebuilt reader must change only the resource description.');
-          }
-          process.stdout.write(JSON.stringify({ content: built, encoding: 'utf-8' }));
-          NODE
-          git hash-object runtime/mcp.mjs
-          gh api --method POST "repos/$GITHUB_REPOSITORY/git/blobs" \
-            --input "$RUNNER_TEMP/super-review-reader-blob.json" --jq '.sha'
       - name: Check generated native payloads
         run: git diff --exit-code -- runtime adapters/claude/plugin adapters/codex/super-review
       - run: bun test
@@ -84,7 +62,7 @@ jobs:
           bun-version: 1.4.1
       - name: Check tag identity
         run: |
-          test "$GITHUB_REF_NAME" = "v$(bun -p 'require(\"./package.json\").version')"
+          test "$GITHUB_REF_NAME" = "v$(bun -p 'require("./package.json").version')"
       - run: bun run package
       - name: Publish the exact tagged build
         env:
