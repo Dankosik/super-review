@@ -43,11 +43,8 @@ assets.append(archive(f"super-review-{VERSION}-claude.zip", [
     (p, "super-review/" + p.relative_to(claude_root).as_posix())
     for p in claude_root.rglob("*") if p.is_file()
 ]))
-codex_files = []
-for name in [".codex-plugin", ".agents", "skills", "runtime", "assets", "docs", "examples"]:
-    codex_files.extend((p, "super-review/" + p.relative_to(ROOT).as_posix()) for p in (ROOT / name).rglob("*") if p.is_file())
-for name in ["plugin.json", "mcp.json", ".mcp.json", "README.md", "LICENSE", "PRIVACY.md", "CHANGELOG.md", "CONTRIBUTING.md", "THIRD_PARTY_NOTICES.md"]:
-    codex_files.append((ROOT / name, "super-review/" + name))
+codex_root = ROOT / "adapters/codex/super-review"
+codex_files = [(p, "super-review/" + p.relative_to(codex_root).as_posix()) for p in codex_root.rglob("*") if p.is_file()]
 assets.append(archive(f"super-review-{VERSION}-codex.zip", codex_files))
 commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True)
 receipt = {"version": VERSION, "commit": commit.stdout.strip() if commit.returncode == 0 else None, "assets": assets}

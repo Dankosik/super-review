@@ -45,7 +45,7 @@ const command = frontmatter(await readFile(join(root, "adapters/opencode/command
 if (command.agent !== "super-review" || command.subtask !== false) errors.push("Command would prevent primary orchestration.");
 const plugin = JSON.parse(await readFile(join(root, "adapters/opencode/package.json"), "utf8"));
 if (plugin.dependencies["@opencode-ai/plugin"] !== manifest.devDependencies["@opencode-ai/plugin"]) errors.push("Adapter package and development dependency differ.");
-for (const path of ["plugin.json", ".codex-plugin/plugin.json", "adapters/claude/plugin/.claude-plugin/plugin.json"]) {
+for (const path of ["plugin.json", ".codex-plugin/plugin.json", "adapters/claude/plugin/.claude-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json"]) {
   const native = JSON.parse(await readFile(join(root, path), "utf8"));
   if (native.name !== "super-review" || native.version.split("+")[0] !== manifest.version) errors.push("Native identity/version mismatch: " + path);
 }
@@ -66,7 +66,14 @@ if (claudeEntry.model !== "inherit" || claudeEntry.effort) errors.push("Claude c
 const openCodeModels = JSON.parse(await readFile(join(root, "adapters/opencode/opencode.json"), "utf8"));
 if (openCodeModels.agent?.["super-review-specialist"]?.model !== "{env:SUPER_REVIEW_SPECIALIST_MODEL}" || openCodeModels.model) errors.push("OpenCode must require an explicit specialist without overriding the orchestrator.");
 const catalog = JSON.parse(await readFile(join(root, ".agents/plugins/marketplace.json"), "utf8"));
-if (catalog.plugins[0]?.source?.path !== "./") errors.push("The project catalog must point at the normalized plugin root ./.");
+if (catalog.plugins[0]?.source?.path !== "./adapters/codex/super-review") errors.push("The project catalog must point at the native Codex package.");
+const nativeMCP = JSON.parse(await readFile(join(root, "adapters/codex/super-review/.mcp.json"), "utf8"));
+if (nativeMCP.mcpServers.super_review_wait.tool_timeout_sec < 660 || nativeMCP.mcpServers.super_review_wait.env.SUPER_REVIEW_COMPLETION_MODE !== "wait" || nativeMCP.mcpServers.super_review.env.SUPER_REVIEW_COMPLETION_MODE !== "submit") errors.push("Native Codex completion wait is not isolated with a sufficient timeout.");
+if (nativeMCP.mcpServers.super_review.cwd !== "." || JSON.stringify(nativeMCP.mcpServers.super_review.args) !== JSON.stringify(["runtime/mcp.mjs"])) errors.push("Native Codex must resolve the reader from its plugin working directory.");
+for (const file of runtimeFiles) {
+  const packaged = join(root, "adapters/codex/super-review/skills/super-review", relative(skill, file));
+  if (!(await readFile(file)).equals(await readFile(packaged))) errors.push("Stale Codex policy: " + relative(skill, file));
+}
 if (!(await readFile(join(root, "runtime/mcp.mjs"))).equals(await readFile(join(root, "adapters/claude/plugin/runtime/mcp.mjs")))) errors.push("Native readers differ.");
 await readFile(join(root, "runtime/THIRD_PARTY_LICENSES.txt"));
 if (errors.length) throw new Error(errors.join("\n"));

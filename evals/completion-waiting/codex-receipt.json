@@ -1,0 +1,282 @@
+{
+  "method": "Native Codex CLI, installed candidate; only the wait namespace is direct. Scoped read-only PR 300 review. Tool and token-usage metadata only.",
+  "date": "2026-09-09",
+  "status": {
+    "exit_code": 0,
+    "profile": "selective-barrier",
+    "orchestrator_model": "gpt-6-astra",
+    "orchestrator_effort": "medium",
+    "specialist_model": "gpt-5.6-terra",
+    "specialist_effort": "medium",
+    "elapsed_seconds": 457.34,
+    "thread_id": "01a08668-3100-7a33-965f-b3d686152038",
+    "usage": {
+      "input_tokens": 740951,
+      "cached_input_tokens": 695552,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 4810,
+      "reasoning_output_tokens": 14
+    }
+  },
+  "parent_tool_counts": {
+    "exec": 7,
+    "spawn_agent": 8,
+    "batch_wait": 3
+  },
+  "waits": [
+    {
+      "start": "2026-09-09T13:44:27.882Z",
+      "batch": "cccb4b27-5993-448e-ad4c-75223c5fba9e",
+      "end": "2026-09-09T13:46:13.638Z",
+      "seconds": 105.756,
+      "intermediate_tool_calls": [],
+      "token_usage_events": 0,
+      "outcome": "ready",
+      "assignments": [
+        {
+          "task": "naming",
+          "status": "completed",
+          "report_characters": 1009,
+          "next_offset": null
+        },
+        {
+          "task": "control-flow",
+          "status": "completed",
+          "report_characters": 1204,
+          "next_offset": null
+        },
+        {
+          "task": "function-cohesion",
+          "status": "completed",
+          "report_characters": 1425,
+          "next_offset": null
+        }
+      ]
+    },
+    {
+      "start": "2026-09-09T13:47:09.527Z",
+      "batch": "6f392e8d-e70b-4e6e-868a-654ad5e78060",
+      "end": "2026-09-09T13:48:15.255Z",
+      "seconds": 65.728,
+      "intermediate_tool_calls": [],
+      "token_usage_events": 0,
+      "outcome": "ready",
+      "assignments": [
+        {
+          "task": "data-flow",
+          "status": "completed",
+          "report_characters": 1539,
+          "next_offset": null
+        },
+        {
+          "task": "abstractions",
+          "status": "completed",
+          "report_characters": 1451,
+          "next_offset": null
+        },
+        {
+          "task": "duplication",
+          "status": "completed",
+          "report_characters": 1762,
+          "next_offset": null
+        }
+      ]
+    },
+    {
+      "start": "2026-09-09T13:48:56.895Z",
+      "batch": "ad0f0af5-463f-4396-9717-6681badc0cca",
+      "end": "2026-09-09T13:49:58.548Z",
+      "seconds": 61.653,
+      "intermediate_tool_calls": [],
+      "token_usage_events": 0,
+      "outcome": "ready",
+      "assignments": [
+        {
+          "task": "api-clarity",
+          "status": "completed",
+          "report_characters": 1237,
+          "next_offset": null
+        },
+        {
+          "task": "change-locality",
+          "status": "completed",
+          "report_characters": 1445,
+          "next_offset": null
+        }
+      ]
+    }
+  ],
+  "children": [
+    {
+      "task": "/root/abstractions",
+      "models": [
+        "gpt-5.6-terra"
+      ],
+      "efforts": [
+        "medium"
+      ],
+      "usage": {
+        "input_tokens": 341630,
+        "cached_input_tokens": 314112,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2403,
+        "reasoning_output_tokens": 995,
+        "total_tokens": 344033
+      }
+    },
+    {
+      "task": "/root/api_clarity",
+      "models": [
+        "gpt-5.6-terra"
+      ],
+      "efforts": [
+        "medium"
+      ],
+      "usage": {
+        "input_tokens": 336873,
+        "cached_input_tokens": 310016,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2089,
+        "reasoning_output_tokens": 664,
+        "total_tokens": 338962
+      }
+    },
+    {
+      "task": "/root/change_locality",
+      "models": [
+        "gpt-5.6-terra"
+      ],
+      "efforts": [
+        "medium"
+      ],
+      "usage": {
+        "input_tokens": 296693,
+        "cached_input_tokens": 271360,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2093,
+        "reasoning_output_tokens": 711,
+        "total_tokens": 298786
+      }
+    },
+    {
+      "task": "/root/control_flow",
+      "models": [
+        "gpt-5.6-terra"
+      ],
+      "efforts": [
+        "medium"
+      ],
+      "usage": {
+        "input_tokens": 255435,
+        "cached_input_tokens": 233728,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1584,
+        "reasoning_output_tokens": 393,
+        "total_tokens": 257019
+      }
+    },
+    {
+      "task": "/root/data_flow",
+      "models": [
+        "gpt-5.6-terra"
+      ],
+      "efforts": [
+        "medium"
+      ],
+      "usage": {
+        "input_tokens": 259770,
+        "cached_input_tokens": 234752,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2284,
+        "reasoning_output_tokens": 986,
+        "total_tokens": 262054
+      }
+    },
+    {
+      "task": "/root/duplication",
+      "models": [
+        "gpt-5.6-terra"
+      ],
+      "efforts": [
+        "medium"
+      ],
+      "usage": {
+        "input_tokens": 289332,
+        "cached_input_tokens": 264192,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2164,
+        "reasoning_output_tokens": 748,
+        "total_tokens": 291496
+      }
+    },
+    {
+      "task": "/root/function_cohesion",
+      "models": [
+        "gpt-5.6-terra"
+      ],
+      "efforts": [
+        "medium"
+      ],
+      "usage": {
+        "input_tokens": 335685,
+        "cached_input_tokens": 308992,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1935,
+        "reasoning_output_tokens": 653,
+        "total_tokens": 337620
+      }
+    },
+    {
+      "task": "/root/naming",
+      "models": [
+        "gpt-5.6-terra"
+      ],
+      "efforts": [
+        "medium"
+      ],
+      "usage": {
+        "input_tokens": 178800,
+        "cached_input_tokens": 133120,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1347,
+        "reasoning_output_tokens": 419,
+        "total_tokens": 180147
+      }
+    }
+  ],
+  "post_run_installed_runtime_and_codex_policy_sha256": {
+    "runtime/mcp.mjs": "e415a6c48b65c8dfe61a675b95db49a7d43898ae9b5a2194e7dfb3de428ebd75",
+    "skills/super-review/SKILL.md": "5ce3aa02cf16c63fdb50fcabba0e3f91bd2e4ff22b63f894d85a7a57e325f2a7",
+    "skills/super-review/references/harnesses/codex.md": "acd8d6838925d8838e11d102b45fdf2d05891325a44fb0f47771017c9b9b90e7"
+  },
+  "readback_note": "Post-run installed/source readback. The local catalog normalized its development cachebuster to 2.1.0; runtime and Codex review instructions were unchanged during the completed selective trial. Claude instructions and documentation were still being finalized.",
+  "illustrative_api_cost_usd": {
+    "parent": 1.390042,
+    "workers": 1.052734,
+    "total": 2.442776,
+    "rates_per_million": {
+      "astra": [
+        10,
+        1,
+        50
+      ],
+      "terra": [
+        2,
+        0.2,
+        12
+      ]
+    },
+    "caveat": "API-equivalent rates using observed cache counters, not an actual subscription bill or controlled comparison."
+  },
+  "comparison_2_0": {
+    "parent_input_tokens": 992555,
+    "parent_cached_input_tokens": 939520,
+    "parent_output_tokens": 4334,
+    "parent_api_cost_usd": 1.68657,
+    "worker_api_cost_usd": 0.8366,
+    "elapsed_seconds": 338.23,
+    "native_wait_calls": 6,
+    "parent_input_reduction_percent": 25.35,
+    "parent_api_cost_reduction_percent": 17.58
+  }
+}

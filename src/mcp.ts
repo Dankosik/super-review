@@ -9,6 +9,7 @@ import { z } from "zod";
 import { GitHubReader, safePath } from "../adapters/opencode/lib/github.ts";
 import { version } from "../package.json";
 import { SnapshotCache } from "./snapshot-cache.ts";
+import { CompletionBatches } from "./completion-batch.ts";
 
 const exec = promisify(execFile);
 const result = (value: unknown) => ({ content: [{ type: "text" as const, text: typeof value === "string" ? value : JSON.stringify(value) }] });
@@ -27,10 +28,18 @@ async function markdownFiles(root: string): Promise<string[]> {
   return files.sort();
 }
 
-export async function createServer(skillRoot: string, reader = new GitHubReader()) {
+export async function createServer(skillRoot: string, reader = new GitHubReader(), batches?: CompletionBatches, completionMode: "all" | "submit" | "wait" = "all") {
   const root = resolve(skillRoot);
   const paths = await markdownFiles(root);
   const server = new McpServer({ name: "super-review", version });
+  if (batches && completionMode !== "submit") server.registerTool("batch_wait", {
+    description: "Block until EVERY assignment in the group has submitted a result, or the group's fixed deadline expires. There is no polling interval to request. Invoke directly and leave this call pending; do not poll or message specialists. Returns reports with explicit continuation offsets, not a quality verdict.",
+    inputSchema: { batch: z.string() }, annotations: { ...readOnly, openWorldHint: false },
+  }, async ({ batch }, extra) => result(await batches.wait(batch, extra.signal)));
+  if (completionMode === "wait") {
+    if (!batches) throw new Error("Completion wait requires batch storage.");
+    return server;
+  }
   const snapshot = z.string().describe("Receipt returned by snapshot; pass the same receipt to specialists.");
   const window = {
     startLine: z.number().int().min(1).optional(),
@@ -43,7 +52,7 @@ export async function createServer(skillRoot: string, reader = new GitHubReader(
   }, async () => {
     try {
       await exec("gh", ["--version"], { timeout: 10_000 });
-      return result({ version, githubCLI: "available", node: process.version, next: "Supply a GitHub PR URL. Snapshot acquisition verifies access to that repository." });
+      return result({ version, githubCLI: "available", node: process.version, completionBatches: Boolean(batches), next: "Supply a GitHub PR URL. Snapshot acquisition verifies access to that repository." });
     } catch {
       return result({ version, githubCLI: "unavailable", next: "Install GitHub CLI, ensure gh is on the harness PATH, and use gh auth login for GitHub access." });
     }
@@ -89,11 +98,32 @@ export async function createServer(skillRoot: string, reader = new GitHubReader(
     }));
     return result({ version, resources });
   });
+  if (batches) {
+    const localWrite = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
+    server.registerTool("batch_open", {
+      description: "Create a group of one to three specialist result slots on this snapshot. Returns one assignment receipt per task. Only local temporary coordination state is written; no agents are launched.",
+      inputSchema: { snapshot, tasks: z.array(z.string().min(1).max(120)).min(1).max(3) }, annotations: localWrite,
+    }, async ({ snapshot, tasks }) => {
+      reader.files(snapshot); // The group must refer to an actually issued immutable snapshot.
+      return result(batches.open(snapshot, tasks));
+    });
+    server.registerTool("batch_submit", {
+      description: "Submit this specialist's terminal result to its issued assignment. Keep all candidates. Repeating the identical result is safe; replacing it is rejected. Finish the native task after submitting.",
+      inputSchema: { batch: z.string(), assignment: z.string(), status: z.enum(["completed", "not_applicable", "unfinished"]), report: z.string().min(1) }, annotations: localWrite,
+    }, async ({ batch, assignment, status, report }) => result(batches.submit(batch, assignment, { status, report })));
+    server.registerTool("batch_result", {
+      description: "Read one submitted specialist report in bounded windows after batch_wait returns. Follow nextOffset to preserve every candidate.",
+      inputSchema: { batch: z.string(), assignment: z.string(), offset: z.number().int().min(0).optional() }, annotations: { ...readOnly, openWorldHint: false },
+    }, async ({ batch, assignment, offset }) => result(batches.result(batch, assignment, offset)));
+  }
   return server;
 }
 
 if (import.meta.main || process.argv[1] === fileURLToPath(import.meta.url)) {
   const root = process.argv[2] ?? resolve(dirname(fileURLToPath(import.meta.url)), "../skills/super-review");
-  const server = await createServer(root, new GitHubReader(undefined, new SnapshotCache()));
+  const batches = process.env.SUPER_REVIEW_COMPLETION_BATCHES === "1" ? new CompletionBatches() : undefined;
+  const completionMode = process.env.SUPER_REVIEW_COMPLETION_MODE ?? "all";
+  if (!["all", "submit", "wait"].includes(completionMode)) throw new Error("Invalid completion mode.");
+  const server = await createServer(root, new GitHubReader(undefined, new SnapshotCache()), batches, completionMode as "all" | "submit" | "wait");
   await server.connect(new StdioServerTransport());
 }

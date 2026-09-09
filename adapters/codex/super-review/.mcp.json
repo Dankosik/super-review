@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "super_review": {
+      "command": "node",
+      "args": [
+        "runtime/mcp.mjs"
+      ],
+      "cwd": ".",
+      "env": {
+        "SUPER_REVIEW_COMPLETION_BATCHES": "1",
+        "SUPER_REVIEW_COMPLETION_MODE": "submit"
+      }
+    },
+    "super_review_wait": {
+      "command": "node",
+      "args": [
+        "runtime/mcp.mjs"
+      ],
+      "cwd": ".",
+      "env": {
+        "SUPER_REVIEW_COMPLETION_BATCHES": "1",
+        "SUPER_REVIEW_COMPLETION_MODE": "wait"
+      },
+      "tool_timeout_sec": 660
+    }
+  }
+}

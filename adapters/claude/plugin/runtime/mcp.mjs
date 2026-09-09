@@ -20052,7 +20052,7 @@ class StdioServerTransport {
 
 // src/mcp.ts
 import { readFile, readdir } from "node:fs/promises";
-import { dirname, resolve, relative, join as join2 } from "node:path";
+import { dirname, resolve, relative, join as join3 } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFile as execFile2 } from "node:child_process";
 import { promisify as promisify2 } from "node:util";
@@ -20367,7 +20367,7 @@ class GitHubReader {
   }
 }
 // package.json
-var version2 = "2.0.0";
+var version2 = "2.1.0";
 
 // src/snapshot-cache.ts
 import { constants, closeSync, fstatSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
@@ -20464,6 +20464,197 @@ class SnapshotCache {
   }
 }
 
+// src/completion-batch.ts
+import { constants as constants2, closeSync as closeSync2, fstatSync as fstatSync2, linkSync, lstatSync as lstatSync2, mkdirSync as mkdirSync2, openSync as openSync2, readFileSync as readFileSync2, readdirSync as readdirSync2, rmSync, unlinkSync as unlinkSync2, watch, writeFileSync as writeFileSync2 } from "node:fs";
+import { randomUUID as randomUUID2 } from "node:crypto";
+import { tmpdir as tmpdir2 } from "node:os";
+import { join as join2 } from "node:path";
+var uuid3 = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
+var ttl = 24 * 60 * 60 * 1000;
+var maxReportBytes = 64 * 1024;
+function reportWindow(report, offset, byteLimit) {
+  let end = offset, upper = Math.min(report.length, offset + byteLimit);
+  while (end < upper) {
+    const middle = Math.ceil((end + upper) / 2);
+    if (Buffer.byteLength(JSON.stringify(report.slice(offset, middle))) <= byteLimit)
+      end = middle;
+    else
+      upper = middle - 1;
+  }
+  if (end < report.length && /[\uD800-\uDBFF]/.test(report[end - 1] ?? ""))
+    end--;
+  return { report: report.slice(offset, end), nextOffset: end < report.length ? end : null };
+}
+function privateDirectory(path) {
+  try {
+    mkdirSync2(path, { mode: 448 });
+  } catch (error) {
+    if (error.code !== "EEXIST")
+      throw error;
+  }
+  const info = lstatSync2(path);
+  if (!info.isDirectory() || info.isSymbolicLink() || process.getuid && (info.uid !== process.getuid() || info.mode & 63))
+    throw new Error("Batch storage must be private and owned by this OS user.");
+}
+function readJSON(path) {
+  const fd = openSync2(path, constants2.O_RDONLY | (constants2.O_NOFOLLOW ?? 0));
+  try {
+    const info = fstatSync2(fd);
+    if (!info.isFile() || info.size > 128 * 1024 || process.getuid && (info.uid !== process.getuid() || info.mode & 63))
+      throw new Error("Invalid batch record.");
+    return JSON.parse(readFileSync2(fd, "utf8"));
+  } finally {
+    closeSync2(fd);
+  }
+}
+function writeOnce(path, value) {
+  const temporary = path + "." + randomUUID2() + ".tmp";
+  const fd = openSync2(temporary, constants2.O_WRONLY | constants2.O_CREAT | constants2.O_EXCL, 384);
+  try {
+    try {
+      writeFileSync2(fd, JSON.stringify(value));
+    } finally {
+      closeSync2(fd);
+    }
+    linkSync(temporary, path);
+  } finally {
+    unlinkSync2(temporary);
+  }
+}
+
+class CompletionBatches {
+  root;
+  constructor(root = join2(tmpdir2(), "super-review-batches-" + (process.getuid?.() ?? "user"))) {
+    this.root = root;
+    privateDirectory(root);
+  }
+  directory(id) {
+    if (!uuid3.test(id))
+      throw new Error("Unknown batch receipt.");
+    const directory = join2(this.root, id);
+    const info = lstatSync2(directory);
+    if (!info.isDirectory() || info.isSymbolicLink() || process.getuid && (info.uid !== process.getuid() || info.mode & 63))
+      throw new Error("Invalid batch directory.");
+    return directory;
+  }
+  load(id) {
+    const batch = readJSON(join2(this.directory(id), "batch.json"));
+    if (batch.id !== id || !uuid3.test(batch.snapshot) || !Number.isFinite(batch.deadline) || !Number.isFinite(batch.createdAt) || Date.now() - batch.createdAt > ttl || !Array.isArray(batch.assignments) || batch.assignments.length < 1 || batch.assignments.length > 3 || batch.assignments.some((a) => !uuid3.test(a.id) || typeof a.task !== "string"))
+      throw new Error("Invalid or expired batch receipt.");
+    return batch;
+  }
+  open(snapshot, tasks, timeoutMs = 10 * 60 * 1000) {
+    if (!uuid3.test(snapshot) || tasks.length < 1 || tasks.length > 3 || new Set(tasks).size !== tasks.length || tasks.some((t) => !t || t.length > 120) || timeoutMs <= 0 || timeoutMs > 10 * 60 * 1000)
+      throw new Error("Use one to three distinct tasks on an issued source snapshot.");
+    for (const name of readdirSync2(this.root)) {
+      if (!uuid3.test(name))
+        continue;
+      try {
+        const path = this.directory(name), previous = readJSON(join2(path, "batch.json"));
+        if (Number.isFinite(previous.createdAt) && Date.now() - previous.createdAt > ttl)
+          rmSync(path, { recursive: true });
+      } catch {}
+    }
+    const batch = { id: randomUUID2(), snapshot, createdAt: Date.now(), deadline: Date.now() + timeoutMs, assignments: tasks.map((task) => ({ id: randomUUID2(), task })) };
+    const directory = join2(this.root, batch.id);
+    privateDirectory(directory);
+    writeOnce(join2(directory, "batch.json"), batch);
+    return batch;
+  }
+  submit(batchID, assignmentID, result) {
+    const batch = this.load(batchID);
+    if (!batch.assignments.some((a) => a.id === assignmentID))
+      throw new Error("Unknown assignment in this batch.");
+    if (!["completed", "not_applicable", "unfinished"].includes(result.status) || !result.report.trim() || Buffer.byteLength(result.report) > maxReportBytes)
+      throw new Error("Submit an explicit status and a report of at most 64 KiB; never truncate findings silently.");
+    const path = join2(this.directory(batchID), assignmentID + ".json");
+    if (Date.now() >= batch.deadline) {
+      try {
+        const previous = readJSON(path);
+        if (previous.status === result.status && previous.report === result.report)
+          return { recorded: true, assignment: assignmentID };
+      } catch {}
+      throw new Error("The batch deadline elapsed; late results cannot change its outcome.");
+    }
+    try {
+      writeOnce(path, result);
+    } catch (error) {
+      if (error.code !== "EEXIST")
+        throw error;
+      const previous = readJSON(path);
+      if (previous.status !== result.status || previous.report !== result.report)
+        throw new Error("This assignment already has a different terminal result.");
+    }
+    return { recorded: true, assignment: assignmentID };
+  }
+  state(batch) {
+    const directory = this.directory(batch.id);
+    return batch.assignments.map((assignment) => {
+      try {
+        const result = readJSON(join2(directory, assignment.id + ".json"));
+        if (!["completed", "not_applicable", "unfinished"].includes(result.status) || typeof result.report !== "string")
+          throw new Error("Invalid submitted result.");
+        return { ...assignment, status: result.status, reportCharacters: result.report.length, ...reportWindow(result.report, 0, 2000) };
+      } catch (error) {
+        if (error.code !== "ENOENT")
+          throw error;
+        return { ...assignment, status: "pending", reportCharacters: 0, report: "", nextOffset: null };
+      }
+    });
+  }
+  async wait(batchID, signal) {
+    const batch = this.load(batchID);
+    if (signal?.aborted)
+      throw new Error("Batch wait cancelled.");
+    return new Promise((resolve, reject) => {
+      let watcher;
+      let timer;
+      let settled = false;
+      const finish = (error) => {
+        if (settled)
+          return;
+        settled = true;
+        watcher?.close();
+        clearTimeout(timer);
+        signal?.removeEventListener("abort", cancel);
+        if (error) {
+          reject(error);
+          return;
+        }
+        try {
+          const assignments = this.state(batch);
+          resolve({ batch: batch.id, outcome: assignments.some((a) => a.status === "pending") ? "timed_out" : assignments.some((a) => a.status === "unfinished") ? "partial" : "ready", assignments });
+        } catch (error) {
+          reject(error);
+        }
+      };
+      const cancel = () => finish(new Error("Batch wait cancelled."));
+      const inspect = () => {
+        try {
+          if (this.state(batch).every((a) => a.status !== "pending") || Date.now() >= batch.deadline)
+            finish();
+        } catch (error) {
+          finish(error);
+        }
+      };
+      watcher = watch(this.directory(batchID), inspect);
+      watcher.on("error", finish);
+      signal?.addEventListener("abort", cancel, { once: true });
+      timer = setTimeout(inspect, Math.max(1, batch.deadline - Date.now()));
+      inspect();
+      if (signal?.aborted)
+        cancel();
+    });
+  }
+  result(batchID, assignmentID, offset = 0) {
+    const batch = this.load(batchID);
+    if (!batch.assignments.some((a) => a.id === assignmentID) || !Number.isInteger(offset) || offset < 0)
+      throw new Error("Invalid result request.");
+    const result = readJSON(join2(this.directory(batchID), assignmentID + ".json"));
+    return { assignment: assignmentID, status: result.status, ...reportWindow(result.report, offset, 6000) };
+  }
+}
+
 // src/mcp.ts
 var exec2 = promisify2(execFile2);
 var result = (value) => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
@@ -20472,7 +20663,7 @@ async function markdownFiles(root) {
   const files = [];
   async function visit(directory) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {
-      const path = join2(directory, entry.name);
+      const path = join3(directory, entry.name);
       if (entry.isDirectory())
         await visit(path);
       else if (entry.isFile() && entry.name.endsWith(".md"))
@@ -20482,10 +20673,21 @@ async function markdownFiles(root) {
   await visit(root);
   return files.sort();
 }
-async function createServer(skillRoot, reader = new GitHubReader) {
+async function createServer(skillRoot, reader = new GitHubReader, batches, completionMode = "all") {
   const root = resolve(skillRoot);
   const paths = await markdownFiles(root);
   const server = new McpServer({ name: "super-review", version: version2 });
+  if (batches && completionMode !== "submit")
+    server.registerTool("batch_wait", {
+      description: "Block until EVERY assignment in the group has submitted a result, or the group's fixed deadline expires. There is no polling interval to request. Invoke directly and leave this call pending; do not poll or message specialists. Returns reports with explicit continuation offsets, not a quality verdict.",
+      inputSchema: { batch: string2() },
+      annotations: { ...readOnly, openWorldHint: false }
+    }, async ({ batch }, extra) => result(await batches.wait(batch, extra.signal)));
+  if (completionMode === "wait") {
+    if (!batches)
+      throw new Error("Completion wait requires batch storage.");
+    return server;
+  }
   const snapshot = string2().describe("Receipt returned by snapshot; pass the same receipt to specialists.");
   const window = {
     startLine: number2().int().min(1).optional(),
@@ -20498,7 +20700,7 @@ async function createServer(skillRoot, reader = new GitHubReader) {
   }, async () => {
     try {
       await exec2("gh", ["--version"], { timeout: 1e4 });
-      return result({ version: version2, githubCLI: "available", node: process.version, next: "Supply a GitHub PR URL. Snapshot acquisition verifies access to that repository." });
+      return result({ version: version2, githubCLI: "available", node: process.version, completionBatches: Boolean(batches), next: "Supply a GitHub PR URL. Snapshot acquisition verifies access to that repository." });
     } catch {
       return result({ version: version2, githubCLI: "unavailable", next: "Install GitHub CLI, ensure gh is on the harness PATH, and use gh auth login for GitHub access." });
     }
@@ -20540,15 +20742,40 @@ async function createServer(skillRoot, reader = new GitHubReader) {
   }, async ({ paths: requested }) => {
     const resources = await Promise.all(requested.map(async (path) => {
       safePath(path);
-      return { path, content: await readFile(join2(root, path), "utf8") };
+      return { path, content: await readFile(join3(root, path), "utf8") };
     }));
     return result({ version: version2, resources });
   });
+  if (batches) {
+    const localWrite = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
+    server.registerTool("batch_open", {
+      description: "Create a group of one to three specialist result slots on this snapshot. Returns one assignment receipt per task. Only local temporary coordination state is written; no agents are launched.",
+      inputSchema: { snapshot, tasks: array(string2().min(1).max(120)).min(1).max(3) },
+      annotations: localWrite
+    }, async ({ snapshot, tasks }) => {
+      reader.files(snapshot);
+      return result(batches.open(snapshot, tasks));
+    });
+    server.registerTool("batch_submit", {
+      description: "Submit this specialist's terminal result to its issued assignment. Keep all candidates. Repeating the identical result is safe; replacing it is rejected. Finish the native task after submitting.",
+      inputSchema: { batch: string2(), assignment: string2(), status: _enum(["completed", "not_applicable", "unfinished"]), report: string2().min(1) },
+      annotations: localWrite
+    }, async ({ batch, assignment, status, report }) => result(batches.submit(batch, assignment, { status, report })));
+    server.registerTool("batch_result", {
+      description: "Read one submitted specialist report in bounded windows after batch_wait returns. Follow nextOffset to preserve every candidate.",
+      inputSchema: { batch: string2(), assignment: string2(), offset: number2().int().min(0).optional() },
+      annotations: { ...readOnly, openWorldHint: false }
+    }, async ({ batch, assignment, offset }) => result(batches.result(batch, assignment, offset)));
+  }
   return server;
 }
 if (__require.main == __require.module || process.argv[1] === fileURLToPath(import.meta.url)) {
   const root = process.argv[2] ?? resolve(dirname(fileURLToPath(import.meta.url)), "../skills/super-review");
-  const server = await createServer(root, new GitHubReader(undefined, new SnapshotCache));
+  const batches = process.env.SUPER_REVIEW_COMPLETION_BATCHES === "1" ? new CompletionBatches : undefined;
+  const completionMode = process.env.SUPER_REVIEW_COMPLETION_MODE ?? "all";
+  if (!["all", "submit", "wait"].includes(completionMode))
+    throw new Error("Invalid completion mode.");
+  const server = await createServer(root, new GitHubReader(undefined, new SnapshotCache), batches, completionMode);
   await server.connect(new StdioServerTransport);
 }
 export {

@@ -1,0 +1,6 @@
+{
+  "exit_code": 0,
+  "fixtureTriggered": true,
+  "elapsed_seconds": 88.7,
+  "method": "Native Codex CLI with a local fixture producer; the producer submits 75 seconds after the batch_wait tool starts. One pending call, no intermediate tool calls. Not a PR review."
+}

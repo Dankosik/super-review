@@ -11,6 +11,18 @@ not an inline duplicate server. The session shares its reader connection.
 Load common resources in one `resources` call and only the assigned lens for a
 specialist. Return the full report to the invoking conversation.
 
+Invoke specialists in the foreground (`run_in_background: false`) and submit a
+small group of independent Agent calls together when native parallel calls are
+available. Keep those calls pending until their reports return. Do not start a
+status-polling or reminder loop. Foreground calls provide the completion boundary;
+if the harness forces background execution, disclose that limitation instead of
+claiming the same waiting behavior.
+
+For guaranteed foreground execution in interactive fork mode, the Claude process
+must start with `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`. The plugin cannot set
+this parent-process environment variable. If foreground selection is unavailable,
+explain this session setup requirement; do not simulate blocking by polling.
+
 The orchestrator inherits the user's session model and effort. Specialists use
 the native `sonnet` model selection at `medium` effort; do not override them
 with the orchestrator's model. User or managed harness overrides retain their

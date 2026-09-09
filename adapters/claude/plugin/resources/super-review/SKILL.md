@@ -2,7 +2,7 @@
 name: super-review
 description: "Review the readability, idiomatic expression, and maintainability of a Go pull request through independent specialist passes. Use when the user explicitly asks for Super Review or this focused review workflow."
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
 ---
 
 # Super Review

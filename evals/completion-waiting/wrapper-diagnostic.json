@@ -1,0 +1,18 @@
+{
+  "exit_code": 0,
+  "profile": "completion-barrier",
+  "orchestrator_model": "gpt-6-astra",
+  "orchestrator_effort": "medium",
+  "specialist_model": "gpt-5.6-terra",
+  "specialist_effort": "medium",
+  "elapsed_seconds": 416.66,
+  "usage": {
+    "input_tokens": 949138,
+    "cached_input_tokens": 858496,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 4922,
+    "reasoning_output_tokens": 86
+  },
+  "excluded_from_final_candidate": true,
+  "reason": "This diagnostic left the wait inside functions.exec. Early wrapper yields caused additional model turns. The final package isolates the wait on a direct-only namespace."
+}

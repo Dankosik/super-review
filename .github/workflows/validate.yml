@@ -26,7 +26,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run build
       - name: Check generated native payloads
-        run: git diff --exit-code -- runtime adapters/claude/plugin
+        run: git diff --exit-code -- runtime adapters/claude/plugin adapters/codex/super-review
       - run: bun test
       - run: bun run typecheck
       - run: bun run validate
