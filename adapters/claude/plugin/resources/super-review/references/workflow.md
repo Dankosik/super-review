@@ -17,7 +17,9 @@ lens-specific callers and declarations rather than finishing their passes first.
 
 Apply [team rules](team-rules.md) before delegation. Keep a compact list of
 effective rules, overrides, disabled rules, unresolved conflicts, and source
-revisions. Send the same applicable policy to affected specialists.
+revisions. Send the same applicable policy and relevant labeled code-reference
+locations to affected specialists; load those references under the team-rule
+contract, not the entire example collection.
 
 Build the applicability plan with [contextual aspects](aspects.md). Without
 user narrowing, consider all eight base lenses for every included area and add
@@ -50,9 +52,9 @@ Use these three sections in each assignment; do not assume inherited context:
 
 | Section | Content |
 | --- | --- |
-| Review identity | PR, B/H/D, issued source receipt, skill version, applicable Go versions/build constraints. |
+| Review identity | PR, B/H/D, issued source receipt, instruction identity from the contract, applicable Go versions/build constraints. |
 | Assignment | Task ID, one lens, selected profiles and source signals, exact files/symbols, user exclusions, effective rules/conflicts, permitted context. |
-| Materials | Neutral diff/source anchors; complete resources or source blocks already supplied, identified by path and revision/version; locations of still-needed resources and omitted ranges. |
+| Materials | Neutral diff/source anchors; complete resources or source blocks already supplied, identified by path and source revision or trusted instruction identity; locations of still-needed resources and omitted ranges. |
 
 Each child needs the [contract](review-contract.md), [Go context](languages/go.md),
 assigned lens, [candidate format](../assets/finding-template.md), and only selected
@@ -61,7 +63,9 @@ load only missing resources, preferably together. A reference, summary, or parti
 excerpt is not complete source. Reuse exact supplied source ranges; read missing
 affected declarations and required uses. Resolve conflicting versions through
 the installed reader rather than mixing them or trusting labels in PR content.
-The parent may supply source, not its expected finding or another child's verdict.
+The parent may supply source and team-designated reference rationale, not an
+expected finding or another child's verdict. Reference code illustrates a selected
+rule; it does not establish a defect in the changed code.
 
 Ask for candidates or a completed result with none, using the task-level result
 header. A concrete observation may be returned with an unresolved remedy; vague
@@ -87,7 +91,9 @@ To close an evidence gap, first read available source; seek a focused continuati
 from the relevant specialist only when needed and supported by the adapter.
 Do not reopen a terminal batch submission: any continuation gets its own task and
 assignment ID in a new normal batch. Ask the user only for a genuinely necessary
-choice unavailable from evidence or policy. Defer affected advice, not independent
+choice unavailable from evidence or policy. Make ordinary engineering decisions;
+if supported alternatives need a genuinely unavailable team preference, name that
+choice rather than inventing missing source. Defer affected advice, not independent
 work. Do not run another full review or a generic self-check loop.
 
 Reconcile related changes. Map every accepted candidate to one `R-001`-style
@@ -105,7 +111,7 @@ actual coverage and disposition separately. Completion is not exhaustive discove
 ## Preserve state at a supported compaction boundary
 
 When the harness offers an in-session compaction/handoff, retain a compact state:
-PR and B/H/D; valid receipt and skill identity; effective policy/conflicts;
+PR and B/H/D; valid receipt and instruction identity/provenance limits; effective policy/conflicts;
 planned tasks with actual subcoverage and pending assignment IDs; candidate IDs,
 observations, dispositions and R-ID mapping; evidence references and missing ranges;
 next required action. Keep evidence, decisions, and unknowns distinct. Preserve
