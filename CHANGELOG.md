@@ -5,6 +5,9 @@ review decisions are product behavior, even when they only edit Markdown.
 
 ## Unreleased
 
+- Refine existing Go judgments for standard-library reuse, interfaces/generics, results, zero values, package boundaries, and caller documentation; add no agents or rule IDs.
+- Constrain suggested Go cleanups by the actual module baseline, error matching, method sets, and defer/ownership contracts rather than happy-path resemblance.
+- Add 24 Go-specific evaluation inputs with separate expectations; record fixture compilation separately from unexecuted model evaluation.
 - Preserve the eight-base-lens plan; select representation and rationale lenses from changed-source signals.
 - Load lifecycle-ownership, dependency-boundaries, effects-separation, and error-expression profiles only for their owning tasks.
 - Track selection separately from completed coverage, honor explicit scope, and resolve newly discovered signals without recursive review waves.

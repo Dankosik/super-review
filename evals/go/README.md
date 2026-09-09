@@ -30,3 +30,10 @@ orchestrator selection. `aspect-cases.json` is evaluator-only; supply reviewers
 only the selected raw section of `packets/aspects.md`. These new cases are
 proposed, not recorded model runs, and supplement rather than replace the
 existing instruction-quality and workflow evaluations.
+
+## Go-specific judgment
+
+[Go idiom evaluation](go-idioms-evaluation.md) targets language-specific useful
+changes and counterexamples. Supply only one raw task from `packets/go-idioms.md`;
+`go-idioms-cases.json` is evaluator-only. Fixture compilation and resource wiring
+are mechanical evidence, not a measured model quality result.

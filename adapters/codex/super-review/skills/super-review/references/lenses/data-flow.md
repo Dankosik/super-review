@@ -17,6 +17,12 @@ slice/map storage, pointer receivers, shallow copies, nil/empty distinctions,
 and order when assessing a proposed shape. These constrain the advice; do not
 scan for races, missing synchronization, or runtime defects.
 
+Choose value or pointer semantics for the actual ownership and method contract,
+not presumed allocation savings. Receiver changes affect method sets; struct
+copies can retain shared reference fields, and values containing used synchronization
+primitives must not be copied. Explain these only when implicated by your proposed
+cleanup, not as an invitation to hunt for copying bugs.
+
 Show the specific origin, transition, or mutation whose ownership becomes easier
 to follow. Do not replace a simple update with an immutable-object framework,
 inline a clear sequence into one expression, or introduce extra copies merely

@@ -19,6 +19,11 @@ Check the proposed shape against effect ordering, short-circuit evaluation,
 deferred cleanup, and error returns. Understand those constraints without
 auditing condition truth or reporting logical bugs.
 
+In Go, explicit return expressions can remove the need to reconstruct named
+result state across distant branches. Keep named results that clarify the API or
+are deliberately updated by deferred code. A bare return in a tiny clear function
+is not automatically a problem; avoid trading visible exits for hidden callbacks.
+
 Show which decisions become easier to follow at the affected branch and main
 path. A visually flatter function that requires more state tracking is not an
 improvement.

@@ -3,21 +3,29 @@
 Owner: control-flow
 Rule: go.flow.show-main-path
 
-**Failure paths.** Read the changed error-handling structure and the participating
-callers. Can a reader follow the already chosen failure policy without tracing
-redundant transformations or learning a custom protocol? A sequence of ordinary
-Go error checks with meaningful context may already be the clearest expression.
+**Failure paths.** Read the changed error-handling structure and participating
+callers. Can a reader follow the already chosen policy without tracing redundant
+transformations or learning a custom protocol? Ordinary `if err != nil` with
+useful context may already be clearest. Repeated syntax is not a reason for
+callbacks, panic/recover, or a generic result framework.
 
-Clarify repeated mechanics or translation ownership only when a concrete reading
-burden is visible. Keep useful context and domain adaptation. A generic helper
-that hides exits or couples independent failure policies may be worse than
-explicit checks; no error-count threshold justifies extraction.
+Prefer direct propagation or supported standard error operations when they
+express the existing contract more clearly than custom plumbing. Keep wrappers
+that add operation context or intentional domain translation. Compare their
+actual methods and consumers before calling them redundant.
 
-Preserve error identity, wrapping, messages, ordering, logging responsibility, and
-public return/status contracts. Do not find unchecked errors, prescribe retries,
-judge HTTP statuses, or repair swallowed failures. Bug prevention alone is not
-an in-scope benefit. Missing contract evidence limits the recommendation.
+Wrapping with `%w` exposes a cause to callers; `%v` can intentionally keep that
+cause private. Do not switch between them merely for idiomatic spelling. Standard
+`errors.Is`/`errors.As` matching can replace custom inspection when matching
+through wrapped errors is already intended. Direct equality or an assertion may
+intentionally inspect only the outer error; broadening that match is not a free
+cleanup. Preserve custom matching behavior, joined errors, messages, and identity.
 
-Show the failure-path knowledge the reader no longer has to reconstruct. Return
-this owner's evidence even if abstraction or duplication also participates;
-the parent reconciles the change under the effective rule, not a new error audit.
+Keep result values and named results used by deferred cleanup understandable.
+Do not remove such names or change defer scope just to simplify returns. Preserve
+ordering, logging responsibility, and public return/status contracts; do not
+find unchecked errors, prescribe retries, judge statuses, or repair failures.
+
+Show the failure-path knowledge readers no longer have to reconstruct. A benefit
+consisting only of preventing a bug is outside this profile. The parent reconciles
+this owner's evidence with other lenses under its effective rule.

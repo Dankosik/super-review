@@ -8,7 +8,7 @@ changed area, the user selects it, or a narrow read is needed to decide.
 | Aspect | Kind | Owner | Source signal, not a finding |
 | --- | --- | --- | --- |
 | [representation](lenses/representation.md) | lens | representation | Changed data shapes, linked collections, intermediate results, or encodings of existing modes/state. |
-| [rationale](lenses/rationale.md) | lens | rationale | Changed non-obvious choices, formulas, compatibility adaptations, or nearby contract/reason comments. No comment diff is required. |
+| [rationale](lenses/rationale.md) | lens | rationale | Changed non-obvious choices, formulas, compatibility adaptations, caller obligations (including zero/nil, partial results, or ownership), or nearby contract/reason comments. No comment diff is required. |
 | [lifecycle-ownership](profiles/lifecycle-ownership.md) | profile | data-flow | Changed acquisition, transfer, startup, shutdown, or multi-step use of a resource or background operation. |
 | [dependency-boundaries](profiles/dependency-boundaries.md) | profile | abstractions | Changed package boundaries, construction dependencies, configuration sources, or types crossing a boundary. |
 | [effects-separation](profiles/effects-separation.md) | profile | function-cohesion | A changed operation interleaves a meaningful computation with reads or writes to its environment. |
