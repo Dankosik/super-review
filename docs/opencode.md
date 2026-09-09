@@ -11,6 +11,26 @@ startup path. `--pure` disables external plugins; managed configuration and the
 harness itself still retain authority. A global plugin or administrator can
 change the effective environment, so the adapter is not an OS sandbox.
 
+## Install and launch
+
+Download the versioned OpenCode ZIP and extract it once:
+
+```sh
+mkdir -p "$HOME/.local/share/super-review/1.1.0"
+gh release download v1.1.0 --repo Dankosik/super-review \
+  --pattern super-review-1.1.0-opencode.zip \
+  --dir "$HOME/.local/share/super-review/1.1.0"
+unzip "$HOME/.local/share/super-review/1.1.0/super-review-1.1.0-opencode.zip" \
+  -d "$HOME/.local/share/super-review/1.1.0"
+"$HOME/.local/share/super-review/1.1.0/opencode/super-review" https://github.com/OWNER/REPO/pull/123
+```
+
+The launcher selects the review agent, config directory, and a trusted launch
+directory automatically. Run it without arguments to open the agent, then use
+`/super-review <PR URL>`. Install a newer release in its own directory
+and start a new review session to update; keep the old directory for rollback.
+No existing team rules or model settings are overwritten.
+
 ## Tools
 
 | Tool | Responsibility |

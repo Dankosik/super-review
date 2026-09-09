@@ -45,5 +45,24 @@ const command = frontmatter(await readFile(join(root, "adapters/opencode/command
 if (command.agent !== "super-review" || command.subtask !== false) errors.push("Command would prevent primary orchestration.");
 const plugin = JSON.parse(await readFile(join(root, "adapters/opencode/package.json"), "utf8"));
 if (plugin.dependencies["@opencode-ai/plugin"] !== manifest.devDependencies["@opencode-ai/plugin"]) errors.push("Adapter package and development dependency differ.");
+for (const path of ["plugin.json", ".codex-plugin/plugin.json", "adapters/claude/plugin/.claude-plugin/plugin.json"]) {
+  const native = JSON.parse(await readFile(join(root, path), "utf8"));
+  if (native.name !== "super-review" || native.version.split("+")[0] !== manifest.version) errors.push("Native identity/version mismatch: " + path);
+}
+for (const file of runtimeFiles) {
+  const packaged = join(root, "adapters/claude/plugin/resources/super-review", relative(skill, file));
+  if (!(await readFile(file)).equals(await readFile(packaged))) errors.push("Stale Claude policy: " + relative(skill, file));
+}
+const claudeEntry = frontmatter(await readFile(join(root, "adapters/claude/plugin/skills/review/SKILL.md"), "utf8"));
+if (claudeEntry.context !== "fork" || claudeEntry.background !== false || claudeEntry.agent !== "super-review:orchestrator" || claudeEntry["disable-model-invocation"] !== true) errors.push("Claude command routing differs from the explicit isolated review.");
+for (const role of ["orchestrator", "specialist"]) {
+  const agent = frontmatter(await readFile(join(root, "adapters/claude/plugin/agents/" + role + ".md"), "utf8"));
+  const allowed = agent.tools.split(",").map((s: string) => s.trim());
+  if (allowed.some((name: string) => !name.startsWith("mcp__plugin_super-review_reader__") && !(role === "orchestrator" && name === "Agent"))) errors.push("Unexpected Claude tool: " + role);
+}
+const catalog = JSON.parse(await readFile(join(root, ".agents/plugins/marketplace.json"), "utf8"));
+if (catalog.plugins[0]?.source?.path !== "./") errors.push("The project catalog must point at the normalized plugin root ./.");
+if (!(await readFile(join(root, "runtime/mcp.mjs"))).equals(await readFile(join(root, "adapters/claude/plugin/runtime/mcp.mjs")))) errors.push("Native readers differ.");
+await readFile(join(root, "runtime/THIRD_PARTY_LICENSES.txt"));
 if (errors.length) throw new Error(errors.join("\n"));
-console.log("Validated skill links, " + ids.size + " stable rule IDs, versions, and adapter routing.");
+console.log("Validated skill links, " + ids.size + " stable rule IDs, native payloads, versions, and adapter routing.");

@@ -1,0 +1,51 @@
+{
+  "version": "1.1.0",
+  "codex": {
+    "cli": "0.153.4",
+    "model": "gpt-6-astra",
+    "result": {
+      "exit_code": 0,
+      "elapsed_seconds": 395.5
+    },
+    "pr": "https://github.com/Dankosik/go-service-template-rest/pull/300",
+    "scope": "internal/infra/httpclient/propagation.go and required context",
+    "B": "6cffd8cc5cd269899021c7205d99e3982beb1c5d",
+    "H": "4c6311c87f888108d27520a075990c823edd1d52",
+    "D": "6cffd8cc5cd269899021c7205d99e3982beb1c5d",
+    "snapshotSharingCheck": {
+      "exit_code": 0,
+      "elapsed_seconds": 70.5
+    },
+    "readerSHA256": "711a589bfc8806db494f33e8263f4d5b444dfd9e16c60b47ec1a0f051e9fbd29"
+  },
+  "claude": {
+    "cli": "2.1.227",
+    "modelReview": "not executed: model authentication unavailable",
+    "roles": {
+      "orchestrator": {
+        "allowedTools": [
+          "Task",
+          "mcp__plugin_super-review_reader__diff",
+          "mcp__plugin_super-review_reader__doctor",
+          "mcp__plugin_super-review_reader__files",
+          "mcp__plugin_super-review_reader__resources",
+          "mcp__plugin_super-review_reader__search",
+          "mcp__plugin_super-review_reader__snapshot",
+          "mcp__plugin_super-review_reader__source"
+        ],
+        "reader": "connected",
+        "command": "super-review:review"
+      },
+      "specialist": {
+        "allowedTools": [
+          "mcp__plugin_super-review_reader__source",
+          "mcp__plugin_super-review_reader__diff",
+          "mcp__plugin_super-review_reader__search",
+          "mcp__plugin_super-review_reader__resources"
+        ],
+        "reader": "connected",
+        "command": "super-review:review"
+      }
+    }
+  }
+}

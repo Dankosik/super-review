@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "reader": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/runtime/mcp.mjs",
+        "${CLAUDE_PLUGIN_ROOT}/resources/super-review"
+      ]
+    }
+  }
+}

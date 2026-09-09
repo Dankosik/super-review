@@ -1,9 +1,9 @@
 # Design decisions
 
-## One skill, one adapter
+## One skill, native adapters
 
 The product is review policy and a workflow inside an existing harness. Models,
-delegation, sessions, and authentication remain OpenCode's responsibility.
+delegation, sessions, and authentication remain the selected harness's responsibility.
 There is one specialist role; each invocation gets one lens and a fresh context.
 
 The entrypoint states purpose, boundaries, and resource routing. Lens-specific
@@ -32,7 +32,10 @@ repository. Deleted or inaccessible fork objects can limit the review.
 
 Source readers walk immutable Git trees and fetch regular blobs. They exclude
 symlinks, submodules, tests, generated Go, binaries, and oversized files.
-Ephemeral receipts belong to the OpenCode process; resumability is not promised.
+OpenCode receipts belong to its process. Native MCP readers share a private
+temporary receipt cache because Codex children can start separate reader
+processes. This preserves immutable source identity; it does not resume an agent
+conversation.
 
 ## Evidence and acceptance
 
@@ -43,6 +46,13 @@ appear as implementation tasks; unresolved coverage stays visible.
 
 Source analysis constrains advice but does not prove equivalence. This project
 does not expand into bug, security, requirements, or test-coverage review.
+
+## Native distribution
+
+The Codex plugin uses the root skill and bundled Node reader. The Claude install
+tree is generated from the same policy with a short native command and two
+agent definitions. Generated files are checked for drift before release. The
+shared policy does not contain duplicated harness configuration.
 
 ## Sources checked
 

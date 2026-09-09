@@ -4,7 +4,7 @@ import { GitHubReader } from "../lib/github.ts";
 
 const reader = new GitHubReader();
 const paths = [
-  "SKILL.md",
+  "SKILL.md", "references/harnesses/codex.md", "references/harnesses/claude.md",
   "references/review-contract.md", "references/workflow.md", "references/team-rules.md",
   "references/verification.md", "references/languages/go.md",
   "references/lenses/naming.md", "references/lenses/control-flow.md",

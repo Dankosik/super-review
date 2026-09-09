@@ -1,0 +1,43 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "super-review",
+  "version": "1.1.0",
+  "description": "Independent readability and maintainability review for Go pull requests.",
+  "author": {
+    "name": "Dankosik",
+    "url": "https://github.com/Dankosik"
+  },
+  "homepage": "https://github.com/Dankosik/super-review",
+  "repository": "https://github.com/Dankosik/super-review",
+  "license": "MIT",
+  "keywords": [
+    "go",
+    "code-review",
+    "agent-skills",
+    "claude-code",
+    "codex"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Super Review",
+        "shortDescription": "Clear, justified Go PR recommendations.",
+        "longDescription": "Review a Go pull request through independent specialist passes. Keep team conventions, verify each recommendation, and leave clear code alone.",
+        "developerName": "Dankosik",
+        "category": "Productivity",
+        "capabilities": [
+          "Read"
+        ],
+        "defaultPrompt": [
+          "Use Super Review to review this Go pull request.",
+          "Use Super Review to check naming and control flow in this Go PR."
+        ],
+        "brandColor": "#3458DB",
+        "websiteURL": "https://github.com/Dankosik/super-review",
+        "privacyPolicyURL": "https://github.com/Dankosik/super-review/blob/main/PRIVACY.md",
+        "composerIcon": "./assets/logo.svg",
+        "logo": "./assets/logo.svg"
+      }
+    }
+  }
+}

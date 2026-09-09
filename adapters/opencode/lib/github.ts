@@ -7,11 +7,12 @@ type GetJSON = (endpoint: string) => Promise<any>;
 type Revision = "base" | "head" | "diff-base";
 type TreeEntry = { path: string; mode: string; type: string; sha: string; size?: number };
 type ChangedFile = { path: string; previousPath?: string; status: string; exclusion?: string; patch?: string; patchAvailable: boolean };
-type Snapshot = {
+export type Snapshot = {
   id: string; url: string; repository: string; headRepository: string;
   B: string; H: string; D: string;
   files: ChangedFile[];
 };
+export type SnapshotStore = { save(snapshot: Snapshot): void; load(id: string): Snapshot | undefined };
 const shaPattern = /^[a-f0-9]{40}$/;
 const repositoryPattern = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const maxBlobBytes = 1024 * 1024;
@@ -107,7 +108,7 @@ export class GitHubReader {
   private blobs = new Map<string, string>();
   private blobRequests = new Map<string, Promise<string>>();
   private blobBytes = 0;
-  constructor(private get: GetJSON = ghGet) {}
+  constructor(private get: GetJSON = ghGet, private store?: SnapshotStore) {}
 
   private async tree(repo: string, ref: string, recursive = false) {
     const key = repo + "/" + ref + (recursive ? "?recursive=1" : "");
@@ -168,8 +169,9 @@ export class GitHubReader {
   }
 
   private snapshot(id: string): Snapshot {
-    const snapshot = this.snapshots.get(id);
-    if (!snapshot) throw new Error("Unknown snapshot receipt. Receipts belong to this OpenCode process; cross-session resume is not supported.");
+    const snapshot = this.snapshots.get(id) ?? this.store?.load(id);
+    if (!snapshot) throw new Error("Unknown or expired snapshot receipt. Start a new review with a new snapshot; do not retarget a report silently.");
+    this.snapshots.set(id, snapshot);
     return snapshot;
   }
 
@@ -201,6 +203,7 @@ export class GitHubReader {
       patchAvailable: typeof f.patch === "string",
     }));
     const snapshot: Snapshot = { id: randomUUID(), url: pr.url, repository: pr.repository, headRepository, B, H, D, files };
+    this.store?.save(snapshot);
     this.snapshots.set(snapshot.id, snapshot);
     return {
       ...snapshot,

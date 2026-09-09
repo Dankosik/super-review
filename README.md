@@ -1,66 +1,86 @@
 # Super Review
 
-Focused review of **readability, idiomatic Go, and maintainability** in a GitHub
-pull request. One skill coordinates independent specialist passes, verifies the
-candidates, and produces a complete Markdown report. It does not edit the code.
+A focused review of **readability, idiomatic Go, and maintainability** in a GitHub
+pull request. Give it a PR URL; independent specialists inspect the selected
+aspects, and the main agent verifies their recommendations before returning a report.
+Clear code can produce no recommendations. Source is never refactored by the skill.
 
-Super Review reviews how the implemented solution is expressed. Bug hunting,
-security review, product validation, and test coverage are separate work.
-A clear change can produce no recommendations.
+## Install once
 
-## Install in OpenCode
+Use a configured model in your preferred harness and GitHub access through
+[`gh`](https://cli.github.com). Claude Code and Codex also need Node.js 20+ to run
+the bundled source reader. No publisher account, model client, or hosted service
+is involved. The reader is bundled; there is no `npm install` step for consumers.
 
-Use an existing [OpenCode](https://opencode.ai) setup with a configured model and
-[GitHub CLI](https://cli.github.com) access. Super Review has no model client,
-account, API key, or server of its own.
-
-Download a fixed release into a new directory:
+### Claude Code
 
 ```sh
-mkdir -p "$HOME/.local/share/super-review/1.0.0"
-gh release download v1.0.0 --repo Dankosik/super-review \
-  --pattern super-review-1.0.0-opencode.zip \
-  --dir "$HOME/.local/share/super-review/1.0.0"
-unzip "$HOME/.local/share/super-review/1.0.0/super-review-1.0.0-opencode.zip" \
-  -d "$HOME/.local/share/super-review/1.0.0"
+claude plugin marketplace add Dankosik/agent-skills-marketplace
+claude plugin install super-review@dankosik-skills
 ```
 
-Launch OpenCode from a **trusted directory outside the PR checkout**, with the
-release's config directory:
-
-```sh
-mkdir -p "$HOME/.local/share/super-review/reviews"
-cd "$HOME/.local/share/super-review/reviews"
-OPENCODE_CONFIG_DIR="$HOME/.local/share/super-review/1.0.0/opencode" opencode --pure
-```
-
-Then run:
+Start a new session, then:
 
 ```text
-/super-review https://github.com/OWNER/REPO/pull/123
+/super-review:review https://github.com/OWNER/REPO/pull/123
 ```
 
-The command selects the primary review agent; one reusable specialist role runs
-each assigned lens in a fresh child context. Your existing model remains the
-default. Model overrides belong in your OpenCode configuration, not in the skill.
+### Codex
 
-The archive contains all skill resources and the OpenCode adapter. OpenCode
-loads its small tool dependency through its normal config-directory dependency
-mechanism. See [adapter details](docs/opencode.md) and [validation](docs/validation.md)
-for the tested version and actual limits.
+```sh
+codex plugin marketplace add Dankosik/agent-skills-marketplace
+codex plugin add super-review@dankosik-skills
+```
 
-## What you get
+Start a new task and select **Super Review** from installed plugins, or invoke its
+skill explicitly:
 
-A report tied to target commit B, head H, and comparison base D, with:
+```text
+$super-review Review https://github.com/OWNER/REPO/pull/123
+```
 
-- Applied Go and team rules, coverage, and any unfinished areas.
-- Every accepted recommendation, its evidence, counterargument, and properties
-  to preserve.
-- A file map, real implementation dependencies, and a compact decision record.
+If you already added Dankosik Skills, refresh that catalog instead of adding it
+again. Claude uses `claude plugin marketplace update dankosik-skills`; Codex uses
+`codex plugin marketplace upgrade dankosik-skills`.
+
+OpenCode keeps its native primary-agent adapter and `/super-review <PR URL>`
+command. Use the [OpenCode installation guide](docs/opencode.md). The standalone
+skill ZIP contains portable instructions; it does not install a harness adapter.
+
+## Choose what to review
+
+The default is all applicable lenses for the changed Go source. Narrow the scope
+in ordinary language when you have a specific concern:
+
+```text
+Review only internal/payments/ and the supporting context it needs.
+Focus on naming and control flow. Write the report in Russian.
+```
+
+A targeted review lists other aspects as not requested. It does not quietly call
+them checked. No special flag grammar or model configuration is needed.
+
+Invoke Super Review without a PR URL to get launch guidance and a reader check.
+Missing GitHub access or unavailable delegation is reported directly. Installation
+does not supply a paid Claude subscription or change your model/provider settings.
+
+## Read and use the report
+
+The outcome comes first. Each accepted recommendation then explains:
+
+- The exact source location and the concrete reading or maintenance cost.
+- The proposed change, its benefit, and the strongest reason to keep the code.
+- The behavior, API, ordering, or resource properties to preserve.
+
+The report retains every accepted recommendation, a file map, actual specialist
+coverage, effective team rules, and unresolved gaps. Give accepted items to your
+coding agent for implementation and testing. Super Review neither edits source
+nor posts GitHub comments.
 
 Eight lenses cover naming, control flow, function cohesion, data flow,
-abstractions, duplication, API clarity, and change locality. They have distinct
-questions; they are not eight agents repeating a general code review.
+abstractions, duplication, API clarity, and change locality. Specialists have
+separate contexts and distinct questions. The main agent checks their candidates;
+agreement or confidence alone is not evidence.
 
 ## Team conventions
 
@@ -74,38 +94,27 @@ Lens: function-cohesion
 Action: refine go.functions.extract-for-clarity
 
 Keep linear conversion steps together unless a helper names an independent
-concept. We value local reading; a function's length alone does not justify
-extraction.
+concept. We value local reading; function length alone does not justify extraction.
 ```
 
-Rules can add, refine, override, or disable named style rules. Paths are exact
-files or directory prefixes; overlapping conflicts are reported rather than
-silently ordered. Policy is read from **B**, so a PR cannot quietly weaken its
-own review. See [the rule contract](skills/super-review/references/team-rules.md)
+Rules can add, refine, override, or disable named style rules within exact files
+or directory prefixes. Policy comes from the pinned target commit, so a PR's
+proposed rule change does not automatically govern its own review. Conflicting
+rules are disclosed. See [the rule contract](skills/super-review/references/team-rules.md)
 and [examples](examples/team-rules/SUPER_REVIEW.md).
 
-## Updating
+## Support and updates
 
-Install the next version in another directory and change `OPENCODE_CONFIG_DIR`
-for a new review session. Keep the old directory to roll back. Do not update a
-running review. This does not overwrite your team's `SUPER_REVIEW.md` or model
-configuration.
+[Native integration details](docs/native-integrations.md) describe tested versions,
+permissions, and update/removal commands. [Validation](docs/validation.md) separates
+mechanical checks from model execution. Other languages and GitHub Enterprise
+are not supported. Missing source, API caps, or unfinished specialists make the
+affected coverage partial.
 
-The skill-only ZIP is portable instruction content. Installing it in another
-harness does **not** install OpenCode's tool restrictions or prove equivalent
-delegation. OpenCode is the v1 adapter; other harness integrations are unverified.
+Bug hunting, security assessment, product validation, and test coverage are
+outside this review. Proposed refactoring equivalence is not tested. A complete
+plan is not a guarantee of finding every possible improvement.
 
-## Boundaries
-
-The review roles deny unlisted tools, including shell, edits, arbitrary local
-reads, MCP tools, and other agent roles. A small source reader makes fixed
-GitHub GET requests through your configured `gh`; it never checks out or executes
-the target project. This is a tool boundary, not an operating-system sandbox.
-Only run trusted OpenCode configurations and adapter code.
-
-GitHub's 300-file comparison cap, missing source, failed specialists, or policy
-conflicts can make coverage partial. The report says so. Recommendations are
-not tested behavioral equivalence or proof of overall code quality.
-
-[Design decisions](docs/design.md) · [Contributing](CONTRIBUTING.md) ·
-[Changelog](CHANGELOG.md) · [License](LICENSE)
+[UX references](docs/ux-reference-study.md) · [Design](docs/design.md) ·
+[Contributing](CONTRIBUTING.md) · [Privacy](PRIVACY.md) · [Changelog](CHANGELOG.md) ·
+[MIT License](LICENSE)

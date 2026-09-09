@@ -1,0 +1,15 @@
+{
+  "name": "super-review",
+  "owner": {
+    "name": "Dankosik",
+    "url": "https://github.com/Dankosik"
+  },
+  "description": "Super Review for Go pull requests.",
+  "plugins": [
+    {
+      "name": "super-review",
+      "source": "./adapters/claude/plugin",
+      "description": "Independent readability and maintainability review for Go pull requests."
+    }
+  ]
+}

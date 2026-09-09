@@ -24,11 +24,17 @@ jobs:
         with:
           bun-version: 1.4.1
       - run: bun install --frozen-lockfile
+      - run: bun run build
+      - name: Check generated native payloads
+        run: git diff --exit-code -- runtime adapters/claude/plugin
       - run: bun test
       - run: bun run typecheck
       - run: bun run validate
       - run: bun run package
+      - run: bun scripts/check-mcp.ts
       - run: bun audit
+      - name: Validate native Claude package
+        run: npx --yes --package @anthropic-ai/claude-code@2.1.227 claude plugin validate adapters/claude/plugin
       - name: Install pinned OpenCode for native configuration checks
         env:
           GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,3 @@
+runtime/* linguist-generated=true -whitespace
+adapters/claude/plugin/** linguist-generated=true
+adapters/claude/plugin/runtime/* -whitespace

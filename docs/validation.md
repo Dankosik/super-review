@@ -1,5 +1,57 @@
 # Validation
 
+## 1.1.0 — native installation and workflow
+
+Recorded 2026-09-09. The runtime reader and core workflow used by the completed
+Codex review match the release candidate byte-for-byte.
+
+- **Codex CLI 0.153.4, GPT-6 Astra:** the installed plugin completed all eight
+  independent specialist passes for PR 300, scoped to
+  `internal/infra/httpclient/propagation.go` and necessary context. Exit 0 after
+  **395.5 seconds**. The report correctly included version 1.1.0 and began with
+  its no-recommendations outcome.
+- **Source sharing:** an initial native child failed on the original process-local
+  receipt. After adding the private shared cache, a fresh independent child read
+  head `go.mod` using its parent's receipt and returned the exact pinned H. That
+  focused native check exited 0 after 70.5 seconds.
+- **Claude Code 2.1.227:** native validation and component inspection recognized
+  one `review` skill, two agents, and one reader. Native startup connected the
+  reader and exposed only delegation plus reader tools to the orchestrator,
+  and four reader operations to the specialist. No shell/edit/unrelated MCP
+  tool appeared in either review role.
+- **Claude model execution remains unverified:** the local CLI had no usable model
+  authentication. Native plugin startup and tool discovery succeeded, but no
+  model-backed Claude review was executed. These startup checks are not a
+  completed Claude review.
+- **Behavior:** an independent Codex agent received ten raw stage requests without
+  a rubric or prior results. Policy resolution, conflict handling, incomplete
+  coverage, reconciliation, all twelve accepted report entries, targeted lenses,
+  first-use guidance, and truthful batch progress met their tested expectations.
+  These are stage tests, not ten end-to-end reviews or an external benchmark.
+- **Mechanics:** 21 tests and 82 assertions passed, including cross-reader snapshot
+  reuse, expiry, unissued receipts, source/path restrictions, private cache access,
+  symlink refusal, MCP discovery, and resource traversal rejection. Node stdio
+  transport loaded the bundled reader without installing consumer dependencies.
+- **OpenCode:** the launcher preserved arguments and selected the installed config
+  and trusted working directory. Native permission/routing checks are retained.
+
+Evidence:
+
+- [Codex report](https://github.com/Dankosik/super-review/blob/v1.1.0/evals/results/codex-pr-300-1.1.0.md)
+  and [native receipt](https://github.com/Dankosik/super-review/blob/v1.1.0/evals/results/native-receipt-1.1.0.json).
+- [Stage inputs](https://github.com/Dankosik/super-review/blob/v1.1.0/evals/go/packets/workflow-ux.md)
+  and [actual outputs](https://github.com/Dankosik/super-review/blob/v1.1.0/evals/results/ux-forward-1.1.0.md).
+
+Timing comes from one scoped run on one machine and model; it is not a speed
+comparison with 1.0.0 or a completion guarantee for arbitrary PRs. No recommendation
+quality score is established by this small case set. Authentication, native
+configuration, source acquisition, model behavior, and release integrity remain
+separate claims.
+
+---
+
+# 1.0.0 evidence (historical)
+
 Recorded on 2026-09-09 (Europe/Moscow) for Super Review 1.0.0. Mechanical
 checks, model behavior, and native execution are separate evidence.
 

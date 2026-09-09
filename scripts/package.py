@@ -18,7 +18,7 @@ shutil.copytree(ROOT / "adapters/opencode", target)
 shutil.copytree(ROOT / "skills/super-review", target / "skills/super-review")
 for name in ["docs", "examples"]:
     shutil.copytree(ROOT / name, target / name)
-for name in ["README.md", "LICENSE", "CONTRIBUTING.md", "CHANGELOG.md", "THIRD_PARTY_NOTICES.md"]:
+for name in ["README.md", "LICENSE", "PRIVACY.md", "CONTRIBUTING.md", "CHANGELOG.md", "THIRD_PARTY_NOTICES.md"]:
     shutil.copy2(ROOT / name, target / name)
 
 def archive(name, files):
@@ -27,7 +27,7 @@ def archive(name, files):
         for source, arcname in sorted(files, key=lambda item: item[1]):
             info = zipfile.ZipInfo(arcname, (1980, 1, 1, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o100644 << 16
+            info.external_attr = (0o100755 if source.stat().st_mode & 0o111 else 0o100644) << 16
             output.writestr(info, source.read_bytes())
     return {"name": name, "sha256": hashlib.sha256(destination.read_bytes()).hexdigest()}
 
@@ -38,6 +38,17 @@ assets = [
     archive(f"super-review-{VERSION}-opencode.zip", opencode_files),
     archive(f"super-review-{VERSION}-skill.zip", skill_files),
 ]
+claude_root = ROOT / "adapters/claude/plugin"
+assets.append(archive(f"super-review-{VERSION}-claude.zip", [
+    (p, "super-review/" + p.relative_to(claude_root).as_posix())
+    for p in claude_root.rglob("*") if p.is_file()
+]))
+codex_files = []
+for name in [".codex-plugin", ".agents", "skills", "runtime", "assets", "docs", "examples"]:
+    codex_files.extend((p, "super-review/" + p.relative_to(ROOT).as_posix()) for p in (ROOT / name).rglob("*") if p.is_file())
+for name in ["plugin.json", "mcp.json", ".mcp.json", "README.md", "LICENSE", "PRIVACY.md", "CHANGELOG.md", "CONTRIBUTING.md", "THIRD_PARTY_NOTICES.md"]:
+    codex_files.append((ROOT / name, "super-review/" + name))
+assets.append(archive(f"super-review-{VERSION}-codex.zip", codex_files))
 commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True)
 receipt = {"version": VERSION, "commit": commit.stdout.strip() if commit.returncode == 0 else None, "assets": assets}
 (DIST / "manifest.json").write_text(json.dumps(receipt, indent=2) + "\n")
