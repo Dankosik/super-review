@@ -1,32 +1,41 @@
-# Candidate format
+# Specialist result
 
-Return compact Markdown. For no candidates, state `completed`, the task, files
-and symbols actually inspected, and any limitations. Missing required evidence
-means `unfinished`, not a clean result. Otherwise use one block per candidate:
+Return compact Markdown: one task header, then candidate blocks. Common fields
+apply to every candidate; do not repeat them per block. Keep this header attached
+when forwarding a candidate, or include its identity when the block travels alone.
 
-## C-<task>-<number>: <concrete improvement>
+## Task result: <task ID>
 
-- Lens, selected profiles, and task:
-- Snapshot: PR, H, comparison D.
-- Change anchor: path, symbol, verified lines at H; how D..H introduces, worsens,
-  or makes the burden relevant. Distinguish supporting unchanged context.
-- Basis: effective default/team IDs; say when consistency alone is the reason.
-- Evidence and cost: inspected declarations/uses and the specific knowledge,
-  state tracking, or coordinated editing that burdens the reader or maintainer.
-- Transformation and net benefit: the smallest useful change; what becomes
-  unnecessary to understand, and any new indirection, concepts, or obligations.
-- Keep alternative: the strongest reason to leave the code as it is, and why
-  the proposed benefit outweighs it; state an unresolved tradeoff honestly.
-- Preserve: relevant contracts, ownership, lifetime, and effect order.
-- Affected files: verified paths; local or cross-file, with real dependencies.
-- Missing context: required source not yet read, or `none`.
+- Snapshot: PR, B/H/D, issued receipt reference; skill version.
+- Assignment: lens, selected profiles, exact scope and effective policy references.
+- Status: `completed`, `not applicable`, or `unfinished`; adapter enums keep their
+  native spelling. For non-applicability give a structural reason.
+- Inspected evidence: verified paths/revisions, complete symbols and relevant uses.
+- Coverage: base/profile results, actual completed subcoverage, and missing required
+  evidence/capability. A profile-only task is not a full owner pass.
+- New applicability signals: aspect, path/symbol, observed fact and missing question,
+  or `none`. Signals are not findings or completed checks.
 
-Prefer a verified path and symbol to guessed line numbers. A small before/after
-example can clarify the change; a full patch is unnecessary. Suggestions do not
-prove equivalence. Explain source evidence, not a checklist score or a narrative
-of the review process.
+With no candidates, state that explicitly after the header. Missing required
+coverage remains `unfinished`, never an empty clean result.
 
-Outside candidate blocks, report selected profile coverage and any newly observed
-applicability signal (aspect, path/symbol, fact, missing question). Signals are
-not recommendations or evidence that another check was completed. Include these
-even when returning no candidates; the parent alone changes the plan.
+## C-<task>-<number>: <concrete observation>
+
+- Change anchor: path, symbol, verified H lines; how D..H introduces, worsens, or
+  makes the burden relevant. Distinguish supporting unchanged context.
+- Basis: effective rule IDs and contributing profiles; identify convention-only advice.
+- Observation: source evidence and concrete reading/maintenance cost. State what is
+  established; an unsupported suspicion does not qualify.
+- Remedy: smallest supported change, or `unresolved` with the exact missing evidence.
+  Separate a demonstrated burden from uncertainty about fixing it. For a proposal,
+  explain net benefit, new indirection/obligations, and the strongest keep alternative.
+- Preserve: relevant contracts/effects and constraints implicated by the proposal;
+  identify what is known versus still unverified. Do not invent a remedy to fill fields.
+- Affected files: verified paths and real dependencies; distinguish inspected from
+  still-needed consumer context. Use `none` for remaining gaps only when warranted.
+
+Prefer verified paths/symbols to guessed lines. A small before/after example can
+clarify a supported change; a full patch is unnecessary. Explain evidence and
+tradeoffs, not a reasoning transcript or checklist score. Only the orchestrator
+accepts implementation recommendations; unresolved observations remain visible
+without becoming instructions to implement.
