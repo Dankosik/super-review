@@ -7,5 +7,7 @@
   "go.abstractions.earn-the-boundary",
   "go.duplication.share-knowledge",
   "go.api.express-the-call",
-  "go.change.localize-existing-variation"
+  "go.change.localize-existing-variation",
+  "go.representation.express-concepts",
+  "go.rationale.explain-constraints"
 ]

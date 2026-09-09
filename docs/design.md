@@ -9,6 +9,21 @@ There is one specialist role; each invocation gets one lens and a fresh context.
 The entrypoint states purpose, boundaries, and resource routing. Lens-specific
 rules stay in their own files. Stable rule IDs make team overrides explainable.
 
+## Contextual depth without extra mandatory agents
+
+The eight base questions remain the applicability floor unless the user narrows
+scope. The installed Markdown [catalog](../skills/super-review/references/aspects.md)
+adds two conditional lenses and four profiles of existing owners. This is a
+model instruction, not a new deterministic router or runtime service. Profiles
+carry their owner's effective rule and do not gain new permissions or a model.
+
+Selection uses changed-source signals, not defect suspicion or keyword scoring.
+A profile-only task claims only that question. Late signals produce focused
+missing work, not repeated base passes; unresolved applicability is partial
+coverage. Development evaluation lives in `evals/go/aspect-evaluation.md` and
+separates routing from judgment evidence. Fixtures and mechanical tests are
+not model results.
+
 ## Changes from the initial proposal
 
 - Team scopes use exact files and directory prefixes rather than glob precedence.

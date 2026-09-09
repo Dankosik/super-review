@@ -21,12 +21,18 @@ Apply [team rules](team-rules.md) before delegation. Keep a compact list of
 effective rules, overrides, disabled rules, unresolved conflicts, and source
 revisions. Send that same policy to every affected specialist.
 
-If the user explicitly selects lenses, declare a targeted plan with those lenses
-and list the others as not requested. Otherwise use all applicable lenses.
-Announce the pinned scope and plan, then report real progress at batch boundaries.
+Build the applicability plan with [contextual aspects](aspects.md). Without
+user narrowing, consider all eight base lenses below for every included area;
+add conditional lenses and owner profiles from the catalog's source signals.
+Record selection and omissions before delegation. A small PR or a clean first
+impression does not justify dropping a base question. Resolve policy for selected
+additional lenses before dispatch, using the same pinned B and conflict rules.
 
-Consider the selected lenses for every included area; mark an inapplicable lens with a
-specific structural reason rather than skipping it because the PR is small:
+Honor user inclusions/exclusions and file scope; a targeted plan lists other
+questions as not requested. Announce the pinned scope, selected lenses/profiles,
+and reasons, then report real progress at batch boundaries.
+
+Base lenses:
 
 | Lens | Question |
 | --- | --- |
@@ -40,22 +46,30 @@ specific structural reason rather than skipping it because the PR is small:
 | [change-locality](lenses/change-locality.md) | Is an existing responsibility scattered? |
 
 Partition large changes by coherent areas. Use one lens per child task, not one
-agent asked to check everything. Run small batches within the harness's available
-concurrency; four simultaneous tasks is a reasonable default, not a finding cap.
+agent asked to check everything. Attach profiles only to their owning lens's
+area; an optional module does not automatically require another worker. Run small
+batches within the harness's available concurrency and adapter limits; four
+simultaneous tasks is a reasonable default, not a task or finding quota.
 
 ## Delegate
 
 Start fresh child contexts. Include the following in each task rather than
 assuming the child inherits them:
 
-> Task ID and lens; PR identity and B/H/D; exact files/symbols and relevant diff;
+> Task ID, one lens, selected profiles and their source signals; PR identity
+> and B/H/D; exact files/symbols and relevant diff;
 > source-access receipt; Go versions; effective team rules and conflicts;
 > [contract](review-contract.md), [Go context](languages/go.md), and assigned
-> lens resource locations; permitted context and excluded checks;
+> lens plus selected profile resource locations; permitted context and exclusions;
 > [candidate format](../assets/finding-template.md).
 
-Require these four resources to be read in the child context. Send a neutral
-question and source anchors, not an expected finding or another child's verdict.
+Require the contract, Go context, assigned lens, candidate format, and only the
+selected profiles to be read in the child context. Send a neutral question and
+source anchors, not an expected finding or another child's verdict. Profile-only
+scope must remain explicit rather than imply full coverage of the owner lens.
+Report each selected profile's result. If any required question is unfinished,
+the task is `unfinished` even when its base pass completed; retain that completed
+subcoverage. Native task status values remain unchanged.
 
 Ask for candidates or an explicit completed result with none. The child may
 read supporting declarations and callers within this snapshot. It cannot expand
@@ -65,6 +79,11 @@ resolved; missing required context still makes the affected work unfinished.
 Report independently useful observations even when another lens may overlap.
 Leave cross-lens coordination and deduplication to the parent; do not inspect
 peer reports or suppress a candidate in anticipation of another specialist.
+
+A child can return a newly observed applicability signal even with no candidates.
+At collection, resolve each signal against user scope, policy, and the existing
+plan. Add only missing work in the next normal batch or record the reason not to;
+never silently enlarge the user's scope or claim a discovered check was completed.
 
 ## Decide and report
 
@@ -80,6 +99,6 @@ to meet an arbitrary count or response length.
 
 Use [the report template](../assets/report-template.md). A review is complete
 only when its declared plan for the supported scope is complete. An unfinished
-task, unresolved rule conflict affecting coverage, or missing required context
-makes the affected coverage partial. Completion is not a guarantee of finding
-every possible improvement.
+task, skipped applicable aspect, unresolved applicability or rule conflict,
+or missing required context makes the affected coverage partial. Completion is
+not a guarantee of finding every possible improvement.

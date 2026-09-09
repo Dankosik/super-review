@@ -22,3 +22,11 @@ and final report assembly) should be tested at their stated stage.
 Record model/harness, exact skill revision, supplied inputs, observed results,
 and limits in `docs/validation.md`. Do not call all twelve passed merely because
 the case file parses or source-reader tests succeed.
+
+## Contextual aspects
+
+[Aspect evaluation](aspect-evaluation.md) separates specialist judgment from
+orchestrator selection. `aspect-cases.json` is evaluator-only; supply reviewers
+only the selected raw section of `packets/aspects.md`. These new cases are
+proposed, not recorded model runs, and supplement rather than replace the
+existing instruction-quality and workflow evaluations.

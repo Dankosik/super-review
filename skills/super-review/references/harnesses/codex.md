@@ -10,6 +10,9 @@ Do not use an older generic `reader` server when multiple versions are present. 
 Run the orchestration in the current task. Keep the orchestrator's model and
 reasoning effort exactly as selected by the user. Use native fresh child contexts,
 one selected lens each, with the pinned source, policy, scope, and resource paths.
+Pass selected owner profiles explicitly; children read only those profiles along
+with the contract, Go context, lens, and candidate format. Content profiles do
+not alter model/effort selection or require extra workers.
 
 For every specialist, explicitly pass both model and reasoning effort to the
 native spawn tool. The default balanced profile is `gpt-5.6-terra` with `medium`.

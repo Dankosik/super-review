@@ -24,14 +24,17 @@ do not start specialist work. Accept file and lens scope in ordinary language.
 
 **Orchestrate.** Read [the contract](references/review-contract.md) and
 [workflow](references/workflow.md), then [Go context](references/languages/go.md)
-and [team rules](references/team-rules.md). Pin the PR's source revisions before
+and [team rules](references/team-rules.md). Use the compact
+[aspect catalog](references/aspects.md) to select contextual lenses and profiles
+without dropping the eight base questions. Pin the PR's source revisions before
 delegating. Use the installed adapter's source tools and independent child
 contexts; the adapter must identify any unavailable capability.
 
-Assign one lens and a concrete scope to each specialist. Specialists read the
-contract, Go context, assigned lens, and candidate format, with the effective
-rules supplied in the task. Each judges its question independently, including
-whether leaving the code alone is better; it does not repeat the whole review.
+Assign one lens, relevant owner profiles, and a concrete scope to each specialist.
+Specialists read the contract, Go context, assigned lens, candidate format, and
+only selected profiles, with effective rules supplied in the task. Each judges
+its question independently, including whether leaving the code alone is better;
+it does not repeat the whole review.
 Read [verification](references/verification.md)
 when evaluating their candidates. Keep every accepted recommendation, including
 ones merged into a shared change.

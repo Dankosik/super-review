@@ -30,7 +30,17 @@ case-sensitive; a prefix includes descendants. Wildcards and implicit nested
 inheritance are not supported in v1. Use explicit links and paths in monorepos.
 
 Each rule needs a unique ID, language, paths, lens, action, statement, and reason.
-The stable default rule IDs are headings in the lens resources. Supported actions:
+The stable default rule IDs are headings in the lens resources. The conditional
+lenses use `Lens: representation` / `go.representation.express-concepts` and
+`Lens: rationale` / `go.rationale.explain-constraints`. No existing ID changes.
+
+A contextual profile is not a new rule namespace. Use its declared owner as
+`Lens` and apply that owner's effective rules, including the profile's named
+`Rule`. A disable, override, or conflict follows the rule into its profiles;
+loading extra guidance never restores the default. Resolve policy before a
+newly selected lens/profile runs. User exclusions remain outside style policy.
+
+Supported actions:
 
 | Action | Effect inside the declared scope |
 | --- | --- |

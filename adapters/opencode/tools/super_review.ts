@@ -11,6 +11,10 @@ const paths = [
   "references/lenses/function-cohesion.md", "references/lenses/data-flow.md",
   "references/lenses/abstractions.md", "references/lenses/duplication.md",
   "references/lenses/api-clarity.md", "references/lenses/change-locality.md",
+  "references/aspects.md",
+  "references/lenses/representation.md", "references/lenses/rationale.md",
+  "references/profiles/lifecycle-ownership.md", "references/profiles/dependency-boundaries.md",
+  "references/profiles/effects-separation.md", "references/profiles/error-expression.md",
   "assets/finding-template.md", "assets/report-template.md",
 ] as const;
 
@@ -64,7 +68,7 @@ export const search = tool({
 });
 
 export const resource = tool({
-  description: "Read an installed Super Review policy, assigned lens, or output template. Paths are relative to the skill root.",
+  description: "Read an installed Super Review policy, aspect catalog, assigned lens/profile, or output template. Paths are relative to the skill root.",
   args: { path: tool.schema.enum(paths) },
   async execute({ path }) {
     return readFile(new URL("../skills/super-review/" + path, import.meta.url), "utf8");

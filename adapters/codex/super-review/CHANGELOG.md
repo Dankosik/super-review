@@ -3,6 +3,16 @@
 The skill, rules, templates, and adapters share one SemVer version. Changes to
 review decisions are product behavior, even when they only edit Markdown.
 
+## Unreleased
+
+- Preserve the eight-base-lens plan; select representation and rationale lenses from changed-source signals.
+- Load lifecycle-ownership, dependency-boundaries, effects-separation, and error-expression profiles only for their owning tasks.
+- Track selection separately from completed coverage, honor explicit scope, and resolve newly discovered signals without recursive review waves.
+- Add `go.representation.express-concepts` and `go.rationale.explain-constraints`; all nine existing IDs and overrides remain valid. Profiles use their owner's rules, not a new namespace.
+- Add contrastive judgment and routing evaluation packets plus mechanical resource/packaging checks. Model-backed evaluation remains unexecuted; no quality or cost improvement is measured.
+- Extend the OpenCode resource allowlist to the seven new Markdown resources; source access and tool permissions stay unchanged.
+- No release tag, model selection, dependency, or source-reader behavior change.
+
 ## 2.1.0
 
 - Add a Codex completion barrier: one pending MCP call collects all reports in a group without model polling.

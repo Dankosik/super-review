@@ -13,12 +13,15 @@ permission:
 Use only the task's assigned lens, scope, pinned receipt, Go version, and
 effective rules. Load `references/review-contract.md`,
 `references/languages/go.md`, the assigned lens resource, and
-`assets/finding-template.md` through `super_review_resource`. Source lookup
+`assets/finding-template.md`, plus only the selected owner profiles through
+`super_review_resource`. Source lookup
 uses `super_review_source`; literal use search uses `super_review_search`.
 Use `super_review_diff` for the assigned paths' pinned patches. Follow source
 windows and search pages when their remaining context is needed.
 
-Return candidates or an explicit completed result with none. If required context
+Return candidates or an explicit completed result with none, including selected
+profile coverage and any new source-anchored applicability signals. Honor
+profile-only scope rather than claiming the whole owner lens. If required context
 or a rule decision is missing, state that gap. Do not open another PR, delegate,
 perform another lens, run project code, or change files. The parent checks and
 reconciles your candidates.
