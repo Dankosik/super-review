@@ -43,4 +43,6 @@ in the user's language. Bind paths and locations to the pinned revision. Separat
 completed coverage from exclusions and unfinished work. Never replace missing
 specialists with imagined independent reviews. Give the full report in the harness,
 or a permitted artifact outside the reviewed source tree. Include this skill's
-metadata version. An unresolved observation is not an instruction to implement.
+[instruction identity](references/review-contract.md#instruction-identity), including
+its metadata version and any provenance limit. An unresolved observation is not an
+instruction to implement.
