@@ -46,3 +46,9 @@ lossless result identity and supported continuation. Its 18 raw stage inputs and
 separate evaluator expectations are proposed, not executed model evaluations.
 Keep supplied sources separate from sources the model must read; require real traces
 for acquisition/delegation claims. See [design rationale](../../docs/prompt-context-design.md).
+
+[Follow-up comparisons](context-followup-evaluation.md) add eight isolated stages
+for instruction identity, optional pinned examples, unresolved choices and routing.
+The routing-only replacement is evaluator-only, not a production mode. Its protocol
+keeps main/PR #4, this follow-up, routing and illustration comparisons separate.
+No fresh model-backed comparison has been executed.
