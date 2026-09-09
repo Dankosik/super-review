@@ -26,6 +26,13 @@ leave it unresolved; source inspection does not establish tested equivalence.
 A sound observation with an unsupported remedy needs a narrower remedy or an
 unresolved disposition, not an instruction to implement the speculative change.
 
+For a Go-specific replacement, require the exact supported operation or signature
+and a concrete account of the contract it preserves. In particular, do not treat
+nil/empty normalization, broader error matching, promoted methods, or moved defers
+as equivalent because the happy-path example is unchanged. Inspect only the
+relevant constraints, including indirect/interface uses when affected. Unknown
+compatibility is a limit, not a request to run tests or import newer APIs.
+
 Choose one disposition for each candidate:
 
 | Disposition | Record |

@@ -20,6 +20,11 @@ helpers when they force readers to reconstruct that sequence across declarations
 without hiding useful knowledge. Keep even a one-line helper when it names a
 real concept or owns a meaningful boundary.
 
+In Go, a helper also creates a new defer boundary. Do not move cleanup, a lock's
+scope, or named-result updates across that boundary merely to separate steps.
+A closure may deliberately retain local state; compare that purpose with explicit
+inputs rather than extracting captured variables into bookkeeping parameters.
+
 Compare keeping, extracting, and inlining only where the observed burden warrants
 it. Preserve contracts, needed values, resource lifetime, and effect ordering.
 Do not invent a service or interface to shorten a function. This lens owns local
