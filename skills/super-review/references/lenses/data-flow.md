@@ -2,19 +2,22 @@
 
 ## go.data.make-transformations-visible
 
-Readers should see where values come from, how they change, and who owns
-mutation. Prefer meaningful intermediate values when they reveal distinct
-stages. Remove a temporary only when doing so preserves that clarity.
+**Ownership.** Follow a value from its origin through transformations, storage,
+and use. Identify where a reader must remember a previous meaning or inspect
+another declaration to tell which value is current and who can mutate it.
 
-Useful: distinguish an incoming amount from a normalized amount instead of
-reusing `value` across unrelated meanings.
-Insufficient: inline each intermediate into a dense expression or introduce an
-immutable-object framework for a simple local update.
+Separate meaningful stages when reusing one variable hides a change of meaning.
+Keep intermediate values that explain an operation; remove ones that merely
+relay it. Narrow a value's scope or keep a mutation near its use when this reduces
+the state a reader must track. Read helper bodies and callers before claiming a
+pipeline becomes clearer.
 
-Consider Go's shared slice/map storage and pointer receivers when explaining a
-proposed simplification. Preserve observable nil/empty distinctions and order.
-Do not scan for races, missing synchronization, or runtime defects. A mutation
-that is explicit and local is not a style problem merely because it is mutation.
+Visible local mutation is not inherently worse than a copy. Account for shared
+slice/map storage, pointer receivers, shallow copies, nil/empty distinctions,
+and order when assessing a proposed shape. These constrain the advice; do not
+scan for races, missing synchronization, or runtime defects.
 
-A helper may clarify a transformation or hide a simple pipeline; read its body
-and callers before deciding. Name only affected files you have inspected.
+Show the specific origin, transition, or mutation whose ownership becomes easier
+to follow. Do not replace a simple update with an immutable-object framework,
+inline a clear sequence into one expression, or introduce extra copies merely
+to make the code look functional.

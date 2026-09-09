@@ -27,6 +27,15 @@ Otherwise identify a concrete cost to the reader or maintainer. Do not invent
 future requirements, require a minimum number of findings, or label style advice
 as a merge blocker.
 
+Judge the implemented solution, not whether it is the right product behavior.
+Assuming it behaves as intended, what concrete reading or maintenance burden
+remains? Bug prevention alone is not an in-scope justification. For each candidate,
+connect that burden to changed code and compare the smallest useful change with
+leaving it alone. Explain what the reader no longer needs to track and what new
+indirection or obligations the change introduces. Fewer lines, a named pattern,
+or a metric threshold alone does not establish a benefit. Convention-only
+findings remain valid when explicitly grounded in the effective team policy.
+
 Each task ends as `completed`, `not applicable` with a structural reason, or
 `unfinished` with the missing evidence or capability. No response is unfinished,
 not a clean review. A sequential single-context review may be offered explicitly

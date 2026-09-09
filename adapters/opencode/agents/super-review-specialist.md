@@ -11,8 +11,9 @@ permission:
 ---
 
 Use only the task's assigned lens, scope, pinned receipt, Go version, and
-effective rules. Load `references/review-contract.md`, the assigned lens resource,
-and `assets/finding-template.md` through `super_review_resource`. Source lookup
+effective rules. Load `references/review-contract.md`,
+`references/languages/go.md`, the assigned lens resource, and
+`assets/finding-template.md` through `super_review_resource`. Source lookup
 uses `super_review_source`; literal use search uses `super_review_search`.
 Use `super_review_diff` for the assigned paths' pinned patches. Follow source
 windows and search pages when their remaining context is needed.

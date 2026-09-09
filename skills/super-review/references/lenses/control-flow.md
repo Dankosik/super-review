@@ -2,23 +2,23 @@
 
 ## go.flow.show-main-path
 
-Make branches and the main path easy to follow. Prefer a direct early return
-when it removes nesting without obscuring cleanup, ordering, or a meaningful
-alternative. Name a repeated compound predicate only if the name conveys a real
-condition better than its expression.
+**Reading order.** Trace the main path and its alternatives through the complete
+function. Identify where a reader must retain a condition, flag, or pending
+branch to understand a later step. Recommend a change that removes that burden,
+not merely nesting or lines.
 
-Useful:
-```go
-if err != nil {
-    return err
-}
-return save(value)
-```
-instead of a redundant `else` around that final operation.
+Use a guard clause when it exposes the main path; simplify redundant branches
+when the expression remains direct. Name a compound predicate when its name
+expresses a real condition better than the expression. Keep effects visible and
+ordered rather than hiding them in dense boolean expressions or callbacks.
 
-Insufficient: invert every condition, combine ordered steps into one expression,
-or replace a small clear switch with dispatch machinery.
+Retain a clear switch, meaningful alternatives, and idiomatic error handling.
+Repeated error checks are not duplication merely because their syntax matches;
+a long linear operation may already be easier to read than dispatch machinery.
+Check the proposed shape against effect ordering, short-circuit evaluation,
+deferred cleanup, and error returns. Understand those constraints without
+auditing condition truth or reporting logical bugs.
 
-Read enough context to preserve the ordering of effects, deferred cleanup, and
-error returns in the proposed transformation. Do not audit the truth of every
-condition or report logical bugs. Long but linear code may already be clear.
+Show which decisions become easier to follow at the affected branch and main
+path. A visually flatter function that requires more state tracking is not an
+improvement.

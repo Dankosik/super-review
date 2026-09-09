@@ -5,7 +5,9 @@ the information below and every accepted recommendation.
 
 ## Outcome
 
-Summarize the useful changes. When none were accepted, say no useful changes
+Lead with the changes offering the clearest supported maintenance benefit,
+considering their scope and adoption cost, not bug severity or finding count.
+When none were accepted, say no useful changes
 were found under the completed plan; do not claim the code is perfect.
 
 ## Context and status
@@ -38,8 +40,11 @@ Do not imply an excluded area was reviewed.
 
 Location at H: file, symbol, verified lines/link. Scope: local or cross-file.
 Basis: applicable rule(s), including team consistency when that is the reason.
-Describe the observed cost, proposed transformation, and practical benefit.
-Address the strongest counterargument and list properties to preserve.
+Connect the observation to D..H and distinguish supporting unchanged context.
+Describe the concrete reading or maintenance task, proposed transformation, and
+net benefit, including new indirection or obligations. Address the strongest
+reason to keep the current design and list properties to preserve. Make the
+bounded change understandable to a coding agent without designing a new feature.
 Include affected files and originating candidate IDs. Small examples are useful;
 a full patch is unnecessary. Repeat for **every** accepted recommendation.
 
