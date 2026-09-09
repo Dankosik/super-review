@@ -86,7 +86,7 @@ work, not a redundant generic self-check round.
 ## Routing experiment: not a new default
 
 The production workflow still reads each included declaration before delegation.
-A [separate evaluator-only variant](https://github.com/Dankosik/super-review/blob/improve/context-engineering-followup/evals/go/experiments/routing-first.json)
+A [separate evaluator-only variant](https://github.com/Dankosik/super-review/blob/d8e76eb19f42b6ea4bc1928dfcccc5672f8d1cf7/evals/go/experiments/routing-first.json)
 replaces exactly that paragraph with routing-sufficient preparation. It keeps full
 specialist inspection and candidate verification, requires expanding uncertain
 applicability reads, and cannot infer non-applicability from absent source.
@@ -123,6 +123,6 @@ Consulted on 2026-09-10:
 The earlier source limitation is superseded only for the official Anthropic article,
 not for direct access to X. No model-backed A/B run was performed for this follow-up.
 Expected gains remain hypotheses. [The existing protocol](https://github.com/Dankosik/super-review/blob/e2d9e65c021c02fefd0f04e90c84f0acff3667d8/evals/go/prompt-context-evaluation.md)
-and [follow-up comparisons](https://github.com/Dankosik/super-review/blob/improve/context-engineering-followup/evals/go/context-followup-evaluation.md) separate
+and [follow-up comparisons](https://github.com/Dankosik/super-review/blob/d8e76eb19f42b6ea4bc1928dfcccc5672f8d1cf7/evals/go/context-followup-evaluation.md) separate
 judgment, native traces and mechanical checks, and require realistic positive and
 clear-code PRs plus untouched holdouts before general quality claims.
