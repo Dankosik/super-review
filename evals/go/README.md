@@ -37,3 +37,12 @@ existing instruction-quality and workflow evaluations.
 changes and counterexamples. Supply only one raw task from `packets/go-idioms.md`;
 `go-idioms-cases.json` is evaluator-only. Fixture compilation and resource wiring
 are mechanical evidence, not a measured model quality result.
+
+## Prompt and context boundaries
+
+[Prompt/context evaluation](prompt-context-evaluation.md) covers observation/remedy
+separation, source acquisition, complete versus partial context, local conflicts,
+lossless result identity and supported continuation. Its 18 raw stage inputs and
+separate evaluator expectations are proposed, not executed model evaluations.
+Keep supplied sources separate from sources the model must read; require real traces
+for acquisition/delegation claims. See [design rationale](../../docs/prompt-context-design.md).

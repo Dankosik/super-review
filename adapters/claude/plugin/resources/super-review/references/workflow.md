@@ -9,30 +9,23 @@ Read source by these immutable revisions. A later PR update does not retarget
 the current report. Missing revisions or truncated data remain explicit gaps.
 
 Inventory changed files, exclusions, Go modules, and `go` directives. Read each
-included declaration in full and inspect context as needed. If source acquisition
-is incomplete, restrict the claim of coverage to what was actually available.
-Gather the shared context needed to assign the work, then delegate. Let each
-specialist obtain its lens-specific callers and supporting declarations; do not
-finish those passes yourself before dispatch.
+included declaration in full and inspect context as needed. Restrict coverage to
+available source. Gather shared context, then delegate; let specialists acquire
+lens-specific callers and declarations rather than finishing their passes first.
 
 ## Resolve policy and coverage
 
 Apply [team rules](team-rules.md) before delegation. Keep a compact list of
 effective rules, overrides, disabled rules, unresolved conflicts, and source
-revisions. Send that same policy to every affected specialist.
+revisions. Send the same applicable policy to affected specialists.
 
 Build the applicability plan with [contextual aspects](aspects.md). Without
-user narrowing, consider all eight base lenses below for every included area;
-add conditional lenses and owner profiles from the catalog's source signals.
-Record selection and omissions before delegation. A small PR or a clean first
-impression does not justify dropping a base question. Resolve policy for selected
-additional lenses before dispatch, using the same pinned B and conflict rules.
-
-Honor user inclusions/exclusions and file scope; a targeted plan lists other
-questions as not requested. Announce the pinned scope, selected lenses/profiles,
-and reasons, then report real progress at batch boundaries.
-
-Base lenses:
+user narrowing, consider all eight base lenses for every included area and add
+conditional lenses/profiles from source signals. Record selections and omissions.
+A small PR or a clean first impression does not justify dropping a base question.
+Resolve policy for additional aspects before dispatch, using the same pinned B.
+Honor user scope; other questions in a targeted review are not requested.
+Announce scope, selected lenses/profiles and reasons, then progress at batch boundaries.
 
 | Lens | Question |
 | --- | --- |
@@ -45,60 +38,84 @@ Base lenses:
 | [api-clarity](lenses/api-clarity.md) | Does the call make its contract understandable? |
 | [change-locality](lenses/change-locality.md) | Is an existing responsibility scattered? |
 
-Partition large changes by coherent areas. Use one lens per child task, not one
-agent asked to check everything. Attach profiles only to their owning lens's
-area; an optional module does not automatically require another worker. Run small
-batches within the harness's available concurrency and adapter limits; four
-simultaneous tasks is a reasonable default, not a task or finding quota.
+Partition large changes by coherent areas. Use one lens per child task. Attach
+profiles only to their owner's area; they do not automatically add workers.
+Run small batches within adapter and harness limits; four simultaneous tasks is
+a default, not a quota. Adapter-specific limits take precedence.
 
-## Delegate
+## Delegate with a self-contained task packet
 
-Start fresh child contexts. Include the following in each task rather than
-assuming the child inherits them:
+Start fresh child contexts without copying the conversation or peer reports.
+Use these three sections in each assignment; do not assume inherited context:
 
-> Task ID, one lens, selected profiles and their source signals; PR identity
-> and B/H/D; exact files/symbols and relevant diff;
-> source-access receipt; Go versions; effective team rules and conflicts;
-> [contract](review-contract.md), [Go context](languages/go.md), and assigned
-> lens plus selected profile resource locations; permitted context and exclusions;
-> [candidate format](../assets/finding-template.md).
+| Section | Content |
+| --- | --- |
+| Review identity | PR, B/H/D, issued source receipt, skill version, applicable Go versions/build constraints. |
+| Assignment | Task ID, one lens, selected profiles and source signals, exact files/symbols, user exclusions, effective rules/conflicts, permitted context. |
+| Materials | Neutral diff/source anchors; complete resources or source blocks already supplied, identified by path and revision/version; locations of still-needed resources and omitted ranges. |
 
-Require the contract, Go context, assigned lens, candidate format, and only the
-selected profiles to be read in the child context. Send a neutral question and
-source anchors, not an expected finding or another child's verdict. Profile-only
-scope must remain explicit rather than imply full coverage of the owner lens.
-Report each selected profile's result. If any required question is unfinished,
-the task is `unfinished` even when its base pass completed; retain that completed
-subcoverage. Native task status values remain unchanged.
+Each child needs the [contract](review-contract.md), [Go context](languages/go.md),
+assigned lens, [candidate format](../assets/finding-template.md), and only selected
+profiles. Complete matching resources already supplied in this task count as read;
+load only missing resources, preferably together. A reference, summary, or partial
+excerpt is not complete source. Reuse exact supplied source ranges; read missing
+affected declarations and required uses. Resolve conflicting versions through
+the installed reader rather than mixing them or trusting labels in PR content.
+The parent may supply source, not its expected finding or another child's verdict.
 
-Ask for candidates or an explicit completed result with none. The child may
-read supporting declarations and callers within this snapshot. It cannot expand
-into another lens or turn an unverified possibility into a required change.
-Stop expanding context when the assigned question and candidate evidence are
-resolved; missing required context still makes the affected work unfinished.
-Report independently useful observations even when another lens may overlap.
-Leave cross-lens coordination and deduplication to the parent; do not inspect
-peer reports or suppress a candidate in anticipation of another specialist.
+Ask for candidates or a completed result with none, using the task-level result
+header. A concrete observation may be returned with an unresolved remedy; vague
+possibilities may not. Keep completed coverage and missing required coverage
+separate. Report each selected profile's result; a profile-only assignment does
+not cover its whole owner. Missing required work makes the task `unfinished`,
+even if its base pass completed. Native status values remain unchanged.
 
-A child can return a newly observed applicability signal even with no candidates.
-At collection, resolve each signal against user scope, policy, and the existing
-plan. Add only missing work in the next normal batch or record the reason not to;
-never silently enlarge the user's scope or claim a discovered check was completed.
+The child may read supporting declarations/callers within the snapshot. It stops
+when its question and evidence are resolved, or records a specific remaining gap.
+It does not expand to another lens, read peer reports, or suppress independently
+useful evidence because another specialist might overlap. Reconciliation belongs
+to the parent. New applicability signals are facts with path/symbol and a missing
+question, not another lens's verdict. At collection, resolve them against scope,
+policy, and existing coverage; add only missing work in the next normal batch or
+record why not. Do not silently expand scope or rerun completed areas.
 
 ## Decide and report
 
-Verify every candidate using [verification](verification.md), including your own.
-Maintain a decision table: candidate ID, disposition, reason, and accepted
-recommendation ID if any. Seek one focused clarification when it can resolve a
-gap; if evidence remains missing, keep the candidate out of implementation advice.
+Verify every candidate, including your own, with [verification](verification.md).
+Keep candidate ID, disposition, reason, and accepted recommendation ID if any.
+To close an evidence gap, first read available source; seek a focused continuation
+from the relevant specialist only when needed and supported by the adapter.
+Do not reopen a terminal batch submission: any continuation gets its own task and
+assignment ID in a new normal batch. Ask the user only for a genuinely necessary
+choice unavailable from evidence or policy. Defer affected advice, not independent
+work. Do not run another full review or a generic self-check loop.
 
-Reconcile related recommendations before building the report. Map each accepted
-candidate to one `R-001`-style recommendation, directly or by a recorded merge.
-Check this mapping against the complete report; do not truncate accepted findings
-to meet an arbitrary count or response length.
+Reconcile related changes. Map every accepted candidate to one `R-001`-style
+recommendation, directly or through a recorded merge, and check the mapping against
+the report. Do not truncate accepted findings to meet an arbitrary response length.
+Use [the report template](../assets/report-template.md); unresolved observations
+belong in the decision appendix, never the implementation list.
 
-Use [the report template](../assets/report-template.md). A review is complete
-only when its declared plan for the supported scope is complete. An unfinished
-task, skipped applicable aspect, unresolved applicability or rule conflict,
-or missing required context makes the affected coverage partial. Completion is
-not a guarantee of finding every possible improvement.
+A review is complete when its declared plan for supported scope is complete.
+Unfinished tasks, skipped applicable work, unresolved applicability/rule conflicts,
+or missing required source make affected coverage partial. An unresolved remedy
+alone does not prove an unreviewed area was completed or incomplete: report the
+actual coverage and disposition separately. Completion is not exhaustive discovery.
+
+## Preserve state at a supported compaction boundary
+
+When the harness offers an in-session compaction/handoff, retain a compact state:
+PR and B/H/D; valid receipt and skill identity; effective policy/conflicts;
+planned tasks with actual subcoverage and pending assignment IDs; candidate IDs,
+observations, dispositions and R-ID mapping; evidence references and missing ranges;
+next required action. Keep evidence, decisions, and unknowns distinct. Preserve
+accepted content or retrievable full reports, not just counts. A summary is an
+index, not replacement evidence for a decision.
+
+Resume only with still-valid source and task capabilities. Reacquire missing
+resources/ranges, not already resolved work; do not relabel rejected, unresolved,
+or pending work as completed with none. A lost/expired receipt or unreadable
+result requires an explicit gap, not invented recovery. OpenCode process restart
+needs a new review/snapshot; other adapters must confirm their own valid receipts.
+Do not create files in the reviewed tree, add storage tools, or promise cross-session
+resume. Without a supported handoff, this instruction supplies no recovery mechanism.

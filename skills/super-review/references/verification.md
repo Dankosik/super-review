@@ -1,54 +1,52 @@
 # Verify recommendations
 
-A routing signal establishes applicability, not a finding. Apply the same evidence
-and acceptance bar to base lenses, conditional lenses, and profiles. Check the
-owning effective rule; a profile cannot revive disabled or conflicting advice.
+The orchestrator owns final acceptance; specialists supply evidence-backed
+observations. Apply the [contract's judgment bar](review-contract.md#judgment-and-acceptance)
+to every candidate, including your own, across base lenses, conditional lenses,
+and profiles. A routing signal or agreement between agents is not evidence.
+A profile cannot revive a disabled or conflicting owner rule.
 
-Read the changed declaration, its comparison at D when needed, and the cited
-uses. Verify the candidate's link to this PR, not just that the named code exists.
-Check the effective rule and the concrete reading or maintenance task that is
-made harder. Apply the contract's scope test; a disguised bug report or an
-imagined future requirement is not maintainability evidence. Explicit team
-consistency remains a valid, separately stated basis.
+Use the task header to resolve snapshot, scope, and policy before judging a block.
+Read its changed declaration, comparison at D when needed, and cited uses. Reuse
+complete matching source already in your context; fetch missing evidence instead
+of rereading everything. Verify the link to this PR, the effective rule, and the
+concrete burden, not merely that the code exists. A disguised bug report or an
+imagined future requirement is outside scope; explicit team consistency is a
+valid, separately stated basis.
 
-Compare the proposed transformation with leaving the code alone. What knowledge,
-state tracking, or coordinated editing disappears? What call jumps, parameters,
-concepts, or dependencies are introduced? Judge the caller and implementation
-together. Prefer the smallest change with a net benefit, not the shortest diff.
-Address the strongest reason to retain the design. Agreement between agents,
-self-reported confidence, and references to patterns are not source evidence.
+Separate two decisions: is the observation supported, and is the remedy ready
+for implementation? A sound observation with an unsupported remedy survives as
+`unresolved`, with its specific gap, unless a narrower supported remedy resolves
+it. An unsupported observation is rejected or left unresolved pending identified
+source, never accepted because it sounds plausible. Self-reported confidence,
+pattern names, and peer agreement do not replace evidence.
 
-Understand what the transformation could disturb: effects and their order,
-public API, ownership and mutation, error identity, absence, resource lifetime,
-and language compatibility. Do not recommend a transformation already shown to
-violate these constraints. When equivalence is uncertain, narrow the advice or
-leave it unresolved; source inspection does not establish tested equivalence.
-A sound observation with an unsupported remedy needs a narrower remedy or an
-unresolved disposition, not an instruction to implement the speculative change.
+For a proposed change, compare what readers no longer track with the calls,
+parameters, concepts, dependencies, and migration work introduced. Consider caller
+and implementation together and the strongest reason to retain the design.
+Prefer the smallest net improvement, not the shortest diff.
 
-For a Go-specific replacement, require the exact supported operation or signature
-and a concrete account of the contract it preserves. In particular, do not treat
-nil/empty normalization, broader error matching, promoted methods, or moved defers
-as equivalent because the happy-path example is unchanged. Inspect only the
-relevant constraints, including indirect/interface uses when affected. Unknown
-compatibility is a limit, not a request to run tests or import newer APIs.
-
-Choose one disposition for each candidate:
+Inspect only the preservation constraints implicated by that transformation,
+using [Go context](languages/go.md): exact supported operation/signature, effects,
+API and method sets, ownership/mutation, error identity, absence, and defer/lifetime.
+Do not infer equivalence from a happy-path example or empty literal search.
+Narrow incompatible/uncertain advice or keep it unresolved; no tests, builds,
+newer APIs, or claims of tested equivalence are authorized by verification.
 
 | Disposition | Record |
 | --- | --- |
-| accepted | Source evidence, net benefit or explicit convention, and recommendation ID. |
-| rejected | Concrete counterevidence, out-of-scope basis, or insufficient benefit. |
-| merged | Destination recommendation and retained candidate ID. |
-| unresolved | The context needed; not an implementation instruction. |
+| accepted | Supported observation and remedy, net benefit or explicit convention, preservation constraints, R-ID. |
+| rejected | Concrete counterevidence, outside scope, or insufficient benefit. |
+| merged | Destination R-ID and retained candidate ID, locations and independent rationale. |
+| unresolved | Supported observation or exact unverified claim, missing evidence/choice, no implementation instruction. |
 
-Check recommendations as a set. Extraction and inlining, abstraction and
-locality, or renaming and API stability can conflict. Choose a supported coherent
-change, or label real alternatives with their tradeoffs. Merge by the underlying
-change and affected scope, not merely the same rule or similar wording. Retain
-every participating location and independently useful rationale. Do not give a
-coding agent contradictory mandatory edits.
+Check recommendations as a set. Extraction and inlining, abstraction and locality,
+or renaming and API stability can conflict. Choose a coherent supported change or
+label real alternatives with tradeoffs. Merge by underlying change and affected
+scope, not merely the rule or similar wording. Preserve all participating locations
+and useful rationale; do not give a coding agent contradictory mandatory edits.
 
-Preserve every accepted candidate in the final recommendation mapping. Keep
-rejected and unresolved candidates in a compact decision appendix, separate
-from the change list. A useful outcome may contain no recommendations.
+Map every accepted candidate to the final report, including merges. Keep rejected
+and unresolved candidates in a compact decision appendix; coverage status remains
+separate from candidate disposition. Follow the workflow's focused-gap handling,
+not a second full review. A useful outcome may contain no recommendations.

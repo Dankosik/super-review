@@ -5,38 +5,36 @@ the information below and every accepted recommendation.
 
 ## Outcome
 
-Lead with the changes offering the clearest supported maintenance benefit,
-considering their scope and adoption cost, not bug severity or finding count.
-When none were accepted, say no useful changes
-were found under the completed plan; do not claim the code is perfect.
+Lead with changes offering the clearest supported maintenance benefit, considering
+scope and adoption cost, not bug severity or finding count. With none accepted,
+say no implementation recommendations were accepted under the completed coverage;
+do not claim perfection or absence of observations when unresolved ones remain.
 
 ## Context and status
 
 PR URL; B, H, D; Super Review version; `complete` or `partial`; independent or
-explicitly limited sequential execution; selected specialist model/profile and
-reasoning effort when available. Explain any missing identity or scope.
+explicitly limited sequential execution; specialist model/profile and reasoning
+effort when available. Explain missing identity/scope. Candidate disposition and
+source coverage are separate: an unresolved remedy is not a missing worker.
 
 ## Applied rules
 
-Go versions, team policy sources and revisions, overrides, disabled rules, and
-unresolved conflicts.
+Go versions, team policy sources/revisions, overrides, disabled rules, and conflicts.
 
 ## Coverage
 
-Record planned lens/profile selection and omissions with source signals or
-structural reasons; compactly group matching scopes/reasons. Keep `not requested`
-and `not checked` distinct from completed work or genuine non-applicability.
-Show later additions and their origin without claiming repeated full passes.
+Record planned lens/profile selection and omissions with signals or structural
+reasons; group matching scopes/reasons. Keep `not requested` and `not checked`
+distinct from completed work or genuine non-applicability. Show later additions
+and focused continuations without implying repeated full passes.
 
 | Area/files | Lens, profiles, task | Selection and actual execution | Reason or evidence |
 | --- | --- | --- | --- |
 
-A profile-only task covers that question, not the whole owning lens. A failed
-selected profile makes that area partial even when the base pass finished.
-Do not confuse content profiles with the separately reported model profile.
-
-List excluded tests, generated/vendor/binary files, and unsupported languages.
-Do not imply an excluded area was reviewed.
+A profile-only task covers that question, not its whole owner. A failed selected
+profile makes that area partial even when the base pass finished. Content profiles
+are not model profiles. List excluded tests, generated/vendor/binary files and
+unsupported languages; never imply they were reviewed.
 
 ## File map
 
@@ -48,28 +46,29 @@ Do not imply an excluded area was reviewed.
 ### R-001 — <concrete change>
 
 Location at H: file, symbol, verified lines/link. Scope: local or cross-file.
-Basis: applicable rule(s) and contributing profiles, including team consistency
-when that is the reason.
-Connect the observation to D..H and distinguish supporting unchanged context.
-Describe the concrete reading or maintenance task, proposed transformation, and
-net benefit, including new indirection or obligations. Address the strongest
-reason to keep the current design and list properties to preserve. Make the
-bounded change understandable to a coding agent without designing a new feature.
-Include affected files and originating candidate IDs. Small examples are useful;
-a full patch is unnecessary. Repeat for **every** accepted recommendation.
+Basis: effective rules and contributing profiles, including convention-only advice.
+Connect the observation to D..H; distinguish supporting unchanged context. Explain
+the reading/maintenance task, supported transformation, net benefit, strongest keep
+alternative, and relevant preservation constraints. Include affected files and
+originating candidate IDs. Make the bounded change usable by a coding agent;
+small examples may help, but a full patch or new feature design is unnecessary.
+Repeat for **every** accepted recommendation, including merged contributions.
 
 ## Implementation order
 
-State only real dependencies, independent changes, or explicitly labeled
-alternatives. Do not manufacture an implementation project for a simple change.
+State only real dependencies, independent accepted changes, or labeled alternatives.
+Unresolved observations are not implementation steps. Do not manufacture a project
+for a simple change.
 
 ## Limits and decisions
 
 Explain unfinished coverage and missing context. State that behavior, bugs,
-security, product requirements, and test coverage were not independently
-validated and that no project checks or source edits were performed.
+security, product requirements and test coverage were not independently validated,
+and no project checks or source edits were performed.
 
-| Candidate | Accepted / rejected / merged / unresolved | Reason | R-ID if accepted/merged |
+| Candidate | Accepted / rejected / merged / unresolved | Reason or demonstrated observation and remaining gap | R-ID if accepted/merged |
 | --- | --- | --- | --- |
 
-This decision appendix is traceability, not a second list of coding tasks.
+Retain useful unresolved observations with their source anchors and the evidence
+or user choice needed to settle the remedy; do not silently drop them or label
+them required changes. This appendix is traceability, not a second task list.

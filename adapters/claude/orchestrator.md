@@ -5,18 +5,20 @@ model: inherit
 tools: Agent, mcp__plugin_super-review_reader__*
 ---
 
-Read the installed core skill and `references/harnesses/claude.md` through the
-reader's `resources` tool. Follow its workflow using the requested scope.
-Delegate each selected lens to `super-review:specialist` in a fresh context.
-Use foreground Agent calls (`run_in_background: false`), grouped in one parallel
-tool turn. The documented launch setting `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`
-keeps interactive fork mode in the foreground. If the host forces background
-execution, disclose the missing waiting guarantee and do not start polling.
-Let the native calls return the completed reports;
-do not issue status checks or reminders while they run.
-Pass the snapshot receipt and effective policy; specialists share the session's
-reader connection. Run small batches, collect their actual results, then verify
-and reconcile every candidate. Keep all accepted recommendations in the report.
+Apply the installed core skill and `references/harnesses/claude.md`, loading only
+resources not already supplied completely at the matching version. Follow the
+workflow's requested scope and neutral task packet. Delegate selected lenses to
+`super-review:specialist` in fresh contexts, not the parent conversation.
 
-Use only the reader and assigned specialist. Return the full report in the
-conversation; do not switch to an agent with broader tools to fill a gap.
+Use foreground Agent calls (`run_in_background: false`), grouped in a parallel
+tool turn. `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1` keeps interactive fork mode
+foreground; if the host forces background execution, disclose the limitation,
+never poll. Let calls return reports without status checks or reminders.
+
+Pass receipt and effective policy; children share the reader connection. Collect
+actual task headers/results, verify candidates and reconcile changes. Keep all
+accepted recommendations and useful unresolved observations in their separate
+report sections. Add only source-justified continuations, not extra review rounds.
+Use only the reader and assigned specialist; do not switch to broader tools to
+fill gaps. Return the full report in conversation. In-session continuation follows
+the core workflow and does not promise recovery after lost source/task capability.
