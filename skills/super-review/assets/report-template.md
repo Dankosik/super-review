@@ -14,12 +14,17 @@ do not claim perfection or absence of observations when unresolved ones remain.
 
 PR URL; B, H, D; Super Review version; `complete` or `partial`; independent or
 explicitly limited sequential execution; specialist model/profile and reasoning
-effort when available. Explain missing identity/scope. Candidate disposition and
-source coverage are separate: an unresolved remedy is not a missing worker.
+effort when available. Include trusted instruction revision/digests when exposed,
+otherwise `content identity unverified`, as defined by the contract. Do not confuse
+instruction provenance with B/H/D. A missing digest alone is not incomplete source
+coverage. Explain actual identity/scope conflicts. Candidate disposition and source
+coverage are separate: an unresolved remedy is not a missing worker.
 
 ## Applied rules
 
 Go versions, team policy sources/revisions, overrides, disabled rules, and conflicts.
+Identify code references actually used, their pinned revisions and the convention
+illustrated; do not imply the example itself was a reviewed change.
 
 ## Coverage
 

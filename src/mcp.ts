@@ -88,7 +88,7 @@ export async function createServer(skillRoot: string, reader = new GitHubReader(
   }, async ({ snapshot, literal, prefix, offset }) => result(await reader.search(snapshot, literal, prefix, offset)));
 
   server.registerTool("resources", {
-    description: "Read one or several installed Super Review resources. Batch the shared context; specialists load only their assigned lens.",
+    description: "Read missing installed Super Review resources in one batch. Reuse complete matching resources already supplied to this context. Specialists need shared role resources, their assigned lens, and selected profiles, not the full lens/profile catalog.",
     inputSchema: { paths: z.array(z.enum(paths as [string, ...string[]])).min(1).max(12) },
     annotations: { ...readOnly, openWorldHint: false },
   }, async ({ paths: requested }) => {

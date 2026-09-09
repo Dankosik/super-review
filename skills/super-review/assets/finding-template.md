@@ -6,7 +6,9 @@ when forwarding a candidate, or include its identity when the block travels alon
 
 ## Task result: <task ID>
 
-- Snapshot: PR, B/H/D, issued receipt reference; skill version.
+- Snapshot: PR, B/H/D, issued receipt reference.
+- Instructions: version and trusted package revision/resource digest when exposed,
+  or `content identity unverified`, under the contract's instruction-identity rules.
 - Assignment: lens, selected profiles, exact scope and effective policy references.
 - Status: `completed`, `not applicable`, or `unfinished`; adapter enums keep their
   native spelling. For non-applicability give a structural reason.
@@ -26,8 +28,9 @@ coverage remains `unfinished`, never an empty clean result.
 - Basis: effective rule IDs and contributing profiles; identify convention-only advice.
 - Observation: source evidence and concrete reading/maintenance cost. State what is
   established; an unsupported suspicion does not qualify.
-- Remedy: smallest supported change, or `unresolved` with the exact missing evidence.
-  Separate a demonstrated burden from uncertainty about fixing it. For a proposal,
+- Remedy: smallest supported change, or `unresolved` with the exact missing evidence
+  or decision. Distinguish unavailable facts from a remaining tradeoff between
+  supported alternatives; do not invent a source gap or a remedy. For a proposal,
   explain net benefit, new indirection/obligations, and the strongest keep alternative.
 - Preserve: relevant contracts/effects and constraints implicated by the proposal;
   identify what is known versus still unverified. Do not invent a remedy to fill fields.
