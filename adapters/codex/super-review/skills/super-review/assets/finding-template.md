@@ -6,7 +6,7 @@ means `unfinished`, not a clean result. Otherwise use one block per candidate:
 
 ## C-<task>-<number>: <concrete improvement>
 
-- Lens and task:
+- Lens, selected profiles, and task:
 - Snapshot: PR, H, comparison D.
 - Change anchor: path, symbol, verified lines at H; how D..H introduces, worsens,
   or makes the burden relevant. Distinguish supporting unchanged context.
@@ -25,3 +25,8 @@ Prefer a verified path and symbol to guessed line numbers. A small before/after
 example can clarify the change; a full patch is unnecessary. Suggestions do not
 prove equivalence. Explain source evidence, not a checklist score or a narrative
 of the review process.
+
+Outside candidate blocks, report selected profile coverage and any newly observed
+applicability signal (aspect, path/symbol, fact, missing question). Signals are
+not recommendations or evidence that another check was completed. Include these
+even when returning no candidates; the parent alone changes the plan.

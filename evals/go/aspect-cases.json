@@ -1,0 +1,341 @@
+{
+  "status": "proposed; not executed",
+  "cases": [
+    {
+      "id": "J01",
+      "stage": "judgment",
+      "aspect": "representation",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J01"
+      },
+      "expect": [
+        "Identify the implicit positional name/total relationship through construction and use.",
+        "A small paired representation may be justified by reduced reader knowledge, not a prediction of mismatched array lengths.",
+        "Preserve ordering and output; do not invent sorting or add new product requirements."
+      ]
+    },
+    {
+      "id": "J02",
+      "stage": "judgment",
+      "aspect": "representation",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J02"
+      },
+      "expect": [
+        "Recognize the concrete consumer/layout constraint rather than require structs for parallel arrays.",
+        "Leave the representation or offer only an independently justified compatible clarification.",
+        "Do not claim measured performance or look for input validation defects."
+      ]
+    },
+    {
+      "id": "J03",
+      "stage": "judgment",
+      "aspect": "rationale",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J03"
+      },
+      "expect": [
+        "A focused explanation of the reserved final slot/overflow contract can be grounded in the supplied context.",
+        "Do not replace the algorithm, audit malformed frames, or require general documentation.",
+        "No changed comment is needed to consider rationale."
+      ]
+    },
+    {
+      "id": "J04",
+      "stage": "judgment",
+      "aspect": "rationale",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J04"
+      },
+      "expect": [
+        "Retain the useful rationale and do not demand narration for double.",
+        "Do not recommend a tidier algorithm that contradicts the supplied constraint.",
+        "Do not invent device history or treat the comment as proof of tested correctness."
+      ]
+    },
+    {
+      "id": "J05",
+      "stage": "judgment",
+      "aspect": "lifecycle-ownership",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J05"
+      },
+      "expect": [
+        "Compare the tuple of lifecycle closures with making acquire/use/release ownership visible at the sole caller.",
+        "Inlining into run or another minimal clarification may be useful; no mandatory owner framework.",
+        "Preserve deferred release ordering and do not report a missing close or invent additional callers."
+      ]
+    },
+    {
+      "id": "J06",
+      "stage": "judgment",
+      "aspect": "lifecycle-ownership",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J06"
+      },
+      "expect": [
+        "Complete the applicable profile without requiring lifecycle objects, wrappers, or extra callbacks.",
+        "Do not call the profile inapplicable merely because ownership is clear.",
+        "Claim only profile-scoped coverage."
+      ]
+    },
+    {
+      "id": "J07",
+      "stage": "judgment",
+      "aspect": "dependency-boundaries",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J07"
+      },
+      "expect": [
+        "A direct prefix dependency can remove knowledge of ambient initialization from the consumer.",
+        "Compare ordinary constructor state against additional wiring; no DI container or interface/class symmetry.",
+        "Preserve the supplied immutable-at-construction semantics; do not hunt for races."
+      ]
+    },
+    {
+      "id": "J08",
+      "stage": "judgment",
+      "aspect": "dependency-boundaries",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J08"
+      },
+      "expect": [
+        "Retain the explicit dependency and composition-root configuration.",
+        "Do not introduce an interface, injector, or new package merely for layering.",
+        "An applicable profile can have no candidates."
+      ]
+    },
+    {
+      "id": "J09",
+      "stage": "judgment",
+      "aspect": "effects-separation",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J09"
+      },
+      "expect": [
+        "A named calculation with explicit rows/discount may clarify the transaction orchestration.",
+        "Preserve read/calculate/save timing inside within; compare extra navigation and arguments.",
+        "Do not correct the business formula, add tests, or require functional architecture."
+      ]
+    },
+    {
+      "id": "J10",
+      "stage": "judgment",
+      "aspect": "effects-separation",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J10"
+      },
+      "expect": [
+        "Leave the clear read/write sequence; do not extract each external action.",
+        "No meaningful obscured computation means automatic profile selection is unnecessary; explicit profile work can return a reasoned no-candidate result.",
+        "Do not add mocks or a testability finding."
+      ]
+    },
+    {
+      "id": "J11",
+      "stage": "judgment",
+      "aspect": "error-expression",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J11"
+      },
+      "expect": [
+        "Ordinary explicit checks can remove the custom failure protocol and unnecessary indirection.",
+        "Preserve exact errors and first/second execution order.",
+        "Do not add retries or find unchecked errors; reconcile any abstraction overlap in the parent."
+      ]
+    },
+    {
+      "id": "J12",
+      "stage": "judgment",
+      "aspect": "error-expression",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J12"
+      },
+      "expect": [
+        "Keep ordinary contextual error checks; no generic helper merely to reduce repetition.",
+        "Keyword error or check count alone is not an automatic trigger.",
+        "Preserve wrapping/messages rather than removing useful adaptation."
+      ]
+    },
+    {
+      "id": "R01",
+      "stage": "routing",
+      "aspect": "catalog",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R01"
+      },
+      "expect": [
+        "Consider all eight base questions for each area, with structural reasons for genuine non-applicability.",
+        "Select representation and rationale where supported and attach all four profiles to their stated owners in the relevant areas.",
+        "Use one lens per task, not fourteen mandatory workers; assignments contain source anchors, not expected findings."
+      ]
+    },
+    {
+      "id": "R02",
+      "stage": "routing",
+      "aspect": "scope",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R02"
+      },
+      "expect": [
+        "Assign data-flow with lifecycle-ownership restricted to that question and path.",
+        "Do not claim full data-flow or whole-PR review.",
+        "Mark other questions/areas not requested, not structurally inapplicable."
+      ]
+    },
+    {
+      "id": "R03",
+      "stage": "routing",
+      "aspect": "scope",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R03"
+      },
+      "expect": [
+        "Keep the base plan and explicitly selected representation.",
+        "Honor the rationale exclusion despite its source trigger; do not run a disguised rationale task.",
+        "Record not requested, not completed or not applicable, for that excluded lens."
+      ]
+    },
+    {
+      "id": "R04",
+      "stage": "routing",
+      "aspect": "scope",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R04"
+      },
+      "expect": [
+        "Consider error-expression as a profile of the selected control-flow lens in J11.",
+        "Do not add representation merely because J01 has a structural signal.",
+        "User lens scope limits automatic extensions."
+      ]
+    },
+    {
+      "id": "R05",
+      "stage": "routing",
+      "aspect": "missing-source",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R05"
+      },
+      "expect": [
+        "Do not conclude representation or lifecycle is absent from unavailable source.",
+        "Record unresolved applicability/not checked and partial affected coverage.",
+        "Continue unaffected work without claiming an independent review of the truncated area."
+      ]
+    },
+    {
+      "id": "R06",
+      "stage": "routing",
+      "aspect": "late-signal",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R06"
+      },
+      "expect": [
+        "Check the signal and add only a focused data-flow/lifecycle continuation with the same snapshot/policy.",
+        "Deduplicate the repeated signal and preserve prior completion; do not rerun all base tasks or recurse through agent discovery.",
+        "Until the new selected work finishes, do not label lifecycle completed."
+      ]
+    },
+    {
+      "id": "R07",
+      "stage": "routing",
+      "aspect": "policy",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R07"
+      },
+      "expect": [
+        "Apply B policy and disclose the H proposal without letting it control the review.",
+        "Do not revive the disabled data-flow rule through lifecycle-ownership or relabel the same advice as another lens.",
+        "Disabled guidelines are recorded policy exclusions, not missing required work; other independent rules remain active."
+      ]
+    },
+    {
+      "id": "R08",
+      "stage": "report",
+      "aspect": "coverage",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R08"
+      },
+      "expect": [
+        "Mark selected lifecycle work unfinished and affected coverage partial.",
+        "Keep completed representation with no candidates distinct from excluded rationale and missing lifecycle.",
+        "Preserve completed base data-flow without claiming full selected task success."
+      ]
+    },
+    {
+      "id": "R09",
+      "stage": "routing",
+      "aspect": "keyword-counterexample",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R09"
+      },
+      "expect": [
+        "Do not activate all profiles from string literals or names.",
+        "Retain appropriate base questions with structural reasons for non-applicability.",
+        "Do not infer an unobserved resource lifetime, failure protocol, or state representation."
+      ]
+    },
+    {
+      "id": "J13",
+      "stage": "judgment",
+      "aspect": "rationale",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "J13"
+      },
+      "expect": [
+        "Identify uncertainty about the constant only as missing rationale, not a ready comment about a made-up protocol.",
+        "Do not invent intent, security claims, historical causes, or a replacement algorithm.",
+        "Withhold unsupported implementation advice."
+      ]
+    },
+    {
+      "id": "R10",
+      "stage": "verification",
+      "aspect": "scope-guard",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R10"
+      },
+      "expect": [
+        "Reject/withhold the correctness-only remedy; a profile label does not make it maintainability evidence.",
+        "Do not invent a local close that may conflict with transfer ownership.",
+        "Record unavailable context honestly without widening into leak detection."
+      ]
+    },
+    {
+      "id": "R11",
+      "stage": "routing",
+      "aspect": "policy-conflict",
+      "input": {
+        "packet": "packets/aspects.md",
+        "section": "R11"
+      },
+      "expect": [
+        "Disclose competing replacements; do not invent path-specificity precedence.",
+        "Defer advice dependent on the conflict and mark affected coverage partial.",
+        "Profile guidance cannot restore the default or choose its preferred team rule; unaffected work continues."
+      ]
+    }
+  ]
+}

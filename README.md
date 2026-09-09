@@ -54,16 +54,29 @@ skill ZIP contains portable instructions; it does not install a harness adapter.
 
 ## Choose what to review
 
-The default is all applicable lenses for the changed Go source. Narrow the scope
-in ordinary language when you have a specific concern:
+The default considers eight base lenses for every changed Go area, then selects
+contextual aspects from inspected source. Two conditional lenses cover
+**representation** (data/state shapes) and **rationale** (supported explanations
+of non-obvious choices). Four profiles deepen an existing lens: lifecycle
+ownership, dependency boundaries, effects separation, and error expression.
+
+Profiles are on-demand guidance, not four extra mandatory agents or model
+profiles. See the compact [aspect catalog](skills/super-review/references/aspects.md).
+A resource or a struct makes a question relevant, not the code defective.
+Narrow or extend the scope in ordinary language:
 
 ```text
 Review only internal/payments/ and the supporting context it needs.
 Focus on naming and control flow. Write the report in Russian.
+Also check representation, but exclude rationale.
+Review only lifecycle ownership in internal/worker/.
 ```
 
 A targeted review lists other aspects as not requested. It does not quietly call
-them checked. No special flag grammar or model configuration is needed.
+them checked. A profile-only request covers that narrower question, not all of
+its owning lens. Missing context or an applicable check that could not run makes
+coverage partial, never silently clean. No special flags or model configuration
+are needed. Additional aspects remain within the same read-only Go review scope.
 
 Invoke Super Review without a PR URL to get launch guidance and a reader check.
 Missing GitHub access or unavailable delegation is reported directly. Installation
@@ -96,8 +109,9 @@ coverage, effective team rules, and unresolved gaps. Give accepted items to your
 coding agent for implementation and testing. Super Review neither edits source
 nor posts GitHub comments.
 
-Eight lenses cover naming, control flow, function cohesion, data flow,
-abstractions, duplication, API clarity, and change locality. Specialists have
+The eight base lenses cover naming, control flow, function cohesion, data flow,
+abstractions, duplication, API clarity, and change locality. Conditional lenses
+add distinct questions; selected profiles deepen their owners. Specialists have
 separate contexts and distinct questions. The main agent checks their candidates;
 agreement or confidence alone is not evidence.
 

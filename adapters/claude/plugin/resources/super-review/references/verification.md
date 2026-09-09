@@ -1,5 +1,9 @@
 # Verify recommendations
 
+A routing signal establishes applicability, not a finding. Apply the same evidence
+and acceptance bar to base lenses, conditional lenses, and profiles. Check the
+owning effective rule; a profile cannot revive disabled or conflicting advice.
+
 Read the changed declaration, its comparison at D when needed, and the cited
 uses. Verify the candidate's link to this PR, not just that the named code exists.
 Check the effective rule and the concrete reading or maintenance task that is

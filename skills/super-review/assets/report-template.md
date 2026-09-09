@@ -23,8 +23,17 @@ unresolved conflicts.
 
 ## Coverage
 
-| Area/files | Lens/task | Completed / not applicable / unfinished | Reason or evidence |
+Record planned lens/profile selection and omissions with source signals or
+structural reasons; compactly group matching scopes/reasons. Keep `not requested`
+and `not checked` distinct from completed work or genuine non-applicability.
+Show later additions and their origin without claiming repeated full passes.
+
+| Area/files | Lens, profiles, task | Selection and actual execution | Reason or evidence |
 | --- | --- | --- | --- |
+
+A profile-only task covers that question, not the whole owning lens. A failed
+selected profile makes that area partial even when the base pass finished.
+Do not confuse content profiles with the separately reported model profile.
 
 List excluded tests, generated/vendor/binary files, and unsupported languages.
 Do not imply an excluded area was reviewed.
@@ -39,7 +48,8 @@ Do not imply an excluded area was reviewed.
 ### R-001 — <concrete change>
 
 Location at H: file, symbol, verified lines/link. Scope: local or cross-file.
-Basis: applicable rule(s), including team consistency when that is the reason.
+Basis: applicable rule(s) and contributing profiles, including team consistency
+when that is the reason.
 Connect the observation to D..H and distinguish supporting unchanged context.
 Describe the concrete reading or maintenance task, proposed transformation, and
 net benefit, including new indirection or obligations. Address the strongest

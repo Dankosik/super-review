@@ -8,8 +8,9 @@ tools. Neither review role has shell or file-edit tools.
 Use `super-review:specialist` through Agent for each selected lens. The reader's
 MCP namespace is `mcp__plugin_super-review_reader__`; use the installed tools,
 not an inline duplicate server. The session shares its reader connection.
-Load common resources in one `resources` call and only the assigned lens for a
-specialist. Return the full report to the invoking conversation.
+Load common resources in one `resources` call. Each specialist reads the assigned
+lens and only selected owner profiles alongside the contract, Go context, and
+candidate format. Return the full report to the invoking conversation.
 
 Invoke specialists in the foreground (`run_in_background: false`) and submit a
 small group of independent Agent calls together when native parallel calls are
