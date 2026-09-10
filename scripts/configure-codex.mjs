@@ -33,7 +33,7 @@ function call(method, params) {
 }
 const timeout = setTimeout(() => { stop(new Error("Codex configuration timed out.")); child.kill(); }, 20_000);
 try {
-  await call("initialize", { clientInfo: { name: "super-review-setup", version: "2.1.0" } });
+  await call("initialize", { clientInfo: { name: "super-review-setup", version: "2.2.0" } });
   const current = await call("config/read", { includeLayers: true });
   const effective = current.config.features?.code_mode;
   const configured = typeof effective === "object" ? effective?.direct_only_tool_namespaces ?? [] : [];

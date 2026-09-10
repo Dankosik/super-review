@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased — TypeScript review
+## 2.2.0 — 2026-09-10
+
+### TypeScript
 
 - Add language routing, TypeScript context, ten TS lens resources and four owner profiles with eleven stable `ts.*` rules; preserve all Go IDs.
 - Support TS/TSX/MTS/CTS and handwritten declarations in pinned source reads and caller search, with compatibility metadata and existing read-only boundaries.
@@ -10,7 +12,7 @@
 The skill, rules, templates, and adapters share one SemVer version. Changes to
 review decisions are product behavior, even when they only edit Markdown.
 
-## Unreleased
+### Rust and review instructions
 
 - Add Rust-specific review lenses/profiles and 11 stable `rust.*` rules without changing Go or TypeScript IDs.
 - Integrate Rust source/Cargo context into shared Go/TypeScript routing and classification; preserve test/generated-code scope limits.
@@ -39,7 +41,7 @@ review decisions are product behavior, even when they only edit Markdown.
 - Add `go.representation.express-concepts` and `go.rationale.explain-constraints`; all nine existing IDs and overrides remain valid. Profiles use their owner's rules, not a new namespace.
 - Add contrastive judgment and routing evaluation packets plus mechanical resource/packaging checks. Model-backed evaluation remains unexecuted; no quality or cost improvement is measured.
 - Extend the OpenCode resource allowlist to the seven new Markdown resources; source access and tool permissions stay unchanged.
-- No release tag, model selection, dependency, or source-reader behavior change.
+- Preserve model selection, dependencies, and read-only permissions.
 
 ## 2.1.0
 
@@ -78,4 +80,4 @@ review decisions are product behavior, even when they only edit Markdown.
 - Versioned complete-adapter and standalone-skill archives.
 
 Default rule IDs are listed in `evals/go/rule-ids.json`. No rule-ID migration is
-required for 2.1.0.
+required for 2.2.0.
