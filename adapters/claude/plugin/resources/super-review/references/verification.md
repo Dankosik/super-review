@@ -30,8 +30,10 @@ Prefer the smallest net improvement, not the shortest diff.
 Inspect only the preservation constraints implicated by that transformation,
 using the matching context from [language routing](languages.md): exact supported
 operation/signature, effects, API/type contracts, ownership/mutation, error identity,
-absence, and resource lifetime. Keep Go and TypeScript preservation rules scoped
+absence, and resource lifetime. Keep Go, TypeScript, and Rust preservation rules scoped
 to their own language; account for TypeScript inference and emitted module behavior.
+For Rust, inspect implicated trait/auto-trait contracts, ownership, eager/lazy
+evaluation and guard/drop lifetimes under the selected language context.
 Do not infer equivalence from a happy-path example or empty literal search.
 Narrow incompatible/uncertain advice or keep it unresolved; no tests, builds,
 newer APIs, or claims of tested equivalence are authorized by verification.

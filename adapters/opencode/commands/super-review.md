@@ -1,5 +1,5 @@
 ---
-description: Review a Go or TypeScript pull request for readability and maintainability.
+description: Review a Go, TypeScript, or Rust pull request for readability and maintainability.
 agent: super-review
 subtask: false
 ---

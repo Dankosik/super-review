@@ -1,5 +1,5 @@
 ---
-description: Review a Go or TypeScript pull request for readability and maintainability using Super Review.
+description: Review a Go, TypeScript, or Rust pull request for readability and maintainability using Super Review.
 mode: primary
 permission:
   "*": deny

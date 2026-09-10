@@ -45,8 +45,10 @@ describe("TypeScript source boundaries", () => {
       expect(exclusion(path)).toBeUndefined();
     }
     expect(sourceLanguage("a.go")).toBe("Go");
+    expect(sourceLanguage("a.rs")).toBe("Rust");
+    expect(exclusion("a.rs")).toBeUndefined();
     expect(exclusion("a.go")).toBeUndefined();
-    for (const path of ["a.js", "a.jsx", "a.ts.map", "a.ts.bak", "a.rs", "package.json"]) expect(exclusion(path)).toBeDefined();
+    for (const path of ["a.js", "a.jsx", "a.ts.map", "a.ts.bak", "package.json"]) expect(exclusion(path)).toBeDefined();
     expect(exclusion("a.ts", "removed")).toContain("deleted");
   });
 

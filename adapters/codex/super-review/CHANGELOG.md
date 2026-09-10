@@ -12,6 +12,10 @@ review decisions are product behavior, even when they only edit Markdown.
 
 ## Unreleased
 
+- Add Rust-specific review lenses/profiles and 11 stable `rust.*` rules without changing Go or TypeScript IDs.
+- Integrate Rust source/Cargo context into shared Go/TypeScript routing and classification; preserve test/generated-code scope limits.
+- Add Rust evaluation packets and mixed-language regression tests; live model quality remains unevaluated.
+
 - Clarify the MCP resource description: reuse complete supplied materials and load missing shared role resources, the assigned lens, and selected profiles rather than the full catalog.
 - Audit model-visible tool metadata alongside role instructions; add selective resource-delivery checks for canonical, Claude, and Codex skill roots. Record blocked model comparisons separately from mechanical validation.
 - Distinguish trusted instruction revision/digest from SemVer and reviewed source identity; do not treat a missing digest alone as a source-coverage gap or a reason for redundant reads.

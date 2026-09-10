@@ -1,0 +1,13 @@
+[
+  "rust.naming.intent",
+  "rust.flow.show-main-path",
+  "rust.functions.extract-for-clarity",
+  "rust.functions.coherent-purpose",
+  "rust.data.make-transformations-visible",
+  "rust.abstractions.earn-the-boundary",
+  "rust.duplication.share-knowledge",
+  "rust.api.express-the-call",
+  "rust.change.localize-existing-variation",
+  "rust.representation.express-concepts",
+  "rust.rationale.explain-constraints"
+]

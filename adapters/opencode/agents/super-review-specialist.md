@@ -1,5 +1,5 @@
 ---
-description: One assigned Super Review lens on a pinned Go or TypeScript source snapshot.
+description: One assigned Super Review lens on a pinned Go, TypeScript, or Rust source snapshot.
 mode: subagent
 hidden: true
 permission:

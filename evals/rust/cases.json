@@ -1,0 +1,17 @@
+{
+  "description": "Contrasting evaluator expectations, not runtime reviewer instructions or measured model results.",
+  "cases": [
+    {"id":"R01","expect":["Identify the unnecessary ownership contract and caller clone as a clarity burden.","A borrowed view is supported by the complete private consumer evidence; do not claim a measured speedup."]},
+    {"id":"R02","expect":["Retain ownership needed by the independently running task.","Do not recommend borrowing or clone removal as a universal rule."]},
+    {"id":"R03","expect":["Consider direct question-mark propagation as a clearer main path.","Preserve exact error type and trim behavior."]},
+    {"id":"R04","expect":["Retain meaningful recovery and record-before-refresh ordering.","Do not replace the match with propagation that skips recovery."]},
+    {"id":"R05","expect":["Do not move the guard into a helper that releases it before the writes.","Keep a coherent operation together rather than manufacture extraction from size alone."]},
+    {"id":"R06","expect":["Recognize snapshot/evaluation and borrowing roles of collect.","Do not replace it blindly with lazy processing."]},
+    {"id":"R07","expect":["Retain the supported heterogeneous dyn boundary.","Do not prescribe generics based on abstract dispatch preferences."]},
+    {"id":"R08","expect":["Do not silently replace a published wire shape with a differently serialized enum.","Keep advice compatible or defer the representation change."]},
+    {"id":"R09","expect":["Use the changed crate's explicit MSRV, not sibling/workspace metadata or the local toolchain.","Do not recommend let-else on this baseline."]},
+    {"id":"R10","expect":["Respect no_std without alloc.","Do not introduce std collections or an allocating abstraction for its own sake."]},
+    {"id":"R11","expect":["Keep all eight base questions for both included language areas.","Route Rust tasks to Rust resources only, retain production declarations and exclude inline tests."]},
+    {"id":"R12","expect":["Exclude the custom test target from reviewed production coverage.","Do not execute the build script; disclose unavailable generated context only where needed."]}
+  ]
+}

@@ -43,7 +43,7 @@ Announce scope, selected lenses/profiles and reasons, then progress at batch bou
 
 Resolve the table's lens names to their language-specific resources using
 [language routing](languages.md); the links above are Go implementations, not
-mandatory resources for TypeScript. Partition mixed-language or large changes by
+mandatory resources for TypeScript or Rust. Partition mixed-language or large changes by
 language and coherent areas. Use one lens per child task. Attach
 profiles only to their owner's area; they do not automatically add workers.
 Run small batches within adapter and harness limits; four simultaneous tasks is

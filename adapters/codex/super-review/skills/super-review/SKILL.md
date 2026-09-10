@@ -1,6 +1,6 @@
 ---
 name: super-review
-description: "Review the readability, idiomatic expression, and maintainability of a Go or TypeScript pull request through independent specialist passes. Use when the user explicitly asks for Super Review or this focused review workflow."
+description: "Review the readability, idiomatic expression, and maintainability of a Go, TypeScript, or Rust pull request through independent specialist passes. Use when the user explicitly asks for Super Review or this focused review workflow."
 metadata:
   version: "2.1.0"
 ---

@@ -1,13 +1,13 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { randomUUID } from "node:crypto";
-import { sourceLanguage, isInternalPath, isTestSource, isReadableContext, isGeneratedSource } from "./source-files.ts";
+import { sourceLanguage, isInternalPath, isTestSource, isReadableSource, isGeneratedSource, isBuildOutput, rustScopeNote, type SourceLanguage } from "./source-files.ts";
 
 const exec = promisify(execFile);
 type GetJSON = (endpoint: string) => Promise<any>;
 type Revision = "base" | "head" | "diff-base";
 type TreeEntry = { path: string; mode: string; type: string; sha: string; size?: number };
-type ChangedFile = { path: string; previousPath?: string; status: string; exclusion?: string; patch?: string; patchAvailable: boolean };
+type ChangedFile = { path: string; language?: SourceLanguage; previousPath?: string; status: string; exclusion?: string; patch?: string; patchAvailable: boolean };
 export type Snapshot = {
   id: string; url: string; repository: string; headRepository: string;
   B: string; H: string; D: string;
@@ -79,6 +79,7 @@ export function exclusion(path: string, status?: string): string | undefined {
   if (status === "removed") return "deleted file: no head source";
   if (isInternalPath(path)) return "vendored or repository internals";
   if (isTestSource(path)) return "test file";
+  if (isBuildOutput(path)) return "Rust build-output path";
   if (!sourceLanguage(path)) return "unsupported language or non-source file";
   return undefined;
 }
@@ -200,6 +201,7 @@ export class GitHubReader {
       previousPath: f.previous_filename ? safePath(f.previous_filename) : undefined,
       status: f.status,
       exclusion: exclusion(f.filename, f.status),
+      language: sourceLanguage(f.filename),
       patch: f.patch,
       patchAvailable: typeof f.patch === "string",
     }));
@@ -238,9 +240,8 @@ export class GitHubReader {
   async source(id: string, revision: Revision, path: string, startLine = 1, lineCount = 400) {
     const snapshot = this.snapshot(id);
     safePath(path);
-    const allowed = Boolean(sourceLanguage(path)) || isReadableContext(path);
-    if (!allowed || isTestSource(path) || isInternalPath(path)) {
-      return { path, excluded: true, reason: "Only non-test Go/TypeScript, supported compatibility files, and Markdown policy context are readable." };
+    if (!isReadableSource(path)) {
+      return { path, excluded: true, reason: "Only eligible Go/TypeScript/Rust source, supported compatibility files, and Markdown policy context are readable." };
     }
     const { repo, ref } = this.revision(snapshot, revision);
     const entry = await this.locate(repo, ref, path);
@@ -251,6 +252,7 @@ export class GitHubReader {
     }
     return {
       path, revision, commit: ref, blob: entry.sha, exists: true,
+      language: sourceLanguage(path), scopeNote: sourceLanguage(path) === "Rust" ? rustScopeNote : undefined,
       ...lineWindow(content, startLine, lineCount),
       sourceURL: "https://github.com/" + repo + "/blob/" + ref + "/" + path.split("/").map(encodeURIComponent).join("/"),
     };
@@ -288,6 +290,7 @@ export class GitHubReader {
     unread.sort((a, b) => a.path.localeCompare(b.path));
     return {
       commit: snapshot.H, literal: needle, prefix,
+      scopeNote: page.some(entry => sourceLanguage(entry.path) === "Rust") ? rustScopeNote : undefined,
       scanned: page.map(e => e.path), matches, unread,
       nextOffset: offset + page.length < files.length ? offset + page.length : null,
       remainingFiles: Math.max(0, files.length - offset - page.length),
