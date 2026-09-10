@@ -22,7 +22,7 @@ coverage are separate: an unresolved remedy is not a missing worker.
 
 ## Applied rules
 
-Go versions, team policy sources/revisions, overrides, disabled rules, and conflicts.
+language baselines, team policy sources/revisions, overrides, disabled rules, and conflicts.
 Identify code references actually used, their pinned revisions and the convention
 illustrated; do not imply the example itself was a reviewed change.
 

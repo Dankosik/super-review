@@ -1,5 +1,11 @@
 # Team rules
 
+Java rules use `Language: Java`, the same logical lens names, and `java.*` IDs
+from the [language-specific lenses](languages/index.md). Go IDs and meanings stay
+unchanged. A Java disable/refinement applies only to its declared Java scope; a
+Go rule is not an alternative way to emit disabled Java advice. Selected profiles
+inherit the effective owner rule in their own language.
+
 Load root `SUPER_REVIEW.md` from **B**, the pinned target commit. Follow only its
 explicit repository-relative links to Markdown policy documents, resolved relative
 to the referring file at B. Reject traversal outside the repository, remote
@@ -33,8 +39,9 @@ inheritance are not supported in v1. Use explicit links and paths in monorepos.
 
 Each rule needs a unique ID, language, paths, lens, action, statement, and reason.
 The stable default rule IDs are headings in the lens resources. The conditional
-lenses use `Lens: representation` / `go.representation.express-concepts` and
-`Lens: rationale` / `go.rationale.explain-constraints`. No existing ID changes.
+lenses use `Lens: representation` / `<language>.representation.express-concepts`
+and `Lens: rationale` / `<language>.rationale.explain-constraints`, with `go` or
+`java` matching the source and rule scope. No existing ID changes.
 
 A contextual profile is not a new rule namespace. Use its declared owner as
 `Lens` and apply that owner's effective rules, including the profile's named
@@ -65,7 +72,7 @@ and cannot be disabled through this file.
 
 ## Optional code references
 
-A rule may label a repository-relative link to Go source as `Code reference`, name
+A rule may label a repository-relative link to Go or Java source as `Code reference`, name
 the symbol, and explain the specific convention it illustrates. Resolve it against
 the referring policy file at the same pinned policy revision (normally B). Read it
 only for an applicable selected rule when the illustration is needed; send that

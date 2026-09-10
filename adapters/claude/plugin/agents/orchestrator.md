@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: Coordinate an explicitly requested Super Review of a Go PR.
+description: Coordinate an explicitly requested Super Review of a Go or Java PR.
 model: inherit
 tools: Agent, mcp__plugin_super-review_reader__*
 ---

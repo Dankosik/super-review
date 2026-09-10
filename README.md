@@ -1,6 +1,6 @@
 # Super Review
 
-A focused review of **readability, idiomatic Go, and maintainability** in a GitHub
+A focused review of **readability, idiomatic Go and Java, and maintainability** in a GitHub
 pull request. Give it a PR URL; independent specialists inspect the selected
 aspects, and the main agent verifies their recommendations before returning a report.
 Clear code can produce no recommendations. Source is never refactored by the skill.
@@ -54,7 +54,7 @@ skill ZIP contains portable instructions; it does not install a harness adapter.
 
 ## Choose what to review
 
-The default considers eight base lenses for every changed Go area, then selects
+The default considers eight base lenses for every changed Go or Java area, then selects
 contextual aspects from inspected source. Two conditional lenses cover
 **representation** (data/state shapes) and **rationale** (supported explanations
 of non-obvious choices). Four profiles deepen an existing lens: lifecycle
@@ -76,7 +76,7 @@ A targeted review lists other aspects as not requested. It does not quietly call
 them checked. A profile-only request covers that narrower question, not all of
 its owning lens. Missing context or an applicable check that could not run makes
 coverage partial, never silently clean. No special flags or model configuration
-are needed. Additional aspects remain within the same read-only Go review scope.
+are needed. Additional aspects remain within the same read-only Go and Java review scope.
 
 Invoke Super Review without a PR URL to get launch guidance and a reader check.
 Missing GitHub access or unavailable delegation is reported directly. Installation
@@ -140,7 +140,7 @@ and [examples](examples/team-rules/SUPER_REVIEW.md).
 
 [Native integration details](docs/native-integrations.md) describe tested versions,
 permissions, and update/removal commands. [Validation](docs/validation.md) separates
-mechanical checks from model execution. Other languages and GitHub Enterprise
+mechanical checks from model execution. Languages other than Go and Java, and GitHub Enterprise,
 are not supported. Missing source, API caps, or unfinished specialists make the
 affected coverage partial.
 
@@ -151,3 +151,17 @@ plan is not a guarantee of finding every possible improvement.
 [UX references](docs/ux-reference-study.md) · [Design](docs/design.md) ·
 [Contributing](CONTRIBUTING.md) · [Privacy](PRIVACY.md) · [Changelog](CHANGELOG.md) ·
 [MIT License](LICENSE)
+
+## Java support
+
+Java uses the same eight base lenses, two conditional lenses and four owner
+profiles as Go, with separate `java.*` rules and language-specific task packets.
+Maven/Gradle module and source-set baselines constrain advice; records, streams,
+Optional, builders and interfaces are not mandatory upgrades. Mixed Go/Java PRs
+keep each language's rules and coverage distinct.
+
+The reader accepts production `.java` and supporting build metadata, excluding
+known test/generated roots without executing project code. Custom source sets
+and unavailable framework/build contracts remain explicit context gaps. See
+[Java design and sources](docs/java-review.md) and the
+[Java team-rule example](examples/team-rules/java.md).

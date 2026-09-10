@@ -1,7 +1,7 @@
 {
   "name": "super-review",
   "version": "2.1.0",
-  "description": "Independent readability and maintainability review for Go pull requests.",
+  "description": "Independent readability and maintainability review for Go or Java pull requests.",
   "author": {
     "name": "Dankosik",
     "url": "https://github.com/Dankosik"
@@ -11,6 +11,7 @@
   "license": "MIT",
   "keywords": [
     "go",
+    "java",
     "code-review",
     "agent-skills",
     "claude-code",

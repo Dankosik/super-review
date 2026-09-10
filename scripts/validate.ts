@@ -27,13 +27,16 @@ for (const file of runtimeFiles.filter(p => p.endsWith(".md"))) {
     const path = resolve(dirname(file), decodeURIComponent(target));
     if (relative(skill, path).startsWith("..") || !runtimeFiles.includes(path)) errors.push("Missing or unpackaged link: " + relative(root, file) + " -> " + target);
   }
-  if (file.includes("/lenses/")) for (const match of text.matchAll(/^## (go\.[a-z0-9.-]+)$/gm)) {
+  if (file.includes("/lenses/")) for (const match of text.matchAll(/^## ((?:go|java)\.[a-z0-9.-]+)$/gm)) {
     if (ids.has(match[1])) errors.push("Duplicate rule ID: " + match[1]);
     ids.add(match[1]);
   }
 }
-if (ids.size === 0) errors.push("No stable Go rule IDs.");
-const expectedIDs: string[] = JSON.parse(await readFile(join(root, "evals/go/rule-ids.json"), "utf8"));
+if (ids.size === 0) errors.push("No stable language rule IDs.");
+const expectedIDs: string[] = [];
+for (const language of ["go", "java"]) {
+  expectedIDs.push(...JSON.parse(await readFile(join(root, "evals/" + language + "/rule-ids.json"), "utf8")));
+}
 if (JSON.stringify([...ids].sort()) !== JSON.stringify(expectedIDs.sort())) errors.push("Rule IDs changed: update migration documentation and rule-ids.json intentionally.");
 for (const role of ["super-review", "super-review-specialist"]) {
   const config = frontmatter(await readFile(join(root, "adapters/opencode/agents/" + role + ".md"), "utf8"));

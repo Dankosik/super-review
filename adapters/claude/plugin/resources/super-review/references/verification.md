@@ -28,8 +28,8 @@ and implementation together and the strongest reason to retain the design.
 Prefer the smallest net improvement, not the shortest diff.
 
 Inspect only the preservation constraints implicated by that transformation,
-using [Go context](languages/go.md): exact supported operation/signature, effects,
-API and method sets, ownership/mutation, error identity, absence, and defer/lifetime.
+using [the applicable language context](languages/index.md): exact supported operation/signature, effects,
+API and method contracts, ownership/mutation, error identity, absence, and cleanup/lifetime.
 Do not infer equivalence from a happy-path example or empty literal search.
 Narrow incompatible/uncertain advice or keep it unresolved; no tests, builds,
 newer APIs, or claims of tested equivalence are authorized by verification.

@@ -73,8 +73,8 @@ describe("Java acquisition and resource wiring (not model judgment)", () => {
     const snapshot = await reader.pin("https://github.com/o/r/pull/1");
     expect(snapshot.files.find(f => f.path === "Example.java")?.exclusion).toBeUndefined();
     expect(snapshot.files.find(f => f.path === "src/test/java/Hidden.java")?.exclusion).toBeDefined();
-    expect((await reader.source(snapshot.id, "head", "Example.java")).content).toContain("needle");
-    expect((await reader.source(snapshot.id, "head", "pom.xml")).content).toContain("17");
+    expect(await reader.source(snapshot.id, "head", "Example.java")).toMatchObject({ content: expect.stringContaining("needle") });
+    expect(await reader.source(snapshot.id, "head", "pom.xml")).toMatchObject({ content: expect.stringContaining("17") });
     expect((await reader.source(snapshot.id, "head", "Generated.java")).excluded).toBe(true);
     const count = calls.length;
     expect((await reader.source(snapshot.id, "head", "src/test/java/Hidden.java")).excluded).toBe(true);

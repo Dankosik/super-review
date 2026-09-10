@@ -1,6 +1,6 @@
 ---
 name: super-review
-description: "Review the readability, idiomatic expression, and maintainability of a Go pull request through independent specialist passes. Use when the user explicitly asks for Super Review or this focused review workflow."
+description: "Review the readability, idiomatic expression, and maintainability of a Go or Java pull request through independent specialist passes. Use when the user explicitly asks for Super Review or this focused review workflow."
 metadata:
   version: "2.1.0"
 ---
@@ -23,7 +23,7 @@ For help or a missing PR URL, explain the launch and check the available reader;
 do not start specialist work. Accept file and lens scope in ordinary language.
 
 **Orchestrate.** Apply [the contract](references/review-contract.md),
-[workflow](references/workflow.md), [Go context](references/languages/go.md),
+[workflow](references/workflow.md), [language routing](references/languages/index.md),
 and [team rules](references/team-rules.md). Use the compact
 [aspect catalog](references/aspects.md) to select contextual lenses and profiles
 without dropping the eight base questions. Pin source revisions before delegating.
