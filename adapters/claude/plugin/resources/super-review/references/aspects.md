@@ -1,5 +1,8 @@
 # Contextual aspects
 
+Resolve resource paths through [language routing](languages.md) for each area;
+the catalog links below are the original Go implementations.
+
 A lens owns a question; a profile deepens one existing lens. Neither is an
 extra agent by definition. Consider this small catalog after the eight base
 lenses. Load a module's full text only when its subject is present in the

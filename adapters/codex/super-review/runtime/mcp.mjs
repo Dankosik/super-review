@@ -20061,6 +20061,51 @@ import { promisify as promisify2 } from "node:util";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { randomUUID } from "node:crypto";
+
+// adapters/opencode/lib/source-files.ts
+var typeScriptExtension = /\.(?:ts|tsx|mts|cts)$/;
+var typeScriptTest = /\.(?:test|spec)\.(?:ts|tsx|mts|cts)$/;
+var testDirectories = new Set(["test", "tests", "__tests__", "__mocks__", "__snapshots__"]);
+var contextNames = new Set([
+  "go.mod",
+  "package.json",
+  "package-lock.json",
+  "npm-shrinkwrap.json",
+  "pnpm-lock.yaml",
+  "yarn.lock",
+  "bun.lock"
+]);
+function sourceLanguage(path) {
+  if (path.endsWith(".go"))
+    return "Go";
+  if (typeScriptExtension.test(path))
+    return "TypeScript";
+  return;
+}
+function isInternalPath(path) {
+  return path.split("/").some((part) => ["vendor", "node_modules", ".git"].includes(part));
+}
+function isTestSource(path) {
+  if (path.endsWith("_test.go"))
+    return true;
+  if (sourceLanguage(path) !== "TypeScript")
+    return false;
+  return typeScriptTest.test(path) || path.split("/").slice(0, -1).some((part) => testDirectories.has(part));
+}
+function isReadableContext(path) {
+  const name = path.split("/").at(-1);
+  return path.endsWith(".md") || contextNames.has(name) || /^tsconfig(?:\.[A-Za-z0-9_-]+)*\.jsonc?$/.test(name) || /^[A-Za-z0-9_.-]+\.tsconfig\.jsonc?$/.test(name);
+}
+function isGeneratedSource(path, content) {
+  if (sourceLanguage(path) === "Go")
+    return /^\/\/ Code generated .* DO NOT EDIT\.$/m.test(content);
+  if (sourceLanguage(path) !== "TypeScript")
+    return false;
+  const header = /^(?:\uFEFF)?(?:#![^\n]*\n)?\s*((?:(?:\/\/[^\n]*(?:\n|$)|\/\*[\s\S]*?\*\/)\s*)*)/.exec(content)?.[1] ?? "";
+  return /(?:@generated\b|\bCode generated\b[^\n]*\bDO NOT EDIT\b|\bauto[- ]generated\b)/i.test(header);
+}
+
+// adapters/opencode/lib/github.ts
 var exec = promisify(execFile);
 var shaPattern = /^[a-f0-9]{40}$/;
 var repositoryPattern = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
@@ -20124,11 +20169,11 @@ function safePath(value, allowRoot = false) {
 function exclusion(path, status) {
   if (status === "removed")
     return "deleted file: no head source";
-  if (path.split("/").some((p) => ["vendor", "node_modules", ".git"].includes(p)))
+  if (isInternalPath(path))
     return "vendored or repository internals";
-  if (path.endsWith("_test.go"))
+  if (isTestSource(path))
     return "test file";
-  if (!path.endsWith(".go"))
+  if (!sourceLanguage(path))
     return "unsupported language or non-source file";
   return;
 }
@@ -20298,17 +20343,17 @@ class GitHubReader {
   async source(id, revision, path, startLine = 1, lineCount = 400) {
     const snapshot = this.snapshot(id);
     safePath(path);
-    const allowed = path.endsWith(".go") || path.endsWith(".md") || path.split("/").at(-1) === "go.mod";
-    if (!allowed || path.endsWith("_test.go") || path.split("/").some((p) => ["vendor", ".git", "node_modules"].includes(p))) {
-      return { path, excluded: true, reason: "Only non-test Go, go.mod, and Markdown policy context are readable." };
+    const allowed = Boolean(sourceLanguage(path)) || isReadableContext(path);
+    if (!allowed || isTestSource(path) || isInternalPath(path)) {
+      return { path, excluded: true, reason: "Only non-test Go/TypeScript, supported compatibility files, and Markdown policy context are readable." };
     }
     const { repo, ref } = this.revision(snapshot, revision);
     const entry = await this.locate(repo, ref, path);
     if (!entry)
       return { path, revision, commit: ref, exists: false };
     const content = await this.text(repo, entry);
-    if (path.endsWith(".go") && /^\/\/ Code generated .* DO NOT EDIT\.$/m.test(content)) {
-      return { path, revision, commit: ref, excluded: true, reason: "generated Go source" };
+    if (isGeneratedSource(path, content)) {
+      return { path, revision, commit: ref, excluded: true, reason: "generated source" };
     }
     return {
       path,
@@ -20335,7 +20380,7 @@ class GitHubReader {
     const inspect = async (entry) => {
       try {
         const content = await this.text(snapshot.headRepository, entry);
-        if (/^\/\/ Code generated .* DO NOT EDIT\.$/m.test(content)) {
+        if (isGeneratedSource(entry.path, content)) {
           unread.push({ path: entry.path, reason: "generated" });
           return;
         }
@@ -20726,7 +20771,7 @@ async function createServer(skillRoot, reader = new GitHubReader, batches, compl
     annotations: readOnly
   }, async ({ snapshot, path, startLine, lineCount }) => result(reader.diff(snapshot, path, startLine, lineCount)));
   server.registerTool("search", {
-    description: "Find one literal substring in non-test Go at H, 20 files per page. Follow nextOffset for required remaining context.",
+    description: "Find one literal substring in non-test Go and TypeScript at H, 20 files per page. Follow nextOffset for required remaining context.",
     inputSchema: {
       snapshot,
       literal: string2().min(1).max(200).describe("Exact substring, not regex."),

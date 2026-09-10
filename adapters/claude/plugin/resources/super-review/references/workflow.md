@@ -8,7 +8,8 @@ load team policy from B. These are distinct roles even when B and D coincide.
 Read source by these immutable revisions. A later PR update does not retarget
 the current report. Missing revisions or truncated data remain explicit gaps.
 
-Inventory changed files, exclusions, Go modules, and `go` directives. Read each
+Inventory changed files, exclusions, languages, and owning packages/modules.
+Apply [language routing](languages.md) and record each area's applicable baseline. Read each
 included declaration in full and inspect context as needed. Restrict coverage to
 available source. Gather shared context, then delegate; let specialists acquire
 lens-specific callers and declarations rather than finishing their passes first.
@@ -40,7 +41,10 @@ Announce scope, selected lenses/profiles and reasons, then progress at batch bou
 | [api-clarity](lenses/api-clarity.md) | Does the call make its contract understandable? |
 | [change-locality](lenses/change-locality.md) | Is an existing responsibility scattered? |
 
-Partition large changes by coherent areas. Use one lens per child task. Attach
+Resolve the table's lens names to their language-specific resources using
+[language routing](languages.md); the links above are Go implementations, not
+mandatory resources for TypeScript. Partition mixed-language or large changes by
+language and coherent areas. Use one lens per child task. Attach
 profiles only to their owner's area; they do not automatically add workers.
 Run small batches within adapter and harness limits; four simultaneous tasks is
 a default, not a quota. Adapter-specific limits take precedence.
@@ -52,12 +56,12 @@ Use these three sections in each assignment; do not assume inherited context:
 
 | Section | Content |
 | --- | --- |
-| Review identity | PR, B/H/D, issued source receipt, instruction identity from the contract, applicable Go versions/build constraints. |
+| Review identity | PR, B/H/D, issued source receipt, instruction identity from the contract, language, selected resource paths, applicable compiler/runtime and build constraints. |
 | Assignment | Task ID, one lens, selected profiles and source signals, exact files/symbols, user exclusions, effective rules/conflicts, permitted context. |
 | Materials | Neutral diff/source anchors; complete resources or source blocks already supplied, identified by path and source revision or trusted instruction identity; locations of still-needed resources and omitted ranges. |
 
-Each child needs the [contract](review-contract.md), [Go context](languages/go.md),
-assigned lens, [candidate format](../assets/finding-template.md), and only selected
+Each child needs the [contract](review-contract.md), the matching language context
+and assigned lens from [language routing](languages.md), [candidate format](../assets/finding-template.md), and only selected
 profiles. Complete matching resources already supplied in this task count as read;
 load only missing resources, preferably together. A reference, summary, or partial
 excerpt is not complete source. Reuse exact supplied source ranges; read missing

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — TypeScript review
+
+- Add language routing, TypeScript context, ten TS lens resources and four owner profiles with eleven stable `ts.*` rules; preserve all Go IDs.
+- Support TS/TSX/MTS/CTS and handwritten declarations in pinned source reads and caller search, with compatibility metadata and existing read-only boundaries.
+- Add contrasting evaluation inputs and mechanical source/resource tests; behavioral model evaluation remains separate and has not been run.
+- Regenerate native Claude/Codex payloads without changing models, permissions, or dependencies.
+
 The skill, rules, templates, and adapters share one SemVer version. Changes to
 review decisions are product behavior, even when they only edit Markdown.
 

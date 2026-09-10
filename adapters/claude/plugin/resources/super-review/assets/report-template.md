@@ -22,7 +22,8 @@ coverage are separate: an unresolved remedy is not a missing worker.
 
 ## Applied rules
 
-Go versions, team policy sources/revisions, overrides, disabled rules, and conflicts.
+Languages and applicable compiler/runtime baselines, team policy sources/revisions,
+overrides, disabled rules, and conflicts. Keep language-specific coverage explicit.
 Identify code references actually used, their pinned revisions and the convention
 illustrated; do not imply the example itself was a reviewed change.
 
