@@ -12,6 +12,10 @@ review decisions are product behavior, even when they only edit Markdown.
 
 ## Unreleased
 
+- Add Java review context, ten lens modules and four owner profiles with stable `java.*` IDs.
+- Extend the shared Go/TypeScript language router and source classifier for Java and read-only Maven/Gradle context.
+- Add 18 contrasting Java judgment fixtures, acquisition/resource tests, and regenerated native packages.
+
 - Clarify the MCP resource description: reuse complete supplied materials and load missing shared role resources, the assigned lens, and selected profiles rather than the full catalog.
 - Audit model-visible tool metadata alongside role instructions; add selective resource-delivery checks for canonical, Claude, and Codex skill roots. Record blocked model comparisons separately from mechanical validation.
 - Distinguish trusted instruction revision/digest from SemVer and reviewed source identity; do not treat a missing digest alone as a source-coverage gap or a reason for redundant reads.

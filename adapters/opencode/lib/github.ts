@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { randomUUID } from "node:crypto";
-import { sourceLanguage, isInternalPath, isTestSource, isReadableContext, isGeneratedSource } from "./source-files.ts";
+import { sourceLanguage, isInternalPath, isTestSource, isReadableContext, isGeneratedSource, isGeneratedPath } from "./source-files.ts";
 
 const exec = promisify(execFile);
 type GetJSON = (endpoint: string) => Promise<any>;
@@ -79,6 +79,7 @@ export function exclusion(path: string, status?: string): string | undefined {
   if (status === "removed") return "deleted file: no head source";
   if (isInternalPath(path)) return "vendored or repository internals";
   if (isTestSource(path)) return "test file";
+  if (isGeneratedPath(path)) return "generated source root";
   if (!sourceLanguage(path)) return "unsupported language or non-source file";
   return undefined;
 }
@@ -239,8 +240,8 @@ export class GitHubReader {
     const snapshot = this.snapshot(id);
     safePath(path);
     const allowed = Boolean(sourceLanguage(path)) || isReadableContext(path);
-    if (!allowed || isTestSource(path) || isInternalPath(path)) {
-      return { path, excluded: true, reason: "Only non-test Go/TypeScript, supported compatibility files, and Markdown policy context are readable." };
+    if (!allowed || isTestSource(path) || isInternalPath(path) || isGeneratedPath(path)) {
+      return { path, excluded: true, reason: "Only non-test Go/Java/TypeScript, supported compatibility files, and Markdown policy context are readable." };
     }
     const { repo, ref } = this.revision(snapshot, revision);
     const entry = await this.locate(repo, ref, path);

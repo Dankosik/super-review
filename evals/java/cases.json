@@ -1,0 +1,24 @@
+{
+  "purpose": "Human/model judgment rubric; never include this file in reviewer context.",
+  "packet": "packets/idioms.md",
+  "cases": [
+    {"id":"J01","lens":"representation","profiles":[],"expect":["Name the existing ShipmentKey alternative to positional Object[] decoding.","Keep the private scope and visible caller semantics; no general DTO framework."]},
+    {"id":"J02","lens":"representation","profiles":[],"expect":["Retain the entity/bean form; do not recommend a record merely to remove getters.","Respect persistence, identity and mutable state rather than assuming a value carrier."]},
+    {"id":"J03","lens":"data-flow","profiles":[],"expect":["A direct single transformation can remove the intermediate selection list.","Preserve a mutable ordered result; Stream.toList or List.copyOf is not a drop-in remedy."]},
+    {"id":"J04","lens":"control-flow","profiles":[],"expect":["Retain the clear loop or justify a strictly better local expression.","No mandatory stream conversion; preserve checked failure, order and early termination."]},
+    {"id":"J05","lens":"control-flow","profiles":[],"expect":["Do not change orElse to orElseGet as an equivalent simplification.","Account for the documented eager audit side effect."]},
+    {"id":"J06","lens":"data-flow","profiles":["lifecycle-ownership"],"expect":["No automatic finally-to-try-with-resources migration.","A proposed remedy must account for primary/suppressed exceptions, not only successful closure."]},
+    {"id":"J07","lens":"data-flow","profiles":["lifecycle-ownership"],"expect":["Do not close the borrowed reader or report a speculative resource leak.","The existing ownership explanation can already be sufficient."]},
+    {"id":"J08","lens":"api-clarity","profiles":[],"expect":["Use release 8 despite a newer CI JDK.","No getLast, records, var or newer API modernization; a supported local rename is independent."]},
+    {"id":"J09","lens":"representation","profiles":[],"expect":["A toolchain alone does not establish this source set's language/API baseline.","Limit version-dependent record advice and state the missing convention configuration without running Gradle."]},
+    {"id":"J10","lens":"abstractions","profiles":["dependency-boundaries"],"expect":["A direct dependency parameter can expose the hidden service-locator requirement.","No new DI framework, interface twin, or test scaffolding; retain the existing collaborator contract."]},
+    {"id":"J11","lens":"function-cohesion","profiles":["effects-separation"],"expect":["Either retain the linear transaction or isolate a meaningful value calculation.","Do not relocate the transactional boundary or assume private/self calls receive proxy advice."]},
+    {"id":"J12","lens":"control-flow","profiles":["error-expression"],"expect":["Multi-catch may remove identical translation while retaining exception type, message and cause.","Do not swallow, log additionally, retry, or convert the checked API for style."]},
+    {"id":"J13","lens":"function-cohesion","profiles":[],"expect":["Honor the Java extraction disable in its declared path.","Do not use a Go rule or owner profile to resurrect disabled Java advice; other independent effective rules remain available."]},
+    {"id":"J14","lens":"naming","profiles":[],"expect":["Recognize the binding/public property contract before proposing a getter rename.","Missing external consumers limit remedy safety, even when a literal search finds no calls."]},
+    {"id":"J15","lens":"rationale","profiles":[],"expect":["Retain the evidence-backed null-compatibility explanation.","Do not replace with List.copyOf or remove the comment as redundant syntax narration."]},
+    {"id":"J16","lens":"change-locality","profiles":[],"expect":["The small closed switch can already localize variation.","Do not introduce a strategy class per enum value or a registry for hypothetical extension."]},
+    {"id":"J17","lens":"duplication","profiles":[],"expect":["Identify the shared implemented display-name normalization, not a universal string sanitizer.","A small named helper may localize this knowledge; preserve trimming, whitespace and case behavior."]},
+    {"id":"J18","lens":"naming","profiles":[],"expect":["A unit-bearing local/parameter name can remove concrete ambiguity in the private calculation.","Do not introduce a public type, dependency, or arbitrary naming convention for this tiny scope."]}
+  ]
+}

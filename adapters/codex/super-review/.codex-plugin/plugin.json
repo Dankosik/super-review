@@ -1,7 +1,7 @@
 {
   "name": "super-review",
   "version": "2.1.0",
-  "description": "Independent readability and maintainability review for Go and TypeScript pull requests.",
+  "description": "Independent readability and maintainability review for Go, Java, and TypeScript pull requests.",
   "author": {
     "name": "Dankosik",
     "url": "https://github.com/Dankosik"
@@ -13,21 +13,24 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Super Review",
-    "shortDescription": "Clear, justified Go and TypeScript PR recommendations.",
-    "longDescription": "Review a Go and TypeScript pull request through independent specialist passes. Keep team conventions, verify each recommendation, and leave clear code alone.",
+    "shortDescription": "Clear, justified Go, Java, and TypeScript PR recommendations.",
+    "longDescription": "Review a Go, Java, and TypeScript pull request through independent specialist passes. Keep team conventions, verify each recommendation, and leave clear code alone.",
     "developerName": "Dankosik",
     "category": "Productivity",
     "capabilities": [
       "Read"
     ],
     "defaultPrompt": [
-      "Use Super Review to review this Go and TypeScript pull request.",
-      "Use Super Review to check naming and control flow in this Go and TypeScript PR."
+      "Use Super Review to review this Go, Java, and TypeScript pull request.",
+      "Use Super Review to check naming and control flow in this Go, Java, and TypeScript PR."
     ],
     "brandColor": "#3458DB",
     "websiteURL": "https://github.com/Dankosik/super-review",
     "privacyPolicyURL": "https://github.com/Dankosik/super-review/blob/main/PRIVACY.md",
     "composerIcon": "./assets/logo.svg",
     "logo": "./assets/logo.svg"
-  }
+  },
+  "keywords": [
+    "java"
+  ]
 }

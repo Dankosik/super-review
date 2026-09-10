@@ -1,5 +1,10 @@
 # Team rules
 
+Java rules use `Language: Java` and the `java.*` IDs in the matching lenses.
+Their disables and refinements are language-scoped; neither `go.*` nor `ts.*`
+can be used to reintroduce disabled Java advice. Profiles inherit their owner
+rule in the same language.
+
 Load root `SUPER_REVIEW.md` from **B**, the pinned target commit. Follow only its
 explicit repository-relative links to Markdown policy documents, resolved relative
 to the referring file at B. Reject traversal outside the repository, remote
@@ -69,7 +74,7 @@ and cannot be disabled through this file.
 
 ## Optional code references
 
-A rule may label a repository-relative link to supported Go or TypeScript source as `Code reference`, name
+A rule may label a repository-relative link to supported Go, Java, or TypeScript source as `Code reference`, name
 the symbol, and explain the specific convention it illustrates. Resolve it against
 the referring policy file at the same pinned policy revision (normally B). Read it
 only for an applicable selected rule when the illustration is needed; send that

@@ -1,13 +1,13 @@
 # Super Review
 
-A focused review of **readability, idiomatic Go/TypeScript, and maintainability** in a GitHub
+A focused review of **readability, idiomatic Go/Java/TypeScript, and maintainability** in a GitHub
 pull request. Give it a PR URL; independent specialists inspect the selected
 aspects, and the main agent verifies their recommendations before returning a report.
 Clear code can produce no recommendations. Source is never refactored by the skill.
 
 ## Supported languages
 
-Go and TypeScript (`.ts`, `.tsx`, `.mts`, `.cts`, including handwritten declaration
+Go, Java, and TypeScript (`.ts`, `.tsx`, `.mts`, `.cts`, including handwritten declaration
 files) use language-specific instructions under the same eight review questions.
 Mixed PRs are partitioned by language; Go rules are not applied to TS. Tests,
 generated code, and JavaScript/JSX remain excluded. Compiler/package files are
@@ -63,7 +63,7 @@ skill ZIP contains portable instructions; it does not install a harness adapter.
 
 ## Choose what to review
 
-The default considers eight base lenses for every changed Go or TypeScript area, then selects
+The default considers eight base lenses for every changed Go, Java, or TypeScript area, then selects
 contextual aspects from inspected source. Two conditional lenses cover
 **representation** (data/state shapes) and **rationale** (supported explanations
 of non-obvious choices). Four profiles deepen an existing lens: lifecycle
@@ -151,7 +151,7 @@ and [examples](examples/team-rules/SUPER_REVIEW.md). TypeScript rules use
 
 [Native integration details](docs/native-integrations.md) describe tested versions,
 permissions, and update/removal commands. [Validation](docs/validation.md) separates
-mechanical checks from model execution. Languages other than Go/TypeScript and GitHub Enterprise
+mechanical checks from model execution. Languages other than Go/Java/TypeScript and GitHub Enterprise
 are not supported. Missing source, API caps, or unfinished specialists make the
 affected coverage partial.
 
@@ -162,3 +162,18 @@ plan is not a guarantee of finding every possible improvement.
 [UX references](docs/ux-reference-study.md) · [Design](docs/design.md) ·
 [Contributing](CONTRIBUTING.md) · [Privacy](PRIVACY.md) · [Changelog](CHANGELOG.md) ·
 [MIT License](LICENSE)
+
+
+## Java support
+
+Java uses the same eight base lenses, two conditional lenses and four owner
+profiles, with separate `java.*` rules. Maven/Gradle module and source-set baselines
+constrain advice; records, streams, Optional, builders and interfaces are not
+mandatory upgrades. Mixed Go/Java/TypeScript PRs keep each language's rules and
+coverage distinct. Existing `go.*` and `ts.*` rule IDs are unchanged.
+
+The reader accepts production `.java` and supporting build metadata, excluding
+known test/generated roots without executing project code. Custom source sets
+and unavailable framework/build contracts remain explicit context gaps. See
+[Java design and sources](docs/java-review.md) and the
+[Java team-rule example](examples/team-rules/java.md).

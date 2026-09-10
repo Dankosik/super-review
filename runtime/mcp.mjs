@@ -20066,6 +20066,8 @@ import { randomUUID } from "node:crypto";
 var typeScriptExtension = /\.(?:ts|tsx|mts|cts)$/;
 var typeScriptTest = /\.(?:test|spec)\.(?:ts|tsx|mts|cts)$/;
 var testDirectories = new Set(["test", "tests", "__tests__", "__mocks__", "__snapshots__"]);
+var javaTestRoot = /(?:^|\/)src\/(?:test|testFixtures|integrationTest|androidTest)\//;
+var javaGeneratedRoot = /(?:^|\/)(?:target\/generated-(?:test-)?sources|build\/generated)\//;
 var contextNames = new Set([
   "go.mod",
   "package.json",
@@ -20073,11 +20075,19 @@ var contextNames = new Set([
   "npm-shrinkwrap.json",
   "pnpm-lock.yaml",
   "yarn.lock",
-  "bun.lock"
+  "bun.lock",
+  "pom.xml",
+  "build.gradle",
+  "build.gradle.kts",
+  "settings.gradle",
+  "settings.gradle.kts",
+  "gradle.properties"
 ]);
 function sourceLanguage(path) {
   if (path.endsWith(".go"))
     return "Go";
+  if (path.endsWith(".java"))
+    return "Java";
   if (typeScriptExtension.test(path))
     return "TypeScript";
   return;
@@ -20085,23 +20095,31 @@ function sourceLanguage(path) {
 function isInternalPath(path) {
   return path.split("/").some((part) => ["vendor", "node_modules", ".git"].includes(part));
 }
+function isGeneratedPath(path) {
+  return path.endsWith(".java") && javaGeneratedRoot.test(path);
+}
 function isTestSource(path) {
   if (path.endsWith("_test.go"))
     return true;
+  if (path.endsWith(".java"))
+    return javaTestRoot.test(path);
   if (sourceLanguage(path) !== "TypeScript")
     return false;
   return typeScriptTest.test(path) || path.split("/").slice(0, -1).some((part) => testDirectories.has(part));
 }
 function isReadableContext(path) {
   const name = path.split("/").at(-1);
-  return path.endsWith(".md") || contextNames.has(name) || /^tsconfig(?:\.[A-Za-z0-9_-]+)*\.jsonc?$/.test(name) || /^[A-Za-z0-9_.-]+\.tsconfig\.jsonc?$/.test(name);
+  return path.endsWith(".md") || contextNames.has(name) || name.endsWith(".gradle") || name.endsWith(".gradle.kts") || name.endsWith(".versions.toml") || /^tsconfig(?:\.[A-Za-z0-9_-]+)*\.jsonc?$/.test(name) || /^[A-Za-z0-9_.-]+\.tsconfig\.jsonc?$/.test(name);
 }
 function isGeneratedSource(path, content) {
-  if (sourceLanguage(path) === "Go")
+  const language = sourceLanguage(path);
+  if (language === "Go")
     return /^\/\/ Code generated .* DO NOT EDIT\.$/m.test(content);
-  if (sourceLanguage(path) !== "TypeScript")
+  if (language !== "TypeScript" && language !== "Java")
     return false;
   const header = /^(?:\uFEFF)?(?:#![^\n]*\n)?\s*((?:(?:\/\/[^\n]*(?:\n|$)|\/\*[\s\S]*?\*\/)\s*)*)/.exec(content)?.[1] ?? "";
+  if (language === "Java")
+    return /\bgenerated\b/i.test(header) && /\bdo not edit\b/i.test(header);
   return /(?:@generated\b|\bCode generated\b[^\n]*\bDO NOT EDIT\b|\bauto[- ]generated\b)/i.test(header);
 }
 
@@ -20173,6 +20191,8 @@ function exclusion(path, status) {
     return "vendored or repository internals";
   if (isTestSource(path))
     return "test file";
+  if (isGeneratedPath(path))
+    return "generated source root";
   if (!sourceLanguage(path))
     return "unsupported language or non-source file";
   return;
@@ -20344,8 +20364,8 @@ class GitHubReader {
     const snapshot = this.snapshot(id);
     safePath(path);
     const allowed = Boolean(sourceLanguage(path)) || isReadableContext(path);
-    if (!allowed || isTestSource(path) || isInternalPath(path)) {
-      return { path, excluded: true, reason: "Only non-test Go/TypeScript, supported compatibility files, and Markdown policy context are readable." };
+    if (!allowed || isTestSource(path) || isInternalPath(path) || isGeneratedPath(path)) {
+      return { path, excluded: true, reason: "Only non-test Go/Java/TypeScript, supported compatibility files, and Markdown policy context are readable." };
     }
     const { repo, ref } = this.revision(snapshot, revision);
     const entry = await this.locate(repo, ref, path);
@@ -20771,7 +20791,7 @@ async function createServer(skillRoot, reader = new GitHubReader, batches, compl
     annotations: readOnly
   }, async ({ snapshot, path, startLine, lineCount }) => result(reader.diff(snapshot, path, startLine, lineCount)));
   server.registerTool("search", {
-    description: "Find one literal substring in non-test Go and TypeScript at H, 20 files per page. Follow nextOffset for required remaining context.",
+    description: "Find one literal substring in non-test Go, Java, and TypeScript at H, 20 files per page. Follow nextOffset for required remaining context.",
     inputSchema: {
       snapshot,
       literal: string2().min(1).max(200).describe("Exact substring, not regex."),

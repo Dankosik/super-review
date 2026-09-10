@@ -1,6 +1,6 @@
 ---
 name: specialist
-description: One assigned Super Review lens on pinned Go or TypeScript source.
+description: One assigned Super Review lens on pinned Go, Java, or TypeScript source.
 model: sonnet
 effort: medium
 tools: mcp__plugin_super-review_reader__source, mcp__plugin_super-review_reader__diff, mcp__plugin_super-review_reader__search, mcp__plugin_super-review_reader__resources

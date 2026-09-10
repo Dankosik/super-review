@@ -2,7 +2,7 @@
 
 ## Scope and authority
 
-The user chooses the PR and any narrower scope. Review changed Go and TypeScript source and
+The user chooses the PR and any narrower scope. Review changed Go, Java, and TypeScript source and
 the context needed to understand it. Read whole affected declarations and
 relevant callers. A recommendation must arise from the change; another file
 may participate in that refactoring, but unrelated old code is not a cleanup

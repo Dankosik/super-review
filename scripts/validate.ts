@@ -42,6 +42,13 @@ for (const file of runtimeFiles.filter(path => path.includes("/lenses/typescript
 }
 const expectedTSIDs: string[] = JSON.parse(await readFile(join(root, "evals/typescript/rule-ids.json"), "utf8"));
 if (new Set(tsIDs).size !== tsIDs.length || JSON.stringify(tsIDs.sort()) !== JSON.stringify(expectedTSIDs.sort())) errors.push("TypeScript rule IDs changed: update migration documentation and rule-ids.json intentionally.");
+const javaIDs: string[] = [];
+for (const file of runtimeFiles.filter(path => path.includes("/lenses/java/") && path.endsWith(".md"))) {
+  const text = await readFile(file, "utf8");
+  for (const match of text.matchAll(/^## (java\.[a-z0-9.-]+)$/gm)) javaIDs.push(match[1]);
+}
+const expectedJavaIDs: string[] = JSON.parse(await readFile(join(root, "evals/java/rule-ids.json"), "utf8"));
+if (new Set(javaIDs).size !== javaIDs.length || JSON.stringify(javaIDs.sort()) !== JSON.stringify(expectedJavaIDs.sort())) errors.push("Java rule IDs changed: update migration documentation and rule-ids.json intentionally.");
 for (const role of ["super-review", "super-review-specialist"]) {
   const config = frontmatter(await readFile(join(root, "adapters/opencode/agents/" + role + ".md"), "utf8"));
   if (config.permission?.["*"] !== "deny") errors.push(role + " does not deny unlisted tools.");
