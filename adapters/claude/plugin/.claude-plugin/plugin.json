@@ -11,6 +11,7 @@
   "license": "MIT",
   "keywords": [
     "go",
+    "rust",
     "code-review",
     "agent-skills",
     "claude-code",

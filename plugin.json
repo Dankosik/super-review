@@ -12,6 +12,7 @@
   "license": "MIT",
   "keywords": [
     "go",
+    "rust",
     "code-review",
     "agent-skills",
     "claude-code",
@@ -21,7 +22,7 @@
     "com.openai": {
       "interface": {
         "displayName": "Super Review",
-        "shortDescription": "Clear, justified Go PR recommendations.",
+        "shortDescription": "Clear, justified Go/Rust PR recommendations.",
         "longDescription": "Review a Go or Rust pull request through independent specialist passes. Keep team conventions, verify each recommendation, and leave clear code alone.",
         "developerName": "Dankosik",
         "category": "Productivity",
@@ -30,7 +31,7 @@
         ],
         "defaultPrompt": [
           "Use Super Review to review this Go or Rust pull request.",
-          "Use Super Review to check naming and control flow in this Go PR."
+          "Use Super Review to check naming and control flow in this Go/Rust PR."
         ],
         "brandColor": "#3458DB",
         "websiteURL": "https://github.com/Dankosik/super-review",
