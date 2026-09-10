@@ -28,8 +28,10 @@ and implementation together and the strongest reason to retain the design.
 Prefer the smallest net improvement, not the shortest diff.
 
 Inspect only the preservation constraints implicated by that transformation,
-using [Go context](languages/go.md): exact supported operation/signature, effects,
-API and method sets, ownership/mutation, error identity, absence, and defer/lifetime.
+using the matching context from [language routing](languages.md): exact supported
+operation/signature, effects, API/type contracts, ownership/mutation, error identity,
+absence, and resource lifetime. Keep Go and TypeScript preservation rules scoped
+to their own language; account for TypeScript inference and emitted module behavior.
 Do not infer equivalence from a happy-path example or empty literal search.
 Narrow incompatible/uncertain advice or keep it unresolved; no tests, builds,
 newer APIs, or claims of tested equivalence are authorized by verification.

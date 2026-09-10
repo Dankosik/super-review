@@ -1,6 +1,7 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { randomUUID } from "node:crypto";
+import { sourceLanguage, isInternalPath, isTestSource, isReadableContext, isGeneratedSource } from "./source-files.ts";
 
 const exec = promisify(execFile);
 type GetJSON = (endpoint: string) => Promise<any>;
@@ -76,9 +77,9 @@ export function safePath(value: string, allowRoot = false): string {
 
 export function exclusion(path: string, status?: string): string | undefined {
   if (status === "removed") return "deleted file: no head source";
-  if (path.split("/").some(p => ["vendor", "node_modules", ".git"].includes(p))) return "vendored or repository internals";
-  if (path.endsWith("_test.go")) return "test file";
-  if (!path.endsWith(".go")) return "unsupported language or non-source file";
+  if (isInternalPath(path)) return "vendored or repository internals";
+  if (isTestSource(path)) return "test file";
+  if (!sourceLanguage(path)) return "unsupported language or non-source file";
   return undefined;
 }
 
@@ -237,16 +238,16 @@ export class GitHubReader {
   async source(id: string, revision: Revision, path: string, startLine = 1, lineCount = 400) {
     const snapshot = this.snapshot(id);
     safePath(path);
-    const allowed = path.endsWith(".go") || path.endsWith(".md") || path.split("/").at(-1) === "go.mod";
-    if (!allowed || path.endsWith("_test.go") || path.split("/").some(p => ["vendor", ".git", "node_modules"].includes(p))) {
-      return { path, excluded: true, reason: "Only non-test Go, go.mod, and Markdown policy context are readable." };
+    const allowed = Boolean(sourceLanguage(path)) || isReadableContext(path);
+    if (!allowed || isTestSource(path) || isInternalPath(path)) {
+      return { path, excluded: true, reason: "Only non-test Go/TypeScript, supported compatibility files, and Markdown policy context are readable." };
     }
     const { repo, ref } = this.revision(snapshot, revision);
     const entry = await this.locate(repo, ref, path);
     if (!entry) return { path, revision, commit: ref, exists: false };
     const content = await this.text(repo, entry);
-    if (path.endsWith(".go") && /^\/\/ Code generated .* DO NOT EDIT\.$/m.test(content)) {
-      return { path, revision, commit: ref, excluded: true, reason: "generated Go source" };
+    if (isGeneratedSource(path, content)) {
+      return { path, revision, commit: ref, excluded: true, reason: "generated source" };
     }
     return {
       path, revision, commit: ref, blob: entry.sha, exists: true,
@@ -270,7 +271,7 @@ export class GitHubReader {
     const inspect = async (entry: TreeEntry) => {
       try {
         const content = await this.text(snapshot.headRepository, entry);
-        if (/^\/\/ Code generated .* DO NOT EDIT\.$/m.test(content)) {
+        if (isGeneratedSource(entry.path, content)) {
           unread.push({ path: entry.path, reason: "generated" });
           return;
         }

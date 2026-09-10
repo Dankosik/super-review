@@ -34,7 +34,11 @@ inheritance are not supported in v1. Use explicit links and paths in monorepos.
 Each rule needs a unique ID, language, paths, lens, action, statement, and reason.
 The stable default rule IDs are headings in the lens resources. The conditional
 lenses use `Lens: representation` / `go.representation.express-concepts` and
-`Lens: rationale` / `go.rationale.explain-constraints`. No existing ID changes.
+`Lens: rationale` / `go.rationale.explain-constraints`. No existing ID changes. TypeScript uses the matching `ts.*` headings from
+[language routing](languages.md), including `ts.representation.express-concepts`
+and `ts.rationale.explain-constraints`. Write `Language: TypeScript` for these
+rules (`TS` is an alias). Resolve rule IDs within the declared language; a Go
+override cannot disable or replace a TS default, or vice versa.
 
 A contextual profile is not a new rule namespace. Use its declared owner as
 `Lens` and apply that owner's effective rules, including the profile's named
@@ -65,7 +69,7 @@ and cannot be disabled through this file.
 
 ## Optional code references
 
-A rule may label a repository-relative link to Go source as `Code reference`, name
+A rule may label a repository-relative link to supported Go or TypeScript source as `Code reference`, name
 the symbol, and explain the specific convention it illustrates. Resolve it against
 the referring policy file at the same pinned policy revision (normally B). Read it
 only for an applicable selected rule when the illustration is needed; send that
