@@ -1,0 +1,13 @@
+[
+  "ts.naming.intent",
+  "ts.flow.show-main-path",
+  "ts.functions.extract-for-clarity",
+  "ts.functions.coherent-purpose",
+  "ts.data.make-transformations-visible",
+  "ts.abstractions.earn-the-boundary",
+  "ts.duplication.share-knowledge",
+  "ts.api.express-the-call",
+  "ts.change.localize-existing-variation",
+  "ts.representation.express-concepts",
+  "ts.rationale.explain-constraints"
+]

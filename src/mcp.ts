@@ -79,7 +79,7 @@ export async function createServer(skillRoot: string, reader = new GitHubReader(
   }, async ({ snapshot, path, startLine, lineCount }) => result(reader.diff(snapshot, path, startLine, lineCount)));
 
   server.registerTool("search", {
-    description: "Find one literal substring in candidate Go/Rust source at H, 20 files per page. Rust item/test scope still requires declaration context. Follow nextOffset for required remaining context.",
+    description: "Find one literal substring in candidate Go/TypeScript/Rust source at H, 20 files per page. Rust item/test scope still requires declaration context. Follow nextOffset for required remaining context.",
     inputSchema: {
       snapshot, literal: z.string().min(1).max(200).describe("Exact substring, not regex."),
       prefix: z.string().optional().describe("Exact file or directory prefix, not a glob."),

@@ -1,15 +1,20 @@
 # Changelog
 
-## Unreleased
+## Unreleased — TypeScript review
 
-- Add Rust review through language-specific base/conditional lenses and owner profiles; preserve all Go rule IDs.
-- Read pinned Rust source and scoped Cargo context with explicit test/generated-item limitations.
-- Add Rust policy examples, contrasting evaluation packets and mechanical reader/resource tests. Live model quality has not been evaluated.
+- Add language routing, TypeScript context, ten TS lens resources and four owner profiles with eleven stable `ts.*` rules; preserve all Go IDs.
+- Support TS/TSX/MTS/CTS and handwritten declarations in pinned source reads and caller search, with compatibility metadata and existing read-only boundaries.
+- Add contrasting evaluation inputs and mechanical source/resource tests; behavioral model evaluation remains separate and has not been run.
+- Regenerate native Claude/Codex payloads without changing models, permissions, or dependencies.
 
 The skill, rules, templates, and adapters share one SemVer version. Changes to
 review decisions are product behavior, even when they only edit Markdown.
 
 ## Unreleased
+
+- Add Rust-specific review lenses/profiles and 11 stable `rust.*` rules without changing Go or TypeScript IDs.
+- Integrate Rust source/Cargo context into shared Go/TypeScript routing and classification; preserve test/generated-code scope limits.
+- Add Rust evaluation packets and mixed-language regression tests; live model quality remains unevaluated.
 
 - Clarify the MCP resource description: reuse complete supplied materials and load missing shared role resources, the assigned lens, and selected profiles rather than the full catalog.
 - Audit model-visible tool metadata alongside role instructions; add selective resource-delivery checks for canonical, Claude, and Codex skill roots. Record blocked model comparisons separately from mechanical validation.

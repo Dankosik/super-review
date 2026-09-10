@@ -1,8 +1,7 @@
-import { exclusion, generatedSource, readableSource, sourceLanguage, rustScopeNote, type SourceLanguage } from "./languages.ts";
-export { exclusion } from "./languages.ts";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { randomUUID } from "node:crypto";
+import { sourceLanguage, isInternalPath, isTestSource, isReadableSource, isGeneratedSource, isBuildOutput, rustScopeNote, type SourceLanguage } from "./source-files.ts";
 
 const exec = promisify(execFile);
 type GetJSON = (endpoint: string) => Promise<any>;
@@ -74,6 +73,15 @@ export function safePath(value: string, allowRoot = false): string {
     throw new Error("Use an exact repository-relative path without traversal.");
   }
   return value;
+}
+
+export function exclusion(path: string, status?: string): string | undefined {
+  if (status === "removed") return "deleted file: no head source";
+  if (isInternalPath(path)) return "vendored or repository internals";
+  if (isTestSource(path)) return "test file";
+  if (isBuildOutput(path)) return "Rust build-output path";
+  if (!sourceLanguage(path)) return "unsupported language or non-source file";
+  return undefined;
 }
 
 // A second boundary behind the tool schemas: no arbitrary endpoints or methods.
@@ -232,19 +240,19 @@ export class GitHubReader {
   async source(id: string, revision: Revision, path: string, startLine = 1, lineCount = 400) {
     const snapshot = this.snapshot(id);
     safePath(path);
-    if (!readableSource(path)) {
-      return { path, excluded: true, reason: "Only eligible Go/Rust source, supported manifest/configuration context, and Markdown are readable." };
+    if (!isReadableSource(path)) {
+      return { path, excluded: true, reason: "Only eligible Go/TypeScript/Rust source, supported compatibility files, and Markdown policy context are readable." };
     }
     const { repo, ref } = this.revision(snapshot, revision);
     const entry = await this.locate(repo, ref, path);
     if (!entry) return { path, revision, commit: ref, exists: false };
     const content = await this.text(repo, entry);
-    if (generatedSource(path, content)) {
+    if (isGeneratedSource(path, content)) {
       return { path, revision, commit: ref, excluded: true, reason: "generated source" };
     }
     return {
       path, revision, commit: ref, blob: entry.sha, exists: true,
-      language: sourceLanguage(path), scopeNote: path.endsWith(".rs") ? rustScopeNote : undefined,
+      language: sourceLanguage(path), scopeNote: sourceLanguage(path) === "Rust" ? rustScopeNote : undefined,
       ...lineWindow(content, startLine, lineCount),
       sourceURL: "https://github.com/" + repo + "/blob/" + ref + "/" + path.split("/").map(encodeURIComponent).join("/"),
     };
@@ -265,7 +273,7 @@ export class GitHubReader {
     const inspect = async (entry: TreeEntry) => {
       try {
         const content = await this.text(snapshot.headRepository, entry);
-        if (generatedSource(entry.path, content)) {
+        if (isGeneratedSource(entry.path, content)) {
           unread.push({ path: entry.path, reason: "generated" });
           return;
         }
@@ -282,7 +290,7 @@ export class GitHubReader {
     unread.sort((a, b) => a.path.localeCompare(b.path));
     return {
       commit: snapshot.H, literal: needle, prefix,
-      scopeNote: page.some(entry => entry.path.endsWith(".rs")) ? rustScopeNote : undefined,
+      scopeNote: page.some(entry => sourceLanguage(entry.path) === "Rust") ? rustScopeNote : undefined,
       scanned: page.map(e => e.path), matches, unread,
       nextOffset: offset + page.length < files.length ? offset + page.length : null,
       remainingFiles: Math.max(0, files.length - offset - page.length),

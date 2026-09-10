@@ -9,7 +9,7 @@ namespace is `mcp__plugin_super-review_reader__`; use that installed reader, not
 an inline duplicate. The session shares its connection. Supply the workflow's
 neutral task packet. Reuse complete matching resources already in the receiving
 context; batch only missing ones in `resources`. Each child needs the contract,
-applicable language context, candidate format, assigned lens and only selected owner profiles.
+Applicable language context, candidate format, assigned lens and only selected owner profiles.
 References and summaries are not full source. Return the full report to the caller.
 
 Invoke specialists in the foreground (`run_in_background: false`), grouping

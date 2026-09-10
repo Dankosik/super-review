@@ -1,8 +1,7 @@
 # Contextual aspects
 
-Selection and coverage are shared by Go and Rust. Links below identify Go
-implementations; for Rust resolve the selected question to its counterpart in
-[Rust context](languages/rust.md), not the Go module.
+Resolve resource paths through [language routing](languages.md) for each area;
+the catalog links below are the original Go implementations.
 
 A lens owns a question; a profile deepens one existing lens. Neither is an
 extra agent by definition. Consider this small catalog after the eight base
@@ -16,7 +15,7 @@ changed area, the user selects it, or a narrow read is needed to decide.
 | [lifecycle-ownership](profiles/lifecycle-ownership.md) | profile | data-flow | Changed acquisition, transfer, startup, shutdown, or multi-step use of a resource or background operation. |
 | [dependency-boundaries](profiles/dependency-boundaries.md) | profile | abstractions | Changed package boundaries, construction dependencies, configuration sources, or types crossing a boundary. |
 | [effects-separation](profiles/effects-separation.md) | profile | function-cohesion | A changed operation interleaves a meaningful computation with reads or writes to its environment. |
-| [error-expression](profiles/error-expression.md) | profile | control-flow | Changed failure-path structure, error translation chains, or a custom error-handling mechanism. Ordinary Go `if err != nil` or Rust `?` alone is insufficient. |
+| [error-expression](profiles/error-expression.md) | profile | control-flow | Changed failure-path structure, error translation chains, or a custom error-handling mechanism. Ordinary `if err != nil` alone is insufficient. |
 
 Choose from inspected declarations and their diff, not from PR claims, keywords,
 file names, line counts, or an already discovered defect. A signal invites a

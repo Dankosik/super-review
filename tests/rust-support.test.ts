@@ -4,8 +4,8 @@ import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { GitHubReader } from "../adapters/opencode/lib/github.ts";
-import { exclusion, generatedSource, readableSource } from "../adapters/opencode/lib/languages.ts";
+import { GitHubReader, exclusion } from "../adapters/opencode/lib/github.ts";
+import { isGeneratedSource as generatedSource, isReadableSource as readableSource } from "../adapters/opencode/lib/source-files.ts";
 import { createServer } from "../src/mcp.ts";
 import { resource } from "../adapters/opencode/tools/super_review.ts";
 
@@ -73,7 +73,7 @@ describe("Rust support: mechanical checks, not model evaluation", () => {
   test("Rust and Cargo reads stay pinned and preserve mixed-file line identities", async () => {
     const f = fixture({ "src/lib.rs": "pub fn work() {}\n#[cfg(test)]\nmod tests {}\n", "Cargo.toml": '[package]\nname = "app"\nrust-version = "1.70"\n', ".cargo/config.toml": "[build]\n" });
     const receipt = await f.reader.pin(url);
-    expect(receipt.files.find(file => file.path === "src/lib.rs")).toMatchObject({ language: "rust", exclusion: undefined });
+    expect(receipt.files.find(file => file.path === "src/lib.rs")).toMatchObject({ language: "Rust", exclusion: undefined });
     f.info.head.sha = "d".repeat(40);
     expect(await f.reader.source(receipt.id, "head", "src/lib.rs", 1, 1)).toMatchObject({ commit: H, content: "1: pub fn work() {}", nextLine: 2, scopeNote: expect.stringContaining("not Rust items") });
     expect(await f.reader.source(receipt.id, "head", "src/lib.rs", 2, 2)).toMatchObject({ content: "2: #[cfg(test)]\n3: mod tests {}", nextLine: null });

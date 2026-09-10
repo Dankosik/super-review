@@ -2,15 +2,15 @@
 
 ## Scope and authority
 
-The user chooses the PR and any narrower scope. Review changed Go or Rust production source and
+The user chooses the PR and any narrower scope. Review changed Go, TypeScript, and Rust production source and
 the context needed to understand it. Read whole affected declarations and
 relevant callers. A recommendation must arise from the change; another file
 may participate in that refactoring, but unrelated old code is not a cleanup
 backlog. Draft, closed, and merged PRs remain reviewable when their source exists.
 
-Exclude tests (Go `*_test.go`; Rust test-only targets and items), generated files,
-vendor trees, binaries, and
-unsupported languages. List these exclusions. Effects and contracts are context
+Exclude tests (`*_test.go`, TS `*.test.*`/`*.spec.*`, and established test
+directories; Rust test-only targets and items), generated files, vendor trees, binaries, and unsupported languages.
+Use [language routing](languages.md) for included extensions and context boundaries. List these exclusions. Effects and contracts are context
 for advice, not a correctness or security pass. Do not recommend missing tests
 or run project checks.
 

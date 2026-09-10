@@ -27,15 +27,15 @@ for (const file of runtimeFiles.filter(p => p.endsWith(".md"))) {
     const path = resolve(dirname(file), decodeURIComponent(target));
     if (relative(skill, path).startsWith("..") || !runtimeFiles.includes(path)) errors.push("Missing or unpackaged link: " + relative(root, file) + " -> " + target);
   }
-  if (file.includes("/lenses/")) for (const match of text.matchAll(/^## ((?:go|rust)\.[a-z0-9.-]+)$/gm)) {
+  if (file.includes("/lenses/")) for (const match of text.matchAll(/^## ((?:go|ts|rust)\.[a-z0-9.-]+)$/gm)) {
     if (ids.has(match[1])) errors.push("Duplicate rule ID: " + match[1]);
     ids.add(match[1]);
   }
 }
-for (const language of ["go", "rust"]) {
-  const expectedIDs: string[] = JSON.parse(await readFile(join(root, "evals/" + language + "/rule-ids.json"), "utf8"));
-  const actual = [...ids].filter(id => id.startsWith(language + ".")).sort();
-  if (!actual.length || JSON.stringify(actual) !== JSON.stringify(expectedIDs.sort())) errors.push(language + " rule IDs changed: document migration and update the manifest intentionally.");
+for (const [language, prefix] of [["go", "go"], ["typescript", "ts"], ["rust", "rust"]]) {
+  const expected: string[] = JSON.parse(await readFile(join(root, "evals/" + language + "/rule-ids.json"), "utf8"));
+  const actual = [...ids].filter(id => id.startsWith(prefix + ".")).sort();
+  if (!actual.length || JSON.stringify(actual) !== JSON.stringify(expected.sort())) errors.push(language + " rule IDs changed: document migration and update the manifest intentionally.");
 }
 for (const role of ["super-review", "super-review-specialist"]) {
   const config = frontmatter(await readFile(join(root, "adapters/opencode/agents/" + role + ".md"), "utf8"));

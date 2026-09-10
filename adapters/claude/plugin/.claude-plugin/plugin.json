@@ -1,7 +1,7 @@
 {
   "name": "super-review",
   "version": "2.1.0",
-  "description": "Independent readability and maintainability review for Go or Rust pull requests.",
+  "description": "Independent readability and maintainability review for Go, TypeScript, and Rust pull requests.",
   "author": {
     "name": "Dankosik",
     "url": "https://github.com/Dankosik"
@@ -11,10 +11,11 @@
   "license": "MIT",
   "keywords": [
     "go",
-    "rust",
     "code-review",
     "agent-skills",
     "claude-code",
-    "codex"
+    "codex",
+    "typescript",
+    "rust"
   ]
 }

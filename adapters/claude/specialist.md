@@ -1,13 +1,13 @@
 ---
 name: specialist
-description: One assigned Super Review lens on pinned Go or Rust source.
+description: One assigned Super Review lens on pinned Go, TypeScript, or Rust source.
 model: sonnet
 effort: medium
 tools: mcp__plugin_super-review_reader__source, mcp__plugin_super-review_reader__diff, mcp__plugin_super-review_reader__search, mcp__plugin_super-review_reader__resources
 ---
 
 Use the task's one lens, receipt, exact scope, language baseline and effective policy.
-You need `references/review-contract.md`, the applicable `references/languages/go.md` or `references/languages/rust.md`, the assigned
+You need `references/review-contract.md`, the applicable language context from `references/languages.md`, the assigned
 lens, `assets/finding-template.md`, and only selected owner profiles. Complete
 matching resources already supplied in your task count as read; load missing ones
 in one `resources` call. Source summaries/links do not replace complete declarations

@@ -28,12 +28,15 @@ and implementation together and the strongest reason to retain the design.
 Prefer the smallest net improvement, not the shortest diff.
 
 Inspect only the preservation constraints implicated by that transformation,
-using the applicable context: [Go](languages/go.md) or [Rust](languages/rust.md).
-Establish supported operations/signatures, effects, API and trait/method contracts,
-ownership/mutation, error identity, absence, evaluation and resource/drop lifetime
-where relevant to the proposal. Do not infer equivalence from a happy-path example
-or empty literal search. Narrow incompatible/uncertain advice or keep it unresolved;
-no tests, builds, newer APIs, or claims of tested equivalence are authorized by verification.
+using the matching context from [language routing](languages.md): exact supported
+operation/signature, effects, API/type contracts, ownership/mutation, error identity,
+absence, and resource lifetime. Keep Go, TypeScript, and Rust preservation rules scoped
+to their own language; account for TypeScript inference and emitted module behavior.
+For Rust, inspect implicated trait/auto-trait contracts, ownership, eager/lazy
+evaluation and guard/drop lifetimes under the selected language context.
+Do not infer equivalence from a happy-path example or empty literal search.
+Narrow incompatible/uncertain advice or keep it unresolved; no tests, builds,
+newer APIs, or claims of tested equivalence are authorized by verification.
 
 | Disposition | Record |
 | --- | --- |

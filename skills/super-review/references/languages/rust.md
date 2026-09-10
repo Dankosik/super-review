@@ -39,28 +39,9 @@ incidental test text in a window or search match is not reviewed coverage. Do no
 exclude a production file merely because it contains a test module. Explain any
 ambiguous target, macro or conditional boundary that limits coverage.
 
-## Language-specific modules
-
-The shared workflow owns coverage. For Rust, resolve selected questions through
-this table instead of loading Go lenses/profiles. These are the same eight base
-questions and conditional aspects, not extra workers or an all-module packet.
-
-| Question | Kind | Owner | Rust resource |
-| --- | --- | --- | --- |
-| naming | base lens | naming | [naming](../lenses/rust/naming.md) |
-| control-flow | base lens | control-flow | [control-flow](../lenses/rust/control-flow.md) |
-| function-cohesion | base lens | function-cohesion | [function-cohesion](../lenses/rust/function-cohesion.md) |
-| data-flow | base lens | data-flow | [data-flow](../lenses/rust/data-flow.md) |
-| abstractions | base lens | abstractions | [abstractions](../lenses/rust/abstractions.md) |
-| duplication | base lens | duplication | [duplication](../lenses/rust/duplication.md) |
-| api-clarity | base lens | api-clarity | [api-clarity](../lenses/rust/api-clarity.md) |
-| change-locality | base lens | change-locality | [change-locality](../lenses/rust/change-locality.md) |
-| representation | conditional lens | representation | [representation](../lenses/rust/representation.md) |
-| rationale | conditional lens | rationale | [rationale](../lenses/rust/rationale.md) |
-| lifecycle-ownership | profile | data-flow | [lifecycle-ownership](../profiles/rust/lifecycle-ownership.md) |
-| dependency-boundaries | profile | abstractions | [dependency-boundaries](../profiles/rust/dependency-boundaries.md) |
-| effects-separation | profile | function-cohesion | [effects-separation](../profiles/rust/effects-separation.md) |
-| error-expression | profile | control-flow | [error-expression](../profiles/rust/error-expression.md) |
+Use [language routing](../languages.md) to select the Rust implementation of the
+assigned lens and owner profiles. The shared workflow owns coverage; these are
+not extra workers or a mandatory all-module packet.
 
 Background: [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/),
 [Cargo MSRV](https://doc.rust-lang.org/cargo/reference/rust-version.html),

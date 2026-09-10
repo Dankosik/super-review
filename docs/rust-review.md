@@ -3,7 +3,8 @@
 Rust uses the same eight base questions, two conditional lenses and four owner
 profiles as Go, with separate [Rust resources](../skills/super-review/references/languages/rust.md).
 Each specialist receives its language context, assigned lens and selected profiles,
-plus the shared contract and output format. Mixed PRs retain both language scopes.
+plus the shared contract and output format. Mixed Go/TypeScript/Rust PRs retain every included language scope through the
+[shared routing catalog](../skills/super-review/references/languages.md).
 
 Good code here means a readable, maintainable expression of an implemented solution,
 not compliance with a lint catalog. Guidance covers ownership-visible APIs, borrowing
@@ -50,3 +51,6 @@ also governs its profiles in the declared language and scope.
 judgment. `evals/rust/` separates raw packets from evaluator expectations; neither
 is installed as reviewer guidance. Live model evaluations have not been run for
 this addition. Mechanical checks do not establish recommendation precision/recall.
+
+The shared file classifier is `adapters/opencode/lib/source-files.ts`; Rust uses
+the same inventory/read/search path as Go and TypeScript, not a second classifier.
