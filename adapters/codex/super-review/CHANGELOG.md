@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.3.0 — 2026-09-10
+
+- Favor demonstrated improvements in readability and maintainability across Go, TypeScript, and Rust; distinguish patch-writing effort from lasting code complexity.
+- Assess compatibility from supported boundaries and known consumers rather than treating public visibility as a frozen API. Retain established external contracts.
+- Revise weak remedies without discarding supported observations; ground specialist findings in actual declarations and calls, and make review extent explicit in assignments.
+- Clarify Rust boolean-mode judgment and align language-specific compatibility guidance with the shared contract.
+- Record four independent baseline/candidate stage runs on Rust fixtures using Astra/medium. Results are bounded and do not establish a general quality gain or default Terra-profile improvement.
+- Preserve all 33 rule IDs, model profiles, source-reader behavior, and read-only permissions; regenerate native Codex and Claude payloads.
+
 ## 2.2.0 — 2026-09-10
 
 ### TypeScript
@@ -80,4 +89,4 @@ review decisions are product behavior, even when they only edit Markdown.
 - Versioned complete-adapter and standalone-skill archives.
 
 Default rule IDs are listed in `evals/go/rule-ids.json`. No rule-ID migration is
-required for 2.2.0.
+required for 2.3.0.

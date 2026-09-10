@@ -16,5 +16,5 @@ instead of mechanically expanding every abbreviation.
 Follow effective team style for prefixes, casing, and acronym spelling. A public
 property name may be a serialization key; an exported name, JSX prop, or declaration
 can have consumers outside literal search results. Separate a local rename from
-an API change, and preserve external names unless compatibility is established.
+an API change, and assess compatibility under the shared contract.
 Show the particular ambiguity removed and the smallest useful rename.

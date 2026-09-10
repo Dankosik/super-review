@@ -20,5 +20,5 @@ more specific inferred type; it is not a universal substitute for a widening
 annotation, assertion, or runtime check. Inspect contextual typing and later writes.
 For TSX, judge actual props and uses under the established framework, not a blanket
 `React.FC`, children, or component-style rule. Show a call before/after and what
-knowledge callers no longer need; withhold incompatible exported changes when
-consumer evidence is unavailable.
+knowledge callers no longer need. Apply the shared contract's compatibility
+judgment to exported changes.

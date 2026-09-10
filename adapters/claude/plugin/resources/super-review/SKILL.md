@@ -2,14 +2,16 @@
 name: super-review
 description: "Review the readability, idiomatic expression, and maintainability of a Go, TypeScript, or Rust pull request through independent specialist passes. Use when the user explicitly asks for Super Review or this focused review workflow."
 metadata:
-  version: "2.2.0"
+  version: "2.3.0"
 ---
 
 # Super Review
 
-**Clarity.** Recommend changes that make the implemented solution easier to
-read or maintain. A shorter function, another interface, or a longer report is
-not an improvement by itself. Leaving clear code alone is a successful result.
+**Clarity.** Find opportunities to make the implemented solution easier to
+understand and maintain. Recommend a change when the resulting code expresses
+its concepts and responsibilities better, whether the improvement is local or
+structural. Judge the result, not the amount of change or the length of the report.
+Retain code when changing it offers no supported improvement.
 
 Review the supplied PR without changing its source or posting comments. Do not
 run its code, tests, build, linters, hooks, or installers. This is a review of

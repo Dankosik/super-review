@@ -54,7 +54,7 @@ unsupported languages; never imply they were reviewed.
 Location at H: file, symbol, verified lines/link. Scope: local or cross-file.
 Basis: effective rules and contributing profiles, including convention-only advice.
 Connect the observation to D..H; distinguish supporting unchanged context. Explain
-the reading/maintenance task, supported transformation, net benefit, strongest keep
+the reading/maintenance task, supported transformation, net benefit, source-supported keep
 alternative, and relevant preservation constraints. Include affected files and
 originating candidate IDs. Make the bounded change usable by a coding agent;
 small examples may help, but a full patch or new feature design is unnecessary.

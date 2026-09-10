@@ -8,7 +8,8 @@ without reconstructing the body? Identify implicit knowledge and show a concrete
 before/after call or compatible clarification.
 
 `Option`, `Result`, a domain enum or an existing value type may clarify a hidden
-protocol. A clear boolean does not automatically need a wrapper or builder.
+protocol. A boolean is clear when the actual call communicates its alternatives;
+otherwise a named operation or mode can remove a lookup even for two alternatives.
 Borrowed views such as `&str` or `&[T]` fit access-only work; owned inputs can
 express storing, consuming or transferring data. Do not generalize every argument
 to `AsRef` or `IntoIterator` without an actual gain.

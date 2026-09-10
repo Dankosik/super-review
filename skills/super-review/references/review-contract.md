@@ -54,14 +54,34 @@ team convention can justify consistency advice on its own. Otherwise identify
 a concrete cost to the reader or maintainer. Do not invent future requirements,
 require a minimum finding count, or label style advice as a merge blocker.
 
-Assuming the implemented solution behaves as intended, what reading or maintenance
-burden remains? Bug prevention alone is outside scope. Connect each observation
-to changed code. Compare a proposed remedy with leaving it alone: what knowledge
-or coordinated editing disappears, and what indirection or obligations appear?
+Assuming the implemented solution behaves as intended, what would make it easier
+to understand or change? Bug prevention alone is outside scope. Connect each
+observation to the assigned source. Compare the resulting code with the current
+code: what becomes explicit, what knowledge or coordinated editing disappears,
+and what concepts or obligations remain? Favor a demonstrated improvement; the
+current design has no presumption of superiority. Small clarity gains are valid.
 Fewer lines, a pattern name, or a metric threshold alone establishes no benefit.
 
+Judge lasting reading and maintenance cost separately from the effort to write
+the patch. A rename, helper, type, or cross-file edit is not a cost objection by
+itself; explain the navigation, duplicated knowledge, migration obligation, or
+other burden it would actually add. Do not assume a manual implementation budget
+or deadline the user has not supplied. Prefer a sufficient, coherent improvement
+over a smaller edit that leaves the demonstrated problem in place.
+
+Assess compatibility from the project's supported boundaries, known consumers,
+and the user's scope, including its release stage. Public visibility signals a
+possible contract, not proof of a frozen API. An unreleased project or empty
+consumer search does not prove there are no consumers either. When compatibility
+is material but unknown, retain the quality observation and identify the specific
+API decision or a compatible remedy; do not turn hypothetical migration work into
+evidence that the existing expression is better. Preserve established external
+behavior and contracts unless their change is part of the authorized review scope.
+
 A candidate is an evidence-backed observation, not an implementation instruction.
-Return a demonstrated in-scope burden even when its remedy needs narrowing;
+Investigate actual declarations and uses, including the strongest source evidence
+against the observation. Return a demonstrated in-scope burden even when its
+remedy needs revision;
 separate uncertainty about the observation from uncertainty about the remedy.
 Unsupported suspicions are not candidates. The orchestrator accepts only changes
 supported by source evidence, net benefit or effective convention, and the

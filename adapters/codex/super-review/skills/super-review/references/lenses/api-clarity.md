@@ -25,8 +25,8 @@ caller obligations rather than manufacturing constructors or validation.
 Do not add product capabilities or validate business requirements. For exported
 changes, inspect compatibility and available consumers. Function values, interface
 satisfaction, and external users can matter beyond direct calls; an empty literal
-search does not prove absence. When context is unavailable, narrow the advice to
-a compatible clarification or withhold the signature change.
+search does not prove absence. Apply the shared contract's compatibility judgment
+to the remedy while retaining any demonstrated call-site burden.
 
 Show a representative call before and after, or an equivalent concrete change,
 and explain which implementation detail callers no longer need to know.

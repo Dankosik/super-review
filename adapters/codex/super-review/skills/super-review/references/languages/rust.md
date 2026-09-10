@@ -28,8 +28,8 @@ not create independent data; cloning an `Arc` preserves shared ownership. A
 collection can deliberately snapshot data or end a borrow. Public signatures,
 trait implementations, auto traits, lifetime captures, serialization and FFI
 layouts can constrain a local simplification. Inspect available consumers;
-absence from literal search does not prove no downstream use. Narrow or withhold
-incompatible advice, without claiming compilation, equivalence or soundness.
+absence from literal search does not prove no downstream use. Apply the shared
+contract's compatibility judgment without claiming compilation, equivalence or soundness.
 
 **Production scope.** Path and generated-header filtering is not a Rust parser or
 Cargo target resolver. Use manifests and declarations to exclude custom test or

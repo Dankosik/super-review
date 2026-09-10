@@ -28,10 +28,11 @@ coverage remains `unfinished`, never an empty clean result.
 - Basis: effective rule IDs and contributing profiles; identify convention-only advice.
 - Observation: source evidence and concrete reading/maintenance cost. State what is
   established; an unsupported suspicion does not qualify.
-- Remedy: smallest supported change, or `unresolved` with the exact missing evidence
+- Remedy: supported improvement, or `unresolved` with the exact missing evidence
   or decision. Distinguish unavailable facts from a remaining tradeoff between
   supported alternatives; do not invent a source gap or a remedy. For a proposal,
-  explain net benefit, new indirection/obligations, and the strongest keep alternative.
+  show how an actual declaration/use becomes clearer, the remaining tradeoff,
+  and the strongest source-supported keep alternative. Scale explanation to the change.
 - Preserve: relevant contracts/effects and constraints implicated by the proposal;
   identify what is known versus still unverified. Do not invent a remedy to fill fields.
 - Affected files: verified paths and real dependencies; distinguish inspected from

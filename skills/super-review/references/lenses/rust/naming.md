@@ -13,6 +13,7 @@ Improve a misleading name, not every spelling that differs from a preference.
 Short local bindings and conventional lifetime parameters can already be clear.
 
 Use a representative call to show the removed ambiguity. Adding type suffixes,
-getter prefixes or verbose lifetime names is not a benefit by itself. Preserve
-public paths, trait method contracts and external consumers; when a rename is
-incompatible, prefer a supported local clarification or retain the name.
+getter prefixes or verbose lifetime names is not a benefit by itself. Distinguish
+ordinary identifiers from public paths, trait method contracts and external names;
+assess their compatibility under the shared contract. Keep the demonstrated naming
+benefit separate from any unresolved migration decision.

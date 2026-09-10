@@ -57,7 +57,7 @@ Use these three sections in each assignment; do not assume inherited context:
 | Section | Content |
 | --- | --- |
 | Review identity | PR, B/H/D, issued source receipt, instruction identity from the contract, language, selected resource paths, applicable compiler/runtime and build constraints. |
-| Assignment | Task ID, one lens, selected profiles and source signals, exact files/symbols, user exclusions, effective rules/conflicts, permitted context. |
+| Assignment | Task ID, one lens, selected profiles and source signals, exact files/symbols, review extent (changed source or explicitly requested whole source), user exclusions, effective rules/conflicts, known compatibility commitments, permitted context. |
 | Materials | Neutral diff/source anchors; complete resources or source blocks already supplied, identified by path and source revision or trusted instruction identity; locations of still-needed resources and omitted ranges. |
 
 Each child needs the [contract](review-contract.md), the matching language context

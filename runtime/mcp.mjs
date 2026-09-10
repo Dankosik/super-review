@@ -20438,7 +20438,7 @@ class GitHubReader {
   }
 }
 // package.json
-var version2 = "2.2.0";
+var version2 = "2.3.0";
 
 // src/snapshot-cache.ts
 import { constants, closeSync, fstatSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";

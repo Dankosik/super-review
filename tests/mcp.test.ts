@@ -21,7 +21,7 @@ describe("native source bridge", () => {
       expect(list.tools.every(t => t.annotations?.readOnlyHint && t.annotations?.destructiveHint === false)).toBe(true);
       const response = await client.callTool({ name: "resources", arguments: { paths: ["SKILL.md", "references/lenses/naming.md"] } });
       const content = JSON.parse((response.content as any)[0].text);
-      expect(content.version).toBe("2.2.0");
+      expect(content.version).toBe("2.3.0");
       expect(content.resources).toHaveLength(2);
       expect(content.resources[0].content).toContain("name: super-review");
       expect(content.resources[1].content).toContain("go.naming.intent");

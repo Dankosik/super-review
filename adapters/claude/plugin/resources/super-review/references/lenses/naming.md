@@ -17,6 +17,6 @@ them clear. Do not homogenize deliberately different concepts. Follow explicit
 team vocabulary; otherwise another equally understandable spelling is not a
 finding. Preserve comments explaining why; renaming does not replace that context.
 
-Inspect callers and compatibility before an exported rename. A naming benefit
-must justify its migration scope. Own the ambiguous vocabulary, not an unrelated
+Inspect callers and compatibility before an exported rename under the shared
+contract. Own the ambiguous vocabulary, not an unrelated
 flow or responsibility rewrite.

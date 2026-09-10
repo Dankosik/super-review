@@ -17,15 +17,19 @@ valid, separately stated basis.
 
 Separate two decisions: is the observation supported, and is the remedy ready
 for implementation? A sound observation with an unsupported remedy survives as
-`unresolved`, with its specific gap, unless a narrower supported remedy resolves
-it. An unsupported observation is rejected or left unresolved pending identified
-source, never accepted because it sounds plausible. Self-reported confidence,
+`unresolved`, with its specific gap, unless a revised supported remedy resolves
+it. An inaccurate proposed name or overbuilt remedy is a reason to repair that
+proposal, not discard its supported observation. An unsupported observation is
+rejected or left unresolved pending identified source, never accepted because it
+sounds plausible. Self-reported confidence,
 pattern names, and peer agreement do not replace evidence.
 
-For a proposed change, compare what readers no longer track with the calls,
-parameters, concepts, dependencies, and migration work introduced. Consider caller
-and implementation together and the strongest reason to retain the design.
-Prefer the smallest net improvement, not the shortest diff.
+Apply the contract's quality and compatibility criteria to caller and
+implementation together. Make the decision at the candidate's actual scope:
+several local improvements do not become a speculative redesign when collected.
+A rejection for insufficient benefit needs a source-specific tradeoff, not just
+the presence of a new name, type, helper, or changed signature. Accept a sufficient
+improvement, revise the remedy, or retain the exact unresolved decision.
 
 Inspect only the preservation constraints implicated by that transformation,
 using the matching context from [language routing](languages.md): exact supported
