@@ -19,6 +19,13 @@ Bun tests check source boundaries, stable IDs, routing, resource delivery, and c
 integrity only; they do not prove that a model reaches the expected judgments.
 No new model, dependency, benchmark service, or review-time execution is required.
 
+The addition was mechanically checked in GitHub Actions with `bun run build`,
+`bun test`, `bun run typecheck`, `bun run validate`, and `bun run package`. The
+existing PR validation workflow records native integration checks for the final
+head. Canonical policy and generated Claude/Codex resources are checked byte for
+byte; evaluation inputs and rubrics are not served as installed review resources.
+The temporary authoring workflow and helper were removed from the final tree.
+
 Rule identity: `ts.*` is a new namespace. All existing `go.*` IDs remain unchanged;
 there is no automatic cross-language rule migration. Function cohesion retains
 two independent rule IDs; profiles inherit their stated TS owner rule.
