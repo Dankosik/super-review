@@ -1,0 +1,51 @@
+name: Resolve Rust and TypeScript integration
+
+on:
+  push:
+    branches: [feat/rust-review-support]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-ts-merge-preparation
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.repository == 'Dankosik/super-review'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: 1.4.1
+      - name: Resolve the pinned TypeScript merge
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python3 .github/rust-ts-merge.py
+          git diff --check
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - run: bun test
+      - run: bun run typecheck
+      - run: bun run validate
+      - run: bun run package
+      - run: bun scripts/check-mcp.ts
+      - name: Commit the verified merge to the existing Rust PR branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add --all
+          git diff --cached --check
+          test -z "$(git diff --name-only --diff-filter=U)"
+          git commit -m 'Merge main and preserve Go, TypeScript, and Rust review support'
+          gh auth setup-git
+          git push origin HEAD:refs/heads/feat/rust-review-support
