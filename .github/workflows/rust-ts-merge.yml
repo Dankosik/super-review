@@ -31,6 +31,14 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           python3 .github/rust-ts-merge.py
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/validate.ts')
+          text = path.read_text()
+          old = '(ids.size + tsIDs.length)'
+          assert old in text
+          path.write_text(text.replace(old, 'ids.size'))
+          PY
           git diff --check
       - run: bun install --frozen-lockfile
       - run: bun run build
