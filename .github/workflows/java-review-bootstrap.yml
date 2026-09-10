@@ -18,6 +18,21 @@ jobs:
         with:
           bun-version: 1.4.1
       - run: python3 .java-review-apply.py
+      - name: Finish typed assertions and shared scope wording
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          def replace(path, old, new):
+              file = Path(path)
+              text = file.read_text()
+              assert text.count(old) == 1, (path, old)
+              file.write_text(text.replace(old, new))
+          replace('tests/java.test.ts', 'expect((await reader.source(snapshot.id, "head", "Example.java")).content).toContain("needle");', 'expect(await reader.source(snapshot.id, "head", "Example.java")).toMatchObject({ content: expect.stringContaining("needle") });')
+          replace('tests/java.test.ts', 'expect((await reader.source(snapshot.id, "head", "pom.xml")).content).toContain("17");', 'expect(await reader.source(snapshot.id, "head", "pom.xml")).toMatchObject({ content: expect.stringContaining("17") });')
+          replace('README.md', 'every changed Go area', 'every changed Go or Java area')
+          replace('README.md', 'Other languages and GitHub Enterprise\nare not supported.', 'Languages other than Go and Java, and GitHub Enterprise,\nare not supported.')
+          replace('skills/super-review/references/team-rules.md', 'The conditional\nlenses use `Lens: representation` / `go.representation.express-concepts` and\n`Lens: rationale` / `go.rationale.explain-constraints`. No existing ID changes.', 'The conditional\nlenses use `Lens: representation` / `<language>.representation.express-concepts`\nand `Lens: rationale` / `<language>.rationale.explain-constraints`, with `go` or\n`java` matching the source and rule scope. No existing ID changes.')
+          PY
       - run: bun install --frozen-lockfile
       - run: bun run build
       - run: bun test
