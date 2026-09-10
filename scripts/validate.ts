@@ -27,14 +27,16 @@ for (const file of runtimeFiles.filter(p => p.endsWith(".md"))) {
     const path = resolve(dirname(file), decodeURIComponent(target));
     if (relative(skill, path).startsWith("..") || !runtimeFiles.includes(path)) errors.push("Missing or unpackaged link: " + relative(root, file) + " -> " + target);
   }
-  if (file.includes("/lenses/")) for (const match of text.matchAll(/^## (go\.[a-z0-9.-]+)$/gm)) {
+  if (file.includes("/lenses/")) for (const match of text.matchAll(/^## ((?:go|rust)\.[a-z0-9.-]+)$/gm)) {
     if (ids.has(match[1])) errors.push("Duplicate rule ID: " + match[1]);
     ids.add(match[1]);
   }
 }
-if (ids.size === 0) errors.push("No stable Go rule IDs.");
-const expectedIDs: string[] = JSON.parse(await readFile(join(root, "evals/go/rule-ids.json"), "utf8"));
-if (JSON.stringify([...ids].sort()) !== JSON.stringify(expectedIDs.sort())) errors.push("Rule IDs changed: update migration documentation and rule-ids.json intentionally.");
+for (const language of ["go", "rust"]) {
+  const expectedIDs: string[] = JSON.parse(await readFile(join(root, "evals/" + language + "/rule-ids.json"), "utf8"));
+  const actual = [...ids].filter(id => id.startsWith(language + ".")).sort();
+  if (!actual.length || JSON.stringify(actual) !== JSON.stringify(expectedIDs.sort())) errors.push(language + " rule IDs changed: document migration and update the manifest intentionally.");
+}
 for (const role of ["super-review", "super-review-specialist"]) {
   const config = frontmatter(await readFile(join(root, "adapters/opencode/agents/" + role + ".md"), "utf8"));
   if (config.permission?.["*"] !== "deny") errors.push(role + " does not deny unlisted tools.");

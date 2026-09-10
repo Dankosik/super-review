@@ -8,7 +8,9 @@ load team policy from B. These are distinct roles even when B and D coincide.
 Read source by these immutable revisions. A later PR update does not retarget
 the current report. Missing revisions or truncated data remain explicit gaps.
 
-Inventory changed files, exclusions, Go modules, and `go` directives. Read each
+Inventory changed files, languages, exclusions, Go modules/`go` directives, and
+Rust crates/workspaces with their effective edition, MSRV, targets and features.
+Manifests are context, not additional review targets. Read each
 included declaration in full and inspect context as needed. Restrict coverage to
 available source. Gather shared context, then delegate; let specialists acquire
 lens-specific callers and declarations rather than finishing their passes first.
@@ -28,6 +30,12 @@ A small PR or a clean first impression does not justify dropping a base question
 Resolve policy for additional aspects before dispatch, using the same pinned B.
 Honor user scope; other questions in a targeted review are not requested.
 Announce scope, selected lenses/profiles and reasons, then progress at batch boundaries.
+
+The table links Go implementations. For Rust, use the corresponding modules in
+[Rust context](languages/rust.md); keep the same eight questions and select
+conditional aspects under [the shared catalog](aspects.md). Partition mixed-language
+areas when needed so a child receives only applicable language rules. Go rule IDs
+and profiles never implicitly govern Rust.
 
 | Lens | Question |
 | --- | --- |
@@ -52,12 +60,12 @@ Use these three sections in each assignment; do not assume inherited context:
 
 | Section | Content |
 | --- | --- |
-| Review identity | PR, B/H/D, issued source receipt, instruction identity from the contract, applicable Go versions/build constraints. |
+| Review identity | PR, B/H/D, issued source receipt, instruction identity from the contract, applicable language, supported version/edition and build constraints. |
 | Assignment | Task ID, one lens, selected profiles and source signals, exact files/symbols, user exclusions, effective rules/conflicts, permitted context. |
 | Materials | Neutral diff/source anchors; complete resources or source blocks already supplied, identified by path and source revision or trusted instruction identity; locations of still-needed resources and omitted ranges. |
 
-Each child needs the [contract](review-contract.md), [Go context](languages/go.md),
-assigned lens, [candidate format](../assets/finding-template.md), and only selected
+Each child needs the [contract](review-contract.md), its language context
+([Go](languages/go.md) or [Rust](languages/rust.md)), assigned language-specific lens, [candidate format](../assets/finding-template.md), and only selected
 profiles. Complete matching resources already supplied in this task count as read;
 load only missing resources, preferably together. A reference, summary, or partial
 excerpt is not complete source. Reuse exact supplied source ranges; read missing

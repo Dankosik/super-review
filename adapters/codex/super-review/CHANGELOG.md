@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add Rust review through language-specific base/conditional lenses and owner profiles; preserve all Go rule IDs.
+- Read pinned Rust source and scoped Cargo context with explicit test/generated-item limitations.
+- Add Rust policy examples, contrasting evaluation packets and mechanical reader/resource tests. Live model quality has not been evaluated.
+
 The skill, rules, templates, and adapters share one SemVer version. Changes to
 review decisions are product behavior, even when they only edit Markdown.
 

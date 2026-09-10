@@ -28,11 +28,12 @@ and implementation together and the strongest reason to retain the design.
 Prefer the smallest net improvement, not the shortest diff.
 
 Inspect only the preservation constraints implicated by that transformation,
-using [Go context](languages/go.md): exact supported operation/signature, effects,
-API and method sets, ownership/mutation, error identity, absence, and defer/lifetime.
-Do not infer equivalence from a happy-path example or empty literal search.
-Narrow incompatible/uncertain advice or keep it unresolved; no tests, builds,
-newer APIs, or claims of tested equivalence are authorized by verification.
+using the applicable context: [Go](languages/go.md) or [Rust](languages/rust.md).
+Establish supported operations/signatures, effects, API and trait/method contracts,
+ownership/mutation, error identity, absence, evaluation and resource/drop lifetime
+where relevant to the proposal. Do not infer equivalence from a happy-path example
+or empty literal search. Narrow incompatible/uncertain advice or keep it unresolved;
+no tests, builds, newer APIs, or claims of tested equivalence are authorized by verification.
 
 | Disposition | Record |
 | --- | --- |

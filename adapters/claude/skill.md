@@ -1,6 +1,6 @@
 ---
 name: review
-description: Review the readability and maintainability of a Go pull request with Super Review.
+description: Review the readability and maintainability of a Go or Rust pull request with Super Review.
 argument-hint: "<PR URL> [scope or review aspects]"
 disable-model-invocation: true
 context: fork

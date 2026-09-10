@@ -1,3 +1,5 @@
+import { exclusion, generatedSource, readableSource, sourceLanguage, rustScopeNote, type SourceLanguage } from "./languages.ts";
+export { exclusion } from "./languages.ts";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { randomUUID } from "node:crypto";
@@ -6,7 +8,7 @@ const exec = promisify(execFile);
 type GetJSON = (endpoint: string) => Promise<any>;
 type Revision = "base" | "head" | "diff-base";
 type TreeEntry = { path: string; mode: string; type: string; sha: string; size?: number };
-type ChangedFile = { path: string; previousPath?: string; status: string; exclusion?: string; patch?: string; patchAvailable: boolean };
+type ChangedFile = { path: string; language?: SourceLanguage; previousPath?: string; status: string; exclusion?: string; patch?: string; patchAvailable: boolean };
 export type Snapshot = {
   id: string; url: string; repository: string; headRepository: string;
   B: string; H: string; D: string;
@@ -72,14 +74,6 @@ export function safePath(value: string, allowRoot = false): string {
     throw new Error("Use an exact repository-relative path without traversal.");
   }
   return value;
-}
-
-export function exclusion(path: string, status?: string): string | undefined {
-  if (status === "removed") return "deleted file: no head source";
-  if (path.split("/").some(p => ["vendor", "node_modules", ".git"].includes(p))) return "vendored or repository internals";
-  if (path.endsWith("_test.go")) return "test file";
-  if (!path.endsWith(".go")) return "unsupported language or non-source file";
-  return undefined;
 }
 
 // A second boundary behind the tool schemas: no arbitrary endpoints or methods.
@@ -199,6 +193,7 @@ export class GitHubReader {
       previousPath: f.previous_filename ? safePath(f.previous_filename) : undefined,
       status: f.status,
       exclusion: exclusion(f.filename, f.status),
+      language: sourceLanguage(f.filename),
       patch: f.patch,
       patchAvailable: typeof f.patch === "string",
     }));
@@ -237,19 +232,19 @@ export class GitHubReader {
   async source(id: string, revision: Revision, path: string, startLine = 1, lineCount = 400) {
     const snapshot = this.snapshot(id);
     safePath(path);
-    const allowed = path.endsWith(".go") || path.endsWith(".md") || path.split("/").at(-1) === "go.mod";
-    if (!allowed || path.endsWith("_test.go") || path.split("/").some(p => ["vendor", ".git", "node_modules"].includes(p))) {
-      return { path, excluded: true, reason: "Only non-test Go, go.mod, and Markdown policy context are readable." };
+    if (!readableSource(path)) {
+      return { path, excluded: true, reason: "Only eligible Go/Rust source, supported manifest/configuration context, and Markdown are readable." };
     }
     const { repo, ref } = this.revision(snapshot, revision);
     const entry = await this.locate(repo, ref, path);
     if (!entry) return { path, revision, commit: ref, exists: false };
     const content = await this.text(repo, entry);
-    if (path.endsWith(".go") && /^\/\/ Code generated .* DO NOT EDIT\.$/m.test(content)) {
-      return { path, revision, commit: ref, excluded: true, reason: "generated Go source" };
+    if (generatedSource(path, content)) {
+      return { path, revision, commit: ref, excluded: true, reason: "generated source" };
     }
     return {
       path, revision, commit: ref, blob: entry.sha, exists: true,
+      language: sourceLanguage(path), scopeNote: path.endsWith(".rs") ? rustScopeNote : undefined,
       ...lineWindow(content, startLine, lineCount),
       sourceURL: "https://github.com/" + repo + "/blob/" + ref + "/" + path.split("/").map(encodeURIComponent).join("/"),
     };
@@ -270,7 +265,7 @@ export class GitHubReader {
     const inspect = async (entry: TreeEntry) => {
       try {
         const content = await this.text(snapshot.headRepository, entry);
-        if (/^\/\/ Code generated .* DO NOT EDIT\.$/m.test(content)) {
+        if (generatedSource(entry.path, content)) {
           unread.push({ path: entry.path, reason: "generated" });
           return;
         }
@@ -287,6 +282,7 @@ export class GitHubReader {
     unread.sort((a, b) => a.path.localeCompare(b.path));
     return {
       commit: snapshot.H, literal: needle, prefix,
+      scopeNote: page.some(entry => entry.path.endsWith(".rs")) ? rustScopeNote : undefined,
       scanned: page.map(e => e.path), matches, unread,
       nextOffset: offset + page.length < files.length ? offset + page.length : null,
       remainingFiles: Math.max(0, files.length - offset - page.length),

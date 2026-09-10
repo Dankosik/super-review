@@ -1,6 +1,6 @@
 # Super Review
 
-A focused review of **readability, idiomatic Go, and maintainability** in a GitHub
+A focused review of **readability, idiomatic Go and Rust, and maintainability** in a GitHub
 pull request. Give it a PR URL; independent specialists inspect the selected
 aspects, and the main agent verifies their recommendations before returning a report.
 Clear code can produce no recommendations. Source is never refactored by the skill.
@@ -54,7 +54,7 @@ skill ZIP contains portable instructions; it does not install a harness adapter.
 
 ## Choose what to review
 
-The default considers eight base lenses for every changed Go area, then selects
+The default considers eight base lenses for every changed Go or Rust area, then selects
 contextual aspects from inspected source. Two conditional lenses cover
 **representation** (data/state shapes) and **rationale** (supported explanations
 of non-obvious choices). Four profiles deepen an existing lens: lifecycle
@@ -76,7 +76,7 @@ A targeted review lists other aspects as not requested. It does not quietly call
 them checked. A profile-only request covers that narrower question, not all of
 its owning lens. Missing context or an applicable check that could not run makes
 coverage partial, never silently clean. No special flags or model configuration
-are needed. Additional aspects remain within the same read-only Go review scope.
+are needed. Additional aspects remain within the same read-only Go/Rust review scope.
 
 Invoke Super Review without a PR URL to get launch guidance and a reader check.
 Missing GitHub access or unavailable delegation is reported directly. Installation
@@ -140,8 +140,9 @@ and [examples](examples/team-rules/SUPER_REVIEW.md).
 
 [Native integration details](docs/native-integrations.md) describe tested versions,
 permissions, and update/removal commands. [Validation](docs/validation.md) separates
-mechanical checks from model execution. Other languages and GitHub Enterprise
-are not supported. Missing source, API caps, or unfinished specialists make the
+mechanical checks from model execution. Languages other than Go and Rust, and GitHub Enterprise,
+are not supported. See [Rust support and source limits](docs/rust-review.md)
+and the [Rust team-rule example](examples/team-rules/RUST.md). Missing source, API caps, or unfinished specialists make the
 affected coverage partial.
 
 Bug hunting, security assessment, product validation, and test coverage are
