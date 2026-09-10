@@ -2,7 +2,6 @@
 set -eu
 
 review_root=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
-review_state=${XDG_STATE_HOME:-"$HOME/.local/state"}/super-review/reviews
 worker_file=${XDG_CONFIG_HOME:-"$HOME/.config"}/super-review/opencode-specialist-model
 worker_model=${SUPER_REVIEW_SPECIALIST_MODEL:-}
 if [ -z "$worker_model" ] && [ -f "$worker_file" ]; then
@@ -26,8 +25,6 @@ if ! command -v "$opencode_bin" >/dev/null 2>&1; then
   printf '%s\n' 'OpenCode is not available. Install OpenCode or set OPENCODE_BIN to its executable.' >&2
   exit 127
 fi
-mkdir -p "$review_state"
-cd "$review_state"
 export OPENCODE_CONFIG_DIR="$review_root"
 if [ "$#" -eq 0 ]; then
   exec "$opencode_bin" --pure --agent super-review

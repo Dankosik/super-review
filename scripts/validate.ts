@@ -45,8 +45,6 @@ for (const role of ["super-review", "super-review-specialist"]) {
 }
 const command = frontmatter(await readFile(join(root, "adapters/opencode/commands/super-review.md"), "utf8"));
 if (command.agent !== "super-review" || command.subtask !== false) errors.push("Command would prevent primary orchestration.");
-const plugin = JSON.parse(await readFile(join(root, "adapters/opencode/package.json"), "utf8"));
-if (plugin.dependencies["@opencode-ai/plugin"] !== manifest.devDependencies["@opencode-ai/plugin"]) errors.push("Adapter package and development dependency differ.");
 for (const path of ["plugin.json", ".codex-plugin/plugin.json", "adapters/claude/plugin/.claude-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json"]) {
   const native = JSON.parse(await readFile(join(root, path), "utf8"));
   if (native.name !== "super-review" || native.version.split("+")[0] !== manifest.version) errors.push("Native identity/version mismatch: " + path);
@@ -62,21 +60,24 @@ for (const role of ["orchestrator", "specialist"]) {
   if (role === "orchestrator" && (agent.model !== "inherit" || agent.effort)) errors.push("Claude orchestrator must inherit the user selection.");
   if (role === "specialist" && (agent.model !== "sonnet" || agent.effort !== "medium")) errors.push("Claude specialist profile changed without updating validation.");
   const allowed = agent.tools.split(",").map((s: string) => s.trim());
-  if (allowed.some((name: string) => !name.startsWith("mcp__plugin_super-review_reader__") && !(role === "orchestrator" && name === "Agent"))) errors.push("Unexpected Claude tool: " + role);
+  const expectedTools = role === "orchestrator" ? ["Agent", "Read", "Glob", "Grep", "Bash"] : ["Read", "Glob", "Grep", "Bash"];
+  if (JSON.stringify(allowed.sort()) !== JSON.stringify(expectedTools.sort())) errors.push("Unexpected Claude native tools: " + role);
 }
 if (claudeEntry.model !== "inherit" || claudeEntry.effort) errors.push("Claude command must inherit the user model and effort.");
 const openCodeModels = JSON.parse(await readFile(join(root, "adapters/opencode/opencode.json"), "utf8"));
 if (openCodeModels.agent?.["super-review-specialist"]?.model !== "{env:SUPER_REVIEW_SPECIALIST_MODEL}" || openCodeModels.model) errors.push("OpenCode must require an explicit specialist without overriding the orchestrator.");
 const catalog = JSON.parse(await readFile(join(root, ".agents/plugins/marketplace.json"), "utf8"));
 if (catalog.plugins[0]?.source?.path !== "./adapters/codex/super-review") errors.push("The project catalog must point at the native Codex package.");
-const nativeMCP = JSON.parse(await readFile(join(root, "adapters/codex/super-review/.mcp.json"), "utf8"));
-if (nativeMCP.mcpServers.super_review_wait.tool_timeout_sec < 660 || nativeMCP.mcpServers.super_review_wait.env.SUPER_REVIEW_COMPLETION_MODE !== "wait" || nativeMCP.mcpServers.super_review.env.SUPER_REVIEW_COMPLETION_MODE !== "submit") errors.push("Native Codex completion wait is not isolated with a sufficient timeout.");
-if (nativeMCP.mcpServers.super_review.cwd !== "." || JSON.stringify(nativeMCP.mcpServers.super_review.args) !== JSON.stringify(["runtime/mcp.mjs"])) errors.push("Native Codex must resolve the reader from its plugin working directory.");
 for (const file of runtimeFiles) {
   const packaged = join(root, "adapters/codex/super-review/skills/super-review", relative(skill, file));
   if (!(await readFile(file)).equals(await readFile(packaged))) errors.push("Stale Codex policy: " + relative(skill, file));
 }
-if (!(await readFile(join(root, "runtime/mcp.mjs"))).equals(await readFile(join(root, "adapters/claude/plugin/runtime/mcp.mjs")))) errors.push("Native readers differ.");
-await readFile(join(root, "runtime/THIRD_PARTY_LICENSES.txt"));
+for (const directory of ["skills/super-review", "adapters/claude/plugin", "adapters/codex/super-review", "adapters/opencode"]) {
+  const files = await walk(join(root, directory));
+  if (files.some(file => /(?:^|\/)(?:\.?mcp\.json|mcp\.mjs)$/.test(file) || file.includes("/runtime/"))) errors.push("Legacy runtime shipped in " + directory);
+}
+for (const file of [".codex-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json"]) {
+  if (JSON.parse(await readFile(join(root, file), "utf8")).mcpServers) errors.push("Legacy server declaration in " + file);
+}
 if (errors.length) throw new Error(errors.join("\n"));
 console.log("Validated skill links, " + ids.size + " stable rule IDs, native payloads, versions, and adapter routing.");

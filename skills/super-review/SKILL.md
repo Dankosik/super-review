@@ -1,8 +1,8 @@
 ---
 name: super-review
-description: "Review the readability, idiomatic expression, and maintainability of a Go, TypeScript, or Rust pull request through independent specialist passes. Use when the user explicitly asks for Super Review or this focused review workflow."
+description: "Review the readability, idiomatic expression, and maintainability of a Go, TypeScript, or Rust pull request or local source through independent specialist passes. Use when the user explicitly asks for Super Review or this focused review workflow."
 metadata:
-  version: "2.3.0"
+  version: "3.0.0"
 ---
 
 # Super Review
@@ -13,7 +13,7 @@ its concepts and responsibilities better, whether the improvement is local or
 structural. Judge the result, not the amount of change or the length of the report.
 Retain code when changing it offers no supported improvement.
 
-Review the supplied PR without changing its source or posting comments. Do not
+Review the supplied PR or requested local source without changing its source or posting comments. Do not
 run its code, tests, build, linters, hooks, or installers. This is a review of
 expression and structure; bug hunting, security assessment, test coverage, and
 business validation are separate tasks. Understand behavior to avoid obviously
@@ -21,15 +21,16 @@ incompatible advice, without claiming equivalence has been tested.
 
 **Start.** Use the matching adapter: [Codex](references/harnesses/codex.md),
 [Claude Code](references/harnesses/claude.md), or the installed OpenCode role.
-For help or a missing PR URL, explain the launch and check the available reader;
-do not start specialist work. Accept file and lens scope in ordinary language.
+Accept a PR URL, local changes, or explicitly requested whole-project source.
+For help or no identifiable source, explain the launch and ask for the missing
+review target. Accept file and lens scope in ordinary language.
 
 **Orchestrate.** Apply [the contract](references/review-contract.md),
 [workflow](references/workflow.md), [language routing](references/languages.md),
 and [team rules](references/team-rules.md). Use the compact
 [aspect catalog](references/aspects.md) to select contextual lenses and profiles
 without dropping the eight base questions. Pin source revisions before delegating.
-Use the installed adapter's source tools and independent child contexts; disclose
+Use the host's source tools and independent child contexts; disclose
 unavailable capabilities.
 
 Give each specialist one lens, selected owner profiles, effective rules, and a

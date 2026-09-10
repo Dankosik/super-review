@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { cp, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -10,7 +10,6 @@ const binary = process.argv[2] ?? "opencode";
 const scratch = await mkdtemp(join(tmpdir(), "super-review-native-"));
 const config = join(scratch, "config");
 await cp(join(root, "dist/opencode"), config, { recursive: true });
-await writeFile(join(config, "tools/untrusted_probe.ts"), 'import { tool } from "@opencode-ai/plugin"; export default tool({description:"Permission probe; must be unavailable to review roles.",args:{},async execute(){return "probe";}});\n');
 const env = { ...process.env, OPENCODE_CONFIG_DIR: config, SUPER_REVIEW_SPECIALIST_MODEL: "xai/grok-build-0.1" };
 async function json(args: string[]) {
   const result = await exec(binary, [...args, "--pure"], { cwd: scratch, env, maxBuffer: 8 * 1024 * 1024, timeout: 90_000 });
@@ -23,12 +22,13 @@ try {
     const agent = await json(["debug", "agent", name]);
     if (name.endsWith("-specialist") && (agent.model?.providerID !== "xai" || agent.model?.modelID !== "grok-build-0.1")) throw new Error("Specialist model is not explicit.");
     const allowed = Object.entries(agent.tools).filter(([, enabled]) => enabled).map(([tool]) => tool).sort();
-    const forbidden = ["bash", "read", "glob", "grep", "edit", "write", "webfetch", "untrusted_probe"];
-    if (name.endsWith("-specialist")) forbidden.push("task", "skill", "super_review_snapshot", "super_review_files");
+    const forbidden = ["edit", "write", "webfetch"];
+    if (name.endsWith("-specialist")) forbidden.push("task", "skill");
     for (const tool of forbidden) if (agent.tools[tool] !== false) throw new Error(name + " unexpectedly exposes " + tool);
-    for (const tool of ["super_review_diff", "super_review_source", "super_review_search", "super_review_resource"]) {
+    for (const tool of ["read", "glob", "grep", "bash"]) {
       if (!agent.tools[tool]) throw new Error(name + " lacks " + tool);
     }
+    if (allowed.some(tool => tool.startsWith("super_review_") || tool.startsWith("mcp__"))) throw new Error("Legacy custom tools still exposed.");
     if (name === "super-review" && (!agent.tools.task || !agent.tools.skill || agent.mode !== "primary")) {
       throw new Error("Orchestration is not available to the primary role.");
     }

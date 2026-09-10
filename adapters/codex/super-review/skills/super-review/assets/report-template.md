@@ -12,7 +12,8 @@ do not claim perfection or absence of observations when unresolved ones remain.
 
 ## Context and status
 
-PR URL; B, H, D; Super Review version; `complete` or `partial`; independent or
+PR URL and B/H/D, or local root, review extent and commit/file-hash identity;
+Super Review version; `complete` or `partial`; independent or
 explicitly limited sequential execution; specialist model/profile and reasoning
 effort when available. Include trusted instruction revision/digests when exposed,
 otherwise `content identity unverified`, as defined by the contract. Do not confuse
@@ -51,9 +52,10 @@ unsupported languages; never imply they were reviewed.
 
 ### R-001 — <concrete change>
 
-Location at H: file, symbol, verified lines/link. Scope: local or cross-file.
+Location at the reviewed revision/snapshot: file, symbol, verified lines/link. Scope: local or cross-file.
 Basis: effective rules and contributing profiles, including convention-only advice.
-Connect the observation to D..H; distinguish supporting unchanged context. Explain
+Connect the observation to D..H or the selected whole-source snapshot; distinguish
+supporting context. Explain
 the reading/maintenance task, supported transformation, net benefit, source-supported keep
 alternative, and relevant preservation constraints. Include affected files and
 originating candidate IDs. Make the bounded change usable by a coding agent;

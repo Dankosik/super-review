@@ -10,7 +10,7 @@ Use the task header to resolve snapshot, scope, policy and instruction identity
 under the contract before judging a block. Resolve conflicting material rather
 than assuming matching version labels mean matching text. Read its changed declaration, comparison at D when needed, and cited uses. Reuse
 complete matching source already in your context; fetch missing evidence instead
-of rereading everything. Verify the link to this PR, the effective rule, and the
+of rereading everything. Verify the link to the assigned scope, the effective rule, and the
 concrete burden, not merely that the code exists. A disguised bug report or an
 imagined future requirement is outside scope; explicit team consistency is a
 valid, separately stated basis.

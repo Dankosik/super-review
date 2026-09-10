@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.0.0 — 2026-09-10
+
+- Breaking: remove all MCP servers, custom source tools, source/result caches, setup scripts and bundled runtime dependencies.
+- Use native file/search, Git/GitHub and agent completion tools in Codex, Claude and OpenCode. Native shell access is governed by host permissions and review instructions, not the old reader allowlist.
+- Support explicit local-change and whole-project review targets with pinned source identities, alongside PR review.
+- Preserve model profiles, all 33 rule IDs, independent lens coverage and candidate reconciliation.
+- Generate instruction-only packages and document removal of the legacy Codex waiting namespace.
+
 ## 2.3.0 — 2026-09-10
 
 - Favor demonstrated improvements in readability and maintainability across Go, TypeScript, and Rust; distinguish patch-writing effort from lasting code complexity.
@@ -89,4 +97,4 @@ review decisions are product behavior, even when they only edit Markdown.
 - Versioned complete-adapter and standalone-skill archives.
 
 Default rule IDs are listed in `evals/go/rule-ids.json`. No rule-ID migration is
-required for 2.3.0.
+required for 3.0.0.

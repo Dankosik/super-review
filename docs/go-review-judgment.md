@@ -1,3 +1,5 @@
+> Historical design/evaluation record. For version 3 source access and installation, see [native integrations](native-integrations.md).
+
 # Go-specific review judgment
 
 Audited against `34acd519d93e79c2b1a1324ed974bbb58861c3bc` on 2026-09-09.

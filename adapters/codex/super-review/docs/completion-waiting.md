@@ -1,3 +1,9 @@
+# Version 3: native completion
+
+Version 3 uses host agent notifications, blocking waits and full-result reads.
+The plugin supplies no barrier, deadlines, receipts or completion server.
+The following is retained historical evidence for 2.x and is not setup guidance.
+
 # Completion waiting
 
 Super Review 2.1 moves waiting out of the orchestrator's repeated model turns.

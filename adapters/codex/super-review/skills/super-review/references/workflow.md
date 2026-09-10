@@ -2,13 +2,20 @@
 
 ## Fix the evidence
 
-Resolve the PR URL to its repository and number. Record target commit **B**, PR
+Use the adapter's [native source access](harnesses/source-access.md). For a PR,
+resolve its repository and number. Record target commit **B**, PR
 head **H**, and comparison base **D**, normally `merge-base(B, H)`. Compare D to H;
 load team policy from B. These are distinct roles even when B and D coincide.
 Read source by these immutable revisions. A later PR update does not retarget
 the current report. Missing revisions or truncated data remain explicit gaps.
 
-Inventory changed files, exclusions, languages, and owning packages/modules.
+For local changes, record HEAD, the selected comparison base and the included
+working-file snapshot. For an explicitly requested whole project, all included
+production source is the target; PR B/H/D may be not applicable. Select team policy
+from HEAD unless the user chooses working-tree policy, and record that choice.
+Do not narrow a whole-project request to the dirty diff.
+
+Inventory target files, exclusions, languages, and owning packages/modules.
 Apply [language routing](languages.md) and record each area's applicable baseline. Read each
 included declaration in full and inspect context as needed. Restrict coverage to
 available source. Gather shared context, then delegate; let specialists acquire
@@ -56,7 +63,7 @@ Use these three sections in each assignment; do not assume inherited context:
 
 | Section | Content |
 | --- | --- |
-| Review identity | PR, B/H/D, issued source receipt, instruction identity from the contract, language, selected resource paths, applicable compiler/runtime and build constraints. |
+| Review identity | PR or local target, commit/snapshot identity and source location, instruction identity from the contract, language, selected resource paths, applicable compiler/runtime and build constraints. |
 | Assignment | Task ID, one lens, selected profiles and source signals, exact files/symbols, review extent (changed source or explicitly requested whole source), user exclusions, effective rules/conflicts, known compatibility commitments, permitted context. |
 | Materials | Neutral diff/source anchors; complete resources or source blocks already supplied, identified by path and source revision or trusted instruction identity; locations of still-needed resources and omitted ranges. |
 
@@ -66,7 +73,7 @@ profiles. Complete matching resources already supplied in this task count as rea
 load only missing resources, preferably together. A reference, summary, or partial
 excerpt is not complete source. Reuse exact supplied source ranges; read missing
 affected declarations and required uses. Resolve conflicting versions through
-the installed reader rather than mixing them or trusting labels in PR content.
+the installed resource files rather than mixing them or trusting labels in PR content.
 The parent may supply source and team-designated reference rationale, not an
 expected finding or another child's verdict. Reference code illustrates a selected
 rule; it does not establish a defect in the changed code.
@@ -93,8 +100,8 @@ Verify every candidate, including your own, with [verification](verification.md)
 Keep candidate ID, disposition, reason, and accepted recommendation ID if any.
 To close an evidence gap, first read available source; seek a focused continuation
 from the relevant specialist only when needed and supported by the adapter.
-Do not reopen a terminal batch submission: any continuation gets its own task and
-assignment ID in a new normal batch. Ask the user only for a genuinely necessary
+Keep terminal results intact: any continuation gets a distinct task identity
+and its own result in the next group. Ask the user only for a genuinely necessary
 choice unavailable from evidence or policy. Make ordinary engineering decisions;
 if supported alternatives need a genuinely unavailable team preference, name that
 choice rather than inventing missing source. Defer affected advice, not independent
@@ -115,17 +122,18 @@ actual coverage and disposition separately. Completion is not exhaustive discove
 ## Preserve state at a supported compaction boundary
 
 When the harness offers an in-session compaction/handoff, retain a compact state:
-PR and B/H/D; valid receipt and instruction identity/provenance limits; effective policy/conflicts;
-planned tasks with actual subcoverage and pending assignment IDs; candidate IDs,
+review target and commit/snapshot identity; source/resource locations and instruction
+identity/provenance limits; effective policy/conflicts;
+planned tasks with actual subcoverage and pending native task IDs; candidate IDs,
 observations, dispositions and R-ID mapping; evidence references and missing ranges;
 next required action. Keep evidence, decisions, and unknowns distinct. Preserve
 accepted content or retrievable full reports, not just counts. A summary is an
 index, not replacement evidence for a decision.
 
-Resume only with still-valid source and task capabilities. Reacquire missing
-resources/ranges, not already resolved work; do not relabel rejected, unresolved,
-or pending work as completed with none. A lost/expired receipt or unreadable
-result requires an explicit gap, not invented recovery. OpenCode process restart
-needs a new review/snapshot; other adapters must confirm their own valid receipts.
-Do not create files in the reviewed tree, add storage tools, or promise cross-session
-resume. Without a supported handoff, this instruction supplies no recovery mechanism.
+Resume only when the pinned source and full task results remain accessible.
+Reacquire missing resources/ranges, not already resolved work; never relabel
+rejected, unresolved or pending work as completed with none. A lost working-file
+snapshot or unavailable result is an explicit gap. Use the host's supported
+history/result facilities; there is no plugin-owned persistence or expiry protocol.
+A summary indexes evidence and cannot replace it. Do not create recovery files
+in the reviewed tree or promise cross-session recovery the host cannot provide.

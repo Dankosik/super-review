@@ -1,6 +1,6 @@
 {
   "name": "super-review",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
   "description": "A focused Go, TypeScript, and Rust PR review skill for Claude Code, Codex, and OpenCode",
@@ -13,10 +13,7 @@
     "build": "bun scripts/build.ts"
   },
   "devDependencies": {
-    "@modelcontextprotocol/sdk": "1.30.0",
-    "@opencode-ai/plugin": "1.18.29",
     "@types/bun": "1.4.2",
-    "typescript": "7.0.2",
-    "zod": "4.3.6"
+    "typescript": "7.0.2"
   }
 }

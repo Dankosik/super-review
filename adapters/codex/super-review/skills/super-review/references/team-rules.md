@@ -1,6 +1,8 @@
 # Team rules
 
-Load root `SUPER_REVIEW.md` from **B**, the pinned target commit. Follow only its
+Load root `SUPER_REVIEW.md` from **B**, the pinned target commit for a PR. For a
+local review use the policy revision recorded by the workflow in place of B
+throughout this reference. Follow only its
 explicit repository-relative links to Markdown policy documents, resolved relative
 to the referring file at B. Reject traversal outside the repository, remote
 instruction links, and executable policy. A missing linked policy file is a gap.

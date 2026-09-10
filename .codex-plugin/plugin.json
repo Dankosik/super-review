@@ -1,6 +1,6 @@
 {
   "name": "super-review",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "Independent readability and maintainability review for Go, TypeScript, and Rust pull requests.",
   "author": {
     "name": "Dankosik",
@@ -10,7 +10,6 @@
   "repository": "https://github.com/Dankosik/super-review",
   "license": "MIT",
   "skills": "./skills/",
-  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Super Review",
     "shortDescription": "Clear, justified Go, TypeScript, and Rust PR recommendations.",

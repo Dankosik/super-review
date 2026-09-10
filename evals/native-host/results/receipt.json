@@ -1,0 +1,109 @@
+{
+  "runs": [
+    {
+      "agent": "/root/native_review_probe",
+      "session": "01a08af1-ff08-7e51-a53d-9dbcec30cc6a",
+      "model": "gpt-6-astra",
+      "effort": "medium",
+      "complete": true,
+      "tools": [
+        "exec",
+        "list_agents",
+        "spawn_agent",
+        "wait_agent"
+      ]
+    },
+    {
+      "agent": "/root/native_review_probe/go_naming",
+      "session": "01a08af3-29bc-7b82-9a89-d9ae76df1558",
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "complete": true,
+      "tools": [
+        "exec",
+        "send_message"
+      ]
+    },
+    {
+      "agent": "/root/native_review_probe/ts_naming",
+      "session": "01a08af3-6112-74c2-a636-e1bcfb949f65",
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "complete": true,
+      "tools": [
+        "exec"
+      ]
+    },
+    {
+      "agent": "/root/native_review_probe/rust_naming",
+      "session": "01a08af4-09c1-7893-a1e6-d34826d2de5c",
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "complete": true,
+      "tools": [
+        "exec"
+      ]
+    }
+  ],
+  "instruction_hashes": {
+    "LICENSE": "c7074984876872b0b37f9a26c8c9afe67740ef3099903262beb64b4e96097e2a",
+    "SKILL.md": "91d7d946708d3a8503a107b8c5a148de6ce151ea6c6b4889658715d46c6aea93",
+    "references/review-contract.md": "22b9b522748ce99f3da9339dc76797a8c4ddb54a63f4bd908b96a4472356f4e5",
+    "references/aspects.md": "6bb055fc85848d67f474948ac7fd6817885660c7e823b0f813a9bb4bc73c8f3a",
+    "references/languages.md": "380a5a7091b6d607e43d26554dccc47973ad59618e394bc808a143d951ed1582",
+    "references/workflow.md": "26e5af09b9d24934a4269bb0b5f60599bca9b514a80e7e108c29397fe625b372",
+    "references/verification.md": "7a221a8a37aea2d162e5110cc3d5566f46ec54b404d4458b6a4cacee1195bce5",
+    "references/team-rules.md": "337841f9ef622f3ee2d800ff8102a2d55a41a58d5d1873dad18b009a76602f14",
+    "agents/openai.yaml": "bb666efc6af54dd165fcbb2c87b3b7dedee412aec3e968410acf775d133c60f3",
+    "assets/report-template.md": "5edeb4769ac7a7a7bf70e41e08852faa988ec272a6367773578f1b5a215c5f51",
+    "assets/finding-template.md": "ba34c4b370bd06ee54dc6dcb9c0c5867049c5111ff8c9b40d9baa5d92c9cbef7",
+    "references/harnesses/source-access.md": "8f8b5779bbaeaab8908ea034f5126c5373eed60fe03f66642a8a2233faa1d978",
+    "references/harnesses/codex.md": "093b516fbb41827c5687c2471504a9db26b9ff6928e086c8a41d4ab97488679e",
+    "references/harnesses/claude.md": "ac67e43f0770c6c9bcc4b2948f3020495d1ec38f6bcf337f99a4aeb41d4e4fff",
+    "references/languages/go.md": "7a7151f079bae68b4bb567e8cb5a266100488ee8adf1f0e9a19cd393e4f9638b",
+    "references/languages/rust.md": "ac08fc7e2baec7abd1df6bafb1e91cadd601f45061049ee581a4b6cfabca7636",
+    "references/languages/typescript.md": "e1f2cec627511fa0b520599577c057013b2d87b2837593d43ce981c787309706",
+    "references/profiles/error-expression.md": "fdc5ec479610ec50ac43ee29d9327e424fe3e7fa4b708beb6b3168de515548d6",
+    "references/profiles/effects-separation.md": "8d758adf82bf1745ab38377a6efe3bde97b2070000908b8cf39682c4a7a786f2",
+    "references/profiles/dependency-boundaries.md": "25797aec3558f34229f3325f84f6aafcca3ab891b6dd5bb1ca140371d2cf083c",
+    "references/profiles/lifecycle-ownership.md": "626425c2bfb4da67a5266f346a48583eaef2c49acadd3dbea31efdc55c18c023",
+    "references/lenses/abstractions.md": "b2d6473acf4802e0588c5576e6ca1049d014293c4a3c8277cb583c0676cac57d",
+    "references/lenses/representation.md": "27b653ae3a239f66e2edcb6252bd8cc421c6c52d7cd3a64b97b9ed4e8447efd9",
+    "references/lenses/rationale.md": "af79aaee8b3de5714a63de5b48157ab7fffdd4173a9f340816017375c2c66de6",
+    "references/lenses/data-flow.md": "67563065d83b009c077b0aea843831e946398cdf7d57a6d2553f29df4777bf1b",
+    "references/lenses/control-flow.md": "863802a34dd7744e9f5360811517692d402c6a586afde257940bb7e9cf8c9e57",
+    "references/lenses/api-clarity.md": "805b6e20e4c5a78f6771a982e458e4f38f14f70aa5b9f260bf89fdce6eda76e2",
+    "references/lenses/change-locality.md": "fff1a00780d461b03b760f550810d41cd4edbb712959a7a1f77eb70de4b88ab4",
+    "references/lenses/naming.md": "bede63d75625e4318065a5a8be77a6ed0ccc744d2e90a365ea38ace07b7cef8f",
+    "references/lenses/function-cohesion.md": "4c0080b8ef47ff56a3ff0bffd4934632112dbac0b6096207c94b138f1038f5ee",
+    "references/lenses/duplication.md": "a8de936eae77ed53e3273c19567c29de7debd8c9029f914d83b1637b0d579b7c",
+    "references/lenses/typescript/abstractions.md": "bccb4adacb4e1bd0fc7246c076bd73ec0f9cc2f6b4f40539a9c70667d114583c",
+    "references/lenses/typescript/representation.md": "cba86c2e1ad1774cec6958a1380427bd1890e1f82a61eba39861b6b4b3baeb48",
+    "references/lenses/typescript/rationale.md": "288029548f12602474686dd7a5ffff88ae21f132b81b1f8cb6605a714eca6e82",
+    "references/lenses/typescript/data-flow.md": "ded52160899a3759d7b416776912c7621576f83f51003efc1d78e169d048651e",
+    "references/lenses/typescript/control-flow.md": "d31dd62705d8f6b1741b148dd197290579919a63dc6d57b216c1aeb30ed44f25",
+    "references/lenses/typescript/api-clarity.md": "6329cf78342072415869f46b3adc11a5b205a6664af1053bbd6563fb76c917e4",
+    "references/lenses/typescript/change-locality.md": "07385541f55e7456a7a205763ca76e04e9d17e6e25fb7a27fbd4e5751fbb52cb",
+    "references/lenses/typescript/naming.md": "71569b7ec80985eb86d292a604c4b0b8d93c677443498ef74f9beae3f9736e7c",
+    "references/lenses/typescript/function-cohesion.md": "3b77144f2eab2e212e51a2e223f23a527e238766b7f055a6360db583a4a33317",
+    "references/lenses/typescript/duplication.md": "108ccbac798db6eae6d747bf6624b0b896374e4ebf50e8149be085256874cbc8",
+    "references/lenses/rust/abstractions.md": "569295d9c1560b8f2c55ab63f895ce9ddd600fdd420e0f4905eeadea67edc368",
+    "references/lenses/rust/representation.md": "06ca8e5c20a9187e4103650acb613629721b542ea4ae6a04321ca78606ca3bc1",
+    "references/lenses/rust/rationale.md": "752d153af07e4dc3c0c4b0bdb1c3d2084b073a09066738d1b7020c4ad61c0401",
+    "references/lenses/rust/data-flow.md": "eef86ba6f21391df9661f0dbe03938088107fbe40b7d69009d7c0451dfb337d7",
+    "references/lenses/rust/control-flow.md": "47e821aa81eb5a2128b92ec8c8886ff5dd338e0da937cf31578415e89ea8e407",
+    "references/lenses/rust/api-clarity.md": "3bfdd3e62c7b0962eb96f85a7f2280d5a60e96898caeb586bb4342c7aa9a9a4a",
+    "references/lenses/rust/change-locality.md": "c07beeccb6927db1121255b33898c67936a621308873f3d8aacb196d1e4b6937",
+    "references/lenses/rust/naming.md": "2abdd7d8e111fe5047b98f429650c83b7e3146e3272aa8a05c043a7075af7c9e",
+    "references/lenses/rust/function-cohesion.md": "1ce38449f7b04c9b43e333887325937d83a81d461873ccb5ab2943e14a67d2af",
+    "references/lenses/rust/duplication.md": "b49b9dad3d29f001200c4d4dc0b94bb103d7ac700238714aef920d2365e0f9dc",
+    "references/profiles/typescript/error-expression.md": "0ec38b9a832dd321a2278f8afd66dd06a4615f76efa7a7d526fa021fd524d8c0",
+    "references/profiles/typescript/effects-separation.md": "8b7c93c467b08e1672e44ea7776b981bf4f1710009b7af93135fdd9f241dab12",
+    "references/profiles/typescript/dependency-boundaries.md": "b30b4a1ab9eeeec600ecc6f920ce988253eb5253ae3ee4d65522891931b58424",
+    "references/profiles/typescript/lifecycle-ownership.md": "1ad08eeac1e0e9ea92495dd7122834d4284ecef51ac531306a467acabad5999f",
+    "references/profiles/rust/error-expression.md": "a7e27b3ceeea34439eadff6d1dcb8acb486f5910a1a7a52fc0f941d14982614c",
+    "references/profiles/rust/effects-separation.md": "511515d5866253cb0ebfd5c3fd0865311ea05e744b18bff12fcd12e71322f804",
+    "references/profiles/rust/dependency-boundaries.md": "0297c990edf428a6ea93b354f118bf4565a8a876220cc358cfc123a558445b2b",
+    "references/profiles/rust/lifecycle-ownership.md": "f503429d8d2af728e98c756f412839a95f19f520472ffdabfc9f9445eacf40c5"
+  }
+}

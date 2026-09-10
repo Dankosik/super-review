@@ -13,10 +13,9 @@ Distinguish language support, emitted JavaScript, type libraries, and the actual
 runtime. `target`/`lib` do not supply polyfills. Account for module resolution,
 package exports/type, JSX mode, decorators, and relevant strictness flags only as
 they affect a proposed change. Do not prescribe new compiler flags, a dependency,
-or an upgrade as a readability improvement. The reader admits conventional
-`tsconfig*.json`/`.jsonc` names (and `*.tsconfig.json`), manifests, and text lockfiles;
-an inaccessible custom inherited config or dependency declaration is an explicit
-context gap, not permission to guess its contents.
+or an upgrade as a readability improvement. Read the actual inherited configuration as text. An inaccessible custom config
+or dependency declaration is an explicit context gap, not permission to guess
+its contents.
 
 **Judgment.** Apply language knowledge within the assigned lens. Optimize the
 reader's understanding of values, contracts, and effects, not the number of type

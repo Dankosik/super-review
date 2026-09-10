@@ -28,8 +28,7 @@ language context. Missing language resources are a coverage gap, not a Go fallba
 
 Rust crate/workspace manifests establish edition, MSRV, target and feature context
 under [Rust context](languages/rust.md). Exclude Rust test-only targets/items and
-known generated source, but retain production declarations in mixed files. Reader
-path/header filtering does not establish item-level coverage.
+known generated source, but retain production declarations in mixed files. Path/header filtering does not establish item-level coverage.
 
 ## Lens resources
 

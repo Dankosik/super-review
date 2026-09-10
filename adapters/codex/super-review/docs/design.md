@@ -1,81 +1,27 @@
-# Design decisions
+# Design
 
-## One skill, native adapters
+Super Review is a skill, not an agent runtime. The canonical policy lives in
+`skills/super-review`; adapters define native role configuration and tool routing.
+Version 3 removes the bundled MCP reader, immutable-receipt cache and completion
+store. No replacement custom transport or background service is introduced.
 
-The product is review policy and a workflow inside an existing harness. Models,
-delegation, sessions, and authentication remain the selected harness's responsibility.
-There is one specialist role; each invocation gets one lens and a fresh context.
+The host provides source access and independent tasks. Shared source-access
+instructions identify PR revisions or local file snapshots, preserve the user's
+checkout, and distinguish reviewed source from trusted skill resources. Specialists
+receive complete neutral task packets and return full reports through native
+agent results. The orchestrator verifies and reconciles evidence.
 
-The entrypoint states purpose, boundaries, and resource routing. Lens-specific
-rules stay in their own files. Stable rule IDs make team overrides explainable.
+Quality criteria, language routing, eight base questions, contextual aspects and
+33 stable rule IDs remain. A missing native facility is disclosed as a coverage
+gap; there is no fabricated independent review or silent fallback to live bytes.
 
-## Contextual depth without extra mandatory agents
+The tradeoff is explicit: there is no fixed reader allowlist, plugin-enforced
+source filter, fixed batch deadline or report receipt. Source exclusion and
+read-only scope are instructions, backed by whichever host sandbox is selected.
+Mechanical package checks and native configuration probes verify installation
+and tool availability; model exercises provide separate behavioral evidence.
 
-The eight base questions remain the applicability floor unless the user narrows
-scope. The installed Markdown [catalog](../skills/super-review/references/aspects.md)
-adds two conditional lenses and four profiles of existing owners. This is a
-model instruction, not a new deterministic router or runtime service. Profiles
-carry their owner's effective rule and do not gain new permissions or a model.
-
-Selection uses changed-source signals, not defect suspicion or keyword scoring.
-A profile-only task claims only that question. Late signals produce focused
-missing work, not repeated base passes; unresolved applicability is partial
-coverage. Development evaluation lives in `evals/go/aspect-evaluation.md` and
-separates routing from judgment evidence. Fixtures and mechanical tests are
-not model results.
-
-## Changes from the initial proposal
-
-- Team scopes use exact files and directory prefixes rather than glob precedence.
-  This avoids a configuration language and ambiguous overlapping patterns.
-- Reports keep the required evidence together in compact cards. A field-rich
-  protocol does not require a heading for every sentence.
-- Read-only acquisition uses a small native custom tool. A broad shell allowlist
-  is too weak for the stated source-protection boundary. The tool implements only
-  fixed GitHub GET routes through `gh`; it contains no model or agent execution.
-- Source, diff, inventory, and search responses are paginated so a large response
-  cannot silently stand in for full coverage. GitHub-imposed limits are explicit.
-- Output stays in the harness conversation. The default role has no write tool;
-  exporting a report is a user/harness action outside the target repository.
-
-## Snapshot semantics
-
-B is the target commit reported by the PR API; H is the PR head. A comparison
-between those immutable commits supplies D, their merge base. Team policy uses
-B, while code uses H and changes use D-to-H. Fork source is read from the head
-repository. Deleted or inaccessible fork objects can limit the review.
-
-Source readers walk immutable Git trees and fetch regular blobs. They exclude
-symlinks, submodules, tests, generated Go, binaries, and oversized files.
-OpenCode receipts belong to its process. Native MCP readers share a private
-temporary receipt cache because Codex children can start separate reader
-processes. This preserves immutable source identity; it does not resume an agent
-conversation.
-
-## Evidence and acceptance
-
-A model's confidence, agreement between reviewers, and output length do not
-establish a recommendation. The orchestrator checks the actual code and a
-counterargument, then reconciles all accepted changes. Only accepted changes
-appear as implementation tasks; unresolved coverage stays visible.
-
-Source analysis constrains advice but does not prove equivalence. This project
-does not expand into bug, security, requirements, or test-coverage review.
-
-## Native distribution
-
-The Codex plugin uses the root skill and bundled Node reader. The Claude install
-tree is generated from the same policy with a short native command and two
-agent definitions. Generated files are checked for drift before release. The
-shared policy does not contain duplicated harness configuration.
-
-## Sources checked
-
-OpenCode 1.18.29 and its [agents](https://opencode.ai/docs/agents/),
-[commands](https://opencode.ai/docs/commands/),
-[permissions](https://opencode.ai/docs/permissions/),
-[custom tools](https://opencode.ai/docs/custom-tools/),
-[skills](https://opencode.ai/docs/skills/), and
-[config directory](https://opencode.ai/docs/config/#custom-directory) documentation
-were inspected during implementation. See the validation record for execution
-evidence; documentation alone is not integration proof.
+`scripts/build.ts` generates Codex and Claude packages by copying canonical files.
+`scripts/package.py` produces deterministic ZIPs and a commit/hash manifest.
+No runtime dependencies are installed by consumers. Development uses Bun only
+for package validation/tests and TypeScript diagnostics.

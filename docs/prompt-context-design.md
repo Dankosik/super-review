@@ -1,3 +1,5 @@
+> Historical design/evaluation record. For version 3 source access and installation, see [native integrations](native-integrations.md).
+
 # Prompt and context boundaries
 
 This unreleased instruction change keeps Super Review's eight base questions,

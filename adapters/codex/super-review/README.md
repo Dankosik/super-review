@@ -1,166 +1,83 @@
 # Super Review
 
-A focused review of **readability, idiomatic Go/TypeScript/Rust, and maintainability** in a GitHub
-pull request. Give it a PR URL; independent specialists inspect the selected
-aspects, and the main agent verifies their recommendations before returning a report.
-Clear code can produce no recommendations. Source is never refactored by the skill.
+Independent readability and maintainability review for Go, TypeScript and Rust.
+Specialists examine distinct questions; the orchestrator verifies their evidence
+and keeps every accepted recommendation. Works with GitHub PRs, local changes,
+or an explicitly requested whole project.
 
-## Supported languages
+Super Review 3 uses native file/search, Git/GitHub and agent tools. It ships no
+MCP server, custom source reader, result daemon or consumer dependencies. The
+review instructions remain read-only; the host's permissions govern its tools.
 
-Go, TypeScript (`.ts`, `.tsx`, `.mts`, `.cts`, including handwritten declaration
-files), and Rust (`.rs`) use language-specific instructions under the same eight review questions.
-Mixed PRs are partitioned by language; each language keeps its own rules. Tests,
-generated code, and JavaScript/JSX remain excluded. Compiler/package files are
-read-only compatibility context. See [TypeScript support](docs/typescript-review.md)
-and [Rust support](docs/rust-review.md) for judgment, boundaries, and evaluation limits.
+## Install
 
-## Install once
-
-Use a configured model in your preferred harness and GitHub access through
-[`gh`](https://cli.github.com). Claude Code and Codex also need Node.js 20+ to run
-the bundled source reader. No publisher account, model client, or hosted service
-is involved. The reader is bundled; there is no `npm install` step for consumers.
-
-### Claude Code
-
-```sh
-claude plugin marketplace add Dankosik/agent-skills-marketplace
-claude plugin install super-review@dankosik-skills
-```
-
-Start a new session, then:
-
-```text
-/super-review:review https://github.com/OWNER/REPO/pull/123
-```
-
-### Codex
+Codex:
 
 ```sh
 codex plugin marketplace add Dankosik/agent-skills-marketplace
 codex plugin add super-review@dankosik-skills
 ```
 
-Start a new task and select **Super Review** from installed plugins, or invoke its
-skill explicitly:
+Claude Code:
 
-```text
-$super-review Review https://github.com/OWNER/REPO/pull/123
+```sh
+claude plugin marketplace add Dankosik/agent-skills-marketplace
+claude plugin install super-review@dankosik-skills
 ```
 
-For completion waiting without wrapper polling, enable the one-time
-[Codex host setting](docs/completion-waiting.md#one-time-host-setting). It keeps
-only Super Review's wait tool outside code mode. The package includes a setup
-helper that preserves existing settings.
+Start a new task/session after installing or updating. No additional waiting-tool
+configuration is needed. See [native integrations](docs/native-integrations.md)
+for updates and removal of old configuration, and [OpenCode](docs/opencode.md)
+for its standalone native adapter. A standalone skill archive is also available
+from [releases](https://github.com/Dankosik/super-review/releases).
 
-If you already added Dankosik Skills, refresh that catalog instead of adding it
-again. Claude uses `claude plugin marketplace update dankosik-skills`; Codex uses
-`codex plugin marketplace upgrade dankosik-skills`.
+## Request a review
 
-OpenCode keeps its native primary-agent adapter and `/super-review <PR URL>`
-command. Use the [OpenCode installation guide](docs/opencode.md). The standalone
-skill ZIP contains portable instructions; it does not install a harness adapter.
+In Codex, select the plugin or invoke `$super-review` with a PR URL or local scope.
+In Claude, use `/super-review:review` followed by that target. For example:
 
-## Choose what to review
+- Review this PR for readability and maintainability.
+- Review all production Rust in the current project, excluding tests.
+- Review my staged and unstaged changes, focusing on API clarity and naming.
 
-The default considers eight base lenses for every changed Go, TypeScript, or Rust area, then selects
-contextual aspects from inspected source. Two conditional lenses cover
-**representation** (data/state shapes) and **rationale** (supported explanations
-of non-obvious choices). Four profiles deepen an existing lens: lifecycle
-ownership, dependency boundaries, effects separation, and error expression.
+Without a target, the skill asks what source to review. PRs use fixed base/head
+commits; working files use an identified snapshot. Local requests do not need an
+invented PR. GitHub access is needed only for remote source; existing source can
+be read locally. The plugin does not supply credentials or model subscriptions.
 
-Profiles are on-demand guidance, not four extra mandatory agents or model
-profiles. See the compact [aspect catalog](skills/super-review/references/aspects.md).
-A resource or a struct makes a question relevant, not the code defective.
-Narrow or extend the scope in ordinary language:
+The default eight questions cover naming, control flow, function cohesion, data
+flow, abstractions, duplication, API clarity and change locality. Representation
+and rationale are selected when relevant; owner profiles deepen their questions.
+Tests, generated/vendor code and unsupported languages are excluded. A targeted
+request narrows coverage explicitly; missing work is never called clean.
 
-```text
-Review only internal/payments/ and the supporting context it needs.
-Focus on naming and control flow. Write the report in Russian.
-Also check representation, but exclude rationale.
-Review only lifecycle ownership in internal/worker/.
-```
+## Models and results
 
-A targeted review lists other aspects as not requested. It does not quietly call
-them checked. A profile-only request covers that narrower question, not all of
-its owning lens. Missing context or an applicable check that could not run makes
-coverage partial, never silently clean. No special flags or model configuration
-are needed. Additional aspects remain within the same read-only review scope.
+The orchestrator retains the user's model and effort. Codex specialists use
+Terra/medium by default, or Luna/medium for an explicitly requested economy profile.
+Claude specialists use Sonnet/medium; OpenCode uses the user's explicit provider/model.
+See [model profiles](docs/model-profiles.md). Delegation and result collection use
+native host facilities, with no plugin-owned timer or result store.
 
-Invoke Super Review without a PR URL to get launch guidance and a reader check.
-Missing GitHub access or unavailable delegation is reported directly. Installation
-does not supply a paid Claude subscription or change your model/provider settings.
+Each recommendation identifies the source, demonstrated improvement, proposed
+change and relevant preservation constraints. The report includes file coverage,
+all candidate decisions and useful unresolved observations. A useful review may
+recommend a local clarification or a structural improvement, or retain clear code.
+Hand accepted recommendations to a coding task for implementation and testing.
 
-## Models and cost
-
-The orchestrator keeps your current model and effort. Codex specialists use
-**Terra/medium** by default; request the **economy** profile for **Luna/medium**.
-Claude specialists use **Sonnet/medium**. OpenCode asks you to select a specialist
-model from your configured provider once. No global model setting is changed.
-See [profiles](docs/model-profiles.md) and the [measured study](docs/model-study.md)
-for exact behavior and the limits of the available quality evidence.
-
-With the required host settings, the orchestrator waits inside a tool. Codex collects a
-whole group's reports in one blocking call; Claude and OpenCode use foreground
-native delegation. The workflow excludes routine status polls and reminder turns. See
-[completion waiting](docs/completion-waiting.md) for the tested behavior and limits.
-
-## Read and use the report
-
-The outcome comes first. Each accepted recommendation then explains:
-
-- The exact source location and the concrete reading or maintenance cost.
-- The proposed change, its benefit, and the strongest reason to keep the code.
-- The behavior, API, ordering, or resource properties to preserve.
-
-The report retains every accepted recommendation, a file map, actual specialist
-coverage, effective team rules, and unresolved gaps. Give accepted items to your
-coding agent for implementation and testing. Super Review neither edits source
-nor posts GitHub comments.
-
-The eight base lenses cover naming, control flow, function cohesion, data flow,
-abstractions, duplication, API clarity, and change locality. Conditional lenses
-add distinct questions; selected profiles deepen their owners. Specialists have
-separate contexts and distinct questions. The main agent checks their candidates;
-agreement or confidence alone is not evidence.
+Super Review does not run project code/checks or post comments. It does not assess
+bugs, security, product requirements or test coverage, and does not claim tested
+refactoring equivalence. Completed coverage is not exhaustive discovery.
 
 ## Team conventions
 
-Add `SUPER_REVIEW.md` to the reviewed repository. For example:
+Use root `SUPER_REVIEW.md` with explicit language, paths, lens and action. Rules
+may add, refine, override or disable a stable rule within their declared scope.
+PR policy comes from the target commit; local policy uses the recorded revision.
+See [the contract](skills/super-review/references/team-rules.md) and
+[examples](examples/team-rules/SUPER_REVIEW.md). All 33 `go.*`, `ts.*` and `rust.*`
+rule IDs remain unchanged in version 3.
 
-```markdown
-## team.go.linear-flow
-Language: Go
-Paths: internal/importer/
-Lens: function-cohesion
-Action: refine go.functions.extract-for-clarity
-
-Keep linear conversion steps together unless a helper names an independent
-concept. We value local reading; function length alone does not justify extraction.
-```
-
-Rules can add, refine, override, or disable named style rules within exact files
-or directory prefixes. Policy comes from the pinned target commit, so a PR's
-proposed rule change does not automatically govern its own review. Conflicting
-rules are disclosed. See [the rule contract](skills/super-review/references/team-rules.md)
-and [examples](examples/team-rules/SUPER_REVIEW.md). TypeScript rules use
-`Language: TypeScript` and the stable `ts.*` IDs, for example
-`Action: refine ts.abstractions.earn-the-boundary`; existing Go IDs do not change.
-Rust rules use `Language: Rust` and `rust.*` IDs; see the
-[Rust convention example](examples/team-rules/RUST.md).
-
-## Support and updates
-
-[Native integration details](docs/native-integrations.md) describe tested versions,
-permissions, and update/removal commands. [Validation](docs/validation.md) separates
-mechanical checks from model execution. Languages other than Go/TypeScript/Rust and GitHub Enterprise
-are not supported. Missing source, API caps, or unfinished specialists make the
-affected coverage partial.
-
-Bug hunting, security assessment, product validation, and test coverage are
-outside this review. Proposed refactoring equivalence is not tested. A complete
-plan is not a guarantee of finding every possible improvement.
-
-[UX references](docs/ux-reference-study.md) · [Design](docs/design.md) ·
-[Contributing](CONTRIBUTING.md) · [Privacy](PRIVACY.md) · [Changelog](CHANGELOG.md) ·
-[MIT License](LICENSE)
+[Validation](docs/validation.md) separates package checks from model evidence.
+[Design](docs/design.md) · [Contributing](CONTRIBUTING.md) · [Privacy](PRIVACY.md) ·
+[Changelog](CHANGELOG.md) · [MIT License](LICENSE)

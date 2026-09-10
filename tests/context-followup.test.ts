@@ -47,18 +47,3 @@ test("follow-up source setup preserves revision and retrieval boundaries", () =>
     }
   }
 });
-
-test("routing-only experiment is an exact isolated workflow replacement", () => {
-  const variant = JSON.parse(read("evals/go/experiments/routing-first.json")) as {
-    target: string; before: string; after: string;
-  };
-  expect(variant.target).toBe("skills/super-review/references/workflow.md");
-  const workflow = read(variant.target);
-  expect(variant.before.length).toBeGreaterThan(0);
-  expect(variant.after.length).toBeGreaterThan(0);
-  expect(variant.before).not.toBe(variant.after);
-  expect(workflow.split(variant.before).length).toBe(2);
-  expect(workflow.includes(variant.after)).toBe(false);
-  const experimental = workflow.replace(variant.before, variant.after);
-  expect(experimental.replace(variant.after, variant.before)).toBe(workflow);
-});

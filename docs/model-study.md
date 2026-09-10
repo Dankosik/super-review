@@ -1,3 +1,5 @@
+> Historical design/evaluation record. For version 3 source access and installation, see [native integrations](native-integrations.md).
+
 # Specialist model study — 2026-09-09
 
 ## Decision

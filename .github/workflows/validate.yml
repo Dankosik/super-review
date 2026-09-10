@@ -26,12 +26,11 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run build
       - name: Check generated native payloads
-        run: git diff --exit-code -- runtime adapters/claude/plugin adapters/codex/super-review
+        run: git diff --exit-code -- adapters/claude/plugin adapters/codex/super-review
       - run: bun test
       - run: bun run typecheck
       - run: bun run validate
       - run: bun run package
-      - run: bun scripts/check-mcp.ts
       - run: bun audit
       - name: Validate native Claude package
         run: npx --yes --package @anthropic-ai/claude-code@2.1.227 claude plugin validate adapters/claude/plugin

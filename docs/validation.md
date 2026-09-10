@@ -1,3 +1,15 @@
+# Version 3.0.0 validation
+
+Native instruction packages replace the MCP reader/runtime. See the
+[native-host probe](https://github.com/Dankosik/super-review/blob/v3.0.0/evals/native-host/README.md) for a completed mixed-language
+local naming review with three Terra/medium specialists, full results and limits.
+Package/role validation, 17 integrity tests, typecheck, dependency audit, native
+Claude manifest and OpenCode 1.18.29 configuration checks passed. These do not
+establish full-review recommendation quality or a shell sandbox.
+
+The older evidence below describes the versions executed then. Its MCP setup,
+source-reader allowlists and batch guarantees do not apply to version 3.
+
 # Validation
 
 ## 2.1.0 — completion waiting

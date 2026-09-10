@@ -1,98 +1,80 @@
-# Claude Code and Codex
+# Native integrations
 
-The native plugin contains the skill, source reader, and host-specific metadata.
-Use your existing harness authentication and model settings. The local Node
-bridge performs fixed GitHub GET requests through `gh`; it contains no model
-client or hosted endpoint. Consumer dependencies: Node.js 20+ and GitHub CLI.
-
-Tested command surfaces: Claude Code 2.1.227 and Codex CLI 0.153.4. Live model
-execution and any account limitation are recorded in [validation](validation.md).
-Claude's command uses foreground skill isolation and nested specialist delegation;
-older versions without those capabilities need an update.
-
-## Claude Code
-
-Install from the author catalog as shown in the README. The only user-facing
-skill is `/super-review:review`. A dedicated orchestrator runs in a separate
-context; each specialist gets a fresh context with one lens. The orchestrator
-inherits the user's model and effort; specialists explicitly use Sonnet/medium. The orchestrator exposes native delegation and the reader;
-specialists expose only source, diff, search, and resource reads. No review role
-exposes Bash, file editing, web tools, or unrelated MCP tools.
-
-Update and remove with native commands:
-
-```sh
-claude plugin marketplace update dankosik-skills
-claude plugin update super-review@dankosik-skills
-claude plugin uninstall super-review@dankosik-skills
-```
-
-Start a new session after an update. The platform publishing account and Claude
-Code model access are separate: an account can submit a plugin without having
-an active Claude Code subscription or API credit.
+Version 3 installs instructions and native agent configuration only. There is no
+Node bridge, MCP connection, custom result store or post-install setup script.
+The selected host supplies file reading/search, Git/GitHub access and independent
+agent execution. Local reviews can run without network access.
 
 ## Codex
-
-Select Super Review from installed plugins in a new task, or use
-`$super-review` with a PR URL. The current task coordinates native child agents.
-The balanced worker profile explicitly selects Terra/medium; economy explicitly
-selects Luna/medium. The orchestrator's current model and effort are preserved.
-See [model profiles](model-profiles.md) for overrides and limitations.
-
-The plugin does not add an alternative agent runtime or create new sidebar tasks
-through the app's task-creation API.
-
-Version 2.1 uses the `super_review` server with four local completion tools in
-addition to source reads. The generated native package declares a 660-second MCP
-timeout and resolves its runtime from the plugin directory. This configuration
-is included in the author catalog and Codex ZIP; the root portable manifest and
-standalone skill do not supply that native wait capability. See
-[completion waiting](completion-waiting.md).
-
-The source reader is read-only with respect to GitHub. Codex retains its normal
-host tool permissions; installing this skill does not restrict every other tool
-in an existing coding task. The review instructions require using the reader and
-native delegation only. For an additional host boundary in the CLI, start a
-review session with `codex --sandbox read-only`.
 
 ```sh
 codex plugin marketplace upgrade dankosik-skills
 codex plugin add super-review@dankosik-skills
+```
+
+Use Super Review in a new task after updating. Native child notifications or
+blocking agent waits collect the complete specialist reports. Existing tasks may
+retain their earlier tool/context configuration until they finish.
+
+For removal:
+
+```sh
 codex plugin remove super-review@dankosik-skills
 ```
 
-Start a new task after installation or an update so skills and MCP tools reload.
-The IDE extension's standalone-skill discovery does not install this native plugin.
+## Claude Code
 
-## Snapshot sharing
+```sh
+claude plugin marketplace update dankosik-skills
+claude plugin update super-review@dankosik-skills
+```
 
-Codex child agents can start separate reader processes. Native readers therefore
-share issued snapshot receipts in a private temporary directory owned by the OS
-user. Files use mode 0600 under a mode 0700 directory on Unix. Receipts contain
-PR identity, immutable B/H/D, changed filenames, and patches; they never contain
-credentials. A child reads that issued snapshot rather than repinning a moving PR.
+Use `/super-review:review <PR URL or local scope>` in a new session. The command
+forks into the orchestrator, which uses native Agent and file/search/Bash tools.
+Specialists use the same source tools without Agent. Their model remains
+Sonnet/medium, and the orchestrator inherits the session's selection.
 
-Receipts expire for new readers after 24 hours. On new snapshots, the cache
-prunes old valid receipts toward 128 records and a 64 MiB budget; concurrent
-processes can temporarily exceed those cleanup targets. Missing, malformed,
-expired, or inaccessible receipts are explicit errors. This shares source
-identity, not the agent's conversation or a guarantee of review resume.
+For removal:
 
-OpenCode keeps its in-process receipt handling. All adapters preserve the same
-source limits and policy-at-B semantics.
+```sh
+claude plugin uninstall super-review@dankosik-skills
+```
 
-## Direct project catalog and local development
+## Migration from 2.x
 
-The project also carries native catalogs named `super-review`. They are useful
-when testing a fixed checkout. Avoid installing the same plugin from both the
-author catalog and the project catalog in normal use.
+Upgrade the author catalog as well as the installed plugin: catalog entries pin
+exact release commits. Replacing the package removes its MCP declarations.
+If you separately registered Super Review servers in user configuration, remove
+only those registrations. Preserve every unrelated MCP server.
+
+The old setup script could add `mcp__super_review_wait` to Codex's
+`features.code_mode.direct_only_tool_namespaces`. Remove only that value; preserve
+other entries and the surrounding code-mode settings. The old script is no longer
+shipped. No replacement setting or cachebuster is needed for the new release.
+
+Old running sessions may retain server processes until they close. Do not kill
+unrelated Node or Codex processes. Start a new task to use the new package.
+
+## Scope and permissions
+
+Review policy prohibits source edits, execution of project code/tests/builds and
+external writes. Shell access is now native and is **not** a read-only sandbox.
+Claude and OpenCode roles omit edit/write tools but have shell access for source
+inspection. Apply host sandbox/approval settings when an enforced boundary is
+needed. This is a deliberate change from the old fixed-command source reader.
+
+Committed source is read by SHA; working source is identified by a shared copy
+and file hashes or verified matching reads. Review copies may contain private
+source, and host history may contain excerpts. No plugin process stores results.
+
+## Direct project catalog
+
+A prepared checkout can be registered separately for development:
 
 ```sh
 codex plugin marketplace add /absolute/path/to/super-review
 codex plugin add super-review@super-review
-claude plugin marketplace add /absolute/path/to/super-review
-claude plugin install super-review@super-review
 ```
 
-The author catalog pins released commits; a local project catalog tracks your
-prepared local package. Do not update a package while a review is running.
+Avoid installing both author and project copies in ordinary use. The author
+catalog pins a release; the project catalog follows its prepared local package.
