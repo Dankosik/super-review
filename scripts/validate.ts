@@ -27,17 +27,28 @@ for (const file of runtimeFiles.filter(p => p.endsWith(".md"))) {
     const path = resolve(dirname(file), decodeURIComponent(target));
     if (relative(skill, path).startsWith("..") || !runtimeFiles.includes(path)) errors.push("Missing or unpackaged link: " + relative(root, file) + " -> " + target);
   }
-  if (file.includes("/lenses/")) for (const match of text.matchAll(/^## ((?:go|java)\.[a-z0-9.-]+)$/gm)) {
+  if (file.includes("/lenses/")) for (const match of text.matchAll(/^## (go\.[a-z0-9.-]+)$/gm)) {
     if (ids.has(match[1])) errors.push("Duplicate rule ID: " + match[1]);
     ids.add(match[1]);
   }
 }
-if (ids.size === 0) errors.push("No stable language rule IDs.");
-const expectedIDs: string[] = [];
-for (const language of ["go", "java"]) {
-  expectedIDs.push(...JSON.parse(await readFile(join(root, "evals/" + language + "/rule-ids.json"), "utf8")));
-}
+if (ids.size === 0) errors.push("No stable Go rule IDs.");
+const expectedIDs: string[] = JSON.parse(await readFile(join(root, "evals/go/rule-ids.json"), "utf8"));
 if (JSON.stringify([...ids].sort()) !== JSON.stringify(expectedIDs.sort())) errors.push("Rule IDs changed: update migration documentation and rule-ids.json intentionally.");
+const tsIDs: string[] = [];
+for (const file of runtimeFiles.filter(path => path.includes("/lenses/typescript/") && path.endsWith(".md"))) {
+  const text = await readFile(file, "utf8");
+  for (const match of text.matchAll(/^## (ts\.[a-z0-9.-]+)$/gm)) tsIDs.push(match[1]);
+}
+const expectedTSIDs: string[] = JSON.parse(await readFile(join(root, "evals/typescript/rule-ids.json"), "utf8"));
+if (new Set(tsIDs).size !== tsIDs.length || JSON.stringify(tsIDs.sort()) !== JSON.stringify(expectedTSIDs.sort())) errors.push("TypeScript rule IDs changed: update migration documentation and rule-ids.json intentionally.");
+const javaIDs: string[] = [];
+for (const file of runtimeFiles.filter(path => path.includes("/lenses/java/") && path.endsWith(".md"))) {
+  const text = await readFile(file, "utf8");
+  for (const match of text.matchAll(/^## (java\.[a-z0-9.-]+)$/gm)) javaIDs.push(match[1]);
+}
+const expectedJavaIDs: string[] = JSON.parse(await readFile(join(root, "evals/java/rule-ids.json"), "utf8"));
+if (new Set(javaIDs).size !== javaIDs.length || JSON.stringify(javaIDs.sort()) !== JSON.stringify(expectedJavaIDs.sort())) errors.push("Java rule IDs changed: update migration documentation and rule-ids.json intentionally.");
 for (const role of ["super-review", "super-review-specialist"]) {
   const config = frontmatter(await readFile(join(root, "adapters/opencode/agents/" + role + ".md"), "utf8"));
   if (config.permission?.["*"] !== "deny") errors.push(role + " does not deny unlisted tools.");
@@ -80,4 +91,4 @@ for (const file of runtimeFiles) {
 if (!(await readFile(join(root, "runtime/mcp.mjs"))).equals(await readFile(join(root, "adapters/claude/plugin/runtime/mcp.mjs")))) errors.push("Native readers differ.");
 await readFile(join(root, "runtime/THIRD_PARTY_LICENSES.txt"));
 if (errors.length) throw new Error(errors.join("\n"));
-console.log("Validated skill links, " + ids.size + " stable rule IDs, native payloads, versions, and adapter routing.");
+console.log("Validated skill links, " + (ids.size + tsIDs.length) + " stable rule IDs, native payloads, versions, and adapter routing.");

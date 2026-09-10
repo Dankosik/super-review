@@ -2,7 +2,7 @@
 
 Java uses the same eight base questions, two source-selected lenses and four
 owner profiles as Go, but separate domain resources and `java.*` identifiers.
-See the [language router](../skills/super-review/references/languages/index.md).
+See the [language router](../skills/super-review/references/languages.md).
 A mixed PR receives language-specific task packets; Go instructions and existing
 `go.*` rule identities are not renamed or imposed on Java. No extra all-purpose
 Java-idioms agent or new review stage is introduced.

@@ -1,13 +1,20 @@
 # Changelog
 
+## Unreleased — TypeScript review
+
+- Add language routing, TypeScript context, ten TS lens resources and four owner profiles with eleven stable `ts.*` rules; preserve all Go IDs.
+- Support TS/TSX/MTS/CTS and handwritten declarations in pinned source reads and caller search, with compatibility metadata and existing read-only boundaries.
+- Add contrasting evaluation inputs and mechanical source/resource tests; behavioral model evaluation remains separate and has not been run.
+- Regenerate native Claude/Codex payloads without changing models, permissions, or dependencies.
+
 The skill, rules, templates, and adapters share one SemVer version. Changes to
 review decisions are product behavior, even when they only edit Markdown.
 
 ## Unreleased
 
-- Add Java-specific review context, ten lens modules and four owner profiles with stable `java.*` IDs; preserve existing Go rules.
-- Route Java source and build context through the shared read-only reader and all three adapters.
-- Add contrasting Java judgment fixtures and mechanical acquisition/resource checks; regenerate native packages.
+- Add Java review context, ten lens modules and four owner profiles with stable `java.*` IDs.
+- Extend the shared Go/TypeScript language router and source classifier for Java and read-only Maven/Gradle context.
+- Add 18 contrasting Java judgment fixtures, acquisition/resource tests, and regenerated native packages.
 
 - Clarify the MCP resource description: reuse complete supplied materials and load missing shared role resources, the assigned lens, and selected profiles rather than the full catalog.
 - Audit model-visible tool metadata alongside role instructions; add selective resource-delivery checks for canonical, Claude, and Codex skill roots. Record blocked model comparisons separately from mechanical validation.

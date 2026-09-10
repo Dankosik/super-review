@@ -1,9 +1,7 @@
 # Contextual aspects
 
-Resolve resource paths through [language routing](languages/index.md) before
-loading a lens/profile. Table links below are Go resources; Java uses the matching
-Java modules with the same logical owners and source-driven applicability. An
-ordinary Java catch or null check alone is not an error-expression signal.
+Resolve resource paths through [language routing](languages.md) for each area;
+the catalog links below are the original Go implementations.
 
 A lens owns a question; a profile deepens one existing lens. Neither is an
 extra agent by definition. Consider this small catalog after the eight base

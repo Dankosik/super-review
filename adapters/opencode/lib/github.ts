@@ -1,8 +1,7 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { randomUUID } from "node:crypto";
-import { exclusion, generatedSourceReason, sourceReadExclusion } from "./source-policy.ts";
-export { exclusion } from "./source-policy.ts";
+import { sourceLanguage, isInternalPath, isTestSource, isReadableContext, isGeneratedSource, isGeneratedPath } from "./source-files.ts";
 
 const exec = promisify(execFile);
 type GetJSON = (endpoint: string) => Promise<any>;
@@ -74,6 +73,15 @@ export function safePath(value: string, allowRoot = false): string {
     throw new Error("Use an exact repository-relative path without traversal.");
   }
   return value;
+}
+
+export function exclusion(path: string, status?: string): string | undefined {
+  if (status === "removed") return "deleted file: no head source";
+  if (isInternalPath(path)) return "vendored or repository internals";
+  if (isTestSource(path)) return "test file";
+  if (isGeneratedPath(path)) return "generated source root";
+  if (!sourceLanguage(path)) return "unsupported language or non-source file";
+  return undefined;
 }
 
 // A second boundary behind the tool schemas: no arbitrary endpoints or methods.
@@ -231,14 +239,17 @@ export class GitHubReader {
   async source(id: string, revision: Revision, path: string, startLine = 1, lineCount = 400) {
     const snapshot = this.snapshot(id);
     safePath(path);
-    const excluded = sourceReadExclusion(path);
-    if (excluded) return { path, excluded: true, reason: excluded };
+    const allowed = Boolean(sourceLanguage(path)) || isReadableContext(path);
+    if (!allowed || isTestSource(path) || isInternalPath(path) || isGeneratedPath(path)) {
+      return { path, excluded: true, reason: "Only non-test Go/Java/TypeScript, supported compatibility files, and Markdown policy context are readable." };
+    }
     const { repo, ref } = this.revision(snapshot, revision);
     const entry = await this.locate(repo, ref, path);
     if (!entry) return { path, revision, commit: ref, exists: false };
     const content = await this.text(repo, entry);
-    const generated = generatedSourceReason(path, content);
-    if (generated) return { path, revision, commit: ref, excluded: true, reason: generated };
+    if (isGeneratedSource(path, content)) {
+      return { path, revision, commit: ref, excluded: true, reason: "generated source" };
+    }
     return {
       path, revision, commit: ref, blob: entry.sha, exists: true,
       ...lineWindow(content, startLine, lineCount),
@@ -261,7 +272,7 @@ export class GitHubReader {
     const inspect = async (entry: TreeEntry) => {
       try {
         const content = await this.text(snapshot.headRepository, entry);
-        if (generatedSourceReason(entry.path, content)) {
+        if (isGeneratedSource(entry.path, content)) {
           unread.push({ path: entry.path, reason: "generated" });
           return;
         }
