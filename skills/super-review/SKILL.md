@@ -31,7 +31,7 @@ Apply [the contract](references/review-contract.md) and
 policy, language/aspect selection, neutral packets and completion. Keep all eight
 base questions unless the user narrows scope; profiles deepen their owners.
 
-Give each fresh specialist one lens, the matching language and selected profiles,
+Give each fresh specialist one lens, the [matching language](references/languages.md) and selected profiles,
 applicable rules and a concrete pinned scope. Reuse complete matching supplied
 resources; a path or summary is not the resource. Do not send peer verdicts or
 simulate independent coverage when delegation is unavailable.
