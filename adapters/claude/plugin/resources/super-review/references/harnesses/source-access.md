@@ -30,6 +30,15 @@ copy, record hashes and verify that each inspected version matches before claimi
 shared coverage. If the working tree later changes, retain the reviewed identity
 and disclose drift; never silently move recommendations to different bytes.
 
+When a selected path is a symlink, submodule or special file, inspect its kind
+before reading or copying it. Resolve symlinks only to permitted regular source
+inside the authorized snapshot, preserving the link and target identities; a link
+is not permission to read outside that scope. Treat a submodule as a separate
+repository at its recorded commit, using only authorized access and scope. An
+unavailable target, escaping link, cycle or special file is a specific access gap,
+not empty source. Continue independent work without hydrating submodules, following
+external links, or opening devices/pipes to make the inventory appear complete.
+
 Read Git source without external diff/textconv tools, pagers or project hooks.
 Shell access serves source acquisition and inspection, not execution of reviewed
 code, tests, builds, linters or repository scripts. Do not evaluate configuration

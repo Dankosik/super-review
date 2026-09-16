@@ -27,11 +27,10 @@ packets and installed skill resources.
 
 ## Development and evidence
 
-Edit canonical skills and adapter templates. Rebuild the native delivery trees
-with `bun run build`; keep generated copies byte-identical. Run `bun test` for
-changed fixture/configuration contracts and `bun run typecheck` for TypeScript.
-Use `bun run validate` and `bun run package` for distributable changes. Follow
-[CONTRIBUTING.md](CONTRIBUTING.md) for the complete commands and release boundary.
+Edit canonical skills and adapter templates; keep generated copies byte-identical.
+Select checks by changed inputs using [CONTRIBUTING.md](CONTRIBUTING.md).
+For a changed agent decision, use [the evaluation protocol](evals/README.md) and
+only its relevant cases. These are development resources, not review packets.
 Reuse successful checks for the same revision/environment rather than repeat
 an equivalent suite at each instruction layer. Fix failures caused by this change.
 

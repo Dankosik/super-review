@@ -103,6 +103,15 @@ record why not. Do not silently expand scope or rerun completed areas.
 
 ## Decide and report
 
+Match every returned task, including a no-candidate result, against the original
+assignment: task identity, source snapshot, lens/profiles, scope and effective
+policy. Account for the assigned base/profile work using its inspected evidence,
+not the child's `completed` label alone. A result for another scope or snapshot
+does not close this task. Preserve that result and its candidates with their actual
+identity; recover the matching result or request only the missing work through
+the adapter. Until resolved, the affected assignment remains unfinished. Reuse
+matching complete evidence rather than rereading it to perform this comparison.
+
 Verify every candidate, including your own, with [verification](verification.md).
 Keep candidate ID, disposition, reason, and accepted recommendation ID if any.
 To close an evidence gap, first read available source; seek a focused continuation

@@ -1,0 +1,12 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "fixtures/before/display.go": "e9eac6a8b952aa265be084c7108f969cd61cb005286130e1aa7c41cc5e21a518",
+    "fixtures/before/formatter.go": "1342e33431510f558a3df052973ad19ed29d1a4f2f7a18ef34e248913cf0da26",
+    "fixtures/deleted/display.go": "8e81f282cffff3cdea384326664d164e103147d99b2775094721a231fec0f069",
+    "fixtures/observations.json": "b8e9bc15d0148a15ba254302bf533b8959a9692099d0ffcaca64212989f1c2de",
+    "fixtures/renamed/display.go": "e9eac6a8b952aa265be084c7108f969cd61cb005286130e1aa7c41cc5e21a518",
+    "fixtures/renamed/labels.go": "7d11efafacddd1d8b575a7e644f67e920d886050b5fba812924afa9b62fab9d5",
+    "fixtures/source/format.go": "d0fd46c1f959dd1e5f102466b88e89f41a0ead981af0c052f3c4d1f8ba0e3f1d"
+  }
+}

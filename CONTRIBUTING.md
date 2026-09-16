@@ -5,10 +5,26 @@ which user decision an instruction changes. Preserve stable rule IDs or document
 migration; keep evaluation expectations and raw model outputs outside runtime
 instructions. Read-only reviews and development of this repository are distinct.
 
-Install development tools with Bun, then run:
+## Select verification by changed inputs
+
+Install with `bun install --frozen-lockfile` when dependencies are missing or the
+lockfile changes. During development, run the checks whose inputs changed:
+
+| Changed inputs | Verification |
+| --- | --- |
+| Canonical skills, adapter templates or packaged documents | `bun run build`, then `bun run validate`; inspect generated diffs. |
+| Fixtures or tests | The affected `bun test <path>` suite; include changed-input dependents. |
+| TypeScript scripts, tests or configuration | `bun run typecheck` and affected tests. |
+| Archive inputs or packaging logic | `bun run package` after a current build; inspect archive contents. |
+| Native roles, commands or permissions | Corresponding native configuration checks in CI. |
+| Development-only prose | Links and affected instruction decisions; no unchanged package rebuild. |
+
+Reuse a successful check only while its relevant inputs, tool versions and
+environment are unchanged. A new failure needs its causal fix and affected check,
+not an automatic restart of every suite. Record unavailable tools and their gaps.
+Before requesting merge of distributable changes, the full CI gate must pass:
 
 ```sh
-bun install --frozen-lockfile
 bun run build
 bun test
 bun run typecheck
@@ -20,7 +36,8 @@ Policy changes need contrasting evaluation cases and honest behavioral evidence.
 Tests verify resource identities, native configuration and packaging; they do not
 prove recommendation quality. Changes to roles need native configuration checks.
 CI validates the Claude plugin and OpenCode tool exposure without executing models.
-Use the [instruction-boundary cases](https://github.com/Dankosik/super-review/tree/main/evals/instruction-boundaries) for
+Use the [evaluation protocol](https://github.com/Dankosik/super-review/tree/main/evals)
+for changed agent decisions and the [instruction-boundary cases](https://github.com/Dankosik/super-review/tree/main/evals/instruction-boundaries) for
 changed launch, policy, coverage and handoff decisions. Do not claim a behavioral
 pass from fixture integrity; record unavailable model runs explicitly. Keep the
 routing-first experiment separate until its comparison justifies promotion.

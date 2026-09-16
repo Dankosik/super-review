@@ -23,9 +23,13 @@ coverage remains `unfinished`, never an empty clean result.
 
 ## C-<task>-<number>: <concrete observation>
 
-- Change anchor: path, symbol, verified H lines; how D..H introduces, worsens, or
-  makes the burden relevant. For whole-project scope, anchor the existing burden
-  directly in the reviewed snapshot. Distinguish supporting context.
+- Change anchor: revision side, path, symbol and verified lines; how D..H
+  introduces, worsens, or makes the burden relevant. Use H for current source and
+  D for removed source; for renames record the old and new paths on their own sides.
+  A D-only location explains a deletion, not an invented H line or permission to
+  restore unrelated old code. Ground its current maintenance impact in the change
+  and available H context. For local or whole-project scope, use the corresponding
+  base/snapshot identities. Distinguish supporting context from the change anchor.
 - Basis: effective rule IDs and contributing profiles; identify convention-only advice.
 - Observation: source evidence and concrete reading/maintenance cost. State what is
   established; an unsupported suspicion does not qualify.
