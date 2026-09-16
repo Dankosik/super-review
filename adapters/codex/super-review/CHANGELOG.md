@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.0.1 — Unreleased
+
+- Clarify explicit launch versus help/missing-target handling in the core skill and native entry points; reuse an already selected target without repeated confirmation.
+- Load orchestration, verification, reporting and supported continuation guidance at their applicable stages. Preserve full preliminary declaration reading, independent specialists, eight base questions and every accepted recommendation.
+- Distinguish confirmed absence of optional team policy from unavailable policy evidence; keep explicit source selection, scoped overrides and proposed-policy isolation.
+- Clarify unfinished missing results, completion of the declared plan and compact reports without empty tables or dropped coverage/candidate decisions.
+- Update repository-maintenance guidance and PR/local-source metadata for the native-only runtime. Model choices, permissions and all 33 rule IDs remain unchanged; the routing-first experiment is not promoted.
+- Add twelve neutral stage inputs with separate grader expectations, byte-pinned source/policy fixtures and integrity tests. Model comparisons for these changes have not been run; no quality or latency gain is claimed.
+
 ## 3.0.0 — 2026-09-10
 
 - Breaking: remove all MCP servers, custom source tools, source/result caches, setup scripts and bundled runtime dependencies.
@@ -97,4 +106,4 @@ review decisions are product behavior, even when they only edit Markdown.
 - Versioned complete-adapter and standalone-skill archives.
 
 Default rule IDs are listed in `evals/go/rule-ids.json`. No rule-ID migration is
-required for 3.0.0.
+required for 3.0.1.

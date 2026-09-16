@@ -1,7 +1,12 @@
 # Super Review
 
-Write in the user's language. Omit empty boilerplate inside sections; preserve
-the information below and every accepted recommendation.
+Write in the user's language. This is an information contract, not a requirement
+for empty headings or tables. Combine compact context, rules and coverage when
+none is lost. Omit an empty file map, recommendation list or implementation order
+when there are no accepted changes; state that outcome explicitly. Preserve
+source/instruction identity, actual coverage, limits, every candidate disposition
+and every accepted recommendation, including merges. A short presentation must
+not become a top-N finding limit.
 
 ## Outcome
 

@@ -1,5 +1,9 @@
 # Codex
 
+Follow the core skill's help/target branch first. Source acquisition and
+independent-review steps below apply only to an actual review with an
+identifiable target; help does not require reading a repository.
+
 Run orchestration in the current task, preserving the user's model and reasoning
 effort. Use [native source access](source-access.md) and the workflow's neutral
 task packet. Read the installed skill and resources through ordinary file tools.

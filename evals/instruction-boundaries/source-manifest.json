@@ -1,0 +1,9 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "fixtures/source/format.go": "5562ab86f67621c635d8d8c012f5b9b0a15b9df2f6cc236263db73bc45ca6725",
+    "fixtures/source/go.mod": "c6958e1b61c2169bafa475f0b8593c6fde6b59b53a2ab121ed8607cae51fc8a3",
+    "fixtures/policy/SUPER_REVIEW.md": "f5b173628957e451ee1e01ff1125dd5edb4c3280e660fa25286da6137d2eb5be",
+    "fixtures/proposed-policy/SUPER_REVIEW.md": "cbd5196626b16a4f583663a4262a0a1a19ef46d112a450129d19ba966d46e718"
+  }
+}

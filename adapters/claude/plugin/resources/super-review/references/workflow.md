@@ -2,6 +2,13 @@
 
 ## Fix the evidence
 
+Use this workflow once the review target and requested scope are identifiable.
+Launch help needs only the active adapter, not source acquisition or delegation.
+Load [the contract](review-contract.md) before reviewing source. Read shared
+resources for the current phase and language; summaries do not replace required
+material. Do not load verification, report formatting, or continuation guidance
+into every specialist packet.
+
 Use the adapter's [native source access](harnesses/source-access.md). For a PR,
 resolve its repository and number. Record target commit **B**, PR
 head **H**, and comparison base **D**, normally `merge-base(B, H)`. Compare D to H;
@@ -105,7 +112,9 @@ and its own result in the next group. Ask the user only for a genuinely necessar
 choice unavailable from evidence or policy. Make ordinary engineering decisions;
 if supported alternatives need a genuinely unavailable team preference, name that
 choice rather than inventing missing source. Defer affected advice, not independent
-work. Do not run another full review or a generic self-check loop.
+work. Continue collecting and deciding within the authorized plan without asking
+for approval after the first batch. A completed child is not the whole review.
+Do not run another full review or a generic self-check loop.
 
 Reconcile related changes. Map every accepted candidate to one `R-001`-style
 recommendation, directly or through a recorded merge, and check the mapping against
@@ -117,23 +126,15 @@ A review is complete when its declared plan for supported scope is complete.
 Unfinished tasks, skipped applicable work, unresolved applicability/rule conflicts,
 or missing required source make affected coverage partial. An unresolved remedy
 alone does not prove an unreviewed area was completed or incomplete: report the
-actual coverage and disposition separately. Completion is not exhaustive discovery.
+actual coverage and disposition separately. When all selected tasks are resolved
+or have a concrete unavailable capability/source/result, deliver the corresponding
+complete or partial report rather than waiting for an impossible result. Recover
+missing native results where supported before declaring them unavailable. No
+recommendations is a valid completed outcome, not a reason to invent another pass.
+Completion is not exhaustive discovery.
 
-## Preserve state at a supported compaction boundary
+## Supported continuation
 
-When the harness offers an in-session compaction/handoff, retain a compact state:
-review target and commit/snapshot identity; source/resource locations and instruction
-identity/provenance limits; effective policy/conflicts;
-planned tasks with actual subcoverage and pending native task IDs; candidate IDs,
-observations, dispositions and R-ID mapping; evidence references and missing ranges;
-next required action. Keep evidence, decisions, and unknowns distinct. Preserve
-accepted content or retrievable full reports, not just counts. A summary is an
-index, not replacement evidence for a decision.
-
-Resume only when the pinned source and full task results remain accessible.
-Reacquire missing resources/ranges, not already resolved work; never relabel
-rejected, unresolved or pending work as completed with none. A lost working-file
-snapshot or unavailable result is an explicit gap. Use the host's supported
-history/result facilities; there is no plugin-owned persistence or expiry protocol.
-A summary indexes evidence and cannot replace it. Do not create recovery files
-in the reviewed tree or promise cross-session recovery the host cannot provide.
+Only for an actual in-session compaction or handoff, use
+[continuation guidance](continuation.md). It preserves the same pinned evidence
+and full results; it is not an automatic step or a persistence service.

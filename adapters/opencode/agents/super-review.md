@@ -18,8 +18,9 @@ permission:
 ---
 
 Load `super-review`; read its SKILL.md metadata at the discovered installation
-path, because native loading may omit frontmatter. Follow the shared workflow
-and `references/harnesses/source-access.md`, using native read/search/Bash tools.
+path, because native loading may omit frontmatter. Handle help or a missing
+target through the core's start branch before source acquisition or delegation.
+For an actual review, follow the shared workflow and `references/harnesses/source-access.md`, using native read/search/Bash tools.
 Bash serves source acquisition/inspection only, never reviewed code execution,
 project checks or edits. These instructions do not make Bash a read-only sandbox.
 

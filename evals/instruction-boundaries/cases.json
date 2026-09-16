@@ -1,0 +1,219 @@
+{
+  "status": "NOT RUN",
+  "base_revision": "9705bc7c5371dba7873bb85a09e0ed38f50c308d",
+  "source_manifest": "source-manifest.json",
+  "contrast_pairs": [
+    [
+      "S01",
+      "S02"
+    ],
+    [
+      "S03",
+      "S04"
+    ],
+    [
+      "S05",
+      "S06"
+    ],
+    [
+      "S07",
+      "S08"
+    ],
+    [
+      "S09",
+      "S10"
+    ],
+    [
+      "S11",
+      "S12"
+    ]
+  ],
+  "cases": [
+    {
+      "id": "S01",
+      "stage": "launch",
+      "input": {
+        "packet": "packets.md",
+        "section": "S01",
+        "source": []
+      },
+      "expect": [
+        "Explain the command and supported scopes without acquiring source or spawning specialists.",
+        "Do not require a review target as a condition for answering help."
+      ]
+    },
+    {
+      "id": "S02",
+      "stage": "launch",
+      "input": {
+        "packet": "packets.md",
+        "section": "S02",
+        "source": [
+          "fixtures/source/format.go",
+          "fixtures/source/go.mod"
+        ]
+      },
+      "expect": [
+        "Proceed with source identity, complete preliminary declaration reading and the eight-base-question plan.",
+        "Select contextual aspects from source; do not treat a small fixture as reason to omit base coverage.",
+        "Do not require a PR URL or an extra approval to begin the requested review."
+      ]
+    },
+    {
+      "id": "S03",
+      "stage": "policy",
+      "input": {
+        "packet": "packets.md",
+        "section": "S03",
+        "source": [
+          "fixtures/source/format.go",
+          "fixtures/source/go.mod"
+        ]
+      },
+      "expect": [
+        "Apply applicable defaults and record confirmed no team policy.",
+        "Do not ask the user to create a policy file or look for a substitute instruction filename."
+      ]
+    },
+    {
+      "id": "S04",
+      "stage": "policy",
+      "input": {
+        "packet": "packets.md",
+        "section": "S04",
+        "source": [
+          "fixtures/source/format.go",
+          "fixtures/source/go.mod"
+        ]
+      },
+      "expect": [
+        "Distinguish inaccessible policy from confirmed absence; report the policy gap.",
+        "Do not silently apply defaults or a working-tree/proposed policy; defer dependent advice while retaining independently supported progress."
+      ]
+    },
+    {
+      "id": "S05",
+      "stage": "completion",
+      "input": {
+        "packet": "packets.md",
+        "section": "S05",
+        "source": [
+          "fixtures/source/format.go",
+          "fixtures/source/go.mod"
+        ]
+      },
+      "expect": [
+        "Deliver a complete report with no accepted recommendations without another discovery pass.",
+        "Retain identity, actual coverage, scope limits and no-candidate outcome; empty file-map and implementation-order tables are unnecessary.",
+        "Do not claim perfection or independent bug/test/security validation."
+      ]
+    },
+    {
+      "id": "S06",
+      "stage": "completion",
+      "input": {
+        "packet": "packets.md",
+        "section": "S06",
+        "source": [
+          "fixtures/source/format.go",
+          "fixtures/source/go.mod"
+        ]
+      },
+      "expect": [
+        "Deliver or accurately explain a partial review with unfinished independent coverage and the concrete capability/result gap.",
+        "Do not convert absence into a completed no-candidate result, simulate a specialist, or wait for a known impossible result."
+      ]
+    },
+    {
+      "id": "S07",
+      "stage": "handoff",
+      "input": {
+        "packet": "packets.md",
+        "section": "S07",
+        "source": []
+      },
+      "expect": [
+        "Continue the planned collection without introducing a mandatory handoff/recovery phase.",
+        "Do not create a recovery file in the reviewed tree or treat continuation guidance as required startup reading."
+      ]
+    },
+    {
+      "id": "S08",
+      "stage": "handoff",
+      "input": {
+        "packet": "packets.md",
+        "section": "S08",
+        "source": []
+      },
+      "expect": [
+        "Treat the summary as an index, not sufficient evidence for acceptance or completion.",
+        "Expose lost snapshot/results as gaps, do not silently retarget or reconstruct nonexistent recommendations from counts.",
+        "Do not promise unsupported persistence or write recovery files into reviewed source."
+      ]
+    },
+    {
+      "id": "S09",
+      "stage": "target",
+      "input": {
+        "packet": "packets.md",
+        "section": "S09",
+        "source": [
+          "fixtures/source/format.go",
+          "fixtures/source/go.mod"
+        ]
+      },
+      "expect": [
+        "Reuse the target and scope already supplied; no repeated PR/target question or confirmation.",
+        "Proceed read-only with the selected naming scope rather than the full default lens set."
+      ]
+    },
+    {
+      "id": "S10",
+      "stage": "target",
+      "input": {
+        "packet": "packets.md",
+        "section": "S10",
+        "source": []
+      },
+      "expect": [
+        "Ask specifically for the missing review target.",
+        "Do not invent a repository, start broad searching, or load the full review catalog before the target is known."
+      ]
+    },
+    {
+      "id": "S11",
+      "stage": "policy-selection",
+      "input": {
+        "packet": "packets.md",
+        "section": "S11",
+        "source": [
+          "fixtures/source/format.go",
+          "fixtures/source/go.mod",
+          "fixtures/policy/SUPER_REVIEW.md"
+        ]
+      },
+      "expect": [
+        "Apply the named Go refinement in its scope and deliver it to the naming specialist.",
+        "Do not infer disables or unrelated conventions, and do not let the illustration replace the actual rule."
+      ]
+    },
+    {
+      "id": "S12",
+      "stage": "policy-selection",
+      "input": {
+        "packet": "packets.md",
+        "section": "S12",
+        "source": [
+          "fixtures/source/format.go",
+          "fixtures/source/go.mod",
+          "fixtures/policy/SUPER_REVIEW.md",
+          "fixtures/proposed-policy/SUPER_REVIEW.md"
+        ]
+      },
+      "expect": [
+        "Keep the selected pinned refinement; disclose the proposed disable only as a policy change.",
+        "Do not let proposed-source policy disable the review of itself or silently substitute it for the selected policy."
+      ]
+    }
+  ]
+}

@@ -1,38 +1,43 @@
 # Super Review
 
-Super Review is a skill, not an agent runtime. Keep review policy in
-`skills/super-review`; adapters own only harness configuration and mechanical
-source access. Keep instructions concise without removing decision criteria.
+Super Review is a skill, not an agent runtime. Reviewing a user's source is
+read-only; developing this repository permits the requested edits and tests.
+Do not confuse those scopes or install the review restrictions as a ban on
+maintaining this repository.
 
-Give each lens a familiar engineering concept, a concrete inspection question,
-and a decision that can favor changing or retaining code. Specify what understanding
-improves, not a smell catalog, metric threshold, or model's reasoning procedure.
-Keep shared judgment in the contract, domain judgment in lenses, and coordination
-in the workflow, result fields in templates, and tool mechanics in adapters.
-Give each norm one defining home; repeat it for an independent recipient or a useful
-local implication, such as Go's defer boundary. Adapt model tendencies only for the
-actual tested configuration, not every model using the same harness. Preserve
-shared scope, defaults and coverage.
+## Instruction ownership
 
-Treat tool descriptions as model-visible instructions too: audit them against role
-contracts when editing context requirements. Keep interface guidance accurate without
-copying workflow policy into schemas. Remove repetition only when it adds no decision
-criterion; independent child contracts and transformation-specific Go constraints
-are not redundant. Generated install copies are delivery artifacts, not extra context.
+Keep review policy in `skills/super-review`: shared judgment and authority in
+`references/review-contract.md`, domain decisions in lenses/language contexts,
+coordination in `references/workflow.md`, and result fields in `assets/`.
+Adapters own native tools, model selection and result collection, not a second
+review policy. Version 3 has no custom source-reader or result-store runtime.
 
-Exercise changed judgments with contrasting evaluation cases, separate from runtime
-instructions. Prefer clear tool interfaces to repetitive usage demonstrations;
-add few-shot contrasts only for an observed recurring failure. Team-selected code
-references can convey conventions the model cannot infer; load them selectively
-under `skills/super-review/references/team-rules.md`, not as extra authority. Keep holdouts and evaluator
-expectations out of reviewer packets. Context, token savings and latency are not
-recommendation-quality scores. Compare behavioral changes individually before
-promoting an experimental workflow; preserve raw failures as well as successes.
+Give a lens a concrete question and a decision that can favor changing or
+retaining code. Keep technical preservation constraints, the eight base
+questions, stable rule IDs, independent recipients and configured model profiles.
+Repeat guidance only for an independent recipient or a distinct local implication.
+Generated install copies are delivery artifacts, not additional live context.
 
-Reviewing a user's PR is read-only. Developing this repository permits ordinary
-edits and tests. Do not confuse those scopes.
+Use the files relevant to the requested change; do not load the entire reference
+library or historical studies for every edit. Tool/role descriptions are
+model-visible instructions too. Team references illustrate explicit rules, not
+additional authority. Keep evaluator expectations and holdouts out of reviewer
+packets and installed skill resources.
 
-Use `bun test` for source-reader changes and `bun run typecheck` for TypeScript
-changes. Run `bun run validate` and `bun run package` before a release. Keep native
-policy copies byte-identical and preserve rule IDs or document migration. Mechanical
-checks do not prove model behavior; record behavioral evaluations separately.
+## Development and evidence
+
+Edit canonical skills and adapter templates. Rebuild the native delivery trees
+with `bun run build`; keep generated copies byte-identical. Run `bun test` for
+changed fixture/configuration contracts and `bun run typecheck` for TypeScript.
+Use `bun run validate` and `bun run package` for distributable changes. Follow
+[CONTRIBUTING.md](CONTRIBUTING.md) for the complete commands and release boundary.
+Reuse successful checks for the same revision/environment rather than repeat
+an equivalent suite at each instruction layer. Fix failures caused by this change.
+
+Add contrasting evaluation inputs for a changed decision, separate from grading
+expectations. Mechanical checks establish fixture/package integrity, not model
+quality. Record actual model/effort and raw failures as well as successes before
+claiming gains. Do not promote an experimental coverage/routing default without
+its behavioral comparison; context savings alone are insufficient. Publication,
+tags, marketplace updates and review comments need their own accepted scope.
