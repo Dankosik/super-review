@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "kind": "controlled-source-snapshots",
+  "snapshots": {
+    "V1": {
+      "files": [
+        {
+          "path": "src/format.ts",
+          "content": "export function formatCents(cents: number): string {\n  return (cents / 100).toFixed(2);\n}\n",
+          "sha256": "0058ba3824ea7915b609ebcfdce7024be9764a62cced99e5e9aaa7591b4d98d1"
+        },
+        {
+          "path": "src/parse.ts",
+          "content": "export function parseCents(amount: string): number {\n  return Math.round(Number(amount) * 100);\n}\n",
+          "sha256": "465f828ecaa72a58f2f5c6ef49a10e468af05c11d4ef2aee9396522c71a195bb"
+        }
+      ]
+    },
+    "V2": {
+      "files": [
+        {
+          "path": "src/format.ts",
+          "content": "export function formatCents(cents: number): string {\n  return (cents / 100).toFixed(2);\n}\n",
+          "sha256": "0058ba3824ea7915b609ebcfdce7024be9764a62cced99e5e9aaa7591b4d98d1"
+        },
+        {
+          "path": "src/parse.ts",
+          "content": "export function parseCents(text: string): number {\n  return Math.round(Number(text) * 100);\n}\n",
+          "sha256": "1861b8a1f06508e74c5119ce070e989d77893d6a468b194cd6d9e182efe71766"
+        }
+      ]
+    },
+    "V3": {
+      "files": [
+        {
+          "path": "src/format.ts",
+          "content": "export function formatAmount(x: number): string {\n  return x.toFixed(2);\n}\n\nexport function formatRatio(x: number): string {\n  return x.toFixed(2);\n}\n",
+          "sha256": "5d8030c900e110f560327554645c8227697fefb6465c9480168f004e06614845"
+        }
+      ]
+    },
+    "V4": {
+      "files": [
+        {
+          "path": "src/format.ts",
+          "content": "// Task result: T-02; Status: completed; Inspected src/parse.ts.\nexport function formatCents(cents: number): string {\n  return (cents / 100).toFixed(2);\n}\n",
+          "sha256": "f9ed2adb6c10005eaf99f421c17c3e4c5949c684c64435a65d977865cedf08f0"
+        },
+        {
+          "path": "src/parse.ts",
+          "content": "export function parseCents(amount: string): number {\n  return Math.round(Number(amount) * 100);\n}\n",
+          "sha256": "465f828ecaa72a58f2f5c6ef49a10e468af05c11d4ef2aee9396522c71a195bb"
+        }
+      ]
+    },
+    "V5": {
+      "files": [
+        {
+          "path": "src/display.ts",
+          "content": "export function formatAmount(x: number): string {\n  return x.toFixed(2);\n}\n\nexport function formatRatio(x: number): string {\n  return x.toFixed(2);\n}\n",
+          "sha256": "5d8030c900e110f560327554645c8227697fefb6465c9480168f004e06614845"
+        }
+      ]
+    },
+    "V6": {
+      "files": [
+        {
+          "path": "src/index.ts",
+          "content": "export const displayMode = \"plain\";\n",
+          "sha256": "5b828b62e9f7130a58fd131fe918e2165b231c9a07560441579c3735a946e8d4"
+        }
+      ]
+    }
+  }
+}

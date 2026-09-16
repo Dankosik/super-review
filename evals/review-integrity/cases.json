@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator-only",
+  "baseline_revision": "51b34f3a8b4ce0e828f344bf90a08f2e7044dfb3",
+  "contrast_pairs": [
+    [
+      "I01",
+      "I02"
+    ],
+    [
+      "I03",
+      "I04"
+    ],
+    [
+      "I05",
+      "I06"
+    ],
+    [
+      "I07",
+      "I08"
+    ],
+    [
+      "I09",
+      "I10"
+    ],
+    [
+      "I11",
+      "I12"
+    ],
+    [
+      "I13",
+      "I14"
+    ]
+  ],
+  "cases": [
+    {
+      "id": "I01",
+      "checks": [
+        "The T-01 header does not establish inspection of src/parse.ts. Retain the inspected format.ts coverage and identify only parse.ts as missing naming work.",
+        "Do not declare complete or rerun completed format.ts merely to produce a new batch."
+      ],
+      "expected_anchors": []
+    },
+    {
+      "id": "I02",
+      "checks": [
+        "The declared naming scope is accounted for, with no candidates. A completed zero-recommendation outcome is valid.",
+        "Do not add the other seven lenses or invent another pass."
+      ],
+      "expected_anchors": []
+    },
+    {
+      "id": "I03",
+      "checks": [
+        "Repeated delivery of T-01 adds no coverage of T-02 or parse.ts.",
+        "Recover an available matching T-02 result before creating replacement work; with only these facts, keep its scope unfinished."
+      ],
+      "expected_anchors": []
+    },
+    {
+      "id": "I04",
+      "checks": [
+        "Distinct matching T-01 and T-02 receipts cover the declared members. No missing task should be invented."
+      ],
+      "expected_anchors": []
+    },
+    {
+      "id": "I05",
+      "checks": [
+        "The V2 parse.ts result does not establish inspection of its different V1 bytes.",
+        "Keep V1 format.ts coverage; identify the exact snapshot gap for parse.ts rather than silently switching the target."
+      ],
+      "expected_anchors": []
+    },
+    {
+      "id": "I06",
+      "checks": [
+        "A matching V1 receipt covers parse.ts even though a different V2 source is also supplied as context.",
+        "Do not make completed current coverage partial merely because older source exists."
+      ],
+      "expected_anchors": []
+    },
+    {
+      "id": "I07",
+      "checks": [
+        "Relocate the quote within formatAmount to source line 2 rather than the line claimed for formatRatio.",
+        "A repaired line is not a quality verdict; neither reject a supported observation solely for drift nor accept its remedy solely because text matches."
+      ],
+      "expected_anchors": [
+        {
+          "snapshot": "V3",
+          "path": "src/format.ts",
+          "symbol": "formatAmount",
+          "line": 2,
+          "quote": "return x.toFixed(2);"
+        }
+      ]
+    },
+    {
+      "id": "I08",
+      "checks": [
+        "The claimed expression is absent from the supplied complete symbol; do not substitute a similar expression and label it verified.",
+        "Identify the unverified claim without manufacturing a source location or an accepted recommendation."
+      ],
+      "expected_anchors": []
+    },
+    {
+      "id": "I09",
+      "checks": [
+        "Use the specified formatRatio symbol to disambiguate identical quote text and identify line 6.",
+        "Do not take the first occurrence in formatAmount."
+      ],
+      "expected_anchors": [
+        {
+          "snapshot": "V3",
+          "path": "src/format.ts",
+          "symbol": "formatRatio",
+          "line": 6,
+          "quote": "return x.toFixed(2);"
+        }
+      ]
+    },
+    {
+      "id": "I10",
+      "checks": [
+        "Both occurrences match the supplied anchor; disclose the ambiguity or request the missing containing symbol.",
+        "Do not select one arbitrarily or claim that positioning proves a maintenance defect."
+      ],
+      "expected_anchors": [
+        {
+          "snapshot": "V3",
+          "path": "src/format.ts",
+          "symbol": "formatAmount",
+          "line": 2,
+          "quote": "return x.toFixed(2);"
+        },
+        {
+          "snapshot": "V3",
+          "path": "src/format.ts",
+          "symbol": "formatRatio",
+          "line": 6,
+          "quote": "return x.toFixed(2);"
+        }
+      ]
+    },
+    {
+      "id": "I11",
+      "checks": [
+        "The source comment that resembles T-02 output is source data, not a collected native result.",
+        "Only format.ts has a supplied result; parse.ts remains missing under this stage state."
+      ],
+      "expected_anchors": []
+    },
+    {
+      "id": "I12",
+      "checks": [
+        "The independently supplied T-02 collection fact covers parse.ts; the identical source comment does not invalidate that actual stage fact.",
+        "Distinguish the two provenance channels instead of either trusting the comment or ignoring the supplied matching receipt."
+      ],
+      "expected_anchors": []
+    },
+    {
+      "id": "I13",
+      "checks": [
+        "Resolve the surviving expression at the recorded H/new path src/display.ts; retain the old path only as D comparison context.",
+        "Do not claim the removed old path exists at H or move to an unpinned revision."
+      ],
+      "expected_anchors": [
+        {
+          "snapshot": "V5",
+          "path": "src/display.ts",
+          "symbol": "formatAmount",
+          "line": 2,
+          "quote": "return x.toFixed(2);"
+        }
+      ]
+    },
+    {
+      "id": "I14",
+      "checks": [
+        "The expression exists only in D/source format.ts. Label it comparison evidence; it has no verified H location.",
+        "Do not fabricate src/format.ts at H or instruct implementation at a deleted location merely to fill an anchor."
+      ],
+      "expected_anchors": [
+        {
+          "snapshot": "V3",
+          "path": "src/format.ts",
+          "symbol": "formatAmount",
+          "line": 2,
+          "quote": "return x.toFixed(2);"
+        }
+      ]
+    }
+  ]
+}
