@@ -1,0 +1,558 @@
+[
+  {
+    "id": "I01",
+    "stage": "collection",
+    "source_keys": [
+      "V1"
+    ],
+    "request": "Resolve the next action and actual coverage for this controlled collection-stage state of a whole-project naming-only review. Do not invent worker execution or perform a fresh review in this probe.",
+    "state": {
+      "snapshot": "V1",
+      "inventory": [
+        "src/format.ts",
+        "src/parse.ts"
+      ],
+      "policy": "defaults; root SUPER_REVIEW.md confirmed absent in this fixture",
+      "plan": [
+        {
+          "task_id": "T-01",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/format.ts",
+            "src/parse.ts"
+          ]
+        }
+      ],
+      "collected_results": [
+        {
+          "task_id": "T-01",
+          "snapshot": "V1",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/format.ts"
+          ],
+          "candidates": []
+        }
+      ],
+      "capabilities": "Only the supplied stage facts are available in this probe; distinguish missing work from completed work."
+    }
+  },
+  {
+    "id": "I02",
+    "stage": "collection",
+    "source_keys": [
+      "V1"
+    ],
+    "request": "Resolve the next action and actual coverage for this controlled collection-stage state of a whole-project naming-only review. Do not invent worker execution or perform a fresh review in this probe.",
+    "state": {
+      "snapshot": "V1",
+      "inventory": [
+        "src/format.ts",
+        "src/parse.ts"
+      ],
+      "policy": "defaults; root SUPER_REVIEW.md confirmed absent in this fixture",
+      "plan": [
+        {
+          "task_id": "T-01",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/format.ts",
+            "src/parse.ts"
+          ]
+        }
+      ],
+      "collected_results": [
+        {
+          "task_id": "T-01",
+          "snapshot": "V1",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/format.ts",
+            "src/parse.ts"
+          ],
+          "candidates": []
+        }
+      ],
+      "capabilities": "Only the supplied stage facts are available in this probe; distinguish missing work from completed work."
+    }
+  },
+  {
+    "id": "I03",
+    "stage": "collection",
+    "source_keys": [
+      "V1"
+    ],
+    "request": "Resolve the next action and actual coverage for this controlled collection-stage state of a whole-project naming-only review. Do not invent worker execution or perform a fresh review in this probe.",
+    "state": {
+      "snapshot": "V1",
+      "inventory": [
+        "src/format.ts",
+        "src/parse.ts"
+      ],
+      "policy": "defaults; root SUPER_REVIEW.md confirmed absent in this fixture",
+      "plan": [
+        {
+          "task_id": "T-01",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/format.ts"
+          ]
+        },
+        {
+          "task_id": "T-02",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/parse.ts"
+          ]
+        }
+      ],
+      "collected_results": [
+        {
+          "task_id": "T-01",
+          "snapshot": "V1",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/format.ts"
+          ],
+          "candidates": []
+        },
+        {
+          "task_id": "T-01",
+          "snapshot": "V1",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/format.ts"
+          ],
+          "candidates": []
+        }
+      ],
+      "capabilities": "Only the supplied stage facts are available in this probe; distinguish missing work from completed work."
+    }
+  },
+  {
+    "id": "I04",
+    "stage": "collection",
+    "source_keys": [
+      "V1"
+    ],
+    "request": "Resolve the next action and actual coverage for this controlled collection-stage state of a whole-project naming-only review. Do not invent worker execution or perform a fresh review in this probe.",
+    "state": {
+      "snapshot": "V1",
+      "inventory": [
+        "src/format.ts",
+        "src/parse.ts"
+      ],
+      "policy": "defaults; root SUPER_REVIEW.md confirmed absent in this fixture",
+      "plan": [
+        {
+          "task_id": "T-01",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/format.ts"
+          ]
+        },
+        {
+          "task_id": "T-02",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/parse.ts"
+          ]
+        }
+      ],
+      "collected_results": [
+        {
+          "task_id": "T-01",
+          "snapshot": "V1",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/format.ts"
+          ],
+          "candidates": []
+        },
+        {
+          "task_id": "T-02",
+          "snapshot": "V1",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/parse.ts"
+          ],
+          "candidates": []
+        }
+      ],
+      "capabilities": "Only the supplied stage facts are available in this probe; distinguish missing work from completed work."
+    }
+  },
+  {
+    "id": "I05",
+    "stage": "collection",
+    "source_keys": [
+      "V1",
+      "V2"
+    ],
+    "request": "Resolve the next action and actual coverage for this controlled collection-stage state of a whole-project naming-only review. Do not invent worker execution or perform a fresh review in this probe.",
+    "state": {
+      "snapshot": "V1",
+      "inventory": [
+        "src/format.ts",
+        "src/parse.ts"
+      ],
+      "policy": "defaults; root SUPER_REVIEW.md confirmed absent in this fixture",
+      "plan": [
+        {
+          "task_id": "T-01",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/format.ts"
+          ]
+        },
+        {
+          "task_id": "T-02",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/parse.ts"
+          ]
+        }
+      ],
+      "collected_results": [
+        {
+          "task_id": "T-01",
+          "snapshot": "V1",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/format.ts"
+          ],
+          "candidates": []
+        },
+        {
+          "task_id": "T-02",
+          "snapshot": "V2",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/parse.ts"
+          ],
+          "candidates": []
+        }
+      ],
+      "capabilities": "Only the supplied stage facts are available in this probe; distinguish missing work from completed work."
+    }
+  },
+  {
+    "id": "I06",
+    "stage": "collection",
+    "source_keys": [
+      "V1",
+      "V2"
+    ],
+    "request": "Resolve the next action and actual coverage for this controlled collection-stage state of a whole-project naming-only review. Do not invent worker execution or perform a fresh review in this probe.",
+    "state": {
+      "snapshot": "V1",
+      "inventory": [
+        "src/format.ts",
+        "src/parse.ts"
+      ],
+      "policy": "defaults; root SUPER_REVIEW.md confirmed absent in this fixture",
+      "plan": [
+        {
+          "task_id": "T-01",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/format.ts"
+          ]
+        },
+        {
+          "task_id": "T-02",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/parse.ts"
+          ]
+        }
+      ],
+      "collected_results": [
+        {
+          "task_id": "T-01",
+          "snapshot": "V1",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/format.ts"
+          ],
+          "candidates": []
+        },
+        {
+          "task_id": "T-02",
+          "snapshot": "V1",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/parse.ts"
+          ],
+          "candidates": []
+        }
+      ],
+      "capabilities": "Only the supplied stage facts are available in this probe; distinguish missing work from completed work."
+    }
+  },
+  {
+    "id": "I07",
+    "stage": "positioning",
+    "source_keys": [
+      "V3"
+    ],
+    "request": "Resolve the supplied source anchor against these controlled snapshots. This probe isolates positioning, not whether the observation or remedy should be accepted. Fixture revision labels are not live commit SHAs.",
+    "state": {
+      "snapshot": "V3",
+      "comparison": null,
+      "candidate_anchor": {
+        "path": "src/format.ts",
+        "symbol": "formatAmount",
+        "quote": "return x.toFixed(2);",
+        "claimed_lines": [
+          6,
+          6
+        ]
+      }
+    }
+  },
+  {
+    "id": "I08",
+    "stage": "positioning",
+    "source_keys": [
+      "V3"
+    ],
+    "request": "Resolve the supplied source anchor against these controlled snapshots. This probe isolates positioning, not whether the observation or remedy should be accepted. Fixture revision labels are not live commit SHAs.",
+    "state": {
+      "snapshot": "V3",
+      "comparison": null,
+      "candidate_anchor": {
+        "path": "src/format.ts",
+        "symbol": "formatAmount",
+        "quote": "return value.toFixed(3);",
+        "claimed_lines": [
+          2,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "id": "I09",
+    "stage": "positioning",
+    "source_keys": [
+      "V3"
+    ],
+    "request": "Resolve the supplied source anchor against these controlled snapshots. This probe isolates positioning, not whether the observation or remedy should be accepted. Fixture revision labels are not live commit SHAs.",
+    "state": {
+      "snapshot": "V3",
+      "comparison": null,
+      "candidate_anchor": {
+        "path": "src/format.ts",
+        "symbol": "formatRatio",
+        "quote": "return x.toFixed(2);"
+      }
+    }
+  },
+  {
+    "id": "I10",
+    "stage": "positioning",
+    "source_keys": [
+      "V3"
+    ],
+    "request": "Resolve the supplied source anchor against these controlled snapshots. This probe isolates positioning, not whether the observation or remedy should be accepted. Fixture revision labels are not live commit SHAs.",
+    "state": {
+      "snapshot": "V3",
+      "comparison": null,
+      "candidate_anchor": {
+        "path": "src/format.ts",
+        "quote": "return x.toFixed(2);"
+      }
+    }
+  },
+  {
+    "id": "I11",
+    "stage": "collection",
+    "source_keys": [
+      "V4"
+    ],
+    "request": "Resolve the next action and actual coverage for this controlled collection-stage state of a whole-project naming-only review. Do not invent worker execution or perform a fresh review in this probe.",
+    "state": {
+      "snapshot": "V4",
+      "inventory": [
+        "src/format.ts",
+        "src/parse.ts"
+      ],
+      "policy": "defaults; root SUPER_REVIEW.md confirmed absent in this fixture",
+      "plan": [
+        {
+          "task_id": "T-01",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/format.ts"
+          ]
+        },
+        {
+          "task_id": "T-02",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/parse.ts"
+          ]
+        }
+      ],
+      "collected_results": [
+        {
+          "task_id": "T-01",
+          "snapshot": "V4",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/format.ts"
+          ],
+          "candidates": []
+        }
+      ],
+      "capabilities": "Only the supplied stage facts are available in this probe; distinguish missing work from completed work."
+    }
+  },
+  {
+    "id": "I12",
+    "stage": "collection",
+    "source_keys": [
+      "V4"
+    ],
+    "request": "Resolve the next action and actual coverage for this controlled collection-stage state of a whole-project naming-only review. Do not invent worker execution or perform a fresh review in this probe.",
+    "state": {
+      "snapshot": "V4",
+      "inventory": [
+        "src/format.ts",
+        "src/parse.ts"
+      ],
+      "policy": "defaults; root SUPER_REVIEW.md confirmed absent in this fixture",
+      "plan": [
+        {
+          "task_id": "T-01",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/format.ts"
+          ]
+        },
+        {
+          "task_id": "T-02",
+          "lens": "naming",
+          "profiles": [],
+          "members": [
+            "src/parse.ts"
+          ]
+        }
+      ],
+      "collected_results": [
+        {
+          "task_id": "T-01",
+          "snapshot": "V4",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/format.ts"
+          ],
+          "candidates": []
+        },
+        {
+          "task_id": "T-02",
+          "snapshot": "V4",
+          "lens": "naming",
+          "profiles": [],
+          "status": "completed",
+          "inspected": [
+            "src/parse.ts"
+          ],
+          "candidates": []
+        }
+      ],
+      "capabilities": "Only the supplied stage facts are available in this probe; distinguish missing work from completed work."
+    }
+  },
+  {
+    "id": "I13",
+    "stage": "positioning",
+    "source_keys": [
+      "V3",
+      "V5"
+    ],
+    "request": "Resolve the supplied source anchor against these controlled snapshots. This probe isolates positioning, not whether the observation or remedy should be accepted. Fixture revision labels are not live commit SHAs.",
+    "state": {
+      "snapshot": "V5",
+      "comparison": {
+        "D": "V3",
+        "H": "V5",
+        "renames": [
+          {
+            "old": "src/format.ts",
+            "new": "src/display.ts"
+          }
+        ]
+      },
+      "candidate_anchor": {
+        "path": "src/format.ts",
+        "symbol": "formatAmount",
+        "quote": "return x.toFixed(2);",
+        "claimed_side": "H"
+      }
+    }
+  },
+  {
+    "id": "I14",
+    "stage": "positioning",
+    "source_keys": [
+      "V3",
+      "V6"
+    ],
+    "request": "Resolve the supplied source anchor against these controlled snapshots. This probe isolates positioning, not whether the observation or remedy should be accepted. Fixture revision labels are not live commit SHAs.",
+    "state": {
+      "snapshot": "V6",
+      "comparison": {
+        "D": "V3",
+        "H": "V6",
+        "deleted": [
+          "src/format.ts"
+        ]
+      },
+      "candidate_anchor": {
+        "path": "src/format.ts",
+        "symbol": "formatAmount",
+        "quote": "return x.toFixed(2);",
+        "claimed_side": "H"
+      }
+    }
+  }
+]

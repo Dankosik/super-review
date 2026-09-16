@@ -23,9 +23,12 @@ coverage remains `unfinished`, never an empty clean result.
 
 ## C-<task>-<number>: <concrete observation>
 
-- Change anchor: path, symbol, verified H lines; how D..H introduces, worsens, or
-  makes the burden relevant. For whole-project scope, anchor the existing burden
-  directly in the reviewed snapshot. Distinguish supporting context.
+- Change anchor: verified path and symbol, with source lines or a short verbatim
+  span distinguishing the expression. Use H/new paths for surviving code and
+  label D/old paths as comparison evidence; diff positions are not source lines.
+  Explain how D..H introduces, worsens, or makes the burden relevant. For
+  whole-project scope, anchor directly in the reviewed snapshot. Distinguish
+  supporting context and state any location ambiguity instead of guessing.
 - Basis: effective rule IDs and contributing profiles; identify convention-only advice.
 - Observation: source evidence and concrete reading/maintenance cost. State what is
   established; an unsupported suspicion does not qualify.

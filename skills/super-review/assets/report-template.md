@@ -57,7 +57,9 @@ unsupported languages; never imply they were reviewed.
 
 ### R-001 — <concrete change>
 
-Location at the reviewed revision/snapshot: file, symbol, verified lines/link. Scope: local or cross-file.
+Location at the reviewed revision/snapshot: verified file and symbol, with verified
+lines/link when available or a distinguishing source span. Label old comparison
+evidence separately; do not invent a current location. Scope: local or cross-file.
 Basis: effective rules and contributing profiles, including convention-only advice.
 Connect the observation to D..H or the selected whole-source snapshot; distinguish
 supporting context. Explain

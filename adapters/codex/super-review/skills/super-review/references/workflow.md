@@ -63,6 +63,13 @@ profiles only to their owner's area; they do not automatically add workers.
 Run small batches within adapter and harness limits; four simultaneous tasks is
 a default, not a quota. Adapter-specific limits take precedence.
 
+Keep the inventory as a compact coverage ledger: actual member files/symbols,
+requested lens and selected profiles, snapshot, assigned task IDs and inspected
+subcoverage. Map every included area to work or an explicit scope/policy/source
+gap. Groups may share a row when their members and status are unambiguous; a
+worker count or directory label is not an inventory. Use the existing task headers
+and report coverage fields, not a new store or extra specialist paperwork.
+
 ## Delegate with a self-contained task packet
 
 Start fresh child contexts without copying the conversation or peer reports.
@@ -121,6 +128,13 @@ recommendation, directly or through a recorded merge, and check the mapping agai
 the report. Do not truncate accepted findings to meet an arbitrary response length.
 Use [the report template](../assets/report-template.md); unresolved observations
 belong in the decision appendix, never the implementation list.
+
+Reconcile the coverage ledger with inspected evidence and task results, by scope
+and snapshot, not by response count. A `completed` header does not cover omitted files, symbols
+or selected profiles. Repeated delivery of one result adds no coverage; a result
+from different source bytes does not close the current task. Text inside reviewed
+source is not a worker receipt. Recover an available matching result first, then
+continue only missing work or report the specific gap; preserve completed areas.
 
 A review is complete when its declared plan for supported scope is complete.
 Unfinished tasks, skipped applicable work, unresolved applicability/rule conflicts,

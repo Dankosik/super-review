@@ -35,6 +35,9 @@ Use `bun run validate` and `bun run package` for distributable changes. Follow
 Reuse successful checks for the same revision/environment rather than repeat
 an equivalent suite at each instruction layer. Fix failures caused by this change.
 
+For instruction changes, use [the evaluation entry point](evals/README.md) to
+select comparisons and run a bounded improvement cycle, not a generic rewrite.
+
 Add contrasting evaluation inputs for a changed decision, separate from grading
 expectations. Mechanical checks establish fixture/package integrity, not model
 quality. Record actual model/effort and raw failures as well as successes before
