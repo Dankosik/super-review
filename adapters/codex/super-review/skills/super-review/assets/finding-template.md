@@ -6,7 +6,8 @@ when forwarding a candidate, or include its identity when the block travels alon
 
 ## Task result: <task ID>
 
-- Snapshot: PR and B/H/D, or local target and commit/file-hash identity; source location.
+- Snapshot: PR and B/H/D, or local target, selected view and both endpoint
+  identities (commit, index blobs or working-file hashes); source location.
 - Instructions: version and trusted package revision/resource digest when exposed,
   or `content identity unverified`, under the contract's instruction-identity rules.
 - Assignment: lens, selected profiles, exact scope and effective policy references.
@@ -23,9 +24,12 @@ coverage remains `unfinished`, never an empty clean result.
 
 ## C-<task>-<number>: <concrete observation>
 
-- Change anchor: path, symbol, verified H lines; how D..H introduces, worsens, or
-  makes the burden relevant. For whole-project scope, anchor the existing burden
-  directly in the reviewed snapshot. Distinguish supporting context.
+- Change anchor: path, symbol, endpoint and verified lines; H/new for surviving
+  source, D/old for removed source, and both paths when a rename requires them.
+  Explain how the selected comparison introduces, worsens, or makes the burden
+  relevant. For local changes use the declared old/new views; for whole-project
+  scope anchor the burden directly in that snapshot. Distinguish supporting
+  context. Do not relocate an old-side observation to invented H lines.
 - Basis: effective rule IDs and contributing profiles; identify convention-only advice.
 - Observation: source evidence and concrete reading/maintenance cost. State what is
   established; an unsupported suspicion does not qualify.

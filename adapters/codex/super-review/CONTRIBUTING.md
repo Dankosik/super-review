@@ -5,7 +5,19 @@ which user decision an instruction changes. Preserve stable rule IDs or document
 migration; keep evaluation expectations and raw model outputs outside runtime
 instructions. Read-only reviews and development of this repository are distinct.
 
-Install development tools with Bun, then run:
+## Change-specific checks
+
+Choose checks from the changed contract, not from the number of agent stages.
+Reuse successful results only while their inputs and environment are unchanged.
+
+| Change | Local evidence |
+| --- | --- |
+| Packaged instructions, adapter templates, or shipped documentation | `bun run build`, relevant fixture/package tests, `bun run validate`, `bun run package`. Documentation copied into Codex is a distributable change too. |
+| TypeScript tooling or configuration | Relevant `bun test` files and `bun run typecheck`; include package checks when delivery changes. |
+| Source-view, location or acquisition instructions | `bun test tests/source-evidence.test.ts` plus contrasting source-evidence evaluation inputs. Disposable Git tests verify semantics, not agent compliance. |
+| Non-shipped evaluation documentation only | Check changed case mappings, source identities and references; no unrelated model or native-host rerun. |
+
+New checkout setup and the full pre-merge gate remain:
 
 ```sh
 bun install --frozen-lockfile
@@ -21,8 +33,13 @@ Tests verify resource identities, native configuration and packaging; they do no
 prove recommendation quality. Changes to roles need native configuration checks.
 CI validates the Claude plugin and OpenCode tool exposure without executing models.
 Use the [instruction-boundary cases](https://github.com/Dankosik/super-review/tree/main/evals/instruction-boundaries) for
-changed launch, policy, coverage and handoff decisions. Do not claim a behavioral
-pass from fixture integrity; record unavailable model runs explicitly. Keep the
+changed launch, policy, coverage and handoff decisions, and the
+[source-evidence cases](https://github.com/Dankosik/super-review/tree/main/evals/source-evidence)
+for snapshot and anchor decisions. Start with a specific failure and its opposite
+case before changing prose. Compare identical source/host/model conditions, retain
+raw traces and failed attempts, and keep grader material out of review packets.
+Do not claim a behavioral pass from fixture integrity; record unavailable model
+runs explicitly. Keep the
 routing-first experiment separate until its comparison justifies promotion.
 
 Codex and Claude install trees are generated. Edit canonical skill files and

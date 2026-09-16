@@ -15,6 +15,15 @@ concrete burden, not merely that the code exists. A disguised bug report or an
 imagined future requirement is outside scope; explicit team consistency is a
 valid, separately stated basis.
 
+Validate each anchor against its declared endpoint under
+[source-access rules](harnesses/source-access.md#file-boundaries-and-source-anchors):
+path, old/new side, symbol and any supplied line range must match that snapshot.
+For deletions inspect old-side evidence; for renames preserve the path mapping.
+Local evidence must match the selected index/worktree view, not just HEAD.
+Repair a demonstrably wrong coordinate without discarding a supported observation;
+if the location cannot be established, retain the specific gap rather than invent
+an anchor. This uses already supplied matching bytes, not another full scan.
+
 Separate two decisions: is the observation supported, and is the remedy ready
 for implementation? A sound observation with an unsupported remedy survives as
 `unresolved`, with its specific gap, unless a revised supported remedy resolves
