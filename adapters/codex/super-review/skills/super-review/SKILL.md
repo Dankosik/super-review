@@ -1,51 +1,46 @@
 ---
 name: super-review
-description: "Review the readability, idiomatic expression, and maintainability of a Go, TypeScript, or Rust pull request or local source through independent specialist passes. Use when the user explicitly asks for Super Review or this focused review workflow."
+description: "Use for an explicitly requested Super Review: independent readability and maintainability review of Go, TypeScript, or Rust PRs or local source."
 metadata:
-  version: "3.0.0"
+  version: "3.0.1"
 ---
 
 # Super Review
 
-**Clarity.** Find opportunities to make the implemented solution easier to
-understand and maintain. Recommend a change when the resulting code expresses
-its concepts and responsibilities better, whether the improvement is local or
-structural. Judge the result, not the amount of change or the length of the report.
-Retain code when changing it offers no supported improvement.
+**Clarity.** Recommend source-supported improvements to expression and structure,
+local or structural, and retain code when changing it offers no supported benefit.
+This workflow does not hunt bugs, assess security or test coverage, or validate
+business requirements. Do not edit reviewed source, post comments, or run its
+code, tests, builds, linters, hooks or installers. Understand behavior as context
+for advice, without claiming tested equivalence.
 
-Review the supplied PR or requested local source without changing its source or posting comments. Do not
-run its code, tests, build, linters, hooks, or installers. This is a review of
-expression and structure; bug hunting, security assessment, test coverage, and
-business validation are separate tasks. Understand behavior to avoid obviously
-incompatible advice, without claiming equivalence has been tested.
+## Start or explain
 
-**Start.** Use the matching adapter: [Codex](references/harnesses/codex.md),
+Use only the active adapter: [Codex](references/harnesses/codex.md),
 [Claude Code](references/harnesses/claude.md), or the installed OpenCode role.
-Accept a PR URL, local changes, or explicitly requested whole-project source.
-For help or no identifiable source, explain the launch and ask for the missing
-review target. Accept file and lens scope in ordinary language.
+For help, explain usage and stop without acquiring source or spawning specialists.
+If an actual review has no identifiable target after considering the request and
+available context, ask only for that target. A selected PR, local changes or an
+explicit whole-project request needs no invented PR or repeated confirmation.
+Accept file and lens scope in ordinary language.
 
-**Orchestrate.** Apply [the contract](references/review-contract.md),
-[workflow](references/workflow.md), [language routing](references/languages.md),
-and [team rules](references/team-rules.md). Use the compact
-[aspect catalog](references/aspects.md) to select contextual lenses and profiles
-without dropping the eight base questions. Pin source revisions before delegating.
-Use the host's source tools and independent child contexts; disclose
-unavailable capabilities.
+## Review and deliver
 
-Give each specialist one lens, selected owner profiles, effective rules, and a
-concrete scope. Supply neutral context using the workflow's task packet.
-Complete resources already supplied in that context need not be fetched again;
-references and summaries alone do not replace them. Specialists investigate
-their question, not the whole review, and return evidence-backed observations.
-The orchestrator owns [verification](references/verification.md), final acceptance,
-and reconciliation. Keep every accepted recommendation, including merged ones.
+Apply [the contract](references/review-contract.md) and
+[workflow](references/workflow.md) for a review. They own source pinning, team
+policy, language/aspect selection, neutral packets and completion. Keep all eight
+base questions unless the user narrows scope; profiles deepen their owners.
 
-**Deliver.** Lead with the outcome. Use [the report structure](assets/report-template.md)
-in the user's language. Bind paths and locations to the pinned revision. Separate
-completed coverage from exclusions and unfinished work. Never replace missing
-specialists with imagined independent reviews. Give the full report in the harness,
-or a permitted artifact outside the reviewed source tree. Include this skill's
-[instruction identity](references/review-contract.md#instruction-identity), including
-its metadata version and any provenance limit. An unresolved observation is not an
-instruction to implement.
+Give each fresh specialist one lens, the matching language and selected profiles,
+applicable rules and a concrete pinned scope. Reuse complete matching supplied
+resources; a path or summary is not the resource. Do not send peer verdicts or
+simulate independent coverage when delegation is unavailable.
+
+The orchestrator uses [verification](references/verification.md) when deciding
+candidates and [the report structure](assets/report-template.md) when delivering.
+Keep every accepted recommendation and merged contribution, separate unresolved
+observations from implementation advice, and report actual coverage and gaps.
+Finish the declared review rather than stopping after one batch or reopening it
+because no findings were accepted. Return the full report in the user's language,
+in the harness or a permitted artifact outside the reviewed tree. Include the
+contract's instruction identity separately from the reviewed source identity.

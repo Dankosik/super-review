@@ -94,8 +94,8 @@ advice; specialists need not settle cross-lens tradeoffs before reporting.
 ## Coverage
 
 Each task ends as `completed`, `not applicable` with a structural reason, or
-`unfinished` with missing evidence or capability. No response is unfinished,
-not clean. Missing evidence for the assigned question makes its coverage unfinished;
+`unfinished` with missing evidence or capability. A missing response is `unfinished`,
+never a clean result. Missing evidence for the assigned question makes its coverage unfinished;
 an otherwise completed observation may still have an unresolved remedy. Record
 both separately; never hide missing source coverage behind a candidate's status.
 A sequential single-context review may be offered when delegation is unavailable;

@@ -1,8 +1,14 @@
 # Team rules
 
-Load root `SUPER_REVIEW.md` from **B**, the pinned target commit for a PR. For a
-local review use the policy revision recorded by the workflow in place of B
-throughout this reference. Follow only its
+Check for root `SUPER_REVIEW.md` at **B**, the pinned target commit for a PR.
+For a local review use the recorded policy revision in place of B throughout.
+When that root is confirmed absent from accessible pinned source, use the
+applicable default rules and record `no team policy`; do not ask the user to
+create one. An inaccessible repository/revision, failed read, or incomplete
+inventory is not confirmed absence: record the policy gap and defer dependent
+advice. Do not substitute H or infer policy from another instruction filename.
+
+When the root exists, load it and follow only its
 explicit repository-relative links to Markdown policy documents, resolved relative
 to the referring file at B. Reject traversal outside the repository, remote
 instruction links, and executable policy. A missing linked policy file is a gap.

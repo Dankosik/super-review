@@ -1,5 +1,9 @@
 # Claude Code
 
+Follow the core skill's help/target branch first. Source acquisition and
+independent-review steps below apply only to an actual review with an
+identifiable target; help does not require reading a repository.
+
 `/super-review:review <PR URL or local scope>` runs the orchestrator in a separate
 foreground context. Use [native source access](source-access.md). Read the core at
 `${CLAUDE_PLUGIN_ROOT}/resources/super-review/SKILL.md` and resolve its references

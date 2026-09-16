@@ -40,8 +40,9 @@ In Claude, use `/super-review:review` followed by that target. For example:
 - Review all production Rust in the current project, excluding tests.
 - Review my staged and unstaged changes, focusing on API clarity and naming.
 
-Without a target, the skill asks what source to review. PRs use fixed base/head
-commits; working files use an identified snapshot. Local requests do not need an
+Help explains usage without reading a target or starting specialist tasks. An
+actual review uses the target already supplied in the request or context and asks
+only when that target is missing. PRs use fixed base/head commits; working files use an identified snapshot. Local requests do not need an
 invented PR. GitHub access is needed only for remote source; existing source can
 be read locally. The plugin does not supply credentials or model subscriptions.
 
@@ -74,10 +75,14 @@ refactoring equivalence. Completed coverage is not exhaustive discovery.
 Use root `SUPER_REVIEW.md` with explicit language, paths, lens and action. Rules
 may add, refine, override or disable a stable rule within their declared scope.
 PR policy comes from the target commit; local policy uses the recorded revision.
+The file is optional: confirmed absence uses defaults. Failed access is a policy
+gap, not permission to assume defaults or use a PR's proposed replacement.
 See [the contract](skills/super-review/references/team-rules.md) and
 [examples](examples/team-rules/SUPER_REVIEW.md). All 33 `go.*`, `ts.*` and `rust.*`
 rule IDs remain unchanged in version 3.
 
 [Validation](docs/validation.md) separates package checks from model evidence.
+The [instruction audit](docs/instruction-audit.md) explains the unreleased 3.0.1
+scope corrections, retained coverage defaults and unexecuted evaluation cases.
 [Design](docs/design.md) · [Contributing](CONTRIBUTING.md) · [Privacy](PRIVACY.md) ·
 [Changelog](CHANGELOG.md) · [MIT License](LICENSE)

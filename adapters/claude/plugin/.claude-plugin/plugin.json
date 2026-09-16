@@ -1,7 +1,7 @@
 {
   "name": "super-review",
-  "version": "3.0.0",
-  "description": "Independent readability and maintainability review for Go, TypeScript, and Rust pull requests.",
+  "version": "3.0.1",
+  "description": "Independent readability and maintainability review for Go, TypeScript, or Rust PRs and local source.",
   "author": {
     "name": "Dankosik",
     "url": "https://github.com/Dankosik"
