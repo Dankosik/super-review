@@ -26,7 +26,10 @@ coverage remains `unfinished`, never an empty clean result.
 - Change anchor: verified path and symbol, with source lines or a short verbatim
   span distinguishing the expression. Use H/new paths for surviving code and
   label D/old paths as comparison evidence; diff positions are not source lines.
-  Explain how D..H introduces, worsens, or makes the burden relevant. For
+  For renames record the old and new paths on their own sides. A D-only location
+  explains a deletion, not an invented H line or permission to restore unrelated
+  old code. Explain how D..H introduces, worsens, or makes the burden relevant,
+  grounding current impact in the change and available H context. For
   whole-project scope, anchor directly in the reviewed snapshot. Distinguish
   supporting context and state any location ambiguity instead of guessing.
 - Basis: effective rule IDs and contributing profiles; identify convention-only advice.

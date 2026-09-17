@@ -1,0 +1,159 @@
+{
+  "collection-a": {
+    "assignment": {
+      "task": "zone-1",
+      "snapshot": {
+        "path": "source/format.go",
+        "sha256": "d0fd46c1f959dd1e5f102466b88e89f41a0ead981af0c052f3c4d1f8ba0e3f1d"
+      },
+      "scope": [
+        "source/format.go"
+      ],
+      "lens": "naming",
+      "profiles": [],
+      "policy": "confirmed absent; installed defaults",
+      "extent": "whole selected file"
+    },
+    "result": {
+      "task": "zone-1",
+      "snapshot": {
+        "path": "source/format.go",
+        "sha256": "d0fd46c1f959dd1e5f102466b88e89f41a0ead981af0c052f3c4d1f8ba0e3f1d"
+      },
+      "scope": [
+        "source/format.go"
+      ],
+      "lens": "naming",
+      "profiles": [],
+      "policy": "confirmed absent; installed defaults",
+      "status": "completed",
+      "inspected": [
+        "FormatZone: complete declaration; no local callers in the selected inventory"
+      ],
+      "coverage": "naming base completed; no selected profiles",
+      "candidates": []
+    },
+    "remaining_tasks": []
+  },
+  "collection-b": {
+    "assignment": {
+      "task": "zone-1",
+      "snapshot": {
+        "path": "source/format.go",
+        "sha256": "d0fd46c1f959dd1e5f102466b88e89f41a0ead981af0c052f3c4d1f8ba0e3f1d"
+      },
+      "scope": [
+        "source/format.go"
+      ],
+      "lens": "naming",
+      "profiles": [],
+      "policy": "confirmed absent; installed defaults",
+      "extent": "whole selected file"
+    },
+    "result": {
+      "task": "zone-1",
+      "snapshot": {
+        "path": "source/format.go",
+        "sha256": "d0fd46c1f959dd1e5f102466b88e89f41a0ead981af0c052f3c4d1f8ba0e3f1d"
+      },
+      "scope": [
+        "source/format.go"
+      ],
+      "lens": "control-flow",
+      "profiles": [],
+      "policy": "confirmed absent; installed defaults",
+      "status": "completed",
+      "inspected": [
+        "FormatZone: complete declaration; no local callers in the selected inventory"
+      ],
+      "coverage": "control-flow base completed; no selected profiles",
+      "candidates": []
+    },
+    "remaining_tasks": []
+  },
+  "location-a": {
+    "comparison": {
+      "D": "before",
+      "H": "renamed"
+    },
+    "change": {
+      "kind": "renamed and modified",
+      "old_path": "formatter.go",
+      "new_path": "labels.go"
+    },
+    "candidate": {
+      "id": "C-zone-1",
+      "location": {
+        "side": "H",
+        "path": "formatter.go",
+        "symbol": "label",
+        "lines": [
+          3,
+          5
+        ]
+      },
+      "observation": "The parameter x hides the zone concept used by Display.",
+      "remedy": "Use zone for this private parameter."
+    }
+  },
+  "location-b": {
+    "comparison": {
+      "D": "before",
+      "H": "deleted"
+    },
+    "change": {
+      "kind": "deleted",
+      "old_path": "formatter.go",
+      "new_path": null
+    },
+    "candidate": {
+      "id": "C-zone-1",
+      "location": {
+        "side": "D",
+        "path": "formatter.go",
+        "symbol": "label",
+        "lines": [
+          3,
+          5
+        ]
+      },
+      "observation": "The helper parameter zone could be more specific.",
+      "remedy": "Rename it to regionName."
+    }
+  },
+  "path-a": {
+    "authorized_root": "fixture-root",
+    "selected_path": "linked.go",
+    "kind": "symlink",
+    "link_text": "source/format.go",
+    "resolved_path": "fixture-root/source/format.go",
+    "target_kind": "regular",
+    "target_identity": {
+      "path": "source/format.go",
+      "sha256": "d0fd46c1f959dd1e5f102466b88e89f41a0ead981af0c052f3c4d1f8ba0e3f1d"
+    }
+  },
+  "path-b": {
+    "authorized_root": "fixture-root",
+    "selected_path": "linked.go",
+    "kind": "symlink",
+    "link_text": "../outside/format.go",
+    "resolved_path": "outside/format.go",
+    "target_kind": "unknown"
+  },
+  "kind-a": {
+    "authorized_root": "fixture-root",
+    "selected_path": "source/format.go",
+    "kind": "regular",
+    "identity": {
+      "path": "source/format.go",
+      "sha256": "d0fd46c1f959dd1e5f102466b88e89f41a0ead981af0c052f3c4d1f8ba0e3f1d"
+    }
+  },
+  "kind-b": {
+    "authorized_root": "fixture-root",
+    "selected_path": "source/format.go",
+    "kind": "fifo",
+    "identity": null
+  }
+}
