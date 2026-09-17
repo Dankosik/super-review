@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.2.0 — 2026-09-17
+
+- Add a native Cursor IDE adapter: `/super-review` skill, a read-only specialist role, and inherit-by-default specialist models with an explicit per-review subagent override. Package a Cursor archive. This does not publish a Cursor marketplace listing.
+- Add seven TypeScript owner profiles for React, Next.js, Tailwind CSS and shadcn/ui. They deepen existing lenses from inspected source; they do not add a language, rule IDs or extra agent types.
+- Record frontend compatibility context, twenty contrasting fixtures and mechanical integrity checks, plus Cursor adapter configuration tests. Independent-agent and behavioral model evaluations remain unrun.
+- Preserve all 44 `go.*`, `ts.*`, `rust.*` and `java.*` rule IDs, native 3.x packaging, and existing Claude, Codex and OpenCode model profiles.
+
 ## 3.1.0 — 2026-09-17
 
 - Add Java review context, ten lens modules and four owner profiles with eleven stable `java.*` IDs. Preserve all existing `go.*`, `ts.*` and `rust.*` identities (44 rules total).

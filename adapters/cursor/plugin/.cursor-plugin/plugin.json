@@ -1,6 +1,6 @@
 {
   "name": "super-review",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Independent readability and maintainability review for Go, TypeScript, Rust, or Java PRs and local source.",
   "author": {
     "name": "Dankosik"

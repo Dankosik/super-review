@@ -2,7 +2,7 @@
 name: super-review
 description: "Use for an explicitly requested Super Review: independent readability and maintainability review of Go, TypeScript (including React 19, Next.js 16, Tailwind and shadcn/ui), Rust, or Java PRs or local source."
 metadata:
-  version: "3.1.0"
+  version: "3.2.0"
 ---
 
 # Super Review
