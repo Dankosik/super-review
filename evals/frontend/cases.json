@@ -1,0 +1,220 @@
+[
+  {
+    "id": "F01",
+    "profiles": [
+      "react-state"
+    ],
+    "kind": "improvement",
+    "expect": [
+      "Identify repeated maintenance of the same projection across both writers, rather than invent a bug.",
+      "Consider deriving double from count with the current initialization and interaction behavior; do not introduce a global store or Action.",
+      "Only the profile is requested; do not claim all eight base questions were reviewed."
+    ]
+  },
+  {
+    "id": "F02",
+    "profiles": [
+      "react-state"
+    ],
+    "kind": "retain",
+    "expect": [
+      "Treat the unsaved draft as a distinct owner/lifecycle, not redundant prop state.",
+      "Do not synchronize every incoming prop change into the draft or replace it with render derivation."
+    ]
+  },
+  {
+    "id": "F03",
+    "profiles": [
+      "react-effects"
+    ],
+    "kind": "improvement",
+    "expect": [
+      "Consider naming the independent row-to-export calculation separately from pending state and I/O.",
+      "Preserve selection, ordering, escaping, exception boundary and save timing; do not convert the whole handler to a generic Hook or Action just to shorten it."
+    ]
+  },
+  {
+    "id": "F04",
+    "profiles": [
+      "react-effects"
+    ],
+    "kind": "retain",
+    "expect": [
+      "Keep a coherent browser-timer synchronization lifecycle.",
+      "Do not remove the Effect, move subscription setup into render, or demand a useMount wrapper."
+    ]
+  },
+  {
+    "id": "F05",
+    "profiles": [
+      "react-composition"
+    ],
+    "kind": "improvement",
+    "expect": [
+      "Identify that callers must inspect implementation to decode x/y; name their existing compact/show-heading meanings.",
+      "Do not require a discriminated union or remove valid boolean combinations without evidence; preserve the current accepted calls or identify compatibility limits."
+    ]
+  },
+  {
+    "id": "F06",
+    "profiles": [
+      "react-composition"
+    ],
+    "kind": "retain",
+    "expect": [
+      "Keep the meaningful orthogonal flag and callback without inventing modes, context, slots or a polymorphic factory.",
+      "No default memoization addition/removal."
+    ]
+  },
+  {
+    "id": "F07",
+    "profiles": [
+      "next-boundaries"
+    ],
+    "kind": "improvement",
+    "expect": [
+      "Consider making the hidden request-header dependency explicit in the route-to-feature boundary, preserving the existing read and decision order.",
+      "Do not report authorization/header trust bugs or force another data/service layer; do not change Next 16 awaiting to a synchronous API."
+    ]
+  },
+  {
+    "id": "F08",
+    "profiles": [
+      "next-boundaries"
+    ],
+    "kind": "retain",
+    "expect": [
+      "Keep a simple route adapter and view without mandatory feature folders or forwarding services.",
+      "Do not prescribe App Router migration, client rendering or caching from framework presence alone."
+    ]
+  },
+  {
+    "id": "F09",
+    "profiles": [
+      "next-data-ownership"
+    ],
+    "kind": "improvement",
+    "expect": [
+      "Consider one explicit owner for the identical directory request/freshness contract, while retaining callers and invocation semantics.",
+      "Do not switch to use cache, client caching or another revalidation API as an equivalent spelling."
+    ]
+  },
+  {
+    "id": "F10",
+    "profiles": [
+      "next-data-ownership"
+    ],
+    "kind": "retain",
+    "expect": [
+      "Keep the distinct public-summary and checkout freshness policies, despite matching URLs.",
+      "Do not enable Cache Components, unify freshness policies or claim default cache behavior without configuration evidence."
+    ]
+  },
+  {
+    "id": "F11",
+    "profiles": [
+      "tailwind-variants"
+    ],
+    "kind": "improvement",
+    "expect": [
+      "Consider a shared named literal variant mapping for the same maintained status role.",
+      "Retain complete statically detectable utility names; no interpolated fragments, mandatory CVA, global CSS or markup unification."
+    ]
+  },
+  {
+    "id": "F12",
+    "profiles": [
+      "tailwind-variants"
+    ],
+    "kind": "retain",
+    "expect": [
+      "Do not extract incidental flex/gap repetition into a shared component/token or call long utility strings intrinsically unreadable.",
+      "CSS is supporting context, not evidence of full CSS review."
+    ]
+  },
+  {
+    "id": "F13",
+    "profiles": [
+      "shadcn-composition"
+    ],
+    "kind": "improvement",
+    "expect": [
+      "Do not exclude the locally maintained primitive just because it was initially copied.",
+      "Consider moving invoice workflow to a feature composition so unrelated primitive callers do not inherit invoice concepts.",
+      "Preserve button props, event/default-prevention and consumer API commitments; do not regenerate upstream components."
+    ]
+  },
+  {
+    "id": "F14",
+    "profiles": [
+      "shadcn-composition"
+    ],
+    "kind": "retain",
+    "expect": [
+      "Respect the actual Base UI backend; do not invent Radix asChild, add wrappers around every primitive or regenerate code.",
+      "The external implementation is not supplied: do not assert exact event/ref semantics or propose unsupported changes requiring that evidence."
+    ]
+  },
+  {
+    "id": "F15",
+    "profiles": [],
+    "kind": "guard",
+    "expect": [
+      "Establish the owning package and Preact JSX/runtime evidence; retain TypeScript review but do not automatically attach React/Next profiles from root dependencies or tsx.",
+      "No unsupported framework-specific recommendations."
+    ]
+  },
+  {
+    "id": "F16",
+    "profiles": [
+      "react-composition"
+    ],
+    "kind": "guard",
+    "expect": [
+      "Do not remove forwardRef solely because the installed development React version is 19; peer consumers include 18.",
+      "No unsupported claim that Compiler is enabled or memoization can be removed."
+    ]
+  },
+  {
+    "id": "F17",
+    "profiles": [
+      "tailwind-variants"
+    ],
+    "kind": "guard",
+    "expect": [
+      "Use the Tailwind 3 baseline; do not require @theme or automatic source detection migration.",
+      "Retain a local one-off arbitrary width without inventing a global design token."
+    ]
+  },
+  {
+    "id": "F18",
+    "profiles": [
+      "shadcn-composition"
+    ],
+    "kind": "guard",
+    "expect": [
+      "Missing local primitive source is a scoped evidence gap; do not fabricate Radix/Base UI semantics or treat a missing response as clean.",
+      "Do not run CLI installers, fetch latest upstream components or infer source contracts from components.json alone."
+    ]
+  },
+  {
+    "id": "F19",
+    "profiles": [
+      "tailwind-variants"
+    ],
+    "kind": "guard",
+    "expect": [
+      "A frontend profile must inherit its disabled owner rule, not revive it as tailwind-specific authority.",
+      "Record policy exclusion separately from missing execution; do not claim all base lenses from the targeted request."
+    ]
+  },
+  {
+    "id": "F20",
+    "profiles": [],
+    "kind": "guard",
+    "expect": [
+      "Disclose that CSS is not a supported standalone review target; do not claim completed TypeScript/Tailwind review.",
+      "Do not spawn unsupported CSS reviewers or silently broaden to another file."
+    ]
+  }
+]

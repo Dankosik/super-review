@@ -58,6 +58,31 @@ and rationale are selected when relevant; owner profiles deepen their questions.
 Tests, generated/vendor code and unsupported languages are excluded. A targeted
 request narrows coverage explicitly; missing work is never called clean.
 
+## Frontend quality review
+
+TypeScript/TSX reviews include source-selected profiles for **React 19, Next.js 16,
+Tailwind CSS and shadcn/ui**. They focus on state ownership, cohesive interactions,
+component contracts, server/client boundaries, explicit data paths, shared design
+knowledge and primitive composition. The eight base questions still apply;
+profiles deepen their existing owners instead of spawning four broad framework
+reviewers. Native model selection is unchanged.
+
+```text
+$super-review Review my local TypeScript/TSX changes for readability and
+maintainability in React 19, Next.js 16, Tailwind and shadcn/ui.
+```
+
+The stack is established per package from pinned source and configuration. No
+automatic upgrades, memoization campaigns, forced Server Actions, design-system
+rewrites or bug/accessibility/performance audits are added. Locally maintained
+shadcn components are not excluded merely because a CLI originally copied them.
+JavaScript/JSX, CSS and MDX remain outside standalone target coverage; theme CSS
+and configuration can support recommendations about included TypeScript/TSX.
+Missing local implementations or configuration are reported, not guessed.
+
+See [routing and profile ownership](skills/super-review/references/frontend.md)
+and the maintainer-only [research and evaluation cases](https://github.com/Dankosik/super-review/tree/main/evals/frontend).
+
 ## Models and results
 
 The orchestrator retains the user's model and effort. Codex specialists use

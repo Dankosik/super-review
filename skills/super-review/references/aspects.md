@@ -23,6 +23,10 @@ question; clear code can complete the check with no candidates. When uncertain,
 inspect the smallest relevant declaration or module rather than silently skip.
 Missing source is an applicability gap, not evidence of absence.
 
+For established frontend TypeScript, also select from the owner profiles in
+[frontend routing](frontend.md). That catalog uses these same selection, policy
+and coverage rules; it is not an alternative eight-question plan.
+
 Without user narrowing, retain the eight-base-lens applicability plan and select
 each contextual aspect whose subject is present. Attach selected profiles to
 their owner's task for that area; they do not replace the base question or

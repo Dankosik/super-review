@@ -45,7 +45,9 @@ exports, overloads, augmentation, or signatures. Unavailable consumers may requi
 a compatible local clarification instead. For TSX, establish the actual framework
 from imports/configuration: `.tsx` alone does not mean React. Use its existing
 component/props conventions, not a framework migration, memoization campaign, or
-new hooks audit.
+new hooks audit. For established frontend source, also use the selected
+[frontend context and owner profiles](../frontend.md); apply only the assigned
+question and preserve local framework contracts.
 
 Background: [everyday types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html),
 [functions](https://www.typescriptlang.org/docs/handbook/2/functions.html),

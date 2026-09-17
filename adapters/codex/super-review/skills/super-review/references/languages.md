@@ -68,3 +68,12 @@ inherit its effective language-specific rules, including disables and overrides.
 | dependency-boundaries | abstractions | [Go](profiles/dependency-boundaries.md) | [Java](profiles/java/dependency-boundaries.md) | [TS](profiles/typescript/dependency-boundaries.md) | [Rust](profiles/rust/dependency-boundaries.md) |
 | effects-separation | function-cohesion | [Go](profiles/effects-separation.md) | [Java](profiles/java/effects-separation.md) | [TS](profiles/typescript/effects-separation.md) | [Rust](profiles/rust/effects-separation.md) |
 | error-expression | control-flow | [Go](profiles/error-expression.md) | [Java](profiles/java/error-expression.md) | [TS](profiles/typescript/error-expression.md) | [Rust](profiles/rust/error-expression.md) |
+
+## Frontend frameworks in TypeScript
+
+For established React, Next.js, Tailwind CSS or shadcn/ui source, apply
+[frontend routing](frontend.md) to select owner profiles and the additional
+[frontend context](frontend/context.md). The TypeScript lens and `ts.*` rules
+remain authoritative for the assigned quality question. Resolve the stack per
+owning package and area, not from `.tsx` alone or workspace-wide dependencies.
+Framework resources do not extend supported languages or replace base coverage.
