@@ -56,3 +56,7 @@ These explain contracts, not a requirement to adopt their current version.
 Use [language routing](../languages.md) to select the Java implementation of the
 assigned lens and owner profiles. The shared workflow owns coverage; these are
 not extra workers or a mandatory all-module packet.
+
+For established Spring mechanisms, use [Spring routing](../spring.md) and its
+additional context. Keep the assigned Java question and use framework contracts
+only where they explain the observation or constrain its proposed remedy.

@@ -25,3 +25,8 @@ and profile ownership. `bun run validate`
 checks installed links/identities and generated copies. These mechanical tests do
 not prove that a model follows the instructions. No behavioral evaluation results
 are claimed by adding this suite. Existing Go expectations and IDs are unchanged.
+
+For mechanism-specific Spring/Boot decisions, use the separate
+[Spring corpus](../spring/README.md) and its isolated packets. Retain the applicable
+Java counterexamples, especially J02/J10/J11/J14; do not load Spring profiles into
+plain Java cases or claim framework coverage from a Java-only result.
