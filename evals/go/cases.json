@@ -120,17 +120,43 @@
   {
     "id": "mixed-language",
     "input": {
+      "stage": "routing",
+      "scope": "Default review; no language narrowing.",
       "files": [
         "fixtures/delivery.go",
         "web/client.ts",
+        "web/legacy.js",
         "fixtures/generated.go",
         "fixtures/delivery_test.go",
         "vendor/example/x.go"
-      ]
+      ],
+      "context": "The Go and TypeScript files are handwritten production source. fixtures/generated.go is established generated code. Plan language membership and exclusions only; source bodies are not supplied and no completed source review is implied."
     },
     "expect": [
-      "Review supported Go only.",
-      "Disclose unsupported, generated, test, and vendor exclusions."
+      "Route included Go and TypeScript production source to their own language resources.",
+      "Disclose unsupported JavaScript and generated, test and vendor exclusions; TypeScript is supported, not an exclusion.",
+      "Produce a routing plan, not an invented completed source review."
+    ]
+  },
+  {
+    "id": "go-only-language",
+    "input": {
+      "stage": "routing",
+      "scope": "Review only Go production source.",
+      "files": [
+        "fixtures/delivery.go",
+        "web/client.ts",
+        "web/legacy.js",
+        "fixtures/generated.go",
+        "fixtures/delivery_test.go",
+        "vendor/example/x.go"
+      ],
+      "context": "The Go and TypeScript files are handwritten production source. fixtures/generated.go is established generated code. Plan language membership and exclusions only; source bodies are not supplied and no completed source review is implied."
+    },
+    "expect": [
+      "Route included Go production source only, respecting the explicit language scope.",
+      "Record TypeScript as not requested rather than unsupported or structurally absent.",
+      "Keep JavaScript, generated, test and vendor exclusions explicit; do not claim completed source coverage."
     ]
   },
   {

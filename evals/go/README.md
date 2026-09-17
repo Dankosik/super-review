@@ -1,6 +1,6 @@
 # Evaluation cases
 
-`cases.json` defines twelve semantic cases for the skill and orchestration.
+`cases.json` defines thirteen semantic cases for the skill and orchestration.
 The expectations are an evaluator's rubric, not input to a reviewing model.
 They do not prescribe exact prose or a minimum finding count.
 
@@ -20,7 +20,7 @@ checks. Workflow-only scenarios (missing specialists, no delegation, reconciliat
 and final report assembly) should be tested at their stated stage.
 
 Record model/harness, exact skill revision, supplied inputs, observed results,
-and limits in `docs/validation.md`. Do not call all twelve passed merely because
+and limits in `docs/validation.md`. Do not call all thirteen passed merely because
 the case file parses or source-reader tests succeed.
 
 ## Contextual aspects
@@ -37,6 +37,14 @@ existing instruction-quality and workflow evaluations.
 changes and counterexamples. Supply only one raw task from `packets/go-idioms.md`;
 `go-idioms-cases.json` is evaluator-only. Fixture compilation and resource wiring
 are mechanical evidence, not a measured model quality result.
+
+[Go quality-depth evaluation](quality-depth/README.md) adds configuration,
+iterator/I/O contracts, background ownership, SQL/HTTP boundaries, maps and
+version/aliasing contrasts without new runtime rules. Inputs and grader material
+remain separate; see its validation receipt for actual mechanical evidence.
+The `mixed-language` and `go-only-language` routing cases distinguish current
+Go/TypeScript support from an explicit Go-only request. They are plans, not
+claims of source-review completion.
 
 ## Prompt and context boundaries
 

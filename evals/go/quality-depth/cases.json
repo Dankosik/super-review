@@ -1,0 +1,377 @@
+{
+  "status": "proposed-not-model-executed",
+  "baseline_commit": "f5a67021bbc54995648fe032d07bccdb88a32fa6",
+  "cases": [
+    {
+      "id": "GD01",
+      "topic": "configuration",
+      "kind": "opportunity",
+      "stage": "specialist",
+      "lens": "api-clarity",
+      "profile": null,
+      "expect": [
+        "Identify the option-application protocol required to supply two ordinary inputs.",
+        "Ordinary arguments or an equally direct construction can remove this protocol at the complete shown uses; demonstrate a call, not a line-count argument.",
+        "Do not require a constructor, builder, validation or interface twin."
+      ],
+      "constraints": [
+        "Preserve empty strings and prefix/suffix roles; do not invent defaults or absent-value validation.",
+        "The usage inventory is explicitly closed and internal; do not generalize this to a released options API."
+      ],
+      "sources": [
+        "spec",
+        "google-options"
+      ]
+    },
+    {
+      "id": "GD02",
+      "topic": "configuration",
+      "kind": "retain",
+      "stage": "specialist",
+      "lens": "api-clarity",
+      "profile": null,
+      "expect": [
+        "Retain useful defaults, the valid zero value and the existing options contract without imposing a universal configuration pattern.",
+        "Do not conflate omitted/nil labels with explicitly empty labels or introduce cloning as clarity-only cleanup."
+      ],
+      "constraints": [
+        "Keep nil/empty, last-option precedence and borrowed slice aliasing.",
+        "Released function and option types have consumers beyond the shown calls; no breaking positional rewrite."
+      ],
+      "sources": [
+        "spec",
+        "google-options"
+      ]
+    },
+    {
+      "id": "GD03",
+      "topic": "iteration",
+      "kind": "opportunity",
+      "stage": "specialist",
+      "lens": "abstractions",
+      "profile": null,
+      "expect": [
+        "Consider slices.Sorted(maps.Keys(m)) as the complete supported operation, with eager collection at the same call.",
+        "A standard composition may remove mechanical collection/sort steps; retaining the domain helper is independent of replacing its body."
+      ],
+      "constraints": [
+        "Go 1.23 is established, including iterator APIs.",
+        "Preserve sorting, eager observation and nil output for no keys; do not return a lazy iterator instead."
+      ],
+      "sources": [
+        "go123",
+        "maps",
+        "slices",
+        "iter"
+      ]
+    },
+    {
+      "id": "GD04",
+      "topic": "iteration",
+      "kind": "retain",
+      "stage": "verification",
+      "lens": "data-flow",
+      "profile": null,
+      "expect": [
+        "Reject the proposed live sequence as an equivalent snapshot cleanup; observation moves after replace.",
+        "Keep the existing eager contract or propose only a remedy that retains it; neither iterators nor copies are universally preferred."
+      ],
+      "constraints": [
+        "Preserve eager observation, repeated traversal and nil/empty.",
+        "A shallow snapshot is sufficient for the shown string elements, not evidence of deep independence for arbitrary types."
+      ],
+      "sources": [
+        "iter",
+        "slices"
+      ]
+    },
+    {
+      "id": "GD05",
+      "topic": "io-operation",
+      "kind": "opportunity",
+      "stage": "specialist",
+      "lens": "abstractions",
+      "profile": null,
+      "expect": [
+        "io.Copy can express the stated transfer contract without custom buffering and EOF plumbing.",
+        "Explain the operation and retained result/error contract; make no allocation or performance claim."
+      ],
+      "constraints": [
+        "Read may return data with an error; retain bytes-written results and EOF normalization.",
+        "The packet explicitly excludes observable batch-size/optional-interface behavior; absent that evidence the replacement needs qualification."
+      ],
+      "sources": [
+        "io"
+      ]
+    },
+    {
+      "id": "GD06",
+      "topic": "io-operation",
+      "kind": "retain",
+      "stage": "verification",
+      "lens": "abstractions",
+      "profile": null,
+      "expect": [
+        "Keep the explicit record/emit protocol; Copy and ReadAll do not express the whole operation.",
+        "Do not replace it with Scanner without establishing delimiter, partial-result and error equivalence."
+      ],
+      "constraints": [
+        "Keep record count, delimiters, partial data, original errors and emit-before-read-error ordering.",
+        "No missing-error audit, buffering optimization or new record policy."
+      ],
+      "sources": [
+        "io",
+        "bufio"
+      ]
+    },
+    {
+      "id": "GD07",
+      "topic": "background-ownership",
+      "kind": "opportunity",
+      "stage": "specialist",
+      "lens": "data-flow",
+      "profile": "lifecycle-ownership",
+      "expect": [
+        "Identify the boolean-selected lifecycle protocol that requires reconstructing cancel versus completion.",
+        "Separate named cancellation and completion handles can express the existing responsibilities without a lifecycle framework.",
+        "Do not make start synchronous or move foreground relative to cancellation/join."
+      ],
+      "constraints": [
+        "Cancellation is a request, not a join.",
+        "Preserve input ownership, output timing, nil/closed input semantics, and who closes done; no race/deadlock/leak audit."
+      ],
+      "sources": [
+        "context",
+        "spec",
+        "review-comments"
+      ]
+    },
+    {
+      "id": "GD08",
+      "topic": "background-ownership",
+      "kind": "retain",
+      "stage": "specialist",
+      "lens": "data-flow",
+      "profile": "lifecycle-ownership",
+      "expect": [
+        "Retain the explicit streaming, cancellation and completion contract without imposing a synchronous or collect-all API.",
+        "An applicable lifecycle review can finish without a candidate; do not demand another owner object or an errgroup dependency."
+      ],
+      "constraints": [
+        "Do not replace the join with Cancel or move deferred cleanup into a helper returning the subscription.",
+        "Keep channel direction, producer close order and foreground return timing."
+      ],
+      "sources": [
+        "context",
+        "spec"
+      ]
+    },
+    {
+      "id": "GD09",
+      "topic": "transaction-ownership",
+      "kind": "opportunity",
+      "stage": "specialist",
+      "lens": "data-flow",
+      "profile": "lifecycle-ownership",
+      "expect": [
+        "Identify the tuple of callbacks hiding a single sql.Tx and its owner.",
+        "A visible BeginTx/use/Commit with deferred Rollback at saveBatch, retaining a meaningful SQL helper if useful, can remove the callback protocol.",
+        "Do not introduce a transaction manager, service locator, DI container or DBTX interface by default."
+      ],
+      "constraints": [
+        "Keep begin/write/commit/deferred-rollback timing and exact operation errors, including commit failure.",
+        "No altered isolation, retry, empty-input or rollback-error policy; no SQL execution."
+      ],
+      "sources": [
+        "transactions",
+        "sql",
+        "spec"
+      ]
+    },
+    {
+      "id": "GD10",
+      "topic": "transaction-ownership",
+      "kind": "retain",
+      "stage": "specialist",
+      "lens": "data-flow",
+      "profile": "lifecycle-ownership",
+      "expect": [
+        "Keep the visible owner/participant contract; merely accepting *sql.Tx does not justify an interface or another layer.",
+        "Reject moving acquisition and defer into a helper returning tx, or moving operations outside the transaction for a tidier function."
+      ],
+      "constraints": [
+        "Preserve effect/defer order, transaction scope and original errors.",
+        "Evaluate expression, not missing rollback handling, SQL validity, retries or isolation."
+      ],
+      "sources": [
+        "transactions",
+        "sql",
+        "spec"
+      ]
+    },
+    {
+      "id": "GD11",
+      "topic": "transport-boundary",
+      "kind": "opportunity",
+      "stage": "specialist",
+      "lens": "abstractions",
+      "profile": "dependency-boundaries",
+      "expect": [
+        "The job caller fabricates HTTP representation only to call an operation that already accepts an email.",
+        "Decode the query at the HTTP adapter and use the existing Send contract for both paths, or an equally justified narrow operation.",
+        "Do not replace one forwarding layer with a new service/repository/mapper hierarchy."
+      ],
+      "constraints": [
+        "Preserve query Get semantics, empty values, context and Send error identity.",
+        "Keep HTTP status and output mapping at the adapter; do not invent new validation or capabilities."
+      ],
+      "sources": [
+        "http",
+        "context",
+        "review-comments"
+      ]
+    },
+    {
+      "id": "GD12",
+      "topic": "transport-boundary",
+      "kind": "retain",
+      "stage": "specialist",
+      "lens": "abstractions",
+      "profile": "dependency-boundaries",
+      "expect": [
+        "Retain the cohesive HTTP adapter and supported ServeContent mechanism.",
+        "No service/repository or copied byte result is justified solely because a handler reads and renders."
+      ],
+      "constraints": [
+        "Keep deferred close at handler return, seekable content, range/conditional response semantics and status mapping.",
+        "No filesystem-security, missing-close, performance or business-logic audit."
+      ],
+      "sources": [
+        "http",
+        "spec"
+      ]
+    },
+    {
+      "id": "GD13",
+      "topic": "version-boundary",
+      "kind": "opportunity",
+      "stage": "verification",
+      "lens": "abstractions",
+      "profile": null,
+      "expect": [
+        "Accept the supported implementation-only simplification in the go1.23-constrained file without increasing the module minimum.",
+        "Check the !go1.23 fallback and unchanged consumer-visible []string signature; mutually exclusive files do not coexist."
+      ],
+      "constraints": [
+        "Keep Go 1.22 consumers and the old implementation.",
+        "No iter.Seq in the common public API; preserve eager sorting and nil output."
+      ],
+      "sources": [
+        "toolchains",
+        "go123",
+        "maps",
+        "slices"
+      ]
+    },
+    {
+      "id": "GD14",
+      "topic": "version-boundary",
+      "kind": "retain",
+      "stage": "verification",
+      "lens": "abstractions",
+      "profile": null,
+      "expect": [
+        "Withhold the Go 1.23-only replacement in the untagged nested module; the installed/root toolchain is not its consumer baseline.",
+        "Retain any supported quality observation without presenting an upgrade as authorized implementation advice."
+      ],
+      "constraints": [
+        "Nearest go.mod and supported consumers govern; absence of a fallback is supplied evidence.",
+        "Successful compilation on a newer toolchain is not an MSRV check."
+      ],
+      "sources": [
+        "toolchains",
+        "go123"
+      ]
+    },
+    {
+      "id": "GD15",
+      "topic": "map-copy",
+      "kind": "opportunity",
+      "stage": "specialist",
+      "lens": "abstractions",
+      "profile": null,
+      "expect": [
+        "maps.Clone expresses the complete stated shallow-copy operation on the supported baseline.",
+        "Keep the meaningful snapshot boundary when useful; do not promise deep independence."
+      ],
+      "constraints": [
+        "Preserve nil versus writable empty and the shared pointed-to values.",
+        "No mutation-policy redesign or immutable framework."
+      ],
+      "sources": [
+        "maps",
+        "spec"
+      ]
+    },
+    {
+      "id": "GD16",
+      "topic": "map-copy",
+      "kind": "retain",
+      "stage": "verification",
+      "lens": "abstractions",
+      "profile": null,
+      "expect": [
+        "Reject the unqualified whole-body Clone replacement because nil input no longer yields a writable map.",
+        "A guarded standard operation may be discussed without demanding it; the current small loop is a valid expression."
+      ],
+      "constraints": [
+        "Preserve nil-to-writable-empty behavior and shallow aliases.",
+        "The issue is proposed-refactor compatibility, not a nil-map bug in current source."
+      ],
+      "sources": [
+        "maps",
+        "spec"
+      ]
+    },
+    {
+      "id": "GD17",
+      "topic": "iterator-lifetime",
+      "kind": "guard",
+      "stage": "verification",
+      "lens": "data-flow",
+      "profile": "lifecycle-ownership",
+      "expect": [
+        "Reject moving stop to a helper that returns before consumption; preserve early termination at the consuming owner.",
+        "Do not pre-count, replay or fully materialize a possibly single-use sequence to simplify this caller."
+      ],
+      "constraints": [
+        "Preserve defer scope, at-most-two consumption and nil output when no values exist.",
+        "No general missing-stop, leak or performance pass."
+      ],
+      "sources": [
+        "iter",
+        "spec"
+      ]
+    },
+    {
+      "id": "GD18",
+      "topic": "slice-aliasing",
+      "kind": "guard",
+      "stage": "verification",
+      "lens": "data-flow",
+      "profile": null,
+      "expect": [
+        "Reject replacing allocating selection with an in-place deletion on the input.",
+        "Cloning plus deletion needs an explicit nil/empty and aliasing comparison, not an automatic preference over this loop."
+      ],
+      "constraints": [
+        "Preserve independent storage, original aliases, ordering and non-nil empty output.",
+        "DeleteFunc mutates storage and supported versions clear the removed tail; no allocation or race claim."
+      ],
+      "sources": [
+        "slices",
+        "spec"
+      ]
+    }
+  ]
+}
