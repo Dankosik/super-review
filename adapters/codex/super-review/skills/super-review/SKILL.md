@@ -17,7 +17,8 @@ for advice, without claiming tested equivalence.
 ## Start or explain
 
 Use only the active adapter: [Codex](references/harnesses/codex.md),
-[Claude Code](references/harnesses/claude.md), or the installed OpenCode role.
+[Claude Code](references/harnesses/claude.md), [Cursor](references/harnesses/cursor.md),
+or the installed OpenCode role.
 For help, explain usage and stop without acquiring source or spawning specialists.
 If an actual review has no identifiable target after considering the request and
 available context, ask only for that target. A selected PR, local changes or an

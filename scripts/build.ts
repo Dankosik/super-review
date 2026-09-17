@@ -28,4 +28,22 @@ for (const file of ["README.md", "LICENSE", "PRIVACY.md", "CONTRIBUTING.md", "CH
 await cp(join(root, ".codex-plugin/plugin.json"), join(codex, ".codex-plugin/plugin.json"));
 await mkdir(join(codex, ".agents/plugins"), { recursive: true });
 await writeFile(join(codex, ".agents/plugins/marketplace.json"), JSON.stringify({ name: "super-review", plugins: [{ name: "super-review", source: { source: "local", path: "./" }, policy: { installation: "AVAILABLE", authentication: "ON_INSTALL" }, category: "Productivity" }] }, null, 2) + "\n");
+
+const cursor = join(root, "adapters/cursor/plugin");
+await rm(cursor, { recursive: true, force: true });
+await mkdir(join(cursor, ".cursor-plugin"), { recursive: true });
+await mkdir(join(cursor, "skills/super-review"), { recursive: true });
+await mkdir(join(cursor, "agents"), { recursive: true });
+await cp(join(root, "skills/super-review"), join(cursor, "resources/super-review"), { recursive: true });
+await cp(join(root, "adapters/cursor/skill.md"), join(cursor, "skills/super-review/SKILL.md"));
+await cp(join(root, "adapters/cursor/specialist.md"), join(cursor, "agents/super-review-specialist.md"));
+await cp(join(root, "docs/cursor.md"), join(cursor, "README.md"));
+for (const file of ["LICENSE", "PRIVACY.md", "THIRD_PARTY_NOTICES.md"]) await cp(join(root, file), join(cursor, file));
+await writeFile(join(cursor, ".cursor-plugin/plugin.json"), JSON.stringify({
+  ...identity,
+  author: { name: identity.author.name },
+  keywords: [...identity.keywords, "cursor"],
+  skills: "./skills/",
+  agents: "./agents/",
+}, null, 2) + "\n");
 console.log(`Built Super Review ${version}: native instruction packages, no plugin runtime.`);

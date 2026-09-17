@@ -25,6 +25,11 @@ claude plugin marketplace add Dankosik/agent-skills-marketplace
 claude plugin install super-review@dankosik-skills
 ```
 
+Cursor IDE: install the [native Cursor adapter](docs/cursor.md) from
+`adapters/cursor/plugin`, then invoke `/super-review` in Agent chat. The guide
+covers project-local and user-wide installation; this addition does not publish
+a Cursor marketplace listing.
+
 Start a new task/session after installing or updating. No additional waiting-tool
 configuration is needed. See [native integrations](docs/native-integrations.md)
 for updates and removal of old configuration, and [OpenCode](docs/opencode.md)
@@ -34,7 +39,8 @@ from [releases](https://github.com/Dankosik/super-review/releases).
 ## Request a review
 
 In Codex, select the plugin or invoke `$super-review` with a PR URL or local scope.
-In Claude, use `/super-review:review` followed by that target. For example:
+In Claude, use `/super-review:review`; in Cursor, use `/super-review` in the current
+Agent chat, followed by that target. For example:
 
 - Review this PR for readability and maintainability.
 - Review all production Rust in the current project, excluding tests.
@@ -57,6 +63,10 @@ request narrows coverage explicitly; missing work is never called clean.
 The orchestrator retains the user's model and effort. Codex specialists use
 Terra/medium by default, or Luna/medium for an explicitly requested economy profile.
 Claude specialists use Sonnet/medium; OpenCode uses the user's explicit provider/model.
+Cursor specialists default to `inherit`, using the parent chat's model. Request a
+specialist override in the prompt, such as "Для subagent используй <Cursor model ID>";
+the adapter applies it through supported native per-call selection, or discloses
+the capability gap without silently substituting. The chat model is not changed.
 See [model profiles](docs/model-profiles.md). Delegation and result collection use
 native host facilities, with no plugin-owned timer or result store.
 

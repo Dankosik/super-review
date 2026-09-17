@@ -45,7 +45,7 @@ for (const role of ["super-review", "super-review-specialist"]) {
 }
 const command = frontmatter(await readFile(join(root, "adapters/opencode/commands/super-review.md"), "utf8"));
 if (command.agent !== "super-review" || command.subtask !== false) errors.push("Command would prevent primary orchestration.");
-for (const path of ["plugin.json", ".codex-plugin/plugin.json", "adapters/claude/plugin/.claude-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json"]) {
+for (const path of ["plugin.json", ".codex-plugin/plugin.json", "adapters/claude/plugin/.claude-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json", "adapters/cursor/plugin/.cursor-plugin/plugin.json"]) {
   const native = JSON.parse(await readFile(join(root, path), "utf8"));
   if (native.name !== "super-review" || native.version.split("+")[0] !== manifest.version) errors.push("Native identity/version mismatch: " + path);
 }
@@ -72,11 +72,23 @@ for (const file of runtimeFiles) {
   const packaged = join(root, "adapters/codex/super-review/skills/super-review", relative(skill, file));
   if (!(await readFile(file)).equals(await readFile(packaged))) errors.push("Stale Codex policy: " + relative(skill, file));
 }
-for (const directory of ["skills/super-review", "adapters/claude/plugin", "adapters/codex/super-review", "adapters/opencode"]) {
+const cursor = join(root, "adapters/cursor/plugin");
+const cursorEntry = frontmatter(await readFile(join(cursor, "skills/super-review/SKILL.md"), "utf8"));
+if (cursorEntry.name !== "super-review" || cursorEntry["disable-model-invocation"] !== true || ["model", "effort", "context", "agent"].some(key => key in cursorEntry)) errors.push("Cursor must run explicitly in the existing chat without overriding its model.");
+const cursorAgent = frontmatter(await readFile(join(cursor, "agents/super-review-specialist.md"), "utf8"));
+if (cursorAgent.name !== "super-review-specialist" || cursorAgent.model !== "inherit" || cursorAgent.readonly !== true || cursorAgent.is_background !== false || "effort" in cursorAgent) errors.push("Cursor specialist must inherit the parent model and stay read-only.");
+for (const [source, target] of [["adapters/cursor/skill.md", "skills/super-review/SKILL.md"], ["adapters/cursor/specialist.md", "agents/super-review-specialist.md"], ["docs/cursor.md", "README.md"]]) {
+  if (!(await readFile(join(root, source))).equals(await readFile(join(cursor, target)))) errors.push("Stale Cursor template: " + source);
+}
+for (const file of runtimeFiles) {
+  const packaged = join(cursor, "resources/super-review", relative(skill, file));
+  if (!(await readFile(file)).equals(await readFile(packaged))) errors.push("Stale Cursor policy: " + relative(skill, file));
+}
+for (const directory of ["skills/super-review", "adapters/claude/plugin", "adapters/codex/super-review", "adapters/opencode", "adapters/cursor/plugin"]) {
   const files = await walk(join(root, directory));
   if (files.some(file => /(?:^|\/)(?:\.?mcp\.json|mcp\.mjs)$/.test(file) || file.includes("/runtime/"))) errors.push("Legacy runtime shipped in " + directory);
 }
-for (const file of [".codex-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json"]) {
+for (const file of [".codex-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json", "adapters/cursor/plugin/.cursor-plugin/plugin.json"]) {
   if (JSON.parse(await readFile(join(root, file), "utf8")).mcpServers) errors.push("Legacy server declaration in " + file);
 }
 if (errors.length) throw new Error(errors.join("\n"));
