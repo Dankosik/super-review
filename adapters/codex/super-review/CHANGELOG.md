@@ -1,13 +1,17 @@
 # Changelog
 
-## 3.0.1 — Unreleased
+## 3.1.0 — 2026-09-17
 
+- Add Java review context, ten lens modules and four owner profiles with eleven stable `java.*` IDs. Preserve all existing `go.*`, `ts.*` and `rust.*` identities (44 rules total).
+- Route Java through the native 3.x language catalog and read-only Maven/Gradle compatibility context. Do not restore the removed MCP reader or custom source runtime.
+- Add eighteen contrasting Java judgment fixtures and mechanical routing/identity tests. Model-backed Java evaluation has not been run.
+- Pin staged, unstaged and combined local snapshots, including old/new finding anchors, renamed/deleted coordinates, symlink/gitlink handling and source-evidence checks.
+- Match specialist results to the assigned task, snapshot, lens/profiles, scope and policy before treating `completed` as coverage.
 - Clarify explicit launch versus help/missing-target handling in the core skill and native entry points; reuse an already selected target without repeated confirmation.
 - Load orchestration, verification, reporting and supported continuation guidance at their applicable stages. Preserve full preliminary declaration reading, independent specialists, eight base questions and every accepted recommendation.
 - Distinguish confirmed absence of optional team policy from unavailable policy evidence; keep explicit source selection, scoped overrides and proposed-policy isolation.
 - Clarify unfinished missing results, completion of the declared plan and compact reports without empty tables or dropped coverage/candidate decisions.
-- Update repository-maintenance guidance and PR/local-source metadata for the native-only runtime. Model choices, permissions and all 33 rule IDs remain unchanged; the routing-first experiment is not promoted.
-- Add twelve neutral stage inputs with separate grader expectations, byte-pinned source/policy fixtures and integrity tests. Model comparisons for these changes have not been run; no quality or latency gain is claimed.
+- Update repository-maintenance guidance and add bounded evaluation suites for instruction boundaries, evidence boundaries and source views. Model comparisons for these changes have not been run; no quality or latency gain is claimed.
 
 ## 3.0.0 — 2026-09-10
 

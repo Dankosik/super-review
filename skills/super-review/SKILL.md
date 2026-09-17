@@ -2,7 +2,7 @@
 name: super-review
 description: "Use for an explicitly requested Super Review: independent readability and maintainability review of Go, TypeScript, Rust, or Java PRs or local source."
 metadata:
-  version: "3.0.1"
+  version: "3.1.0"
 ---
 
 # Super Review
