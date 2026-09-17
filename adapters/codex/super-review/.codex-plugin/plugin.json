@@ -1,7 +1,7 @@
 {
   "name": "super-review",
   "version": "3.0.1",
-  "description": "Independent readability and maintainability review for Go, TypeScript, or Rust PRs and local source.",
+  "description": "Independent readability and maintainability review for Go, TypeScript, Rust, or Java PRs and local source.",
   "author": {
     "name": "Dankosik",
     "url": "https://github.com/Dankosik"
@@ -13,7 +13,7 @@
   "interface": {
     "displayName": "Super Review",
     "shortDescription": "Readability and maintainability review of PRs or local source.",
-    "longDescription": "Review Go, TypeScript, or Rust PRs, local changes, or an explicitly requested whole project through independent specialist passes. Apply team conventions, verify recommendations, and report coverage without editing or executing the reviewed source.",
+    "longDescription": "Review Go, TypeScript, Rust, or Java PRs, local changes, or an explicitly requested whole project through independent specialist passes. Apply team conventions, verify recommendations, and report coverage without editing or executing the reviewed source.",
     "developerName": "Dankosik",
     "category": "Productivity",
     "capabilities": [

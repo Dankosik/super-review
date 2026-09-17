@@ -3,7 +3,7 @@
 Rust uses the same eight base questions, two conditional lenses and four owner
 profiles as Go, with separate [Rust resources](../skills/super-review/references/languages/rust.md).
 Each specialist receives its language context, assigned lens and selected profiles,
-plus the shared contract and output format. Mixed Go/TypeScript/Rust PRs retain every included language scope through the
+plus the shared contract and output format. Mixed Go/TypeScript/Rust/Java PRs retain every included language scope through the
 [shared routing catalog](../skills/super-review/references/languages.md).
 
 Good code here means a readable, maintainable expression of an implemented solution,

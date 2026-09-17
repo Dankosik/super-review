@@ -3,7 +3,7 @@
   "version": "3.0.1",
   "private": true,
   "type": "module",
-  "description": "A focused Go, TypeScript, and Rust PR review skill for Claude Code, Codex, and OpenCode",
+  "description": "A focused Go, TypeScript, Rust, and Java PR review skill for Claude Code, Codex, and OpenCode",
   "license": "MIT",
   "scripts": {
     "test": "bun test",

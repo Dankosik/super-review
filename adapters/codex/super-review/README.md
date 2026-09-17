@@ -1,6 +1,6 @@
 # Super Review
 
-Independent readability and maintainability review for Go, TypeScript and Rust.
+Independent readability and maintainability review for Go, TypeScript, Rust and Java.
 Specialists examine distinct questions; the orchestrator verifies their evidence
 and keeps every accepted recommendation. Works with GitHub PRs, local changes,
 or an explicitly requested whole project.
@@ -78,7 +78,8 @@ PR policy comes from the target commit; local policy uses the recorded revision.
 The file is optional: confirmed absence uses defaults. Failed access is a policy
 gap, not permission to assume defaults or use a PR's proposed replacement.
 See [the contract](skills/super-review/references/team-rules.md) and
-[examples](examples/team-rules/SUPER_REVIEW.md). All 33 `go.*`, `ts.*` and `rust.*`
+[examples](examples/team-rules/SUPER_REVIEW.md). All 44 `go.*`, `ts.*`, `rust.*`
+and `java.*`
 rule IDs remain unchanged in version 3.
 
 [Validation](docs/validation.md) separates package checks from model evidence.

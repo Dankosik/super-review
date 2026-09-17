@@ -12,7 +12,7 @@ test("all languages share routing without loading a language-specific child fall
     expect(read(path)).toContain("languages.md");
   }
   const routing = read("skills/super-review/references/languages.md");
-  for (const language of ["go", "typescript", "rust"]) {
+  for (const language of ["go", "typescript", "rust", "java"]) {
     expect(routing).toContain("languages/" + language + ".md");
     const directory = language === "go" ? "" : language + "/";
     for (const lens of lenses) expect(routing).toContain("lenses/" + directory + lens + ".md");

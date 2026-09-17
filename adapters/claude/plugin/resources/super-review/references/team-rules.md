@@ -47,7 +47,8 @@ lenses use `Lens: representation` / `go.representation.express-concepts` and
 and `ts.rationale.explain-constraints`. Write `Language: TypeScript` for these
 rules (`TS` is an alias). Resolve rule IDs within the declared language; a Go
 override cannot disable or replace a TS default, or vice versa. Rust rules use
-`Language: Rust` and their `rust.*` headings. All three namespaces are independent;
+`Language: Rust` and their `rust.*` headings. Java rules use `Language: Java` and
+their `java.*` headings. All four namespaces are independent;
 a language's override/disable follows only its own owner rule into profiles.
 
 A contextual profile is not a new rule namespace. Use its declared owner as
@@ -79,7 +80,7 @@ and cannot be disabled through this file.
 
 ## Optional code references
 
-A rule may label a repository-relative link to supported Go, TypeScript, or Rust source as `Code reference`, name
+A rule may label a repository-relative link to supported Go, TypeScript, Rust, or Java source as `Code reference`, name
 the symbol, and explain the specific convention it illustrates. Resolve it against
 the referring policy file at the same pinned policy revision (normally B). Read it
 only for an applicable selected rule when the illustration is needed; send that

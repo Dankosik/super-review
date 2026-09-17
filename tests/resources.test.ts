@@ -8,11 +8,11 @@ const lenses = ["naming", "control-flow", "function-cohesion", "data-flow", "abs
 const profiles = ["lifecycle-ownership", "dependency-boundaries", "effects-separation", "error-expression"];
 
 // File delivery and evaluation integrity only; these do not measure model judgment.
-for (const [language, prefix, directory] of [["go", "go", ""], ["typescript", "ts", "typescript/"], ["rust", "rust", "rust/"]]) {
+for (const [language, prefix, directory] of [["go", "go", ""], ["typescript", "ts", "typescript/"], ["rust", "rust", "rust/"], ["java", "java", "java/"]]) {
   test(`${language}: every rule and owner remains present in all native packages`, () => {
     const ids: string[] = JSON.parse(read(`evals/${language}/rule-ids.json`));
     const paths = ["references/review-contract.md", "assets/finding-template.md", `references/languages/${language}.md`, ...lenses.map(lens => `references/lenses/${directory}${lens}.md`), ...profiles.map(profile => `references/profiles/${directory}${profile}.md`)];
-    const actual = lenses.flatMap(lens => [...read(`skills/super-review/references/lenses/${directory}${lens}.md`).matchAll(/^## ((?:go|ts|rust)\.[a-z0-9.-]+)$/gm)].map(match => match[1]));
+    const actual = lenses.flatMap(lens => [...read(`skills/super-review/references/lenses/${directory}${lens}.md`).matchAll(/^## ((?:go|ts|rust|java)\.[a-z0-9.-]+)$/gm)].map(match => match[1]));
     expect(new Set(actual).size).toBe(actual.length);
     expect(actual.sort()).toEqual([...ids].sort());
     expect(actual.every(id => id.startsWith(prefix + "."))).toBe(true);
@@ -34,6 +34,7 @@ for (const [suite, packet, pattern] of [
   ["evals/go/aspect-cases.json", "evals/go/packets/aspects.md", /^## ([JR]\d+)$/gm],
   ["evals/rust/cases.json", "evals/rust/packets/idioms.md", /^## (R\d+)$/gm],
   ["evals/typescript/cases.json", "evals/typescript/packets/contrasts.md", /^## (T\d+)$/gm],
+  ["evals/java/cases.json", "evals/java/packets/idioms.md", /^## (J\d+)$/gm],
 ] as const) {
   test(`${suite}: expectations have distinct raw sections`, () => {
     const data = JSON.parse(read(suite));

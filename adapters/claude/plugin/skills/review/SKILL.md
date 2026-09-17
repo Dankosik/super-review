@@ -1,6 +1,6 @@
 ---
 name: review
-description: Review readability and maintainability of Go, TypeScript, or Rust PRs or local source with Super Review.
+description: Review readability and maintainability of Go, TypeScript, Rust, or Java PRs or local source with Super Review.
 argument-hint: "<PR URL or local scope> [review aspects]"
 disable-model-invocation: true
 context: fork

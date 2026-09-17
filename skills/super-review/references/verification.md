@@ -54,10 +54,13 @@ improvement, revise the remedy, or retain the exact unresolved decision.
 Inspect only the preservation constraints implicated by that transformation,
 using the matching context from [language routing](languages.md): exact supported
 operation/signature, effects, API/type contracts, ownership/mutation, error identity,
-absence, and resource lifetime. Keep Go, TypeScript, and Rust preservation rules scoped
+absence, and resource lifetime. Keep Go, TypeScript, Rust, and Java preservation rules scoped
 to their own language; account for TypeScript inference and emitted module behavior.
 For Rust, inspect implicated trait/auto-trait contracts, ownership, eager/lazy
 evaluation and guard/drop lifetimes under the selected language context.
+For Java, inspect implicated null/absence, overload/override and generic
+signatures, mutability, evaluation timing, exception causes and resource or
+framework/proxy ownership under the selected language context.
 Do not infer equivalence from a happy-path example or empty literal search.
 Narrow incompatible/uncertain advice or keep it unresolved; no tests, builds,
 newer APIs, or claims of tested equivalence are authorized by verification.

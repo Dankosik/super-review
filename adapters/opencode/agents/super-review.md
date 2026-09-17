@@ -1,5 +1,5 @@
 ---
-description: Review Go, TypeScript, or Rust PRs or local source for readability and maintainability.
+description: Review Go, TypeScript, Rust, or Java PRs or local source for readability and maintainability.
 mode: primary
 permission:
   "*": deny

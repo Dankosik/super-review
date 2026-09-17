@@ -3,15 +3,18 @@
 ## Scope and authority
 
 The user chooses a PR, local changes, or whole-project source and any narrower
-scope. Review the selected Go, TypeScript, and Rust production source and
+scope. Review the selected Go, TypeScript, Rust, and Java production source and
 the context needed to understand it. Read whole affected declarations and
 relevant callers. For a change review, a recommendation must arise from the
 change; another file may participate in that refactoring, but unrelated old code is not a cleanup
 backlog. For a whole-project review, every included file is a target. Draft,
 closed, and merged PRs remain reviewable when their source exists.
 
-Exclude tests (`*_test.go`, TS `*.test.*`/`*.spec.*`, and established test
-directories; Rust test-only targets and items), generated files, vendor trees, binaries, and unsupported languages.
+Exclude tests (`*_test.go`, TS `*.test.*`/`*.spec.*`, Java known test source-sets
+such as `src/test/java`, `src/testFixtures/java`, `src/integrationTest/java` and
+`src/androidTest/java`, and established test directories; Rust test-only targets
+and items), generated files (including Java `target/generated-sources` and
+`build/generated` roots), vendor trees, binaries, and unsupported languages.
 Use [language routing](languages.md) for included extensions and context boundaries. List these exclusions. Effects and contracts are context
 for advice, not a correctness or security pass. Do not recommend missing tests
 or run project checks.

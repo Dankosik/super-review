@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: Coordinate an explicitly requested Super Review of Go, TypeScript, or Rust source.
+description: Coordinate an explicitly requested Super Review of Go, TypeScript, Rust, or Java source.
 model: inherit
 tools: Agent, Read, Glob, Grep, Bash
 ---
