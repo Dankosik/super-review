@@ -3,3 +3,4 @@ adapters/claude/plugin/** linguist-generated=true
 adapters/claude/plugin/runtime/* -whitespace
 adapters/codex/super-review/** linguist-generated=true
 adapters/codex/super-review/runtime/* -whitespace
+adapters/cursor/plugin/** linguist-generated=true

@@ -46,6 +46,11 @@ assets.append(archive(f"super-review-{VERSION}-claude.zip", [
 codex_root = ROOT / "adapters/codex/super-review"
 codex_files = [(p, "super-review/" + p.relative_to(codex_root).as_posix()) for p in codex_root.rglob("*") if p.is_file()]
 assets.append(archive(f"super-review-{VERSION}-codex.zip", codex_files))
+cursor_root = ROOT / "adapters/cursor/plugin"
+assets.append(archive(f"super-review-{VERSION}-cursor.zip", [
+    (p, "super-review/" + p.relative_to(cursor_root).as_posix())
+    for p in cursor_root.rglob("*") if p.is_file()
+]))
 commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True)
 receipt = {"version": VERSION, "commit": commit.stdout.strip() if commit.returncode == 0 else None, "assets": assets}
 (DIST / "manifest.json").write_text(json.dumps(receipt, indent=2) + "\n")

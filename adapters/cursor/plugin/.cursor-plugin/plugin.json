@@ -1,0 +1,24 @@
+{
+  "name": "super-review",
+  "version": "3.1.0",
+  "description": "Independent readability and maintainability review for Go, TypeScript, Rust, or Java PRs and local source.",
+  "author": {
+    "name": "Dankosik"
+  },
+  "homepage": "https://github.com/Dankosik/super-review",
+  "repository": "https://github.com/Dankosik/super-review",
+  "license": "MIT",
+  "keywords": [
+    "go",
+    "code-review",
+    "agent-skills",
+    "claude-code",
+    "codex",
+    "typescript",
+    "rust",
+    "java",
+    "cursor"
+  ],
+  "skills": "./skills/",
+  "agents": "./agents/"
+}

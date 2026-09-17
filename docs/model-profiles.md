@@ -1,9 +1,10 @@
 # Model profiles
 
 The orchestrator keeps the model and reasoning effort selected by the user.
-Super Review selects smaller specialist models explicitly instead of inheriting
-that potentially expensive choice. Model access still comes from the harness;
-there are no publisher credentials or model HTTP clients.
+Specialist selection is adapter-specific: Codex and Claude use the profiles below,
+OpenCode requires an explicit choice, and Cursor defaults to native inheritance.
+Model access still comes from the harness; there are no publisher credentials or
+model HTTP clients.
 
 | Harness | Orchestrator | Specialists |
 | --- | --- | --- |
@@ -11,6 +12,7 @@ there are no publisher credentials or model HTTP clients.
 | Codex, explicit economy profile | Current task's model and effort | `gpt-5.6-luna`, `medium` |
 | Claude Code | `inherit`, no effort override | Native `sonnet` selection, `medium` |
 | OpenCode | Current primary model and effort | One explicitly selected `provider/model-id`; provider's configured/default effort |
+| Cursor IDE | Current Agent chat's selected model/settings | `inherit`; an explicit user subagent choice takes precedence where native per-call selection supports it |
 
 For Codex, request economy mode in ordinary language:
 
@@ -47,7 +49,23 @@ The launcher passes the selection through native OpenCode configuration. It
 refuses to launch without a selection. If running OpenCode directly rather than
 through the launcher, set that environment variable yourself.
 
-## Why balanced is the default
+For Cursor, leave specialists on the chat model or request an override directly:
+
+```text
+/super-review Review my local changes. Use <Cursor model ID> for subagents.
+/super-review Проверь этот PR. Для subagent используй <Cursor model ID>.
+```
+
+The override applies to all specialists and continuations in that review, not the
+orchestrator. An explicit return to the parent's model restores `inherit`; a new
+review defaults to inheritance unless the user carries the choice forward.
+The adapter checks the exposed native Task selector, applies a supported choice
+in launch configuration, and reports unsupported selection or observed fallback
+instead of silently substituting. A prompt cannot itself change a model or
+bypass Cursor's plan/admin restrictions. See [Cursor setup and capability limits](cursor.md).
+Native end-to-end Cursor model routing has not been measured by this project.
+
+## Why balanced is the Codex default
 
 Terra and Luna both passed the small offline screen and completed a scoped real
 PR review. That does not establish parity on difficult repository discovery,
