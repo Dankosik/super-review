@@ -138,13 +138,23 @@ config.mode = "safe";
 
 ## T10
 
-This is a handwritten public declaration. The package documents TypeScript 4.8+
-consumer support; the workspace lockfile uses TypeScript 5.4. External consumers
-are not available in the supplied snapshot. No API migration is requested.
+The package ships `src/palette.ts` itself as its public entry point; consumers
+compile that source with TypeScript 4.8+. The author's workspace uses 5.4.
+The helper has no effects and serves only to check the table shape without losing
+per-property types. These are the complete source and representative uses; no
+consumer-baseline migration is requested.
 
 ```ts
-export interface Options { mode: "fast" | "safe" }
-export declare function options(): Options;
+export type Color = string | [number, number, number];
+function definePalette<T extends Record<string, Color>>(value: T): T {
+  return value;
+}
+export const palette = definePalette({
+  primary: "#336699",
+  accent: [10, 20, 30] as [number, number, number],
+});
+const label: string = palette.primary.toUpperCase();
+const channel: number = palette.accent[0];
 ```
 
 ## T11

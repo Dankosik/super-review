@@ -34,6 +34,7 @@ for (const [suite, packet, pattern] of [
   ["evals/go/aspect-cases.json", "evals/go/packets/aspects.md", /^## ([JR]\d+)$/gm],
   ["evals/rust/cases.json", "evals/rust/packets/idioms.md", /^## (R\d+)$/gm],
   ["evals/typescript/cases.json", "evals/typescript/packets/contrasts.md", /^## (T\d+)$/gm],
+  ["evals/typescript/depth-cases.json", "evals/typescript/packets/depth.md", /^## (TD\d+)$/gm],
   ["evals/java/cases.json", "evals/java/packets/idioms.md", /^## (J\d+)$/gm],
 ] as const) {
   test(`${suite}: expectations have distinct raw sections`, () => {
