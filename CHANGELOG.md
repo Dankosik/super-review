@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.3.0 — 2026-09-17
+
+- Add six Spring/Spring Boot owner profiles for bean wiring, application operations, HTTP contracts/errors, managed lifecycle and value shapes, plus per-module compatibility context. They deepen existing Java lenses; they do not add a language, rule IDs or extra agent types.
+- Deepen TypeScript contract review for generic inputs, overload consumers, schema ownership and public module artifacts, with contrast cases and T07/T10 corrections.
+- Deepen Rust API and conditional library quality review: conversion/builders, lifetime and generic contracts, plus Tokio/Serde/clap/Axum notes under existing owners.
+- Deepen Go quality contrasts and correct language-scope evaluation; calibrate Java representation evals to accept equivalent remedies without changing runtime instructions.
+- Preserve all 44 `go.*`, `ts.*`, `rust.*` and `java.*` rule IDs, native 3.x packaging, and existing Claude, Codex, Cursor and OpenCode adapters. Model-backed quality comparisons remain unrun.
+
 ## 3.2.0 — 2026-09-17
 
 - Add a native Cursor IDE adapter: `/super-review` skill, a read-only specialist role, and inherit-by-default specialist models with an explicit per-review subagent override. Package a Cursor archive. This does not publish a Cursor marketplace listing.

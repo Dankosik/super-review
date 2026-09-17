@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "super-review",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Independent readability and maintainability review for Go, TypeScript, Rust, or Java PRs and local source.",
   "author": {
     "name": "Dankosik",
