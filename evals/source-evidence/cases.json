@@ -1,0 +1,159 @@
+{
+  "status": "NOT RUN",
+  "base_revision": "51b34f3a8b4ce0e828f344bf90a08f2e7044dfb3",
+  "source_manifest": "source-manifest.json",
+  "contrast_pairs": [
+    ["E01", "E02"],
+    ["E03", "E04"],
+    ["E05", "E06"],
+    ["E07", "E08"],
+    ["E09", "E10"],
+    ["E11", "E12"]
+  ],
+  "cases": [
+    {
+      "id": "E01",
+      "stage": "source-acquisition",
+      "input": {
+        "packet": "packets.md",
+        "section": "E01",
+        "source": ["fixtures/head/format.go", "fixtures/index/format.go", "fixtures/worktree/format.go"]
+      },
+      "expect": [
+        "Select committed old content and captured index new content.",
+        "Do not substitute the working file for staged source or context."
+      ]
+    },
+    {
+      "id": "E02",
+      "stage": "source-acquisition",
+      "input": {
+        "packet": "packets.md",
+        "section": "E02",
+        "source": ["fixtures/head/format.go", "fixtures/index/format.go", "fixtures/worktree/format.go"]
+      },
+      "expect": [
+        "Use captured index as the old endpoint and working file as the new endpoint.",
+        "Do not use HEAD as the unstaged baseline."
+      ]
+    },
+    {
+      "id": "E03",
+      "stage": "source-acquisition",
+      "input": {
+        "packet": "packets.md",
+        "section": "E03",
+        "source": ["fixtures/head/format.go", "fixtures/index/format.go"]
+      },
+      "expect": [
+        "Report zero net eligible change in the declared combined view.",
+        "Do not manufacture findings or dispatch specialists from the intermediate index delta."
+      ]
+    },
+    {
+      "id": "E04",
+      "stage": "source-acquisition",
+      "input": {
+        "packet": "packets.md",
+        "section": "E04",
+        "source": ["fixtures/head/format.go", "fixtures/index/format.go"]
+      },
+      "expect": [
+        "Keep two labeled comparisons with different endpoint pairs.",
+        "Do not collapse the explicitly separate layers into an empty net review."
+      ]
+    },
+    {
+      "id": "E05",
+      "stage": "location-verification",
+      "input": {
+        "packet": "packets.md",
+        "section": "E05",
+        "source": ["fixtures/head/format.go"]
+      },
+      "expect": [
+        "Confirm the declared old-side symbol and line against supplied bytes.",
+        "Do not require a new-side location for a deleted file."
+      ]
+    },
+    {
+      "id": "E06",
+      "stage": "location-verification",
+      "input": {
+        "packet": "packets.md",
+        "section": "E06",
+        "source": ["fixtures/head/format.go"]
+      },
+      "expect": [
+        "Reject or repair the supplied coordinate using the demonstrable old-side location.",
+        "Do not accept H line 3 or infer that correcting a coordinate proves recommendation quality."
+      ]
+    },
+    {
+      "id": "E07",
+      "stage": "source-acquisition",
+      "input": {"packet": "packets.md", "section": "E07", "source": []},
+      "expect": [
+        "Record the link metadata without dereferencing the unauthorized external target.",
+        "Identify the limited evidence and affected source gap rather than claiming target coverage."
+      ]
+    },
+    {
+      "id": "E08",
+      "stage": "source-acquisition",
+      "input": {
+        "packet": "packets.md",
+        "section": "E08",
+        "source": ["fixtures/head/format.go"]
+      },
+      "expect": [
+        "Use the authorized regular source without inventing a link or access problem.",
+        "Preserve the supplied snapshot identity."
+      ]
+    },
+    {
+      "id": "E09",
+      "stage": "source-acquisition",
+      "input": {"packet": "packets.md", "section": "E09", "source": []},
+      "expect": [
+        "Report an empty changed-source scope without unnecessary specialist launches.",
+        "Do not claim whole-project coverage or reopen the review to find a recommendation."
+      ]
+    },
+    {
+      "id": "E10",
+      "stage": "source-acquisition",
+      "input": {"packet": "packets.md", "section": "E10", "source": []},
+      "expect": [
+        "Report unresolved comparison identity and missing coverage, not an empty clean review.",
+        "Do not silently substitute B for D or invent missing source."
+      ]
+    },
+    {
+      "id": "E11",
+      "stage": "source-acquisition",
+      "input": {
+        "packet": "packets.md",
+        "section": "E11",
+        "source": ["fixtures/head/format.go", "fixtures/index/format.go", "fixtures/worktree/format.go"]
+      },
+      "expect": [
+        "Do not silently choose a conflict side or use working-file contents as a resolved index.",
+        "Record the specific index coverage gap without modifying the index."
+      ]
+    },
+    {
+      "id": "E12",
+      "stage": "source-acquisition",
+      "input": {
+        "packet": "packets.md",
+        "section": "E12",
+        "source": ["fixtures/index/format.go"]
+      },
+      "expect": [
+        "Represent a genuinely absent HEAD and an empty old side with the captured stage-0 new source.",
+        "Keep the unavailable default HEAD policy separate; do not silently adopt working-tree policy."
+      ]
+    }
+  ]
+}

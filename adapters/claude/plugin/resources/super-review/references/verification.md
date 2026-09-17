@@ -15,12 +15,17 @@ concrete burden, not merely that the code exists. A disguised bug report or an
 imagined future requirement is outside scope; explicit team consistency is a
 valid, separately stated basis.
 
-Check location independently of quality. Match the cited expression to the pinned
-file and containing symbol before using its line range. Diff positions and hunk
-offsets are not source line numbers. Repeated snippets need enclosing context,
-not the first textual match. Use H/new paths for surviving code and D/old paths
-for deleted comparison evidence; never relocate a claim to a moving branch.
-A removed declaration may explain a change, but is not code still present at H.
+Check location independently of quality. Validate each anchor against its declared
+endpoint under [source-access rules](harnesses/source-access.md#file-boundaries-and-source-anchors):
+path, old/new side, symbol and any supplied line range must match that snapshot.
+Match the cited expression to the pinned file and containing symbol before using
+its line range. Diff positions and hunk offsets are not source line numbers.
+Repeated snippets need enclosing context, not the first textual match. Use H/new
+paths for surviving code and D/old paths for deleted comparison evidence; never
+relocate a claim to a moving branch. For deletions inspect old-side evidence; for
+renames preserve the path mapping. Local evidence must match the selected
+index/worktree view, not just HEAD. A removed declaration may explain a change,
+but is not code still present at H.
 
 Repair a wrong line or stale path when the same observation is supported at a
 verified location. If only line numbering is unavailable, a verified path, symbol
@@ -28,6 +33,7 @@ and distinguishing source span are sufficient; omit the line rather than guess.
 If the cited expression or its association remains unverified, retain that exact
 gap outside implementation advice. Do not turn a positioning failure into either
 acceptance of an unsupported claim or rejection of a separately supported burden.
+This uses already supplied matching bytes, not another full scan.
 
 Separate two decisions: is the observation supported, and is the remedy ready
 for implementation? A sound observation with an unsupported remedy survives as

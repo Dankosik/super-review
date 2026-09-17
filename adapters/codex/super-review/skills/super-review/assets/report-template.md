@@ -17,7 +17,8 @@ do not claim perfection or absence of observations when unresolved ones remain.
 
 ## Context and status
 
-PR URL and B/H/D, or local root, review extent and commit/file-hash identity;
+PR URL and B/H/D, or local root, review extent, selected view and both endpoint
+identities (commits, index blobs or working-file hashes);
 Super Review version; `complete` or `partial`; independent or
 explicitly limited sequential execution; specialist model/profile and reasoning
 effort when available. Include trusted instruction revision/digests when exposed,
@@ -57,11 +58,13 @@ unsupported languages; never imply they were reviewed.
 
 ### R-001 — <concrete change>
 
-Location at the reviewed revision/snapshot: verified file and symbol, with verified
+Location at the reviewed endpoint/snapshot: verified file and symbol, with verified
 lines/link when available or a distinguishing source span. Label old comparison
-evidence separately; do not invent a current location. Scope: local or cross-file.
+evidence separately; keep old/new paths for renames and old-side anchors for
+removed source. Do not invent a current location. Links identify that pinned
+revision, not the current branch. Scope: local or cross-file.
 Basis: effective rules and contributing profiles, including convention-only advice.
-Connect the observation to D..H or the selected whole-source snapshot; distinguish
+Connect the observation to the selected comparison or whole-source snapshot; distinguish
 supporting context. Explain
 the reading/maintenance task, supported transformation, net benefit, source-supported keep
 alternative, and relevant preservation constraints. Include affected files and

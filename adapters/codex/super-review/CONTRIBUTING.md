@@ -15,6 +15,7 @@ lockfile changes. During development, run the checks whose inputs changed:
 | Canonical skills, adapter templates or packaged documents | `bun run build`, then `bun run validate`; inspect generated diffs. |
 | Fixtures or tests | The affected `bun test <path>` suite; include changed-input dependents. |
 | TypeScript scripts, tests or configuration | `bun run typecheck` and affected tests. |
+| Source-view, location or acquisition instructions | `bun test tests/source-evidence.test.ts` plus contrasting source-evidence evaluation inputs. Disposable Git tests verify semantics, not agent compliance. |
 | Archive inputs or packaging logic | `bun run package` after a current build; inspect archive contents. |
 | Native roles, commands or permissions | Corresponding native configuration checks in CI. |
 | Development-only prose | Links and affected instruction decisions; no unchanged package rebuild. |
@@ -38,8 +39,15 @@ prove recommendation quality. Changes to roles need native configuration checks.
 CI validates the Claude plugin and OpenCode tool exposure without executing models.
 Use the [evaluation protocol](https://github.com/Dankosik/super-review/tree/main/evals)
 for changed agent decisions and the [instruction-boundary cases](https://github.com/Dankosik/super-review/tree/main/evals/instruction-boundaries) for
-changed launch, policy, coverage and handoff decisions. Do not claim a behavioral
-pass from fixture integrity; record unavailable model runs explicitly. Keep the
+changed launch, policy, coverage and handoff decisions, the
+[evidence-boundary cases](https://github.com/Dankosik/super-review/tree/main/evals/evidence-boundaries)
+for task/result matching and renamed/deleted anchors, and the
+[source-evidence cases](https://github.com/Dankosik/super-review/tree/main/evals/source-evidence)
+for snapshot and anchor decisions. Start with a specific failure and its opposite
+case before changing prose. Compare identical source/host/model conditions, retain
+raw traces and failed attempts, and keep grader material out of review packets.
+Do not claim a behavioral pass from fixture integrity; record unavailable model
+runs explicitly. Keep the
 routing-first experiment separate until its comparison justifies promotion.
 
 Codex and Claude install trees are generated. Edit canonical skill files and

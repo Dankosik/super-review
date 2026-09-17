@@ -6,7 +6,8 @@ when forwarding a candidate, or include its identity when the block travels alon
 
 ## Task result: <task ID>
 
-- Snapshot: PR and B/H/D, or local target and commit/file-hash identity; source location.
+- Snapshot: PR and B/H/D, or local target, selected view and both endpoint
+  identities (commit, index blobs or working-file hashes); source location.
 - Instructions: version and trusted package revision/resource digest when exposed,
   or `content identity unverified`, under the contract's instruction-identity rules.
 - Assignment: lens, selected profiles, exact scope and effective policy references.
@@ -23,15 +24,17 @@ coverage remains `unfinished`, never an empty clean result.
 
 ## C-<task>-<number>: <concrete observation>
 
-- Change anchor: verified path and symbol, with source lines or a short verbatim
-  span distinguishing the expression. Use H/new paths for surviving code and
-  label D/old paths as comparison evidence; diff positions are not source lines.
-  For renames record the old and new paths on their own sides. A D-only location
-  explains a deletion, not an invented H line or permission to restore unrelated
-  old code. Explain how D..H introduces, worsens, or makes the burden relevant,
-  grounding current impact in the change and available H context. For
-  whole-project scope, anchor directly in the reviewed snapshot. Distinguish
-  supporting context and state any location ambiguity instead of guessing.
+- Change anchor: verified path, symbol and endpoint, with source lines or a short
+  verbatim span distinguishing the expression. Use H/new for surviving source and
+  D/old for removed source; record both paths when a rename requires them. Diff
+  positions are not source lines. A D-only location explains a deletion, not an
+  invented H line or permission to restore unrelated old code. Explain how the
+  selected comparison introduces, worsens, or makes the burden relevant,
+  grounding current impact in the change and available new-side context. For
+  local changes use the declared old/new views; for whole-project scope, anchor
+  directly in that snapshot. Distinguish supporting context and state any
+  location ambiguity instead of guessing. Do not relocate an old-side observation
+  to invented H lines.
 - Basis: effective rule IDs and contributing profiles; identify convention-only advice.
 - Observation: source evidence and concrete reading/maintenance cost. State what is
   established; an unsupported suspicion does not qualify.

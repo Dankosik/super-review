@@ -16,11 +16,14 @@ load team policy from B. These are distinct roles even when B and D coincide.
 Read source by these immutable revisions. A later PR update does not retarget
 the current report. Missing revisions or truncated data remain explicit gaps.
 
-For local changes, record HEAD, the selected comparison base and the included
-working-file snapshot. For an explicitly requested whole project, all included
+For local changes, select staged, unstaged, or combined scope and pin both
+endpoints under [local snapshot rules](harnesses/source-access.md#local-snapshots).
+Include that view in each task identity, rather than treating every local target
+as working-file content. For an explicitly requested whole project, all included
 production source is the target; PR B/H/D may be not applicable. Select team policy
-from HEAD unless the user chooses working-tree policy, and record that choice.
-Do not narrow a whole-project request to the dirty diff.
+from HEAD unless the user chooses another policy snapshot, and record that choice.
+If HEAD does not exist, disclose that policy gap rather than silently adopting
+working-tree instructions. Do not narrow whole-project scope to the dirty diff.
 
 Inventory target files, exclusions, languages, and owning packages/modules.
 Apply [language routing](languages.md) and record each area's applicable baseline. Read each
@@ -77,7 +80,7 @@ Use these three sections in each assignment; do not assume inherited context:
 
 | Section | Content |
 | --- | --- |
-| Review identity | PR or local target, commit/snapshot identity and source location, instruction identity from the contract, language, selected resource paths, applicable compiler/runtime and build constraints. |
+| Review identity | PR or local target, selected comparison and both endpoint identities, source location, instruction identity from the contract, language, selected resource paths, applicable compiler/runtime and build constraints. |
 | Assignment | Task ID, one lens, selected profiles and source signals, exact files/symbols, review extent (changed source or explicitly requested whole source), user exclusions, effective rules/conflicts, known compatibility commitments, permitted context. |
 | Materials | Neutral diff/source anchors; complete resources or source blocks already supplied, identified by path and source revision or trusted instruction identity; locations of still-needed resources and omitted ranges. |
 

@@ -12,6 +12,7 @@ credential is required by this repository. Missing execution capability means
 | Activation, help, policy availability and completion | [instruction-boundaries](instruction-boundaries/README.md) |
 | Coverage membership, duplicate/stale results and source anchors | [review-integrity](review-integrity/cases.json), with the isolation procedure below |
 | Task/result matching, renamed/deleted anchors, file boundaries | [evidence-boundaries](evidence-boundaries/README.md) |
+| Staged/unstaged/combined views and old/new source anchors | [source-evidence](source-evidence/README.md) |
 | Expression/structure judgment | `quality-judgment/`, plus applicable `go/`, `typescript/` and `rust/` cases |
 | Native delegation, local snapshots and delivery | [native-host](native-host/README.md) and the current adapter configuration tests |
 | Historical routing, model selection or waiting experiments | Their own revision-specific protocols; do not apply a 2.x runtime experiment to 3.x by text substitution. |

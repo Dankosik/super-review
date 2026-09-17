@@ -1,0 +1,8 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "fixtures/head/format.go": "5ace873b7cd0d6cafe820cc43f8877851cfa6e772bddd34f090efb405ca42cc0",
+    "fixtures/index/format.go": "5379edc2b87b11b9fd3ab0abdffcc921c052360c900965273832d9c1ef53cf8f",
+    "fixtures/worktree/format.go": "8daab79f6db617ae79dd481e7f2f6d51260050619714603d4210db1e9dbb392b"
+  }
+}
