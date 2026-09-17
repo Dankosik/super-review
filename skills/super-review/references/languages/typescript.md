@@ -17,6 +17,14 @@ or an upgrade as a readability improvement. Read the actual inherited configurat
 or dependency declaration is an explicit context gap, not permission to guess
 its contents.
 
+For a public change, distinguish the authoring compiler from the files consumers
+actually receive: source TypeScript, JavaScript, and selected declarations. New
+syntax erased during the build need not raise the consumer baseline; syntax or
+library types retained in shipped source/declarations may. Inspect available
+entry-point and build evidence, not just the workspace compiler version. TypeScript
+or `@types/node` alone establishes neither Node.js, Bun, Deno nor a backend framework;
+resolve the actual execution path per area without adding runtime support or migration.
+
 **Judgment.** Apply language knowledge within the assigned lens. Optimize the
 reader's understanding of values, contracts, and effects, not the number of type
 annotations or resemblance to another language. Plain functions, structural types,

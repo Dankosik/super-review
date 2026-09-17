@@ -15,6 +15,13 @@ callback implementation may ignore it. Preserve accepted calls and return correl
 when replacing overloads with unions. Handwritten declarations and module augmentations
 are public contracts, not implementation-free formatting opportunities.
 
+Consumers include functions passed as values and types extracted from signatures,
+not only direct calls. `ReturnType`/`Parameters` use the last overload signature,
+not a union of every overload; a forwarding helper can lose useful alternatives.
+Keep readable correlated overloads rather than replace them with a conditional-type
+puzzle. Simplify redundant alternatives only after checking accepted calls, callback
+assignability and exposed declarations, including any intentionally rejected forms.
+
 `satisfies` (TypeScript 4.9+) can check a value against a shape while retaining a
 more specific inferred type; it is not a universal substitute for a widening
 annotation, assertion, or runtime check. Inspect contextual typing and later writes.

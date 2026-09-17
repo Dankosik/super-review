@@ -13,6 +13,14 @@ introduce a schema dependency or derive every transport/domain/UI type from one
 large object. `Pick`, `Omit`, indexed access, and `ReturnType` can couple consumers
 to implementation details; an explicit public shape may be clearer and more stable.
 
+Establish the direction of derivation. A schema's accepted input can differ from
+its parsed/transformed output; choose the library's existing input/output facility
+for the phase consumers actually use. Keep independent public shapes even when
+currently equal. Deriving a type does not authorize adding parsing, defaults or
+coercion to a runtime path. Likewise, `keyof typeof` can follow a complete registry
+that owns the key set, but a partial label/handler table must not define the domain.
+A known domain type may instead constrain its table while keeping value inference.
+
 For repeated types and handlers, show which exact knowledge is shared and which
 adaptation stays local. A configurable helper with flags for unrelated cases can
 be worse than small repetition. Do not deduplicate solely because text matches,
