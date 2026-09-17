@@ -1,0 +1,562 @@
+[
+  {
+    "id": "F01",
+    "request": "Use Super Review on Counter.tsx, only React state ownership.",
+    "snapshot": "frontend-fixture-F01",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"19.0.0\",\n    \"react-dom\": \"19.0.0\"\n  }\n}\n",
+        "sha256": "7638277ffa5466415e5528ac6d7345d0d6a3770b03a8962b1468ac669ae006bc"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "Counter.tsx",
+        "content": "import { useState } from \"react\";\nexport function Counter() {\n  const [count, setCount] = useState(0);\n  const [double, setDouble] = useState(0);\n  function increment() { setCount(count + 1); setDouble((count + 1) * 2); }\n  function reset() { setCount(0); setDouble(0); }\n  return <section><output>{count} / {double}</output><button onClick={increment}>Add</button><button onClick={reset}>Reset</button></section>;\n}\n",
+        "sha256": "0c3c8026a60a7f064ea8eee6a6c420faf607f949cf51d2d8dbe6340ef2879098"
+      }
+    ]
+  },
+  {
+    "id": "F02",
+    "request": "Use Super Review on TitleDraft.tsx, only React state ownership.",
+    "snapshot": "frontend-fixture-F02",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"19.0.0\",\n    \"react-dom\": \"19.0.0\"\n  }\n}\n",
+        "sha256": "7638277ffa5466415e5528ac6d7345d0d6a3770b03a8962b1468ac669ae006bc"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "TitleDraft.tsx",
+        "content": "import { useState } from \"react\";\ntype Props = { initialTitle: string; onSave: (title: string) => void };\nexport function TitleDraft({ initialTitle, onSave }: Props) {\n  // Incoming props are not an instruction to discard the user's unsaved edits.\n  const [draftTitle, setDraftTitle] = useState(initialTitle);\n  return <form onSubmit={event => { event.preventDefault(); onSave(draftTitle); }}><input value={draftTitle} onChange={event => setDraftTitle(event.target.value)} /><button>Save</button></form>;\n}\n",
+        "sha256": "d21e0a09503a8893bde574297da5d4177dcf80743397ba11ea41824071ee468d"
+      }
+    ]
+  },
+  {
+    "id": "F03",
+    "request": "Use Super Review on ExportButton.tsx, only React interaction cohesion.",
+    "snapshot": "frontend-fixture-F03",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"19.0.0\",\n    \"react-dom\": \"19.0.0\"\n  }\n}\n",
+        "sha256": "7638277ffa5466415e5528ac6d7345d0d6a3770b03a8962b1468ac669ae006bc"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "ExportButton.tsx",
+        "content": "import { useState } from \"react\";\ntype Row = { name: string; enabled: boolean; quantity: number };\ntype Props = { rows: Row[]; save: (body: string) => Promise<void> };\nexport function ExportButton({ rows, save }: Props) {\n  const [pending, setPending] = useState(false);\n  async function exportRows() {\n    setPending(true);\n    try {\n      const selected = rows.filter(row => row.enabled);\n      const groups = new Map<string, number>();\n      for (const row of selected) groups.set(row.name, (groups.get(row.name) ?? 0) + row.quantity);\n      const lines = [...groups].sort(([a], [b]) => a.localeCompare(b)).map(([name, quantity]) => `${JSON.stringify(name)}:${quantity}`);\n      await save(lines.join(\"\\n\"));\n    } finally { setPending(false); }\n  }\n  return <button disabled={pending} onClick={exportRows}>Export</button>;\n}\n",
+        "sha256": "ec646b016629c6be6b02c034ab006b608afe45ca5f07439f8f4dd6861c87d0ce"
+      }
+    ]
+  },
+  {
+    "id": "F04",
+    "request": "Use Super Review on Clock.tsx, only React interaction cohesion.",
+    "snapshot": "frontend-fixture-F04",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"19.0.0\",\n    \"react-dom\": \"19.0.0\"\n  }\n}\n",
+        "sha256": "7638277ffa5466415e5528ac6d7345d0d6a3770b03a8962b1468ac669ae006bc"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "Clock.tsx",
+        "content": "import { useEffect, useState } from \"react\";\nexport function Clock() {\n  const [now, setNow] = useState(() => Date.now());\n  useEffect(() => {\n    const timer = window.setInterval(() => setNow(Date.now()), 1000);\n    return () => window.clearInterval(timer);\n  }, []);\n  return <time>{new Date(now).toISOString()}</time>;\n}\n",
+        "sha256": "e7af029e15f62194e59e384438bc5cd253912dbd643a52926bfd171077f1cc45"
+      }
+    ]
+  },
+  {
+    "id": "F05",
+    "request": "Use Super Review on Panel.tsx and callers, only React component API clarity.",
+    "snapshot": "frontend-fixture-F05",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"19.0.0\",\n    \"react-dom\": \"19.0.0\"\n  }\n}\n",
+        "sha256": "7638277ffa5466415e5528ac6d7345d0d6a3770b03a8962b1468ac669ae006bc"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "Panel.tsx",
+        "content": "import type { ReactNode } from \"react\";\nexport function Panel({ x, y, children }: { x: boolean; y: boolean; children: ReactNode }) {\n  return <section className={x ? \"panel compact\" : \"panel\"}>{y ? <header>Details</header> : null}{children}</section>;\n}\nexport function Example() { return <Panel x={true} y={false}>Preview</Panel>; }\n",
+        "sha256": "2f9f3b6e94d07b1fd489a353bfc272e02d48ad1bed2dfefbe3eda02df4629d12"
+      }
+    ]
+  },
+  {
+    "id": "F06",
+    "request": "Use Super Review on SaveButton.tsx, only React component API clarity.",
+    "snapshot": "frontend-fixture-F06",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"19.0.0\",\n    \"react-dom\": \"19.0.0\"\n  }\n}\n",
+        "sha256": "7638277ffa5466415e5528ac6d7345d0d6a3770b03a8962b1468ac669ae006bc"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "SaveButton.tsx",
+        "content": "export function SaveButton({ disabled, onSave }: { disabled: boolean; onSave: () => void }) {\n  return <button disabled={disabled} onClick={onSave}>Save</button>;\n}\n",
+        "sha256": "22099240d5f8392b5ce45d46fc56cdcbac7f91c20334893354be14b4afaf46d5"
+      }
+    ]
+  },
+  {
+    "id": "F07",
+    "request": "Use Super Review on app/page.tsx and its supplied dependency, only Next.js boundaries.",
+    "snapshot": "frontend-fixture-F07",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"dependencies\":{\"next\":\"16.0.0\",\"react\":\"19.2.0\",\"react-dom\":\"19.2.0\"}}\n",
+        "sha256": "a7c446ba93dac87f00247e74ad5a89c241ac3eaf096243602991ff15b785c6b2"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "next.config.ts",
+        "content": "export default { cacheComponents: false };\n",
+        "sha256": "3d812ec80e0cf7aedca0b0ace8dd2498677d178ba9b034f2b592b65fcd7077a9"
+      },
+      {
+        "path": "app/page.tsx",
+        "content": "import { cookies } from \"next/headers\";\nimport { chooseMessage } from \"../message\";\nexport default async function Page() {\n  const preferences = await cookies();\n  return <h1>{await chooseMessage(preferences.get(\"locale\")?.value ?? \"en\")}</h1>;\n}\n",
+        "sha256": "0132db0bcad5a1143d1879ce8866875d7d47cb35b917ed4d58cd2ee2f84cae4c"
+      },
+      {
+        "path": "message.ts",
+        "content": "import { headers } from \"next/headers\";\nexport async function chooseMessage(locale: string) {\n  const audience = (await headers()).get(\"x-audience\") ?? \"public\";\n  return locale === \"fr\" ? (audience === \"staff\" ? \"Bonjour équipe\" : \"Bonjour\") : (audience === \"staff\" ? \"Hello team\" : \"Hello\");\n}\n",
+        "sha256": "d6110c3ec8aa4f0e42983dedc35037979b7de7de697064b2f40bf15024f3c23d"
+      }
+    ]
+  },
+  {
+    "id": "F08",
+    "request": "Use Super Review on app/page.tsx, only Next.js boundaries.",
+    "snapshot": "frontend-fixture-F08",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"dependencies\":{\"next\":\"16.0.0\",\"react\":\"19.2.0\",\"react-dom\":\"19.2.0\"}}\n",
+        "sha256": "a7c446ba93dac87f00247e74ad5a89c241ac3eaf096243602991ff15b785c6b2"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "next.config.ts",
+        "content": "export default { cacheComponents: false };\n",
+        "sha256": "3d812ec80e0cf7aedca0b0ace8dd2498677d178ba9b034f2b592b65fcd7077a9"
+      },
+      {
+        "path": "app/page.tsx",
+        "content": "import { cookies } from \"next/headers\";\nexport default async function Page() {\n  const preferences = await cookies();\n  return <h1>{preferences.get(\"locale\")?.value === \"fr\" ? \"Bonjour\" : \"Hello\"}</h1>;\n}\n",
+        "sha256": "60de1dc9ac98d62c311d5e67c1950a621fddca18b2d88c14ce574debe6c03630"
+      }
+    ]
+  },
+  {
+    "id": "F09",
+    "request": "Use Super Review on customers.ts, only Next.js data ownership.",
+    "snapshot": "frontend-fixture-F09",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"dependencies\":{\"next\":\"16.0.0\",\"react\":\"19.2.0\",\"react-dom\":\"19.2.0\"}}\n",
+        "sha256": "a7c446ba93dac87f00247e74ad5a89c241ac3eaf096243602991ff15b785c6b2"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "next.config.ts",
+        "content": "export default { cacheComponents: false };\n",
+        "sha256": "3d812ec80e0cf7aedca0b0ace8dd2498677d178ba9b034f2b592b65fcd7077a9"
+      },
+      {
+        "path": "customers.ts",
+        "content": "const endpoint = \"https://service.example/customers\";\nexport async function loadMenuCustomers() {\n  const response = await fetch(endpoint, { next: { revalidate: 300, tags: [\"customer-directory\"] } });\n  return response.json();\n}\nexport async function loadSearchCustomers() {\n  const response = await fetch(endpoint, { next: { revalidate: 300, tags: [\"customer-directory\"] } });\n  return response.json();\n}\n// Both entry points intentionally expose the same directory and freshness contract.\n",
+        "sha256": "35c4c2d2bd38f954f07fd09c47c3a8af09719c593bfd160d790dd55c0f1af222"
+      }
+    ]
+  },
+  {
+    "id": "F10",
+    "request": "Use Super Review on prices.ts, only Next.js data ownership.",
+    "snapshot": "frontend-fixture-F10",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"dependencies\":{\"next\":\"16.0.0\",\"react\":\"19.2.0\",\"react-dom\":\"19.2.0\"}}\n",
+        "sha256": "a7c446ba93dac87f00247e74ad5a89c241ac3eaf096243602991ff15b785c6b2"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "next.config.ts",
+        "content": "export default { cacheComponents: false };\n",
+        "sha256": "3d812ec80e0cf7aedca0b0ace8dd2498677d178ba9b034f2b592b65fcd7077a9"
+      },
+      {
+        "path": "prices.ts",
+        "content": "const endpoint = \"https://service.example/prices\";\nexport async function loadPublicPriceSummary() {\n  return (await fetch(endpoint, { next: { revalidate: 3600, tags: [\"price-summary\"] } })).json();\n}\nexport async function loadCheckoutQuote() {\n  return (await fetch(endpoint, { cache: \"no-store\" })).json();\n}\n",
+        "sha256": "dc4dfeede0aa6f5c234fe101d12ea7717d3daded5c049b67d6d4227d7854d190"
+      }
+    ]
+  },
+  {
+    "id": "F11",
+    "request": "Use Super Review on Status.tsx, only Tailwind variant duplication.",
+    "snapshot": "frontend-fixture-F11",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"dependencies\":{\"react\":\"19.0.0\",\"react-dom\":\"19.0.0\",\"tailwindcss\":\"4.0.0\"}}\n",
+        "sha256": "bb7447aaa946f5701fedf5c55a58b012abc7918122776be2a2cce4658456bb5a"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "styles.css",
+        "content": "@import \"tailwindcss\";\n",
+        "sha256": "42070e0b45bb201b2b838a52aaaa6e965f964e0b542d97f1fe517fe59c4b75a8"
+      },
+      {
+        "path": "Status.tsx",
+        "content": "type Tone = \"success\" | \"warning\";\n// Badges and filter labels implement the same status foreground/background role.\nexport function StatusBadge({ tone }: { tone: Tone }) {\n  return <span className={tone === \"success\" ? \"bg-green-100 text-green-900\" : \"bg-amber-100 text-amber-900\"}>{tone}</span>;\n}\nexport function StatusFilterLabel({ tone }: { tone: Tone }) {\n  return <label className={tone === \"success\" ? \"bg-green-100 text-green-900\" : \"bg-amber-100 text-amber-900\"}>{tone}</label>;\n}\n",
+        "sha256": "a083331b7d2d69b706568dc0987064e5022340efaf6730faedec55d40043bd9e"
+      }
+    ]
+  },
+  {
+    "id": "F12",
+    "request": "Use Super Review on Layout.tsx, only Tailwind variant duplication.",
+    "snapshot": "frontend-fixture-F12",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"dependencies\":{\"react\":\"19.0.0\",\"react-dom\":\"19.0.0\",\"tailwindcss\":\"4.0.0\"}}\n",
+        "sha256": "bb7447aaa946f5701fedf5c55a58b012abc7918122776be2a2cce4658456bb5a"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "styles.css",
+        "content": "@import \"tailwindcss\";\n",
+        "sha256": "42070e0b45bb201b2b838a52aaaa6e965f964e0b542d97f1fe517fe59c4b75a8"
+      },
+      {
+        "path": "Layout.tsx",
+        "content": "export function Toolbar() { return <nav className=\"flex gap-2\"><button>Save</button><button>Cancel</button></nav>; }\nexport function Receipt() { return <article className=\"flex gap-2\"><span>Total</span><strong>100</strong></article>; }\n",
+        "sha256": "9903f59b9c6ce4e367bafee6f07e10b524131d20e027ed370f317f3f4f6757db"
+      }
+    ]
+  },
+  {
+    "id": "F13",
+    "request": "Use Super Review on the supplied locally maintained shadcn-derived Button.tsx and consumers, only shadcn API clarity.",
+    "snapshot": "frontend-fixture-F13",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"19.0.0\",\n    \"react-dom\": \"19.0.0\"\n  }\n}\n",
+        "sha256": "7638277ffa5466415e5528ac6d7345d0d6a3770b03a8962b1468ac669ae006bc"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "components.json",
+        "content": "{\"tsx\":true,\"aliases\":{\"ui\":\"@/components/ui\",\"utils\":\"@/lib/utils\"}}\n",
+        "sha256": "bfba6c5e7707072aa355794ff8bd84982ca37a3da09b6c26a0cd4fda42083bf2"
+      },
+      {
+        "path": "components/ui/Button.tsx",
+        "content": "import type { ComponentProps } from \"react\";\ntype Props = ComponentProps<\"button\"> & { invoiceId?: string; archiveInvoice?: (id: string) => void };\nexport function Button({ invoiceId, archiveInvoice, onClick, ...props }: Props) {\n  return <button {...props} onClick={event => {\n    onClick?.(event);\n    if (!event.defaultPrevented && invoiceId && archiveInvoice) archiveInvoice(invoiceId);\n  }} />;\n}\n",
+        "sha256": "6f66d103b2e05f7536cdc9dba1aeaeb7b6fad80541037cd750c66f777447b74a"
+      },
+      {
+        "path": "Feature.tsx",
+        "content": "import { Button } from \"./components/ui/Button\";\nexport function Invoice({ archive }: { archive: (id: string) => void }) { return <Button invoiceId=\"inv-1\" archiveInvoice={archive}>Archive</Button>; }\nexport function Continue() { return <Button onClick={() => window.history.forward()}>Continue</Button>; }\n",
+        "sha256": "7b4704fc96f5231b1bb6eaa26717027fc231c8a564fc2f661967af2be2e27b93"
+      }
+    ]
+  },
+  {
+    "id": "F14",
+    "request": "Use Super Review on Button.tsx and the supplied consumer, only shadcn API clarity.",
+    "snapshot": "frontend-fixture-F14",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"dependencies\":{\"react\":\"19.0.0\",\"react-dom\":\"19.0.0\",\"@base-ui/react\":\"1.0.0\"}}\n",
+        "sha256": "3b30f12de526b77b45179338a714cee67a169d1360fce2829ece388eb24b1e53"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "components.json",
+        "content": "{\"tsx\":true,\"aliases\":{\"ui\":\"@/components/ui\",\"utils\":\"@/lib/utils\"}}\n",
+        "sha256": "bfba6c5e7707072aa355794ff8bd84982ca37a3da09b6c26a0cd4fda42083bf2"
+      },
+      {
+        "path": "Button.tsx",
+        "content": "import type { ComponentProps } from \"react\";\nimport { Button as BaseButton } from \"@base-ui/react/button\";\nexport function Button(props: ComponentProps<typeof BaseButton>) { return <BaseButton {...props} />; }\nexport function Example() { return <Button disabled>Save</Button>; }\n",
+        "sha256": "220a5356a95a3a344a7433d12637c6409cafbd81cd939182c288b374076cda3b"
+      }
+    ]
+  },
+  {
+    "id": "F15",
+    "request": "Use Super Review on packages/widget/Widget.tsx for maintainability.",
+    "snapshot": "frontend-fixture-F15",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"workspaces\":[\"packages/*\"],\"devDependencies\":{\"next\":\"16.0.0\",\"react\":\"19.0.0\"}}\n",
+        "sha256": "c202ba874227852c912986feca85cfdacf9240ab26b245a16ce8089079aac247"
+      },
+      {
+        "path": "packages/widget/package.json",
+        "content": "{\"dependencies\":{\"preact\":\"10.25.0\"}}\n",
+        "sha256": "29aaa3039edcc6c7b52c8f9c3138614c7877cbdb1ef01676df744e9efe5518fd"
+      },
+      {
+        "path": "packages/widget/tsconfig.json",
+        "content": "{\"compilerOptions\":{\"jsx\":\"react-jsx\",\"jsxImportSource\":\"preact\",\"strict\":true}}\n",
+        "sha256": "cebfd6764da786080f3a0060d785fe7c8cc897be83b52dee1708cb8f862966d8"
+      },
+      {
+        "path": "packages/widget/Widget.tsx",
+        "content": "import { useState } from \"preact/hooks\";\nexport function Widget() {\n  const [count, setCount] = useState(0);\n  return <button onClick={() => setCount(count + 1)}>{count}</button>;\n}\n",
+        "sha256": "f72647c333b52ea01fd536011aaf8024b914764de2e96b5ca088327180f10f88"
+      }
+    ]
+  },
+  {
+    "id": "F16",
+    "request": "Use Super Review on Input.tsx, only React component API clarity.",
+    "snapshot": "frontend-fixture-F16",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"name\":\"shared-ui\",\"peerDependencies\":{\"react\":\"^18.2.0 || ^19.0.0\"},\"devDependencies\":{\"react\":\"19.0.0\",\"@types/react\":\"19.0.0\"}}\n",
+        "sha256": "456ebda4a2db737e0e522d82b94b71518fecbdba11d1a1b8bef4514a37d75281"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "Input.tsx",
+        "content": "import { forwardRef, type ComponentProps } from \"react\";\nexport const Input = forwardRef<HTMLInputElement, ComponentProps<\"input\">>(function Input(props, ref) {\n  return <input {...props} ref={ref} />;\n});\n",
+        "sha256": "3ad03f9c0bd6106d0def1c8b33ea68551c7c7405ed4d16573fb51e2740164866"
+      }
+    ]
+  },
+  {
+    "id": "F17",
+    "request": "Use Super Review on Popover.tsx, only Tailwind variant duplication.",
+    "snapshot": "frontend-fixture-F17",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"dependencies\":{\"react\":\"19.0.0\",\"tailwindcss\":\"3.4.0\"}}\n",
+        "sha256": "bd9af8625106b633d3a4bc7af2fbfd2729ecee4c443272398245ca2e3cd6e8ee"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "Popover.tsx",
+        "content": "export function Popover() { return <aside className=\"w-[22rem] rounded-md border p-4\">Account menu</aside>; }\n",
+        "sha256": "067b6a6e277c98b03c26ec4fed7d40b4f94e423ec14ba9d3e71b2f44091fd30a"
+      },
+      {
+        "path": "tailwind.config.ts",
+        "content": "export default { content: [\"./*.tsx\"], theme: { extend: {} } };\n",
+        "sha256": "659cfabe2fb1e543bd99a70bbdcc7f9e25eb23df8dd15a795a9575000b68b071"
+      },
+      {
+        "path": "styles.css",
+        "content": "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n",
+        "sha256": "cc1a7ad0d019ddb1d32d0ecb588ba0ac26ce41d8625dd6c366348b25f83a28ec"
+      }
+    ]
+  },
+  {
+    "id": "F18",
+    "request": "Use Super Review on Dialog.tsx, only shadcn API clarity.",
+    "snapshot": "frontend-fixture-F18",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "The aliased components/ui/dialog implementation is unavailable in this snapshot.",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"19.0.0\",\n    \"react-dom\": \"19.0.0\"\n  }\n}\n",
+        "sha256": "7638277ffa5466415e5528ac6d7345d0d6a3770b03a8962b1468ac669ae006bc"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "components.json",
+        "content": "{\"tsx\":true,\"aliases\":{\"ui\":\"@/components/ui\",\"utils\":\"@/lib/utils\"}}\n",
+        "sha256": "bfba6c5e7707072aa355794ff8bd84982ca37a3da09b6c26a0cd4fda42083bf2"
+      },
+      {
+        "path": "Dialog.tsx",
+        "content": "import { Dialog, DialogTrigger, DialogContent } from \"@/components/ui/dialog\";\nexport function Settings() { return <Dialog><DialogTrigger>Settings</DialogTrigger><DialogContent>Preferences</DialogContent></Dialog>; }\n",
+        "sha256": "0b781646f2c46e7863fd6484a412bed023af76ad6bbd8adb7b2d5b69cecbe5b6"
+      }
+    ]
+  },
+  {
+    "id": "F19",
+    "request": "Use Super Review on Status.tsx, only Tailwind variants. For this controlled evaluation, apply the supplied target-policy snapshot.",
+    "snapshot": "frontend-fixture-F19",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "This stage probe explicitly selects the supplied SUPER_REVIEW.md as target policy; it is not PR-authored policy.",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"dependencies\":{\"react\":\"19.0.0\",\"react-dom\":\"19.0.0\",\"tailwindcss\":\"4.0.0\"}}\n",
+        "sha256": "bb7447aaa946f5701fedf5c55a58b012abc7918122776be2a2cce4658456bb5a"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "styles.css",
+        "content": "@import \"tailwindcss\";\n",
+        "sha256": "42070e0b45bb201b2b838a52aaaa6e965f964e0b542d97f1fe517fe59c4b75a8"
+      },
+      {
+        "path": "Status.tsx",
+        "content": "type Tone = \"success\" | \"warning\";\nexport function Badge({ tone }: { tone: Tone }) { return <span className={tone === \"success\" ? \"bg-green-100\" : \"bg-amber-100\"}>{tone}</span>; }\nexport function Label({ tone }: { tone: Tone }) { return <label className={tone === \"success\" ? \"bg-green-100\" : \"bg-amber-100\"}>{tone}</label>; }\n",
+        "sha256": "5b6333ca4f9cc45eb981fbd395c12c96fe0983d6e250a6a991789a45e44021e7"
+      },
+      {
+        "path": "SUPER_REVIEW.md",
+        "content": "# Review conventions\n\n## team.ts.keep-local-status-styles\nLanguage: TypeScript\nPaths: Status.tsx\nLens: duplication\nAction: disable ts.duplication.share-knowledge\n\nKeep these local status styles separate for the current independent design owners.\nTheir appearances are intentionally allowed to evolve independently.\n",
+        "sha256": "e73006aea15ab7f8bc2b03761f45ea498c08197bf6a8a0e3dd398d840ea9250a"
+      }
+    ]
+  },
+  {
+    "id": "F20",
+    "request": "Use Super Review to review only styles.css for Tailwind code quality.",
+    "snapshot": "frontend-fixture-F20",
+    "source_extent": "whole supplied production declarations",
+    "source_notes": "",
+    "files": [
+      {
+        "path": "package.json",
+        "content": "{\"private\":true,\"dependencies\":{\"react\":\"19.0.0\",\"react-dom\":\"19.0.0\",\"tailwindcss\":\"4.0.0\"}}\n",
+        "sha256": "bb7447aaa946f5701fedf5c55a58b012abc7918122776be2a2cce4658456bb5a"
+      },
+      {
+        "path": "tsconfig.json",
+        "content": "{\"compilerOptions\":{\"strict\":true,\"jsx\":\"react-jsx\",\"target\":\"ES2022\"}}\n",
+        "sha256": "0f731afcfe27a5cfc280ed71f7588c5f3cf4d05c4c47f4e3da5fd18bcb632af0"
+      },
+      {
+        "path": "styles.css",
+        "content": "@import \"tailwindcss\";\n@theme { --color-brand: #123456; }\n",
+        "sha256": "75fbb72c51bcd0c93c26bea1448b9e01feef79a84b86de979eed4831fefd69f8"
+      }
+    ]
+  }
+]
