@@ -77,3 +77,12 @@ For established React, Next.js, Tailwind CSS or shadcn/ui source, apply
 remain authoritative for the assigned quality question. Resolve the stack per
 owning package and area, not from `.tsx` alone or workspace-wide dependencies.
 Framework resources do not extend supported languages or replace base coverage.
+
+## Spring mechanisms in Java
+
+For established Spring or Spring Boot source, apply [Spring routing](spring.md)
+and [Spring context](spring/context.md). Resolve the actual container, binding,
+web and persistence mechanisms per owning module and area, including relevant
+dependency/provider versions. Spring profiles deepen their existing Java owners
+and inherit java.* rules; they are not a broad Spring reviewer, additional
+language, mandatory all-module packet or replacement for base coverage.

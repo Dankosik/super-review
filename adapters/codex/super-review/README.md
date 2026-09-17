@@ -83,6 +83,30 @@ Missing local implementations or configuration are reported, not guessed.
 See [routing and profile ownership](skills/super-review/references/frontend.md)
 and the maintainer-only [research and evaluation cases](https://github.com/Dankosik/super-review/tree/main/evals/frontend).
 
+## Spring and Spring Boot quality review
+
+Java reviews select applicable Spring profiles for bean wiring/configuration,
+application operations, HTTP contracts/errors, managed lifecycle and value shapes.
+Each profile deepens one existing Java owner; there is no broad Spring agent,
+new rule namespace or mandatory framework-wide pass. The eight base questions,
+scoped team rules and native model selection remain unchanged.
+
+```text
+$super-review Review this Java/Spring PR for readability and maintainability.
+Use only the Spring modules actually established in each owning module.
+```
+
+Compatibility includes Framework/Boot, the actual web and Spring Data modules,
+Persistence API/provider, validation and serialization dependencies, not just JDK.
+MVC, WebFlux and client-only WebClient use are distinguished. Clear interfaces,
+transactional operations, constructors, annotations, entities and separate DTOs
+are retained when their contracts justify them. No reactive migration, ORM change,
+Spring Modulith adoption, universal mapper or interface-per-service is required.
+
+See [Spring routing and owners](skills/super-review/references/spring.md) and the
+maintainer-only [sources and contrasting cases](https://github.com/Dankosik/super-review/tree/main/evals/spring).
+These additions do not claim measured model-quality gains from fixture checks.
+
 ## Models and results
 
 The orchestrator retains the user's model and effort. Codex specialists use

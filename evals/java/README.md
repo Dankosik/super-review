@@ -45,3 +45,8 @@ This clarifies grader calibration under the existing
 not runtime review policy. It is a source-backed clarification, not a reproduced
 model failure or evidence of improved review quality. Behavioral comparisons
 remain necessary before claiming such gains.
+
+For mechanism-specific Spring/Boot decisions, use the separate
+[Spring corpus](../spring/README.md) and its isolated packets. Retain the applicable
+Java counterexamples, especially J02/J10/J11/J14; do not load Spring profiles into
+plain Java cases or claim framework coverage from a Java-only result.
