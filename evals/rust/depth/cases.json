@@ -1,0 +1,403 @@
+{
+  "description": "Evaluator-only contrasts; never include in reviewer packets or installed resources. These are expectations, not measured results.",
+  "cases": [
+    {
+      "id": "RD01",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Consider a canonical From<String> implementation that fits the existing Into consumer and removes repeated explicit adaptation.",
+        "Preserve ownership and the exact text; do not add validation or generalized bounds without a caller benefit."
+      ],
+      "contrasts": [
+        "RD02"
+      ]
+    },
+    {
+      "id": "RD02",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Retain the named summarization; infallibility alone does not make From appropriate.",
+        "Do not prescribe Borrow<str> with incompatible equality, or Deref solely to shorten field access. A named view or AsRef may remain appropriate."
+      ],
+      "contrasts": [
+        "RD01"
+      ]
+    },
+    {
+      "id": "RD03",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Show how named configuration, a suitable builder or named operations make actual call choices recoverable.",
+        "Keep required endpoint ownership and all values; do not require typestate or a builder when a configuration literal is sufficient."
+      ],
+      "contrasts": [
+        "RD04"
+      ]
+    },
+    {
+      "id": "RD04",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Retain consuming construction rather than requiring build(&self), File::try_clone or shared ownership.",
+        "Do not introduce marker states for a single ordinary optional prefix; a compatible simpler constructor is acceptable if its call benefit is demonstrated."
+      ],
+      "contrasts": [
+        "RD03"
+      ]
+    },
+    {
+      "id": "RD05",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Identify the unnecessary relationship between the key and result lifetimes; a signature using receiver elision or a separate key lifetime can explain the actual contract.",
+        "Do not turn this into a blanket demand for explicit lifetime annotations."
+      ],
+      "contrasts": [
+        "RD06"
+      ]
+    },
+    {
+      "id": "RD06",
+      "rule": "rust.data.make-transformations-visible",
+      "expect": [
+        "Retain the owned clone/snapshot and guard boundary; a borrowed view would change the contract.",
+        "Do not report clone, allocation or local mutation as quality problems by themselves."
+      ],
+      "contrasts": [
+        "RD05"
+      ]
+    },
+    {
+      "id": "RD07",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Consider derive(Clone) as a direct expression of the existing field-wise contract.",
+        "Do not infer that every manual trait implementation should become a derive or execute a procedural macro."
+      ],
+      "contrasts": [
+        "RD08"
+      ]
+    },
+    {
+      "id": "RD08",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Retain the manual bounds when derive would unnecessarily constrain T.",
+        "Do not require Clone on Record or change factory ownership merely to reduce implementation text."
+      ],
+      "contrasts": [
+        "RD07"
+      ]
+    },
+    {
+      "id": "RD09",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Consider whether an associated output type makes the existing implementation-determined relationship clearer and removes the propagated T parameter.",
+        "Require a source-specific benefit, not a finding merely because there is only one implementation; do not turn loop syntax into this lens's verdict."
+      ],
+      "contrasts": [
+        "RD10"
+      ]
+    },
+    {
+      "id": "RD10",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Retain caller-selected generic parameterizations and the dyn contract; an associated type would remove a supported distinction.",
+        "Do not prefer static dispatch or remove Box based on performance or ideology."
+      ],
+      "contrasts": [
+        "RD09"
+      ]
+    },
+    {
+      "id": "RD11",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Identify the duplicated relationship between the flag and result; a direct enum can give the two existing concepts one home.",
+        "Explain reading/maintenance benefit, not prevention of impossible-state bugs; do not introduce typestate machinery."
+      ],
+      "contrasts": [
+        "RD12"
+      ]
+    },
+    {
+      "id": "RD12",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Retain the straightforward enum/match; do not replace a runtime choice with generic marker states.",
+        "Do not flatten the separate meaningful Draft-to-Ready API solely because typestate is sometimes excessive."
+      ],
+      "contrasts": [
+        "RD11"
+      ]
+    },
+    {
+      "id": "RD13",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Consider map plus transpose as a recognizable optional fallible operation, not a mandatory shorter spelling.",
+        "Preserve absence, ParseIntError, evaluation and fallback value; compare actual readability."
+      ],
+      "contrasts": [
+        "RD14"
+      ]
+    },
+    {
+      "id": "RD14",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Retain the explicit loop/match rather than replacing it with first-error collect or try_fold.",
+        "Do not treat local mutation or a tuple containing related outputs as a problem by itself."
+      ],
+      "contrasts": [
+        "RD13"
+      ]
+    },
+    {
+      "id": "RD15",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Consider an explicit method to expose the actual call contract without the single-use macro vocabulary.",
+        "Use the supplied definition; preserve receiver, method name and mutation, and do not claim that all macros are undesirable."
+      ],
+      "contrasts": [
+        "RD16",
+        "RD36"
+      ]
+    },
+    {
+      "id": "RD16",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Retain the small declarative syntax when replacing it with a function does not explain more.",
+        "Do not execute macros or merge independent label vocabularies solely because they look alike."
+      ],
+      "contrasts": [
+        "RD15"
+      ]
+    },
+    {
+      "id": "RD17",
+      "rule": "rust.data.make-transformations-visible",
+      "expect": [
+        "Consider JoinSet as a direct owner of the existing task group and completion collection, removing handwritten bookkeeping.",
+        "Preserve JoinError handling and owner lifetime; do not justify only by speed or replace next handling with panicking join_all."
+      ],
+      "contrasts": [
+        "RD18"
+      ]
+    },
+    {
+      "id": "RD18",
+      "rule": "rust.data.make-transformations-visible",
+      "expect": [
+        "Do not replace the detached task with a local abort-on-drop group or borrow its owned label.",
+        "Do not replace spawn-order collection with completion-order results; retain supported ownership and explicit sequencing."
+      ],
+      "contrasts": [
+        "RD17"
+      ]
+    },
+    {
+      "id": "RD19",
+      "rule": "rust.data.make-transformations-visible",
+      "expect": [
+        "Consider the existing TaskTracker::wait operation in place of manual completion polling, keeping cancel and close ordering.",
+        "Do not substitute abort for cooperative cleanup, claim dropping TaskTracker cancels work, or add a new runtime."
+      ],
+      "contrasts": [
+        "RD20"
+      ]
+    },
+    {
+      "id": "RD20",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Retain the explicit competing-event structure and biased priority instead of hiding it in a generic callback adapter.",
+        "Do not generalize the supplied recv cancellation contract to all awaited operations or launch a race/deadlock audit."
+      ],
+      "contrasts": [
+        "RD19"
+      ]
+    },
+    {
+      "id": "RD21",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Consider a Serialize derive as the same explicit data contract without manual field synchronization.",
+        "Preserve struct/field names and ordering; do not replace a wire DTO with an unrelated domain enum or execute the derive."
+      ],
+      "contrasts": [
+        "RD22"
+      ]
+    },
+    {
+      "id": "RD22",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Retain the direct externally tagged enum and no-alloc boundary.",
+        "Do not prescribe internal/adjacent/untagged deserialization or assume that enabling derive enables alloc; transparent is not an ABI guarantee."
+      ],
+      "contrasts": [
+        "RD21"
+      ]
+    },
+    {
+      "id": "RD23",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Consider a Parser derive that unifies the static declaration and extraction, with explicit command/long names and try_parse_from.",
+        "Preserve optionality, PathBuf/non-UTF-8 inputs and diagnostics; do not add a default or turn parser errors into process exits."
+      ],
+      "contrasts": [
+        "RD24"
+      ]
+    },
+    {
+      "id": "RD24",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Retain Command for the genuinely dynamic grammar and the fallible no-exit boundary.",
+        "Do not invent a closed Subcommand enum, string-literal leak or additional handler framework merely to remove construction code."
+      ],
+      "contrasts": [
+        "RD23"
+      ]
+    },
+    {
+      "id": "RD25",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Consider Json<Input> in the handler signature to expose the existing request contract directly.",
+        "Preserve rejection and body handling; do not add a service/mapper layer or assume all HTTP decoding is interchangeable."
+      ],
+      "contrasts": [
+        "RD26"
+      ]
+    },
+    {
+      "id": "RD26",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Retain locally handled Result extraction and the explicit Response conversion when it explains the two alternatives.",
+        "Do not replace it with bare Json or mismatched impl IntoResponse branches, or change status/body diagnostics."
+      ],
+      "contrasts": [
+        "RD25",
+        "RD35"
+      ]
+    },
+    {
+      "id": "RD27",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "On this MSRV, consider a precise use capture or another genuinely simpler correct signature instead of the private capture-trait workaround.",
+        "Preserve borrowing and opaque-result contract; do not assume all RPIT positions share the same stabilization date."
+      ],
+      "contrasts": [
+        "RD28"
+      ]
+    },
+    {
+      "id": "RD28",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Do not recommend use captures unavailable at Rust 1.70 or import the sibling's baseline.",
+        "A different supported simpler signature may be accepted with evidence; retaining the workaround is not mandatory. Do not add allocating erasure or std."
+      ],
+      "contrasts": [
+        "RD27"
+      ]
+    },
+    {
+      "id": "RD29",
+      "rule": "rust.change.localize-existing-variation",
+      "expect": [
+        "Consider moving the private encoding knowledge next to its decoder and preserving supported paths through re-exports.",
+        "Do not create a workspace crate or narrow public visibility merely to reduce file size."
+      ],
+      "contrasts": [
+        "RD30"
+      ]
+    },
+    {
+      "id": "RD30",
+      "rule": "rust.change.localize-existing-variation",
+      "expect": [
+        "Retain intentional conditional organization and the supported public path.",
+        "Do not consolidate platform alternatives based only on textual similarity or claim no downstream consumers from a local search."
+      ],
+      "contrasts": [
+        "RD29"
+      ]
+    },
+    {
+      "id": "RD31",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Compare the unnecessary all-input-lifetimes bound with Deserialize tied to the supplied input lifetime; accept only a clearer contract, not genericity for hypothetical callers.",
+        "Do not require title itself to return a borrow or claim that Cow always borrows."
+      ],
+      "contrasts": [
+        "RD32"
+      ]
+    },
+    {
+      "id": "RD32",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Retain DeserializeOwned and owned result independence; Deserialize<'static> is not a replacement.",
+        "Do not leak/retain the buffer, execute derive macros or introduce a borrowing interface just to remove ownership."
+      ],
+      "contrasts": [
+        "RD31"
+      ]
+    },
+    {
+      "id": "RD33",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Retain local map_err, owned path and source chain because a global From<io::Error> lacks the operation's path.",
+        "Do not stringify the source or remove the clone solely to reduce allocation."
+      ],
+      "contrasts": [
+        "RD34"
+      ]
+    },
+    {
+      "id": "RD34",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Consider direct question-mark propagation through the existing From instead of a mechanical mapping closure.",
+        "Preserve the source-bearing wrapper; do not prescribe an error crate or opaque string error."
+      ],
+      "contrasts": [
+        "RD33"
+      ]
+    },
+    {
+      "id": "RD35",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Consider an adapter-local IntoResponse implementation to give the repeated HTTP contract one home.",
+        "Preserve statuses/bodies and do not move HTTP dependencies into a separate domain type merely for convenience."
+      ],
+      "contrasts": [
+        "RD26"
+      ]
+    },
+    {
+      "id": "RD36",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Record the specific generated-API/dependency evidence gap; do not claim complete knowledge of the expansion or implementation-ready macro removal.",
+        "Do not run Cargo, build scripts, rustc or the macro to resolve it; complete independent reasoning about the visible body without inventing a finding."
+      ],
+      "contrasts": [
+        "RD15"
+      ]
+    }
+  ]
+}
