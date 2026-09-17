@@ -1,0 +1,522 @@
+{
+  "description": "Neutral, isolated source packets. Supply one inputs entry only; not executable crates or measured worker outputs.",
+  "inputs": [
+    {
+      "id": "RD01",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-01\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "struct Endpoint(String);\nfn endpoint(text: String) -> Endpoint { Endpoint(text) }\nfn retain<E: Into<Endpoint>>(endpoint: E) -> Endpoint { endpoint.into() }\nfn from_config(text: String) -> Endpoint { retain(endpoint(text)) }\nfn from_prompt(text: String) -> Endpoint { retain(endpoint(text)) }\n"
+      },
+      "context": [
+        "Endpoint stores the entire unmodified address text. There is one supported String-to-Endpoint interpretation; no validation or normalization is performed."
+      ]
+    },
+    {
+      "id": "RD02",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-02\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "struct Summary(String);\nfn summarize(text: &str) -> Summary {\n    Summary(text.lines().next().unwrap_or(\"\").to_owned())\n}\nfn display(text: &str) -> String { summarize(text).0 }\nstruct Alias(String);\nimpl Alias { fn as_str(&self) -> &str { &self.0 } }\nimpl PartialEq for Alias {\n    fn eq(&self, other: &Self) -> bool { self.0.eq_ignore_ascii_case(&other.0) }\n}\nimpl Eq for Alias {}\nfn same(a: &Alias, b: &Alias) -> bool { a == b }\nfn label(a: &Alias) -> &str { a.as_str() }\n"
+      },
+      "context": [
+        "The first-line summary is a deliberate projection. Alias comparison ignores ASCII case, but its text view retains original spelling."
+      ]
+    },
+    {
+      "id": "RD03",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-03\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "struct Client { endpoint: String, timeout_ms: u64, retries: u8, compressed: bool }\nfn client(endpoint: String, timeout_ms: u64, retries: u8, compressed: bool) -> Client {\n    Client { endpoint, timeout_ms, retries, compressed }\n}\nfn interactive(endpoint: String) -> Client { client(endpoint, 1500, 0, false) }\nfn batch(endpoint: String) -> Client { client(endpoint, 9000, 3, true) }\n"
+      },
+      "context": [
+        "All four choices vary independently in the two existing operation modes; construction is infallible and stores the supplied endpoint."
+      ]
+    },
+    {
+      "id": "RD04",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-04\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::fs::File;\nstruct Output { file: File, prefix: String }\nstruct OutputBuilder { file: File, prefix: String }\nimpl OutputBuilder {\n    fn new(file: File) -> Self { Self { file, prefix: String::new() } }\n    fn prefix(mut self, prefix: String) -> Self { self.prefix = prefix; self }\n    fn build(self) -> Output { Output { file: self.file, prefix: self.prefix } }\n}\nfn output(file: File, prefix: String) -> Output {\n    OutputBuilder::new(file).prefix(prefix).build()\n}\n"
+      },
+      "context": [
+        "This established constructor transfers an already-open file exactly once. No resource duplication or reusable configuration is part of its contract."
+      ]
+    },
+    {
+      "id": "RD05",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-05\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::collections::BTreeMap;\nstruct Labels(BTreeMap<String, String>);\nimpl Labels {\n    fn lookup<'a>(&'a self, key: &'a str) -> Option<&'a str> {\n        self.0.get(key).map(String::as_str)\n    }\n}\nfn show(labels: &Labels, key: &str) { println!(\"{:?}\", labels.lookup(key)); }\n"
+      },
+      "context": [
+        "The returned text is stored in Labels; key is used only for the lookup and is neither retained nor returned."
+      ]
+    },
+    {
+      "id": "RD06",
+      "request": "Review the supplied production source through data-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "data-flow",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-06\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::sync::Mutex;\nfn snapshot(store: &Mutex<Vec<String>>) -> Vec<String> {\n    store.lock().expect(\"store available\").clone()\n}\nfn take_then_clear(store: &Mutex<Vec<String>>) -> Vec<String> {\n    let names = snapshot(store);\n    store.lock().expect(\"store available\").clear();\n    names\n}\n"
+      },
+      "context": [
+        "The operation returns the pre-clear names after releasing exclusive access. Existing panic policy is outside this review."
+      ]
+    },
+    {
+      "id": "RD07",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-07\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "struct Label { title: String, suffix: String }\nimpl Clone for Label {\n    fn clone(&self) -> Self { Self { title: self.title.clone(), suffix: self.suffix.clone() } }\n}\nfn duplicate(label: &Label) -> Label { label.clone() }\n"
+      },
+      "context": [
+        "The implementation has only ordinary field-by-field cloning, without extra effects or generic parameters."
+      ]
+    },
+    {
+      "id": "RD08",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-08\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "struct Factory<T>(fn() -> T);\nimpl<T> Copy for Factory<T> {}\nimpl<T> Clone for Factory<T> { fn clone(&self) -> Self { *self } }\nstruct Record;\nfn record() -> Record { Record }\nfn factories() -> (Factory<Record>, Factory<Record>) {\n    let first = Factory(record as fn() -> Record);\n    (first, first.clone())\n}\n"
+      },
+      "context": [
+        "Record intentionally has neither Copy nor Clone. The cloned object is the function pointer, not its produced Record."
+      ]
+    },
+    {
+      "id": "RD09",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-09\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "trait Source<T> { fn next(&mut self) -> Option<T>; }\nstruct Numbers(std::vec::IntoIter<u64>);\nimpl Source<u64> for Numbers { fn next(&mut self) -> Option<u64> { self.0.next() } }\nfn read_all<S, T>(mut source: S) -> Vec<T> where S: Source<T> {\n    let mut result = Vec::new();\n    while let Some(value) = source.next() { result.push(value); }\n    result\n}\nfn numbers(values: Vec<u64>) -> Vec<u64> { read_all(Numbers(values.into_iter())) }\n"
+      },
+      "context": [
+        "Each source implementation determines its one output type. This private interface has no consumer-selected output parameterizations or downstream impls."
+      ]
+    },
+    {
+      "id": "RD10",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-10\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "trait Encode<T> { fn encode(&self, value: T) -> Vec<u8>; }\nstruct LittleEndian;\nimpl Encode<u8> for LittleEndian { fn encode(&self, value: u8) -> Vec<u8> { vec![value] } }\nimpl Encode<u16> for LittleEndian { fn encode(&self, value: u16) -> Vec<u8> { value.to_le_bytes().to_vec() } }\nfn narrow(encoder: &dyn Encode<u8>) -> Vec<u8> { encoder.encode(7) }\nfn wide() -> Vec<u8> { LittleEndian.encode(513_u16) }\nfn boxed() -> Box<dyn Encode<u8>> { Box::new(LittleEndian) }\n"
+      },
+      "context": [
+        "Both parameterizations are supported by the same implementation. The dyn-facing function is an established runtime boundary, and its boxed return is deliberately owned."
+      ]
+    },
+    {
+      "id": "RD11",
+      "request": "Review the supplied production source through representation for readability and maintainability. Do not implement or execute it.",
+      "lens": "representation",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-11\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "struct Job { finished: bool, result: Option<u64> }\nimpl Job {\n    fn pending() -> Self { Self { finished: false, result: None } }\n    fn complete(result: u64) -> Self { Self { finished: true, result: Some(result) } }\n}\nfn label(job: &Job) -> String {\n    match (job.finished, job.result) {\n        (false, None) => \"pending\".to_owned(),\n        (true, Some(value)) => format!(\"complete: {value}\"),\n        _ => unreachable!(\"constructed by the two constructors\"),\n    }\n}\nfn labels() -> [String; 2] { [label(&Job::pending()), label(&Job::complete(8))] }\n"
+      },
+      "context": [
+        "The two constructors describe all implemented states. There is no serialized, FFI or public representation commitment. Assume the implementation behaves as intended."
+      ]
+    },
+    {
+      "id": "RD12",
+      "request": "Review the supplied production source through representation for readability and maintainability. Do not implement or execute it.",
+      "lens": "representation",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-12\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "enum Job { Pending, Complete(u64) }\nfn label(job: &Job) -> String {\n    match job { Job::Pending => \"pending\".to_owned(), Job::Complete(n) => format!(\"complete: {n}\") }\n}\nstruct Draft(String);\nstruct Ready(String);\nimpl Draft { fn approve(self) -> Ready { Ready(self.0) } }\nimpl Ready { fn publish(self) -> String { self.0 } }\nfn publish(text: String) -> String { Draft(text).approve().publish() }\n"
+      },
+      "context": [
+        "Job represents a runtime choice read by label. Separately, the existing approval API deliberately exposes publish only after a consuming approval transition."
+      ]
+    },
+    {
+      "id": "RD13",
+      "request": "Review the supplied production source through control-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "control-flow",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-13\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::num::ParseIntError;\nfn limit(raw: Option<&str>) -> Result<Option<u32>, ParseIntError> {\n    let parsed = match raw { Some(text) => Some(text.parse::<u32>()?), None => None };\n    Ok(parsed)\n}\nfn configured(raw: Option<&str>) -> Result<u32, ParseIntError> { Ok(limit(raw)?.unwrap_or(20)) }\n"
+      },
+      "context": [
+        "No parse logging, recovery or default-construction effects occur. The returned error is ParseIntError."
+      ]
+    },
+    {
+      "id": "RD14",
+      "request": "Review the supplied production source through control-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "control-flow",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-14\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::num::ParseIntError;\nfn parse_rows(rows: &[&str]) -> (Vec<u32>, Vec<(usize, ParseIntError)>) {\n    let mut values = Vec::new();\n    let mut errors = Vec::new();\n    for (index, row) in rows.iter().enumerate() {\n        match row.parse::<u32>() {\n            Ok(value) => values.push(value),\n            Err(error) => errors.push((index, error)),\n        }\n    }\n    (values, errors)\n}\nfn rows() -> (Vec<u32>, Vec<(usize, ParseIntError)>) { parse_rows(&[\"1\", \"bad\", \"3\"]) }\n"
+      },
+      "context": [
+        "Every row is processed and all failed row positions are retained in input order."
+      ]
+    },
+    {
+      "id": "RD15",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-15\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "macro_rules! setting {\n    ($name:ident) => { pub fn $name(&mut self, value: bool) { self.enabled = value; } };\n}\npub struct Options { enabled: bool }\nimpl Options { setting!(compress); }\nfn options() -> Options { let mut value = Options { enabled: false }; value.compress(true); value }\n"
+      },
+      "context": [
+        "This macro has one invocation. The complete definition is supplied; it defines a setter with a public name but hides its receiver and parameter in the invocation. Options is in the private unreleased module described by scope."
+      ]
+    },
+    {
+      "id": "RD16",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-16\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "macro_rules! labels {\n    ($($key:literal => $value:literal),* $(,)?) => { &[$(($key, $value)),*] };\n}\nconst SHORT: &[(&str, &str)] = labels![\"pending\" => \"P\", \"complete\" => \"C\"];\nconst LONG: &[(&str, &str)] = labels![\"pending\" => \"Pending\", \"complete\" => \"Complete\"];\nfn lookup<'a>(table: &'a [(&str, &str)], key: &str) -> Option<&'a str> {\n    table.iter().find(|entry| entry.0 == key).map(|entry| entry.1)\n}\nfn display(key: &str) -> (Option<&str>, Option<&str>) { (lookup(SHORT, key), lookup(LONG, key)) }\n"
+      },
+      "context": [
+        "The local macro only expresses a literal mapping syntax used by both tables. Its complete expansion rule is supplied and introduces no hidden public methods or effects."
+      ]
+    },
+    {
+      "id": "RD17",
+      "request": "Review the supplied production source through data-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "data-flow",
+      "profiles": [
+        "lifecycle-ownership"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-17\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\ntokio = { version = \"=1.53.1\", default-features = false, features = [\"rt\", \"sync\", \"macros\"] }\n",
+        "src/lib.rs": "use std::future::Future;\nuse tokio::task::{JoinError, JoinHandle};\nstruct Workers { handles: Vec<JoinHandle<u64>> }\nimpl Workers {\n    fn spawn(&mut self, work: impl Future<Output = u64> + Send + 'static) {\n        self.handles.push(tokio::spawn(work));\n    }\n    async fn next(&mut self) -> Option<Result<u64, JoinError>> {\n        loop {\n            if self.handles.is_empty() { return None; }\n            if let Some(index) = self.handles.iter().position(JoinHandle::is_finished) {\n                return Some(self.handles.swap_remove(index).await);\n            }\n            tokio::task::yield_now().await;\n        }\n    }\n}\nimpl Drop for Workers { fn drop(&mut self) { for task in &self.handles { task.abort(); } } }\nasync fn run() -> Vec<Result<u64, JoinError>> {\n    let mut workers = Workers { handles: Vec::new() };\n    workers.spawn(async { 3 }); workers.spawn(async { 8 });\n    let mut results = Vec::new();\n    while let Some(result) = workers.next().await { results.push(result); }\n    results\n}\n"
+      },
+      "context": [
+        "The group owns only asynchronous tasks, reports each result including JoinError, and aborts remaining work when its owner is dropped. Result order among completed tasks is not a supported contract. No synchronous blocking tasks or detached tasks are in the group."
+      ]
+    },
+    {
+      "id": "RD18",
+      "request": "Review the supplied production source through data-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "data-flow",
+      "profiles": [
+        "lifecycle-ownership"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-18\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\ntokio = { version = \"=1.53.1\", default-features = false, features = [\"rt\", \"sync\", \"macros\"] }\n",
+        "src/lib.rs": "use tokio::sync::mpsc::UnboundedSender;\nfn dispatch(label: String, completed: UnboundedSender<String>) {\n    let task = tokio::spawn(async move { let _ = completed.send(label); });\n    drop(task);\n}\nasync fn ordered() -> Vec<u64> {\n    let handles = vec![tokio::spawn(async { 3_u64 }), tokio::spawn(async { 8_u64 })];\n    let mut values = Vec::new();\n    for task in handles { values.push(task.await.expect(\"task completes\")); }\n    values\n}\n"
+      },
+      "context": [
+        "dispatch returns without waiting; accepted work remains independent of the caller. ordered returns values in spawn order. The shown channels and tasks are configured by their callers."
+      ]
+    },
+    {
+      "id": "RD19",
+      "request": "Review the supplied production source through data-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "data-flow",
+      "profiles": [
+        "lifecycle-ownership"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-19\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\ntokio = { version = \"=1.53.1\", default-features = false, features = [\"rt\", \"sync\", \"macros\"] }\ntokio-util = { version = \"=0.7.19\", default-features = false, features = [\"rt\"] }\n",
+        "src/lib.rs": "use tokio_util::task::TaskTracker;\nuse tokio_util::sync::CancellationToken;\nstruct Service { stop: CancellationToken, tasks: TaskTracker }\nimpl Service {\n    async fn finish(&self) {\n        self.stop.cancel();\n        self.tasks.close();\n        loop {\n            if self.tasks.is_empty() { break; }\n            tokio::task::yield_now().await;\n        }\n    }\n}\n"
+      },
+      "context": [
+        "No task is added after close in this service. Workers already observe stop, finish their cleanup and then return. The tracker and token are the existing application-owned mechanisms."
+      ]
+    },
+    {
+      "id": "RD20",
+      "request": "Review the supplied production source through control-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "control-flow",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-20\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\ntokio = { version = \"=1.53.1\", default-features = false, features = [\"rt\", \"sync\", \"macros\"] }\ntokio-util = { version = \"=0.7.19\", default-features = false, features = [\"rt\"] }\n",
+        "src/lib.rs": "use tokio::sync::mpsc::Receiver;\nuse tokio_util::sync::CancellationToken;\nasync fn consume(mut input: Receiver<String>, stop: CancellationToken) -> Vec<String> {\n    let mut received = Vec::new();\n    loop {\n        tokio::select! {\n            biased;\n            _ = stop.cancelled() => break,\n            item = input.recv() => match item {\n                Some(text) => received.push(text),\n                None => break,\n            }\n        }\n    }\n    received\n}\n"
+      },
+      "context": [
+        "Cancellation has explicit priority when both branches are ready. mpsc Receiver::recv is the supplied losing-operation boundary; neither branch contains an in-progress read_exact or a custom cleanup future."
+      ]
+    },
+    {
+      "id": "RD21",
+      "request": "Review the supplied production source through representation for readability and maintainability. Do not implement or execute it.",
+      "lens": "representation",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-21\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\nserde = { version = \"=1.0.229\", features = [\"derive\"] }\n",
+        "src/lib.rs": "use serde::ser::{Serialize, SerializeStruct, Serializer};\nstruct WireLabel { label: String, count: u32 }\nimpl Serialize for WireLabel {\n    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {\n        let mut fields = serializer.serialize_struct(\"WireLabel\", 2)?;\n        fields.serialize_field(\"label\", &self.label)?;\n        fields.serialize_field(\"count\", &self.count)?;\n        fields.end()\n    }\n}\n"
+      },
+      "context": [
+        "All fields are serialized in declaration order with their own names. There are no flattening, custom adapters, omitted fields, conditional encodings or extra effects. Serde derive is already enabled."
+      ]
+    },
+    {
+      "id": "RD22",
+      "request": "Review the supplied production source through representation for readability and maintainability. Do not implement or execute it.",
+      "lens": "representation",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-22\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\nserde = { version = \"=1.0.229\", default-features = false, features = [\"derive\"] }\n",
+        "src/lib.rs": "#![no_std]\n#[derive(serde::Serialize, serde::Deserialize)]\nenum WireMode { Off, Count(u32) }\nfn count(mode: WireMode) -> u32 { match mode { WireMode::Off => 0, WireMode::Count(n) => n } }\n"
+      },
+      "context": [
+        "The owning crate has no allocator and intentionally uses externally tagged enum representation. Its consumers require that representation; no format or feature migration is authorized."
+      ]
+    },
+    {
+      "id": "RD23",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-23\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\nclap = { version = \"=4.6.6\", features = [\"derive\", \"string\"] }\n",
+        "src/lib.rs": "use clap::{Arg, ArgAction, Command};\nuse std::ffi::OsString;\nuse std::path::PathBuf;\nstruct Args { output: Option<PathBuf>, verbose: bool }\nfn parse(input: Vec<OsString>) -> Result<Args, clap::Error> {\n    let mut matches = Command::new(\"export\")\n        .arg(Arg::new(\"output\").long(\"output\").value_parser(clap::value_parser!(PathBuf)))\n        .arg(Arg::new(\"verbose\").long(\"verbose\").action(ArgAction::SetTrue))\n        .try_get_matches_from(input)?;\n    Ok(Args { output: matches.remove_one(\"output\"), verbose: matches.get_flag(\"verbose\") })\n}\n"
+      },
+      "context": [
+        "The grammar is static. output is optional and its absence is preserved for later config merging. Callers supply the executable name followed by args. External spellings, generated help/errors, and return-versus-exit behavior are supported."
+      ]
+    },
+    {
+      "id": "RD24",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-24\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\nclap = { version = \"=4.6.6\", features = [\"derive\", \"string\"] }\n",
+        "src/lib.rs": "use clap::Command;\nuse std::ffi::OsString;\nfn parse(plugins: &[String], input: Vec<OsString>) -> Result<String, clap::Error> {\n    let mut command = Command::new(\"runner\").subcommand_required(true);\n    for name in plugins { command = command.subcommand(Command::new(name.clone())); }\n    let matches = command.try_get_matches_from(input)?;\n    Ok(matches.subcommand_name().expect(\"required by grammar\").to_owned())\n}\n"
+      },
+      "context": [
+        "Plugin command names are provided at runtime and vary per invocation. clap dynamic string support is enabled. The containing application displays returned clap errors itself."
+      ]
+    },
+    {
+      "id": "RD25",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-25\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\naxum = { version = \"=0.8.9\", features = [\"json\", \"query\", \"macros\"] }\nserde = { version = \"=1.0.229\", features = [\"derive\"] }\n",
+        "src/lib.rs": "use axum::{extract::{FromRequest, Request}, Json};\n#[derive(serde::Deserialize)]\nstruct Input { title: String }\nasync fn create(request: Request) -> Result<Json<String>, axum::extract::rejection::JsonRejection> {\n    let Json(input) = Json::<Input>::from_request(request, &()).await?;\n    Ok(Json(input.title))\n}\n"
+      },
+      "context": [
+        "This stateless handler performs only standard Json extraction followed by returning the title. It uses the standard JsonRejection response and Axum's existing body-limit behavior; no custom request adaptation occurs."
+      ]
+    },
+    {
+      "id": "RD26",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-26\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\naxum = { version = \"=0.8.9\", features = [\"json\", \"query\", \"macros\"] }\nserde = { version = \"=1.0.229\", features = [\"derive\"] }\n",
+        "src/lib.rs": "use axum::{extract::rejection::JsonRejection, http::StatusCode, response::{IntoResponse, Response}, Json};\n#[derive(serde::Deserialize)]\nstruct Input { title: String }\nasync fn create(input: Result<Json<Input>, JsonRejection>) -> Response {\n    match input {\n        Ok(Json(input)) => (StatusCode::CREATED, Json(input.title)).into_response(),\n        Err(_) => (StatusCode::UNPROCESSABLE_ENTITY, \"invalid document\").into_response(),\n    }\n}\n"
+      },
+      "context": [
+        "The constant rejection text, 422 rejection status and 201 successful response are supported HTTP behavior. Branches have different concrete response types."
+      ]
+    },
+    {
+      "id": "RD27",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-27\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.82\"\n",
+        "src/lib.rs": "trait Captures<T> {}\nimpl<T: ?Sized, U> Captures<T> for U {}\nfn entries<'a>(bytes: &'a [u8]) -> impl Iterator<Item = u8> + Captures<&'a ()> {\n    bytes.iter().copied()\n}\nfn total(bytes: &[u8]) -> u32 { entries(bytes).map(u32::from).sum() }\n"
+      },
+      "context": [
+        "This is a free function, not a trait method. The private Captures helper is used only here to express the hidden type's input lifetime."
+      ]
+    },
+    {
+      "id": "RD28",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-28\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.70\"\n",
+        "src/lib.rs": "#![no_std]\ntrait Captures<T> {}\nimpl<T: ?Sized, U> Captures<T> for U {}\nfn entries<'a>(bytes: &'a [u8]) -> impl Iterator<Item = u8> + Captures<&'a ()> {\n    bytes.iter().copied()\n}\nfn total(bytes: &[u8]) -> u32 { entries(bytes).map(u32::from).sum() }\n"
+      },
+      "context": [
+        "The owning crate explicitly pins Rust 1.70 and edition 2021 without workspace inheritance. A sibling uses edition 2024 and the local toolchain is 1.85. This crate has no std or alloc."
+      ]
+    },
+    {
+      "id": "RD29",
+      "request": "Review the supplied production source through change-locality for readability and maintainability. Do not implement or execute it.",
+      "lens": "change-locality",
+      "profiles": [],
+      "scope": "All supplied production modules of a released library; preserve the stated public paths and contracts.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-29\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "mod code;\npub mod wire;\npub mod parse;\n",
+        "src/code.rs": "pub(crate) const EMPTY: u8 = 0;\npub(crate) const VALUE: u8 = 1;\n",
+        "src/wire.rs": "pub enum Packet { Empty, Value(u8) }\n",
+        "src/parse.rs": "use crate::{code, wire::Packet};\npub fn decode(bytes: [u8; 2]) -> Option<Packet> {\n    match bytes[0] { code::EMPTY => Some(Packet::Empty), code::VALUE => Some(Packet::Value(bytes[1])), _ => None }\n}\n"
+      },
+      "context": [
+        "The private code module is the sole source of the numeric encoding. Public paths wire::Packet and parse::decode are supported; consumers include downstream users. No encoding change is authorized."
+      ]
+    },
+    {
+      "id": "RD30",
+      "request": "Review the supplied production source through change-locality for readability and maintainability. Do not implement or execute it.",
+      "lens": "change-locality",
+      "profiles": [],
+      "scope": "All supplied production source in a released library; public separator must remain callable.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-30\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "#[cfg(unix)]\nmod platform { pub fn separator() -> char { '/' } }\n#[cfg(windows)]\nmod platform { pub fn separator() -> char { '\\\\' } }\npub use platform::separator;\n"
+      },
+      "context": [
+        "The target contract covers Unix and Windows. Consumers import the root separator re-export. Conditional implementations are alternative target-specific modules, not simultaneously active duplicate tables."
+      ]
+    },
+    {
+      "id": "RD31",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-31\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\nserde = { version = \"=1.0.229\", features = [\"derive\"] }\n",
+        "src/lib.rs": "use serde::{Deserialize, de::{DeserializeOwned, value::{BorrowedStrDeserializer, Error}}};\nfn decode<'de, T: DeserializeOwned>(text: &'de str) -> Result<T, Error> {\n    T::deserialize(BorrowedStrDeserializer::new(text))\n}\nfn title(text: &str) -> Result<String, Error> { decode(text) }\n"
+      },
+      "context": [
+        "The decoder consumes no input buffer and retains no state; the deserializer borrows the caller's surviving text. The generic boundary is private and its complete use is shown. No zero-copy performance claim is supplied."
+      ]
+    },
+    {
+      "id": "RD32",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-32\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\nserde = { version = \"=1.0.229\", features = [\"derive\"] }\n",
+        "src/lib.rs": "use serde::{Deserialize, de::{DeserializeOwned, value::{BorrowedStrDeserializer, Error}}};\nfn decode<T: DeserializeOwned>(text: String) -> Result<T, Error> {\n    T::deserialize(BorrowedStrDeserializer::new(&text))\n}\nfn title(text: String) -> Result<String, Error> { decode(text) }\n"
+      },
+      "context": [
+        "The owned input buffer is destroyed before the parsed value reaches the caller. The generic result is intentionally independent of this buffer."
+      ]
+    },
+    {
+      "id": "RD33",
+      "request": "Review the supplied production source through control-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "control-flow",
+      "profiles": [
+        "error-expression"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-33\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::{fs, io, path::{Path, PathBuf}};\n#[derive(Debug)]\nstruct LoadError { path: PathBuf, source: io::Error }\nimpl std::fmt::Display for LoadError {\n    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, \"{}: {}\", self.path.display(), self.source) }\n}\nimpl std::error::Error for LoadError {\n    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { Some(&self.source) }\n}\nfn read(path: &Path) -> Result<String, LoadError> {\n    fs::read_to_string(path).map_err(|source| LoadError { path: path.to_owned(), source })\n}\n"
+      },
+      "context": [
+        "The returned error must survive the borrowed path, display the operation path and expose the original io::Error through source()."
+      ]
+    },
+    {
+      "id": "RD34",
+      "request": "Review the supplied production source through control-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "control-flow",
+      "profiles": [
+        "error-expression"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-34\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::io;\n#[derive(Debug)]\nstruct ReadError(io::Error);\nimpl From<io::Error> for ReadError { fn from(error: io::Error) -> Self { Self(error) } }\nimpl std::fmt::Display for ReadError {\n    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, \"{}\", self.0) }\n}\nimpl std::error::Error for ReadError {\n    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { Some(&self.0) }\n}\nfn read(reader: &mut impl io::Read) -> Result<Vec<u8>, ReadError> {\n    let mut bytes = Vec::new();\n    reader.read_to_end(&mut bytes).map_err(|error| ReadError::from(error))?;\n    Ok(bytes)\n}\n"
+      },
+      "context": [
+        "The existing conversion is canonical; no path, recovery, logging or extra effects are attached at this call. Error identity and source chain are supported."
+      ]
+    },
+    {
+      "id": "RD35",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-35\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\naxum = { version = \"=0.8.9\", features = [\"json\", \"query\", \"macros\"] }\nserde = { version = \"=1.0.229\", features = [\"derive\"] }\n",
+        "src/lib.rs": "use axum::{http::StatusCode, response::{IntoResponse, Response}};\nenum Failure { Missing, Busy }\nfn lookup(error: Failure) -> Response {\n    match error {\n        Failure::Missing => (StatusCode::NOT_FOUND, \"missing\").into_response(),\n        Failure::Busy => (StatusCode::SERVICE_UNAVAILABLE, \"busy\").into_response(),\n    }\n}\nfn update(error: Failure) -> Response {\n    match error {\n        Failure::Missing => (StatusCode::NOT_FOUND, \"missing\").into_response(),\n        Failure::Busy => (StatusCode::SERVICE_UNAVAILABLE, \"busy\").into_response(),\n    }\n}\n"
+      },
+      "context": [
+        "Failure is a private HTTP-adapter type. Both operations share the same maintained status/body mapping; there are no distinct headers or domain-specific differences."
+      ]
+    },
+    {
+      "id": "RD36",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-36\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\nvendor = { workspace = true }\n",
+        "src/lib.rs": "#[vendor::endpoint]\npub async fn export(title: String) -> String { title }\n"
+      },
+      "context": [
+        "vendor is a workspace procedural-macro crate whose source and generated output are unavailable in this snapshot. Its public generated API and Send bounds are undocumented here. Only the shown user-written body and attribute are available. Cargo.toml declares the workspace dependency; the owning workspace metadata is unavailable."
+      ]
+    }
+  ]
+}

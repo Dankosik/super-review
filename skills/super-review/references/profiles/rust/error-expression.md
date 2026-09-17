@@ -17,3 +17,8 @@ Compare callers and preserve relevant error types, source chains, conversion,
 downcasting and panic/recovery contracts. Unavailable evidence limits a rewrite,
 not an otherwise demonstrated clarity observation. Missing error handling and
 runtime failures are not this profile's subject.
+
+An existing canonical `From` can make propagation direct. A local `map_err` that
+captures a path, operation or identifier expresses context that `From` alone does
+not know. Retain owned diagnostic data and the underlying source when required;
+`Display` text is not a substitute for the error's source/downcasting contract.

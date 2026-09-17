@@ -16,3 +16,12 @@ eager/lazy defaults and drop scopes. A closure changes the return boundary;
 short-circuiting can skip effects an eager collection performed. Establish the
 supported edition/MSRV before introducing syntax. Show which decisions become
 easier to follow, or retain the clear form.
+
+A supported `Option::transpose` can directly express optional fallible work;
+`collect::<Result<_, _>>()` or `try_fold` can express an existing fail-fast
+transformation. Compare the resulting story, not a method checklist. Retain a
+match for contextual recovery and a loop that accumulates all errors or makes
+several related state changes. These are not equivalent to first-error exit.
+
+Background: [Option](https://doc.rust-lang.org/std/option/enum.Option.html)
+and [Iterator](https://doc.rust-lang.org/std/iter/trait.Iterator.html).

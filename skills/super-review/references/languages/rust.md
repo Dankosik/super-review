@@ -10,6 +10,25 @@ need not coexist. Read dependency declarations, `Cargo.lock` or committed Cargo
 configuration only when a proposed operation depends on them. Missing baseline
 or feature context limits that recommendation; it does not authorize an upgrade.
 
+**Library context.** Resolve the actual dependency version and enabled features
+for the owning crate before using a mechanism below. A dependency elsewhere in a
+workspace is not an applicability signal. These are conditional reference notes,
+not new profiles, rule IDs, mandatory dependencies or extra coverage passes.
+Read only the note implicated by source and the assigned owner's question; another
+section can supply preservation context, not authority to review another lens.
+
+| Mechanism | Existing owners | Reference |
+| --- | --- | --- |
+| Tokio task groups, shutdown or selection | data-flow/lifecycle-ownership; control-flow | [Tokio](../rust/tokio.md) |
+| Serde wire shape or deserialization lifetime | representation; api-clarity | [Serde](../rust/serde.md) |
+| clap argument grammar or repeated command knowledge | api-clarity; change-locality | [clap](../rust/clap.md) |
+| Axum HTTP contract or adapter/application boundary | api-clarity; function-cohesion/effects-separation | [Axum](../rust/axum.md) |
+
+For a proposed API, distinguish stabilization of the operation, const use and
+syntax position. A dependency's advertised MSRV does not establish the minimum
+of every feature/transitive-resolution combination. Missing resolution evidence
+limits that specific replacement; it is not permission to run Cargo or upgrade.
+
 **Judgment.** Apply Rust knowledge inside the assigned lens, not as another broad
 idiom pass. Prefer an understandable ownership and call contract over cleverness.
 Local mutation, ordinary loops, explicit matches, owned values and concrete types

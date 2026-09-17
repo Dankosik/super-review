@@ -14,3 +14,9 @@ incorrect judgment. These fixtures are not scored by substring presence in outpu
 
 The automated tests check that every expectation has one raw section and stable
 resource/rule wiring. They do not run models or establish recommendation quality.
+
+Use [Rust depth](depth/README.md) for conversion/builders, lifetime and generic API,
+derive/macros, representation and conditional Tokio/Serde/clap/Axum decisions.
+Its neutral input objects and evaluator expectations are separate; existing
+R01-R12 remain unchanged regression inputs. See its explicit execution limits
+before making a behavioral-quality claim.
