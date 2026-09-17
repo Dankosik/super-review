@@ -2,7 +2,7 @@
   "purpose": "Human/model judgment rubric; never include this file in reviewer context.",
   "packet": "packets/idioms.md",
   "cases": [
-    {"id":"J01","lens":"representation","profiles":[],"expect":["Name the existing ShipmentKey alternative to positional Object[] decoding.","Keep the private scope and visible caller semantics; no general DTO framework."]},
+    {"id":"J01","lens":"representation","profiles":[],"expect":["Identify the positional Object[] decoding burden; accept the existing ShipmentKey or direct component access after removing the private intermediate when supported by the shown caller.","Do not require creating or mentioning a named type when the direct expression removes that burden.","Keep the private scope and visible caller semantics; no general DTO framework."]},
     {"id":"J02","lens":"representation","profiles":[],"expect":["Retain the entity/bean form; do not recommend a record merely to remove getters.","Respect persistence, identity and mutable state rather than assuming a value carrier."]},
     {"id":"J03","lens":"data-flow","profiles":[],"expect":["A direct single transformation can remove the intermediate selection list.","Preserve a mutable ordered result; Stream.toList or List.copyOf is not a drop-in remedy."]},
     {"id":"J04","lens":"control-flow","profiles":[],"expect":["Retain the clear loop or justify a strictly better local expression.","No mandatory stream conversion; preserve checked failure, order and early termination."]},
@@ -19,6 +19,7 @@
     {"id":"J15","lens":"rationale","profiles":[],"expect":["Retain the evidence-backed null-compatibility explanation.","Do not replace with List.copyOf or remove the comment as redundant syntax narration."]},
     {"id":"J16","lens":"change-locality","profiles":[],"expect":["The small closed switch can already localize variation.","Do not introduce a strategy class per enum value or a registry for hypothetical extension."]},
     {"id":"J17","lens":"duplication","profiles":[],"expect":["Identify the shared implemented display-name normalization, not a universal string sanitizer.","A small named helper may localize this knowledge; preserve trimming, whitespace and case behavior."]},
-    {"id":"J18","lens":"naming","profiles":[],"expect":["A unit-bearing local/parameter name can remove concrete ambiguity in the private calculation.","Do not introduce a public type, dependency, or arbitrary naming convention for this tiny scope."]}
+    {"id":"J18","lens":"naming","profiles":[],"expect":["A unit-bearing local/parameter name can remove concrete ambiguity in the private calculation.","Do not introduce a public type, dependency, or arbitrary naming convention for this tiny scope."]},
+    {"id":"J19","lens":"representation","profiles":[],"expect":["The shared warehouse/SKU value key already makes grouping and lookup contracts explicit; retaining this representation is a valid no-finding result.","Do not replace this shared value key with positional arrays or a concatenated string merely to remove a type; any alternative needs a source-backed clarity benefit and must preserve component equality and the shown consumers."]}
   ]
 }

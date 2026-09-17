@@ -394,3 +394,32 @@ final class Elapsed {
     }
 }
 ```
+
+## J19
+
+`src/main/java/Shipments.java`; counts are grouped and queried by warehouse and
+SKU. Inputs, orders and components are non-null. The shown entry points are
+internal to the module, with no reflection, serialization or framework binding.
+
+```java
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+final class Shipments {
+    record Order(String warehouse, String sku) {}
+    record ShipmentKey(String warehouse, String sku) {}
+    private static ShipmentKey key(Order order) {
+        return new ShipmentKey(order.warehouse(), order.sku());
+    }
+    static Map<ShipmentKey, Integer> counts(List<Order> orders) {
+        Map<ShipmentKey, Integer> counts = new HashMap<>();
+        for (Order order : orders) {
+            counts.merge(key(order), 1, Integer::sum);
+        }
+        return counts;
+    }
+    static int countFor(Map<ShipmentKey, Integer> counts, Order order) {
+        return counts.getOrDefault(key(order), 0);
+    }
+}
+```

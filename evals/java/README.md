@@ -25,3 +25,23 @@ and profile ownership. `bun run validate`
 checks installed links/identities and generated copies. These mechanical tests do
 not prove that a model follows the instructions. No behavioral evaluation results
 are claimed by adding this suite. Existing Go expectations and IDs are unchanged.
+
+## Representation calibration
+
+J01 grades removal of positional decoding, not selection of a particular type.
+Both reuse of the existing `ShipmentKey` and direct component access after
+removing the private intermediate can be supported remedies. Do not penalize
+the latter for omitting a type name or reward a type mention without a useful
+change. The J01 source packet is unchanged.
+
+J19 supplies the contrasting source: a shared warehouse/SKU value key participates
+in both grouping and lookup. Retaining that already meaningful representation is
+a valid outcome; eliminating J01's temporary carrier is not a rule to remove
+value types elsewhere. Evaluate the cases separately in fresh reviewer contexts,
+without this explanation, the rubric, or the other case's verdict.
+
+This clarifies grader calibration under the existing
+[Java representation rule](../../skills/super-review/references/lenses/java/representation.md),
+not runtime review policy. It is a source-backed clarification, not a reproduced
+model failure or evidence of improved review quality. Behavioral comparisons
+remain necessary before claiming such gains.
