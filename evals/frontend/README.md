@@ -44,3 +44,12 @@ The suite checks profile ownership, routing, relative links in the added resourc
 source hashes, contrasting coverage and byte-identical native delivery. It also
 checks that evaluation data is not installed. Full package/TypeScript/CI validation
 remains governed by CONTRIBUTING; do not infer those results from this suite.
+
+## Technology-depth follow-up
+
+[The depth corpus](depth/README.md) adds 30 separate inputs for the accepted
+modern React/Next, Tailwind state/layout and shadcn React Aria questions. Its
+[research map](depth/research.md) connects every decision to its owner and a
+contrasting input. F01-F20 remain unchanged; do not silently replace their
+regression coverage with the new scenarios. New fixtures are not behavioral
+results, and the research note does not activate Vue single-file-component support.
