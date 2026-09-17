@@ -1,0 +1,363 @@
+[
+  {
+    "id": "D01",
+    "topic": "effect-event",
+    "kind": "opportunity",
+    "profiles": [
+      "react-effects"
+    ],
+    "expect": [
+      "Consider whether a local Effect Event removes the latest-callback ref protocol while preserving timer lifetime.",
+      "Compare commit/ref-update timing and actual call sites; do not claim equivalence from fewer lines or turn the result into a child callback."
+    ]
+  },
+  {
+    "id": "D02",
+    "topic": "effect-event",
+    "kind": "retain",
+    "profiles": [
+      "react-effects"
+    ],
+    "expect": [
+      "eventName defines subscription identity; do not hide it in an Effect Event to remove a dependency.",
+      "A coherent Effect is a valid retention outcome."
+    ]
+  },
+  {
+    "id": "D03",
+    "topic": "state-transitions",
+    "kind": "opportunity",
+    "profiles": [
+      "react-state-transitions"
+    ],
+    "expect": [
+      "Consider naming the existing confirm/edit/discard transitions and correlated payload representation instead of reconstructing setter groups.",
+      "Preserve all actual transitions, queued updates and input resets; no new forbidden states, state-machine library or action-per-field bureaucracy.",
+      "This is conditional representation coverage, not a completed base data-flow pass."
+    ]
+  },
+  {
+    "id": "D04",
+    "topic": "state-transitions",
+    "kind": "retain",
+    "profiles": [
+      "react-state-transitions"
+    ],
+    "expect": [
+      "Retain independent settings; no reducer or union solely because there is more than one useState.",
+      "Do not invent dependencies between hint visibility and density."
+    ]
+  },
+  {
+    "id": "D05",
+    "topic": "child-roles",
+    "kind": "opportunity",
+    "profiles": [
+      "react-composition"
+    ],
+    "expect": [
+      "Identify that callers must know a positional child-role protocol; consider explicit slots or role props for the existing composition.",
+      "Preserve accepted children, ordering, keys and merging; do not impose a compound-component factory or ban cloneElement."
+    ]
+  },
+  {
+    "id": "D06",
+    "topic": "child-roles",
+    "kind": "retain",
+    "profiles": [
+      "react-composition"
+    ],
+    "expect": [
+      "Keep purposeful explicit single-control adaptation when a replacement adds no reading benefit.",
+      "Do not lose existing description IDs, child key/ref or prop semantics through a generic anti-cloneElement rule."
+    ]
+  },
+  {
+    "id": "D07",
+    "topic": "provider",
+    "kind": "opportunity",
+    "profiles": [
+      "react-composition"
+    ],
+    "expect": [
+      "Consider removing the opaque forwarding-only provider API or clarifying it; support for direct client-exported Context is supplied.",
+      "Keep Context creation in the client module and preserve consumers; do not infer that all providers are redundant."
+    ]
+  },
+  {
+    "id": "D08",
+    "topic": "provider",
+    "kind": "retain",
+    "profiles": [
+      "react-composition"
+    ],
+    "expect": [
+      "Retain actual state ownership; direct RSC Context support does not replace a stateful provider.",
+      "No memoization campaign or provider-state relocation."
+    ]
+  },
+  {
+    "id": "D09",
+    "topic": "browser-gate",
+    "kind": "opportunity",
+    "profiles": [
+      "react-effects"
+    ],
+    "expect": [
+      "Recognize a mount-only browser gate and investigate whether use(browser()) removes it.",
+      "The earlier first client render is null and the new mechanism has different timing: matching eventual content/fallback does not prove equivalence. Defer a timing-dependent remedy rather than claim a tested pass."
+    ]
+  },
+  {
+    "id": "D10",
+    "topic": "browser-gate",
+    "kind": "retain",
+    "profiles": [
+      "react-effects"
+    ],
+    "expect": [
+      "Retain meaningful server-provided output; do not replace it with a Suspense fallback just to remove an Effect.",
+      "A browser gate is not an equivalent rewrite of server-to-client enhancement."
+    ]
+  },
+  {
+    "id": "D11",
+    "topic": "ui-flow",
+    "kind": "opportunity",
+    "profiles": [
+      "next-ui-boundaries"
+    ],
+    "expect": [
+      "Consider naming or exposing the existing loading/failure/result branches without changing their DOM or recovery ownership.",
+      "No forced Suspense, new throws or moving awaits across boundaries; a local source-supported clarification is enough."
+    ]
+  },
+  {
+    "id": "D12",
+    "topic": "ui-flow",
+    "kind": "retain",
+    "profiles": [
+      "next-ui-boundaries"
+    ],
+    "expect": [
+      "Retain a clear existing boundary; do not fragment it or hoist await merely to shorten the component.",
+      "Do not claim waterfalls, missing errors or performance gains."
+    ]
+  },
+  {
+    "id": "D13",
+    "topic": "next-recovery",
+    "kind": "opportunity",
+    "profiles": [
+      "next-ui-boundaries"
+    ],
+    "expect": [
+      "Identify the custom route/reset/retry coordination and consider supported catchError as an alternative mechanism.",
+      "The missing legacy implementation prevents a confident replacement: disclose the gap, check logging and special errors, and keep remedy unresolved.",
+      "Distinguish retry from reset; never claim router.refresh plus remount equals catchError."
+    ]
+  },
+  {
+    "id": "D14",
+    "topic": "next-recovery",
+    "kind": "retain",
+    "profiles": [
+      "next-ui-boundaries"
+    ],
+    "expect": [
+      "Keep the framework-provided error boundary; no catchError wrapper around the error.tsx export.",
+      "Do not replace the existing reset contract with re-fetching solely because the new API exists."
+    ]
+  },
+  {
+    "id": "D15",
+    "topic": "route-types",
+    "kind": "opportunity",
+    "profiles": [
+      "next-boundaries"
+    ],
+    "expect": [
+      "Consider the established global PageProps route helper to remove manual route shape maintenance.",
+      "Keep awaited params and inspect actual generated shape before type-sensitive advice; do not invent imports, enable typedRoutes, execute typegen or claim unavailable definitions were checked."
+    ]
+  },
+  {
+    "id": "D16",
+    "topic": "route-types",
+    "kind": "retain",
+    "profiles": [
+      "next-boundaries"
+    ],
+    "expect": [
+      "Do not couple a reusable public component contract to Next generated route types.",
+      "Retain the named domain prop and route adapter; unavailable external consumers are not proof they do not exist."
+    ]
+  },
+  {
+    "id": "D17",
+    "topic": "navigation-lifetime",
+    "kind": "opportunity",
+    "profiles": [
+      "next-data-ownership"
+    ],
+    "expect": [
+      "Investigate the duplicated draft ownership using actual lifetimes rather than assume navigation always unmounts the route.",
+      "Do not remove layout ownership solely because Activity may retain recent routes; eviction and sharing can make that a behavior change.",
+      "A compatible single-owner remedy or an unresolved lifetime decision is valid; do not assert a framework cache is durable storage."
+    ]
+  },
+  {
+    "id": "D18",
+    "topic": "navigation-lifetime",
+    "kind": "retain",
+    "profiles": [
+      "next-data-ownership"
+    ],
+    "expect": [
+      "Keep the explicit reload-durability contract; Activity does not replace sessionStorage.",
+      "Explain hidden-route Effect cleanup/recreation only as an implicated preservation constraint, not a new bug audit."
+    ]
+  },
+  {
+    "id": "D19",
+    "topic": "presentation-state",
+    "kind": "opportunity",
+    "profiles": [
+      "tailwind-state"
+    ],
+    "expect": [
+      "The mirror only selects a class while native details owns open state; investigate an equivalent group/open selector.",
+      "Preserve DOM, actual open state, selector scope and initial/event timing; fewer setters is not proof of visual equivalence."
+    ]
+  },
+  {
+    "id": "D20",
+    "topic": "presentation-state",
+    "kind": "retain",
+    "profiles": [
+      "tailwind-state"
+    ],
+    "expect": [
+      "Retain state owning content and the report interaction; a CSS selector cannot replace these responsibilities.",
+      "Changing only class expression is optional; do not manufacture a redundant-owner finding."
+    ]
+  },
+  {
+    "id": "D21",
+    "topic": "container-layout",
+    "kind": "opportunity",
+    "profiles": [
+      "tailwind-layout"
+    ],
+    "expect": [
+      "Consider a local container query when measurement exists solely for that component layout.",
+      "Compare measured box/axis, threshold units, container ancestry, containment effects and initial render; no unconditional equivalence claim or viewport substitution."
+    ]
+  },
+  {
+    "id": "D22",
+    "topic": "container-layout",
+    "kind": "retain",
+    "profiles": [
+      "tailwind-layout"
+    ],
+    "expect": [
+      "Keep explicit user density selection; available width is not the same contract.",
+      "No mandatory container-query migration or removal of an intentional prop."
+    ]
+  },
+  {
+    "id": "D23",
+    "topic": "aria-composition",
+    "kind": "opportunity",
+    "profiles": [
+      "shadcn-composition"
+    ],
+    "expect": [
+      "Consider exposing meaningful increment/decrement part roles instead of opaque A/B component names.",
+      "Retain functional slots and local React Aria composition; do not translate to Radix asChild or invent unprovided event internals."
+    ]
+  },
+  {
+    "id": "D24",
+    "topic": "aria-composition",
+    "kind": "retain",
+    "profiles": [
+      "shadcn-composition"
+    ],
+    "expect": [
+      "Keep explicit library render props and functional slots; do not narrow the supported className contract or stringify functions through cn.",
+      "Do not replace data-pressed with CSS active from superficial similarity or invent Radix/Base UI semantics."
+    ]
+  },
+  {
+    "id": "D25",
+    "topic": "react-version",
+    "kind": "guard",
+    "profiles": [
+      "react-effects"
+    ],
+    "expect": [
+      "Development React 19.3 does not authorize useEffectEvent for consumers below 19.2.",
+      "Keep the source observation separate from unavailable compatible remedy; no upgrade requirement."
+    ]
+  },
+  {
+    "id": "D26",
+    "topic": "next-version",
+    "kind": "guard",
+    "profiles": [
+      "next-ui-boundaries"
+    ],
+    "expect": [
+      "Do not import stable catchError or require an upgrade on Next 16.0.",
+      "The route convention already supplies a boundary; retain the clear source."
+    ]
+  },
+  {
+    "id": "D27",
+    "topic": "missing-primitive",
+    "kind": "guard",
+    "profiles": [
+      "shadcn-composition"
+    ],
+    "expect": [
+      "Do not infer a local primitive backend from a dependency list or prop name alone.",
+      "Record missing required local source and defer affected advice; no upstream fetch, CLI installation or false completed coverage."
+    ]
+  },
+  {
+    "id": "D28",
+    "topic": "vue-scope",
+    "kind": "guard",
+    "profiles": [],
+    "expect": [
+      "Disclose unsupported .vue target coverage even though script setup contains TypeScript.",
+      "Do not apply React Effects/reducer rules or claim review of the template; research notes do not activate Vue support."
+    ]
+  },
+  {
+    "id": "D29",
+    "topic": "policy-disable",
+    "kind": "guard",
+    "profiles": [
+      "tailwind-state"
+    ],
+    "expect": [
+      "The new profile inherits its disabled data-flow rule; do not revive it as Tailwind-specific authority.",
+      "Report a policy exclusion, not missing execution or full frontend coverage."
+    ]
+  },
+  {
+    "id": "D30",
+    "topic": "narrow-scope",
+    "kind": "guard",
+    "profiles": [
+      "tailwind-variants"
+    ],
+    "expect": [
+      "Honor explicit duplication-only scope; do not add tailwind-state or tailwind-layout even when their signals exist.",
+      "No invented duplication finding; no claim of a completed full frontend pass."
+    ]
+  }
+]

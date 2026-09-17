@@ -27,7 +27,19 @@ configuration blocks that specific remedy, not independent observations. Missing
 invalidation, waterfalls, authorization and stale-data bugs are outside this
 quality question; do not test routes or benchmark rendering.
 
+**Navigation lifetime.** When the established `cacheComponents` configuration
+uses Activity-backed navigation, a recently visited route may be hidden with
+state retained, while its Effects are cleaned up and recreated on reveal. That
+is neither ordinary unmounting nor durable storage: older hidden routes can be
+evicted. Before moving state to a provider/store or removing persistence plumbing,
+identify the actual sharing/durability contract. Do not promise retention across
+reloads/eviction or equate URL change with unmount. Preserve explicit URL/session
+ownership and continuous operations that must outlive a hidden route. State
+placement advice needs a demonstrated ownership benefit, not a retention claim
+inferred solely from navigation.
+
 Background: [data fetching](https://nextjs.org/docs/app/getting-started/fetching-data),
-[Cache Components](https://nextjs.org/docs/app/getting-started/caching),
+[Cache Components](https://nextjs.org/docs/app/getting-started/cache-components),
 [mutating data](https://nextjs.org/docs/app/getting-started/mutating-data),
-[revalidation](https://nextjs.org/docs/app/getting-started/revalidating).
+[revalidation](https://nextjs.org/docs/app/getting-started/revalidating),
+[Activity navigation](https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents).

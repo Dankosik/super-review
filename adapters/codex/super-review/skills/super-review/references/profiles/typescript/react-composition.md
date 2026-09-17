@@ -26,6 +26,24 @@ keys, DOM/event semantics and provider ancestry. React Compiler is a configured
 build tool, not an automatic consequence of React 19; do not add or remove
 `memo`, `useMemo` or `useCallback` as a style campaign, even when it is enabled.
 
+**Visible child roles.** Inspect component-type/position checks and `cloneElement`
+prop injection when callers must know a hidden children protocol. Named slots,
+explicit data or a render prop can expose that existing contract. Compare actual
+uses and accepted children; preserve keys, refs, prop/event merging and ordering.
+Keep a purposeful primitive/Slot adapter that implements a documented composition
+contract. Do not ban cloning or replace one explicit API with a compound-component
+factory merely for a pattern name. Library render props are not inherently opaque.
+
+On a supported React 19.3 RSC integration, a Server Component can render Context
+exported by a client module directly. Consider eliminating a provider wrapper
+only when its API adds unexplained forwarding and no state, adaptation or useful
+meaning. Context creation remains in the client module. Keep stateful providers,
+consumer compatibility and wrappers naming a genuine domain boundary. Check the
+actual renderer and consumers, not React's package version alone; no relocation
+of state or mandatory removal of provider components follows from this feature.
+
 Background: [passing props](https://react.dev/learn/passing-props-to-a-component),
 [React 19 refs/providers](https://react.dev/blog/2024/12/05/react-19),
-[Compiler tradeoffs](https://react.dev/learn/react-compiler/introduction).
+[Compiler tradeoffs](https://react.dev/learn/react-compiler/introduction),
+[child composition alternatives](https://react.dev/reference/react/cloneElement),
+[React 19.3 RSC Context](https://react.dev/blog/2026/09/09/react-19-3).

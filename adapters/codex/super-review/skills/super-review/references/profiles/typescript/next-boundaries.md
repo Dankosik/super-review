@@ -28,6 +28,18 @@ Do not mandate App Router migration, Server Actions, a data layer, feature-slice
 folders, bundle optimization or a security audit. An extraction must earn its
 boundary through a concrete reading/navigation benefit.
 
+**Framework-owned route contracts.** If manual route-parameter/slot declarations
+repeat the framework's route structure, available `PageProps`, `LayoutProps` or
+`RouteContext` may remove that separate maintenance obligation. Establish the
+owning route, supported Next version and project type-generation/inclusion setup
+from source. These are generated globals, not imports or a reason to enable
+`typedRoutes`. Preserve awaited params/searchParams, optional/catch-all values,
+layout slots and exposed call compatibility. Keep deliberate narrower domain
+types and reusable non-route APIs independent of `.next` declarations. Do not
+run typegen/build, edit generated declarations or invent their exact shape when
+unavailable. Lack of generation evidence defers this remedy, not other advice.
+
 Background: [server/client composition](https://nextjs.org/docs/app/getting-started/server-and-client-components),
 [project structure](https://nextjs.org/docs/app/getting-started/project-structure),
-[Next.js 16 compatibility](https://nextjs.org/docs/app/guides/upgrading/version-16).
+[Next.js 16 compatibility](https://nextjs.org/docs/app/guides/upgrading/version-16),
+[route-aware type helpers](https://nextjs.org/docs/app/api-reference/config/typescript).
