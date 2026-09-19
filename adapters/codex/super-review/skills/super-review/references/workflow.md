@@ -45,7 +45,7 @@ conditional lenses/profiles from source signals. Record selections and omissions
 A small PR or a clean first impression does not justify dropping a base question.
 Resolve policy for additional aspects before dispatch, using the same pinned B.
 Honor user scope; other questions in a targeted review are not requested.
-Announce scope, selected lenses/profiles and reasons, then progress at batch boundaries.
+Announce scope, selected lenses/profiles and reasons, then periodic progress as tasks complete.
 
 | Lens | Question |
 | --- | --- |
@@ -63,8 +63,24 @@ Resolve the table's lens names to their language-specific resources using
 mandatory resources for TypeScript, Rust or Java. Partition mixed-language or large changes by
 language and coherent areas. Use one lens per child task. Attach
 profiles only to their owner's area; they do not automatically add workers.
-Run small batches within adapter and harness limits; four simultaneous tasks is
-a default, not a quota. Adapter-specific limits take precedence.
+Use a concurrency limit of eight active child tasks by default throughout the
+review, including follow-ups. An explicit user concurrency limit overrides the
+default; actual adapter/harness capacity and rate limits remain hard bounds.
+This is a ceiling, not a quota: launch only justified tasks. Do not invent a
+smaller adapter cap or automatically reduce concurrency for later dispatches.
+
+Fill available slots with ready independent tasks. As each result arrives,
+collect and preserve it, release the finished child's slot through native cleanup
+when required, and refill from the pending queue without waiting for unrelated
+children. Keep collecting every launched task; early completion is not a report
+boundary. When native calls only return as a complete batch, use batches up to
+the same concurrency limit rather than pretending incremental collection exists.
+If capacity is unknown, use the default within exposed limits; on a capacity or
+rate-limit rejection, retain running tasks and queue unstarted work until native
+capacity/retry guidance allows it. Do not duplicate accepted launches or treat
+model/permission failures as capacity limits. Disclose a real lower limit; do not
+change host settings to bypass it. Concurrency changes scheduling, not selected
+coverage, independent task packets, models or result requirements.
 
 Keep the inventory as a compact coverage ledger: actual member files/symbols,
 requested lens and selected profiles, snapshot, assigned task IDs and inspected
@@ -108,7 +124,7 @@ It does not expand to another lens, read peer reports, or suppress independently
 useful evidence because another specialist might overlap. Reconciliation belongs
 to the parent. New applicability signals are facts with path/symbol and a missing
 question, not another lens's verdict. At collection, resolve them against scope,
-policy, and existing coverage; add only missing work in the next normal batch or
+policy, and existing coverage; add only missing work to the pending queue or
 record why not. Do not silently expand scope or rerun completed areas.
 
 ## Decide and report
@@ -127,12 +143,12 @@ Keep candidate ID, disposition, reason, and accepted recommendation ID if any.
 To close an evidence gap, first read available source; seek a focused continuation
 from the relevant specialist only when needed and supported by the adapter.
 Keep terminal results intact: any continuation gets a distinct task identity
-and its own result in the next group. Ask the user only for a genuinely necessary
+and its own result through the same queue. Ask the user only for a genuinely necessary
 choice unavailable from evidence or policy. Make ordinary engineering decisions;
 if supported alternatives need a genuinely unavailable team preference, name that
 choice rather than inventing missing source. Defer affected advice, not independent
 work. Continue collecting and deciding within the authorized plan without asking
-for approval after the first batch. A completed child is not the whole review.
+for approval after the first completions. A completed child is not the whole review.
 Do not run another full review or a generic self-check loop.
 
 Reconcile related changes. Map every accepted candidate to one `R-001`-style
