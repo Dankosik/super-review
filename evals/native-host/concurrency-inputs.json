@@ -1,0 +1,210 @@
+[
+  {
+    "id": "S01",
+    "request": "Continue the planned review.",
+    "host": {
+      "adapter": "codex",
+      "available_child_slots": 16,
+      "completion": "incremental"
+    },
+    "active": [],
+    "ready": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12",
+      "T13",
+      "T14",
+      "T15",
+      "T16"
+    ]
+  },
+  {
+    "id": "S02",
+    "request": "Continue the planned review.",
+    "host": {
+      "adapter": "codex",
+      "available_child_slots": 6,
+      "completion": "incremental"
+    },
+    "active": [],
+    "ready": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12",
+      "T13",
+      "T14",
+      "T15",
+      "T16"
+    ]
+  },
+  {
+    "id": "S03",
+    "request": "Continue the planned review with at most six simultaneous subagents.",
+    "host": {
+      "adapter": "cursor",
+      "available_child_slots": 16,
+      "completion": "incremental"
+    },
+    "active": [],
+    "ready": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12",
+      "T13",
+      "T14",
+      "T15",
+      "T16"
+    ]
+  },
+  {
+    "id": "S04",
+    "request": "Continue the planned review.",
+    "host": {
+      "adapter": "codex",
+      "available_child_slots": 0,
+      "completion": "incremental",
+      "completed_child_holds_slot_until_closed": true,
+      "native_close_available": true
+    },
+    "active": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07"
+    ],
+    "completed": {
+      "task": "T08",
+      "full_result_collected": true
+    },
+    "ready": [
+      "T09",
+      "T10",
+      "T11",
+      "T12"
+    ]
+  },
+  {
+    "id": "S05",
+    "request": "Continue the planned review.",
+    "host": {
+      "adapter": "cursor",
+      "available_child_slots": 16,
+      "completion": "batch_only"
+    },
+    "active": [],
+    "ready": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12",
+      "T13",
+      "T14",
+      "T15",
+      "T16"
+    ]
+  },
+  {
+    "id": "S06",
+    "request": "Continue only the two remaining planned assignments.",
+    "host": {
+      "adapter": "claude",
+      "available_child_slots": 8,
+      "completion": "incremental"
+    },
+    "active": [],
+    "ready": [
+      "T01",
+      "T02"
+    ]
+  },
+  {
+    "id": "S07",
+    "request": "Continue the planned review.",
+    "host": {
+      "adapter": "codex",
+      "available_child_slots": null,
+      "completion": "incremental"
+    },
+    "active": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06"
+    ],
+    "ready": [
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12"
+    ],
+    "last_launch": {
+      "task": "T07",
+      "accepted": false,
+      "task_id": null,
+      "error": "capacity",
+      "guidance": "Wait for an existing child to finish before retrying."
+    }
+  },
+  {
+    "id": "S08",
+    "request": "Continue the planned review.",
+    "host": {
+      "adapter": "opencode",
+      "available_child_slots": 0,
+      "independent_delegation": false
+    },
+    "active": [],
+    "ready": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08"
+    ]
+  }
+]

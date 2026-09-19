@@ -15,11 +15,15 @@ balanced is `gpt-5.6-terra` / `medium`, explicitly requested economy is
 An unavailable model or independent-child facility is a disclosed capability gap.
 Profiles deepen their owner and do not automatically add workers.
 
-Dispatch small groups of at most three within available host slots. Give each
-child the pinned source identity and accessible source/resource paths. Children
+Use the shared [workflow concurrency policy](../workflow.md#resolve-policy-and-coverage)
+within available host slots, without a separate adapter cap. Give each child the
+pinned source identity and accessible source/resource paths. Children
 return the complete task header and candidate blocks in their final response.
 Use native completion notifications or the host's blocking agent-wait tool to
-collect every result; wait for remaining children after an early completion.
+collect every result. After an early completion, preserve its full result and
+close the finished child through native cleanup when needed to free its slot;
+refill ready work before waiting again on the remaining children. Do not close
+running children or lose their pending results to make room.
 Do not substitute a status summary for a full report. Recover missing output
 through native result reads where supported; failed or unavailable results remain
 unfinished. No custom result store, assignment receipt or waiting service is needed.

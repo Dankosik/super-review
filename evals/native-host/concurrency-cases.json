@@ -1,0 +1,62 @@
+[
+  {
+    "id": "S01",
+    "checks": [
+      "Start eight ready tasks, not three or four, before waiting.",
+      "Keep the other eight queued and use the same ceiling for later dispatches.",
+      "Preserve the selected model, one-lens assignments, packets and required results."
+    ]
+  },
+  {
+    "id": "S02",
+    "checks": [
+      "Start six ready tasks within the reported host capacity; disclose the lower limit.",
+      "Queue the rest without shrinking the review plan or changing host settings."
+    ]
+  },
+  {
+    "id": "S03",
+    "checks": [
+      "Honor the explicit six-task ceiling even though sixteen slots are available.",
+      "Keep the override for subsequent dispatches and focused continuations."
+    ]
+  },
+  {
+    "id": "S04",
+    "checks": [
+      "Preserve T08 full result, close only finished T08, and launch one queued task in the freed slot.",
+      "Do not wait for T01 through T07 before refilling or exceed eight active review children.",
+      "Keep the seven running tasks and their outstanding results; do not finalize the review."
+    ]
+  },
+  {
+    "id": "S05",
+    "checks": [
+      "Use a native parallel batch of eight and collect its complete results.",
+      "The next eight ready tasks use the same ceiling, not an automatic later cap of six or three.",
+      "Do not invent incremental result access, background arguments or status polling."
+    ]
+  },
+  {
+    "id": "S06",
+    "checks": [
+      "Launch only the two justified assignments.",
+      "Do not split work or add lenses to fill eight slots, and collect both complete results."
+    ]
+  },
+  {
+    "id": "S07",
+    "checks": [
+      "Retain all six accepted children; keep unstarted T07 through T12 queued.",
+      "Use native completion/capacity guidance before retrying only unstarted work, without duplicate launches or a guessed three-task cap.",
+      "Do not convert capacity pressure into a model switch, dropped coverage or permission bypass."
+    ]
+  },
+  {
+    "id": "S08",
+    "checks": [
+      "Disclose unavailable independent delegation and affected coverage.",
+      "Do not fabricate children, pretend sequential author work is independent, or retry an impossible spawn indefinitely."
+    ]
+  }
+]

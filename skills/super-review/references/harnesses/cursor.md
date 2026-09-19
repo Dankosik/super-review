@@ -52,8 +52,11 @@ language, selected profiles and effective rules. Record the requested model mode
 (`inherit` or the explicit ID) with the task; model selection itself belongs in
 the native launch configuration. Do not pass chat history or peer verdicts.
 
-Dispatch at most three concurrent tasks within Cursor's available slots. Collect
-the complete final response of every launched task, using native foreground
+Use the shared [workflow concurrency policy](../workflow.md#resolve-policy-and-coverage)
+within Cursor's available slots, without a separate adapter cap. Refill ready work
+as native completions free slots; use bounded batches only when the native call
+blocks until all results return. Collect the complete final response of every
+launched task, using native foreground
 completion or the exposed background wait/result facility. A task ID or progress
 summary is not a result. Follow up only for a specific missing question; retain
 the selection unless the user changes it, and use a fresh task when resuming would
