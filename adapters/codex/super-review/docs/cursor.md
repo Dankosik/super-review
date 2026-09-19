@@ -11,7 +11,9 @@ There is no extension runtime, model API client, MCP server or additional login.
 Use a revision containing `adapters/cursor/plugin`; older release archives do not
 contain this adapter. That checked-in directory is the generated, self-contained
 Cursor plugin payload, including `.cursor-plugin/plugin.json`. No build tool is
-needed by consumers. This change does not publish a marketplace listing.
+needed by consumers. The repository-root `.cursor-plugin/marketplace.json` points
+at this adapter for Cursor marketplace import or submission. That manifest does
+not by itself list Super Review in the public Cursor Marketplace.
 
 For a project-local installation, run the following from the Super Review checkout
 and replace `DEST` with your project's absolute path. The subshell refuses to

@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.4.0 — 2026-09-19
+
+- Default to eight concurrent specialist tasks and refill a free slot as each result arrives, instead of three-task Codex/Cursor caps or waiting for unrelated children.
+- Honor an explicit user concurrency ceiling; keep host capacity and rate limits binding. Use same-size batches only when the host returns whole batches. Do not invent later reductions to six or three.
+- Point Cursor's repository marketplace manifest at the native Cursor adapter so this revision can be submitted or imported. Manual install remains supported; an official public listing still needs Cursor review.
+- Preserve all 44 `go.*`, `ts.*`, `rust.*` and `java.*` rule IDs, native 3.x packaging, and existing Claude, Codex, Cursor and OpenCode adapters. Scheduling latency comparison remains unrun.
+
 ## 3.3.0 — 2026-09-17
 
 - Add six Spring/Spring Boot owner profiles for bean wiring, application operations, HTTP contracts/errors, managed lifecycle and value shapes, plus per-module compatibility context. They deepen existing Java lenses; they do not add a language, rule IDs or extra agent types.

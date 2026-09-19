@@ -1,0 +1,16 @@
+{
+  "name": "super-review",
+  "owner": {
+    "name": "Dankosik"
+  },
+  "metadata": {
+    "description": "Independent readability and maintainability review for Go, TypeScript, Rust, or Java PRs and local source."
+  },
+  "plugins": [
+    {
+      "name": "super-review",
+      "source": "adapters/cursor/plugin",
+      "description": "Independent readability and maintainability review for Go, TypeScript, Rust, or Java PRs and local source."
+    }
+  ]
+}

@@ -27,8 +27,9 @@ claude plugin install super-review@dankosik-skills
 
 Cursor IDE: install the [native Cursor adapter](docs/cursor.md) from
 `adapters/cursor/plugin`, then invoke `/super-review` in Agent chat. The guide
-covers project-local and user-wide installation; this addition does not publish
-a Cursor marketplace listing.
+covers project-local and user-wide installation. The repository marketplace
+manifest can be imported or submitted to Cursor; a public Marketplace listing
+is a separate Cursor review.
 
 Start a new task/session after installing or updating. No additional waiting-tool
 configuration is needed. See [native integrations](docs/native-integrations.md)

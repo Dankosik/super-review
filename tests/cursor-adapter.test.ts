@@ -55,6 +55,19 @@ test("Cursor manifest declares only the native skill and specialist", () => {
   for (const field of ["mcpServers", "hooks", "commands", "rules", "model"]) expect(manifest[field]).toBeUndefined();
 });
 
+test("repository Cursor marketplace points at the native adapter without claiming a public listing", () => {
+  const marketplace = JSON.parse(read(".cursor-plugin/marketplace.json"));
+  expect(marketplace.name).toBe("super-review");
+  expect(marketplace.plugins).toEqual([
+    {
+      name: "super-review",
+      source: "adapters/cursor/plugin",
+      description: "Independent readability and maintainability review for Go, TypeScript, Rust, or Java PRs and local source.",
+    },
+  ]);
+  expect(read("docs/cursor.md")).toContain("not by itself list Super Review in the public Cursor Marketplace");
+});
+
 test("Cursor generated templates and the complete shared policy are byte-identical", () => {
   for (const [source, installed] of [
     ["adapters/cursor/skill.md", "skills/super-review/SKILL.md"],

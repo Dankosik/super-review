@@ -68,6 +68,10 @@ const openCodeModels = JSON.parse(await readFile(join(root, "adapters/opencode/o
 if (openCodeModels.agent?.["super-review-specialist"]?.model !== "{env:SUPER_REVIEW_SPECIALIST_MODEL}" || openCodeModels.model) errors.push("OpenCode must require an explicit specialist without overriding the orchestrator.");
 const catalog = JSON.parse(await readFile(join(root, ".agents/plugins/marketplace.json"), "utf8"));
 if (catalog.plugins[0]?.source?.path !== "./adapters/codex/super-review") errors.push("The project catalog must point at the native Codex package.");
+const cursorMarketplace = JSON.parse(await readFile(join(root, ".cursor-plugin/marketplace.json"), "utf8"));
+if (cursorMarketplace.name !== "super-review" || cursorMarketplace.plugins?.[0]?.name !== "super-review" || cursorMarketplace.plugins?.[0]?.source !== "adapters/cursor/plugin") {
+  errors.push("The Cursor marketplace manifest must point at the native Cursor package.");
+}
 for (const file of runtimeFiles) {
   const packaged = join(root, "adapters/codex/super-review/skills/super-review", relative(skill, file));
   if (!(await readFile(file)).equals(await readFile(packaged))) errors.push("Stale Codex policy: " + relative(skill, file));
