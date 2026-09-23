@@ -1,0 +1,26 @@
+[
+  {
+    "id": "bounded-name",
+    "task": "Naming lens on a private helper. The complete function and its only two callers are supplied. Team vocabulary defines account versus client. No exported API or behavior changes are involved. Choose a native Codex specialist model and effort."
+  },
+  {
+    "id": "cross-file-contract",
+    "task": "Naming lens on a renamed exported field used by two packages and a serialized JSON response. The compatibility baseline and external consumers must be checked. Choose a native Codex specialist model and effort."
+  },
+  {
+    "id": "small-effectful-diff",
+    "task": "Control-flow lens on a three-line change around an audit call and an external emit call. Preserve ordering, call counts and error propagation. Choose a native Codex specialist model and effort."
+  },
+  {
+    "id": "missing-callers",
+    "task": "Duplication lens on two similar helpers. The diff is small, but the owners and callers are not yet available, so it is unclear whether they represent one policy. Choose a native Codex specialist model and effort."
+  },
+  {
+    "id": "focused-continuation",
+    "task": "A completed local naming pass used Luna. A focused continuation now needs to decide whether the name appears in a public wire format and check downstream callers. Choose a native Codex specialist model and effort for the continuation."
+  },
+  {
+    "id": "explicit-override",
+    "task": "The user explicitly requests gpt-6-sol at high effort for every specialist. A local naming assignment is otherwise bounded and complete. Choose a native Codex specialist model and effort."
+  }
+]

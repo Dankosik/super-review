@@ -115,7 +115,7 @@ These precedence rules are documented in [Claude's subagent guide](https://code.
 and [plugin settings reference](https://code.claude.com/docs/en/plugins-reference).
 
 The command still runs its orchestrator in a separate foreground context.
-Specialists remain Sonnet/medium. If the host forces background execution,
+Specialists select Opus and inherit session effort. If the host forces background execution,
 the adapter discloses the changed guarantee instead of claiming an equivalent
 blocking wait.
 

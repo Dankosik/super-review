@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Coordinate an explicitly requested Super Review of Go, TypeScript, Rust, or Java source.
-model: inherit
+model: opus
 tools: Agent, Read, Glob, Grep, Bash
 ---
 

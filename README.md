@@ -110,9 +110,11 @@ These additions do not claim measured model-quality gains from fixture checks.
 
 ## Models and results
 
-The orchestrator retains the user's model and effort. Codex specialists use
-Terra/medium by default, or Luna/medium for an explicitly requested economy profile.
-Claude specialists use Sonnet/medium; OpenCode uses the user's explicit provider/model.
+Codex keeps the user's orchestrator model and effort. Each specialist uses
+GPT-6 Luna/medium for a bounded local question with complete context, or
+GPT-6 Sol/medium for cross-file, uncertain, or preservation-sensitive work.
+Claude Code uses Opus for the review command, orchestrator, and specialists;
+effort follows the session setting. OpenCode uses the user's explicit provider/model.
 Cursor specialists default to `inherit`, using the parent chat's model. Request a
 specialist override in the prompt, such as "Для subagent используй <Cursor model ID>";
 the adapter applies it through supported native per-call selection, or discloses

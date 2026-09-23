@@ -1,41 +1,61 @@
 # Model profiles
 
-The orchestrator keeps the model and reasoning effort selected by the user.
-Specialist selection is adapter-specific: Codex and Claude use the profiles below,
-OpenCode requires an explicit choice, and Cursor defaults to native inheritance.
-Model access still comes from the harness; there are no publisher credentials or
-model HTTP clients.
+Super Review uses the selected host's native model routing and credentials. It
+does not call model APIs or bundle provider access. Report the effective model
+and effort when the host exposes them; a requested profile is not proof of use.
 
 | Harness | Orchestrator | Specialists |
 | --- | --- | --- |
-| Codex, balanced default | Current task's model and effort | `gpt-5.6-terra`, `medium` |
-| Codex, explicit economy profile | Current task's model and effort | `gpt-5.6-luna`, `medium` |
-| Claude Code | `inherit`, no effort override | Native `sonnet` selection, `medium` |
+| Codex | Current task's model and effort | `gpt-6-luna` / `medium` for a bounded local question with complete context; `gpt-6-sol` / `medium` otherwise |
+| Claude Code | Native `opus`; session effort | Native `opus`; session effort |
 | OpenCode | Current primary model and effort | One explicitly selected `provider/model-id`; provider's configured/default effort |
 | Cursor IDE | Current Agent chat's selected model/settings | `inherit`; an explicit user subagent choice takes precedence where native per-call selection supports it |
 
-For Codex, request economy mode in ordinary language:
+## Codex: select for the assigned question
 
-```text
-$super-review Review <PR URL> using the economy specialist profile.
-```
+Choose after pinning the source and building the area/lens assignment. Luna is
+appropriate only when the relevant declarations and callers are available and
+the answer stays within a local expression or responsibility. Examples include a
+local name whose vocabulary and uses are known, or duplication whose two owners
+and change relationship are already established. Sol handles cross-file API or
+compatibility questions, ownership and lifecycle, observable effects, conflicting
+policy, missing context, or an area whose complexity is uncertain. The same lens
+can use either model on different source. Do not reduce coverage, the eight base
+questions, source reading, or verification to justify Luna.
 
-An explicit user selection for specialists takes precedence over the Codex
-profiles. Each child receives the chosen model and effort as native spawn
-arguments, plus a fresh context. Changing global Codex subagent defaults is not
-needed. If model selection is unavailable, the review discloses that gap rather
-than silently using the more expensive parent model.
+Pass the selected model and `medium` effort to each native child. An explicit user
+specialist model or effort choice takes precedence. Reassess a focused
+continuation if new evidence changes its scope, and record both task identities
+and their actual models. A host that cannot run the selected model must disclose
+the gap rather than silently substitute. There is no global Codex subagent
+configuration to change.
 
-Claude's `sonnet` alias resolved to `claude-sonnet-5` in the tested CLI. The alias
-can follow the user's provider and future model updates; it is not an immutable
-quality guarantee. User/managed overrides retain their native precedence.
-In particular, older Claude versions let `CLAUDE_CODE_SUBAGENT_MODEL` override
-`model: inherit` as well; leave it unset for our inherited-orchestrator contract.
-Native nested routing was verified against a local synthetic endpoint. Sonnet's
-actual recommendation quality has not yet been evaluated in this project.
+These GPT-6 IDs are the current release's pinned choices, not moving aliases.
+Future releases require a deliberate compatibility and quality check. The older
+[model study](model-study.md) covers GPT-5.6 and remains historical evidence; it
+does not establish GPT-6 review quality or parity between Sol and Luna.
 
-OpenCode supports multiple providers. To avoid choosing a different provider or
-billing path implicitly, save one specialist model from your configured provider:
+## Claude Code: Opus with session effort
+
+The review command, orchestrator, and specialist role all select `opus`.
+On the direct Anthropic API with Claude Code 2.1.280 or later, that alias
+currently resolves to Claude Opus 5.5. Other providers have their own alias
+mapping, which can lag behind their newest available Opus. If necessary, map
+`ANTHROPIC_DEFAULT_OPUS_MODEL` to that provider's Opus 5.5 ID in native Claude
+Code configuration. Inspect the effective model rather than assuming 5.5.
+
+The roles do not pin effort, so select it in the Claude Code session before
+starting the review: `medium` for bounded work, `high` for ambiguous cross-file
+contracts or preservation constraints, and `xhigh` for unusually difficult cases.
+The native specialist role inherits that session effort; it cannot select a
+different effort per lens through the current Agent call. Use `/status` for the
+session model and `/tasks` for running specialists. Native user/managed settings
+and model restrictions retain their precedence. A fallback must be reported.
+
+## OpenCode and Cursor
+
+OpenCode supports multiple providers. To avoid changing provider or billing
+implicitly, save one specialist model from your configured provider:
 
 ```sh
 mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/super-review"
@@ -64,18 +84,3 @@ in launch configuration, and reports unsupported selection or observed fallback
 instead of silently substituting. A prompt cannot itself change a model or
 bypass Cursor's plan/admin restrictions. See [Cursor setup and capability limits](cursor.md).
 Native end-to-end Cursor model routing has not been measured by this project.
-
-## Why balanced is the Codex default
-
-Terra and Luna both passed the small offline screen and completed a scoped real
-PR review. That does not establish parity on difficult repository discovery,
-missing evidence, or complex ownership. Terra is the conservative initial choice
-for the full set of lenses; economy mode makes the cheaper option explicit.
-No evidence here supports assigning a different model to each lens yet.
-
-A strong orchestrator can reject poor suggestions, but cannot reliably recover
-an opportunity that a specialist never noticed. We retain independent passes,
-source verification, and honest incomplete coverage in both profiles. A small
-model is not permission to skip required context or silently report a clean lens.
-
-The [model study](model-study.md) records actual outputs, usage, rates, and limits.

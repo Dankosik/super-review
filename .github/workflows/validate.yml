@@ -33,7 +33,7 @@ jobs:
       - run: bun run package
       - run: bun audit
       - name: Validate native Claude package
-        run: npx --yes --package @anthropic-ai/claude-code@2.1.227 claude plugin validate adapters/claude/plugin
+        run: npx --yes --package @anthropic-ai/claude-code@2.1.280 claude plugin validate adapters/claude/plugin
       - name: Install pinned OpenCode for native configuration checks
         env:
           GH_TOKEN: ${{ github.token }}
