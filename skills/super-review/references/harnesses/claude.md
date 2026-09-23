@@ -21,7 +21,15 @@ completion/result facility and wait for every full result before reconciliation.
 Do not poll or send routine reminders. Missing results remain unfinished; add only
 source-justified continuations, each with its own task identity.
 
-The orchestrator inherits the session model and effort. Specialists use native
-`sonnet` at `medium`; explicit user/managed overrides keep native precedence.
-Missing nested delegation or source access is a gap, not a simulated independent
-pass. Preserve task headers and all candidates, then return the full report.
+The command, orchestrator, and specialists select the native `opus` alias, which
+resolves according to the configured provider and may need an explicit native
+provider mapping to reach its newest Opus. They inherit the session's effort:
+choose `medium` for a bounded review, `high` for ambiguous
+cross-file contracts or preservation constraints, and `xhigh` only when those
+questions remain unusually difficult. Set the session effort before starting a
+review; the native specialist role does not vary effort per lens. Record the
+effective model/effort where the host exposes them. User/managed restrictions and
+native model precedence still apply; a substituted or unavailable Opus is a
+disclosed capability gap, not a successful Opus run. Missing nested delegation or
+source access is likewise a gap. Preserve task headers and all candidates, then
+return the full report.

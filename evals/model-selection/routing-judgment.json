@@ -1,0 +1,8 @@
+[
+  { "id": "bounded-name", "model": "gpt-6-luna", "effort": "medium", "reason": "Complete local question." },
+  { "id": "cross-file-contract", "model": "gpt-6-sol", "effort": "medium", "reason": "Cross-file and compatibility contract." },
+  { "id": "small-effectful-diff", "model": "gpt-6-sol", "effort": "medium", "reason": "Observable effects make diff size insufficient." },
+  { "id": "missing-callers", "model": "gpt-6-sol", "effort": "medium", "reason": "Unknown ownership and incomplete context." },
+  { "id": "focused-continuation", "model": "gpt-6-sol", "effort": "medium", "reason": "New public contract question changes the assignment." },
+  { "id": "explicit-override", "model": "gpt-6-sol", "effort": "high", "reason": "Explicit user choice takes precedence." }
+]

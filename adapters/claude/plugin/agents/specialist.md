@@ -1,8 +1,7 @@
 ---
 name: specialist
 description: One assigned Super Review lens on pinned Go, TypeScript, Rust, or Java source.
-model: sonnet
-effort: medium
+model: opus
 tools: Read, Glob, Grep, Bash
 ---
 

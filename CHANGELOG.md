@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.5.0 — 2026-09-23
+
+- Route Codex specialist tasks to GPT-6 Luna/medium only for bounded local questions with complete context; use GPT-6 Sol/medium for cross-file, preservation-sensitive, uncertain, or incomplete questions. An explicit user model/effort selection still wins.
+- Select the native Opus alias for the Claude Code review command, orchestrator, and specialists. Inherit session effort so a review can use medium, high, or xhigh according to its difficulty; provider alias mappings remain native configuration.
+- Keep the existing eight-lens coverage, read-only review policy, rule IDs, native adapters, and source/result contracts. A bounded model-choice comparison passed; GPT-6/Opus specialist quality and effective routing remain unmeasured on this host.
+
 ## 3.4.0 — 2026-09-19
 
 - Default to eight concurrent specialist tasks and refill a free slot as each result arrives, instead of three-task Codex/Cursor caps or waiting for unrelated children.

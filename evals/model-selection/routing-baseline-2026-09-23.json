@@ -1,0 +1,32 @@
+[
+  {
+    "id": "bounded-name",
+    "model": "gpt-5.6-terra",
+    "effort": "medium"
+  },
+  {
+    "id": "cross-file-contract",
+    "model": "gpt-5.6-terra",
+    "effort": "medium"
+  },
+  {
+    "id": "small-effectful-diff",
+    "model": "gpt-5.6-terra",
+    "effort": "medium"
+  },
+  {
+    "id": "missing-callers",
+    "model": "gpt-5.6-terra",
+    "effort": "medium"
+  },
+  {
+    "id": "focused-continuation",
+    "model": "gpt-5.6-terra",
+    "effort": "medium"
+  },
+  {
+    "id": "explicit-override",
+    "model": "gpt-6-sol",
+    "effort": "high"
+  }
+]
