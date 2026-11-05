@@ -7,6 +7,10 @@ consumers. Establish which existing decision they encode, who owns it, and why
 they should change together. Similar text, fields, or types do not establish a
 shared rule; do not infer policy ownership from appearance alone.
 
+Search the whole snapshot beyond the assigned area for the decision's names,
+literal values and call shapes, and read each match. A partition limits where a
+candidate is anchored, not where its partners may be.
+
 Centralize demonstrated shared knowledge in the smallest meaningful operation.
 Conversely, separate a shared helper when flags, callbacks, or divergent caller
 contracts show that unrelated decisions have been forced together. Account for

@@ -1,0 +1,96 @@
+{
+  "description": "Neutral packets for change-together decisions. Give a reviewer exactly one input object.",
+  "inputs": [
+    {
+      "id": "CT01",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: worker/src/boot.rs. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "worker/src/boot.rs": "pub fn identity(configured: Option<String>) -> String {\n    configured.unwrap_or_else(|| hostname().to_string_lossy().into_owned())\n}\n",
+        "api/src/boot.rs": "pub fn replica(configured: Option<String>) -> String {\n    configured.unwrap_or_else(|| hostname().to_string_lossy().into_owned())\n}\n",
+        "telemetry/src/lib.rs": "pub struct Resource { pub instance_id: String }\n"
+      },
+      "context": [
+        "Both binaries depend on telemetry, which publishes the value as the service instance identity."
+      ]
+    },
+    {
+      "id": "CT02",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: worker/src/boot.rs. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "worker/src/boot.rs": "fn sampler(kind: config::Kind, ratio: f64) -> telemetry::Sampler {\n    match kind {\n        config::Kind::On => telemetry::Sampler::On,\n        config::Kind::Off => telemetry::Sampler::Off,\n        config::Kind::Ratio => telemetry::Sampler::Ratio(ratio),\n    }\n}\n",
+        "api/src/boot.rs": "fn sampler(kind: config::Kind, ratio: f64) -> telemetry::Sampler {\n    match kind {\n        config::Kind::On => telemetry::Sampler::On,\n        config::Kind::Off => telemetry::Sampler::Off,\n        config::Kind::Ratio => telemetry::Sampler::Ratio(ratio),\n    }\n}\n"
+      },
+      "context": [
+        "The config and telemetry crates are leaves that must not import each other; both binaries compose them."
+      ]
+    },
+    {
+      "id": "CT03",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: worker/src/boot.rs. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "worker/src/boot.rs": "fn histograms() -> Vec<(&'static str, &'static [f64])> {\n    vec![\n        (http::DURATION_METRIC, http::DURATION_BUCKETS),\n        (db::WAIT_METRIC, db::WAIT_BUCKETS),\n    ]\n}\n\nasync fn wait_for_signal() {\n    let mut term = signal(SignalKind::terminate()).unwrap_or_else(|_| exit(1));\n    term.recv().await;\n}\n",
+        "api/src/boot.rs": "fn histograms() -> Vec<(&'static str, &'static [f64])> {\n    vec![\n        (http::DURATION_METRIC, http::DURATION_BUCKETS),\n        (db::WAIT_METRIC, db::WAIT_BUCKETS),\n        (grpc::HANDLING_METRIC, grpc::HANDLING_BUCKETS),\n    ]\n}\n\nasync fn wait_for_signal() {\n    let mut term = signal(SignalKind::terminate()).unwrap_or_else(|_| exit(1));\n    term.recv().await;\n}\n",
+        "telemetry/src/lib.rs": "pub const DEFAULT_BUCKETS: &[f64] = &[0.1, 1.0, 10.0];\npub fn install(histograms: &[(&str, &[f64])]) { /* a name not listed renders DEFAULT_BUCKETS */ }\n",
+        "docs/lifecycle.md": "# Lifecycle\n\nSignal handling and teardown stay separate in each binary. Extract a shared lifecycle crate only when shared behavior change outweighs its API cost.\n"
+      },
+      "context": []
+    },
+    {
+      "id": "CT06",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: orders/src/label.ts. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "orders/src/label.ts": "type State = \"open\" | \"paid\";\nexport function label(state: State): string {\n  switch (state) {\n    case \"open\": return \"Open\";\n    case \"paid\": return \"Paid\";\n    default: { const unreachable: never = state; return unreachable; }\n  }\n}\nexport const FETCH_TIMEOUT_MS = 2000;\n",
+        "invoices/src/label.ts": "type State = \"open\" | \"paid\";\nexport function label(state: State): string {\n  switch (state) {\n    case \"open\": return \"Unpaid\";\n    case \"paid\": return \"Settled\";\n    default: { const unreachable: never = state; return unreachable; }\n  }\n}\n",
+        "invoices/src/client.ts": "const FETCH_TIMEOUT_MS = 2000;\nexport const load = (url: string) => fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });\n",
+        "orders/src/client.ts": "import { FETCH_TIMEOUT_MS } from \"./label\";\nexport const load = (url: string) => fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });\n"
+      },
+      "context": [
+        "Both clients call the same gateway, whose documented request limit is the reason for the timeout."
+      ]
+    },
+    {
+      "id": "CT07",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: orders/src/main/java/app/orders/Retry.java. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "orders/src/main/java/app/orders/Retry.java": "package app.orders;\nfinal class Retry {\n  static final int GATEWAY_ATTEMPTS = 3;\n  static String name(Kind kind) {\n    return switch (kind) {\n      case Kind.Card c -> \"card\";\n      case Kind.Wire w -> \"wire\";\n    };\n  }\n}\n",
+        "billing/src/main/java/app/billing/Client.java": "package app.billing;\nfinal class Client {\n  private static final int GATEWAY_ATTEMPTS = 3;\n  static String name(Kind kind) {\n    return switch (kind) {\n      case Kind.Card c -> \"card\";\n      case Kind.Wire w -> \"wire\";\n    };\n  }\n}\n"
+      },
+      "context": [
+        "`Kind` is a sealed interface shared by both modules. Both retry counts bound calls to the same gateway."
+      ]
+    },
+    {
+      "id": "CT08",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: orders/rules.go. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "go.mod": "module example.test/app\n\ngo 1.25\n",
+        "orders/rules.go": "package orders\n\nimport \"time\"\n\nconst GatewayTimeout = 2 * time.Second\n\nfunc Eligible(total int) bool { return total > 100 }\n",
+        "billing/client.go": "package billing\n\nimport \"time\"\n\nconst gatewayTimeout = 2 * time.Second\n\nfunc Eligible(total int) bool { return total > 100 }\n"
+      },
+      "context": [
+        "Both timeouts bound the same gateway call. Order eligibility and billing eligibility are owned by different teams and have changed independently before."
+      ]
+    }
+  ]
+}

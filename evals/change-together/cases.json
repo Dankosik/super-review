@@ -1,0 +1,66 @@
+{
+  "description": "Evaluator-only expectations. Never send these to a reviewer.",
+  "cases": [
+    {
+      "id": "CT01",
+      "kind": "useful",
+      "expect": [
+        "Report the copied fallback across binaries and name a shared owner; the assigned area alone looks clean."
+      ],
+      "contrasts": [
+        "CT02"
+      ]
+    },
+    {
+      "id": "CT02",
+      "kind": "retain",
+      "expect": [
+        "Retain or mark low value: a new variant fails to compile in both copies and the crate graph permits no shared owner."
+      ],
+      "contrasts": [
+        "CT01"
+      ]
+    },
+    {
+      "id": "CT03",
+      "kind": "mixed",
+      "expect": [
+        "Report the histogram lists, whose omission compiles and silently renders default buckets. Do not report signal handling, which the recorded decision names."
+      ],
+      "contrasts": [
+        "CT02"
+      ]
+    },
+    {
+      "id": "CT06",
+      "kind": "mixed",
+      "expect": [
+        "Report the timeout copy behind one gateway. Retain the labels, which differ and are exhaustive."
+      ],
+      "contrasts": [
+        "CT01",
+        "CT02"
+      ]
+    },
+    {
+      "id": "CT07",
+      "kind": "mixed",
+      "expect": [
+        "Report the attempt count behind one gateway. Treat the sealed switches as compile-connected, not silent divergence."
+      ],
+      "contrasts": [
+        "CT02"
+      ]
+    },
+    {
+      "id": "CT08",
+      "kind": "mixed",
+      "expect": [
+        "Report the gateway timeout. Retain the eligibility predicates, which look alike but have independent owners."
+      ],
+      "contrasts": [
+        "CT01"
+      ]
+    }
+  ]
+}

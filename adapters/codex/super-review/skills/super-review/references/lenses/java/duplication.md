@@ -8,6 +8,14 @@ variation. A small domain helper or existing JDK/project operation can remove
 repeated mechanics; a generic base class with hooks and flags may couple unrelated
 operations more than the repeated code did.
 
+Search the whole snapshot beyond the assigned area for the decision's names,
+literal values and call shapes, and read each match. A partition limits where a
+candidate is anchored, not where its partners may be.
+
+A `switch` expression over a sealed type or a required constructor parameter connects its copies through a compile
+error, so such a copy costs an extra edit rather than silent divergence; judge
+it by that cost.
+
 Treat DTO mapping, construction, and boundary translation in context. Similar
 field assignments between distinct external contracts are not necessarily one
 abstraction. Do not introduce reflection, Lombok, a mapping library, or a builder
