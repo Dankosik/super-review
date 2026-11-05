@@ -1,4 +1,4 @@
-# Change together: Rust duplication
+# Change together: duplication across areas
 
 Maintainer/evaluator material only. Baseline: Super Review 3.5.0 at `a79b1bb`.
 
@@ -6,14 +6,14 @@ Maintainer/evaluator material only. Baseline: Super Review 3.5.0 at `a79b1bb`.
 
 | Decision | Instruction action | Cases |
 | --- | --- | --- |
-| A partitioned duplication task finds partners outside its area | Search sentence in the Rust duplication lens | CT01, live replay |
-| A copy connected by the compiler costs an edit, not silent divergence | Compile-link sentence in the Rust duplication lens | CT02, CT03, live replay |
+| A partitioned duplication task finds partners outside its area | Search sentence in the Go, Rust, TypeScript and Java duplication lenses | CT01, CT06-CT08, live replay |
+| A copy connected by the compiler costs an edit, not silent divergence | Compile-link sentence in the Rust, TypeScript and Java lenses. Go has no exhaustive switch or required field to connect copies | CT02, CT03, CT06, CT07, live replay |
 | A recorded decision clears only what it names | No instruction change; baseline already held | CT03 |
 
 ## Replay
 
 `inputs.json` holds neutral packets. Give a reviewer exactly one input object, with
-the normal contract, Rust context, lens and candidate template from the revision
+the normal contract, matching language context, lens and candidate template from the revision
 under test. Never send this README, `cases.json` or peer answers.
 
 The live replay is one specialist on lens `duplication`, area `crates/jobs-worker`,
@@ -46,8 +46,11 @@ Raw reports are in [results](results).
 | CT02, compile-connected copy | Candidate, remedy unresolved | Candidate, states the small cost and favors keeping |
 | CT03, histogram list and named signals | Reports list, keeps signals | Same |
 | CT01 | NOT RUN | NOT RUN |
+| CT06, TypeScript: gateway timeout and differing labels | Reports timeout, keeps labels | Same |
+| CT07, Java: attempt limit and sealed switches | Reports limit; proposes moving the switch onto `Kind` | Reports limit; marks the switch low cost, remedy unresolved, keeping defensible |
+| CT08, Go: gateway timeout and independently owned predicates | Reports timeout, keeps predicates | Same |
 
-Five runs on one area cannot establish a rate, and the run counts are too small to
+The live replay is Rust only. For Go, TypeScript and Java the evidence is one static run per arm, where the whole snapshot is in the packet, so the search sentence cannot show its effect there. Five runs on one area cannot establish a rate, and the run counts are too small to
 separate the two sentences' effects cleanly. Runs also varied in ways unrelated to
 this change, as each arm's other candidates show.
 
@@ -65,4 +68,3 @@ Their reports remain in `results` with the `dropped-` prefix. A merge sentence i
 verification and a recorded-decision sentence in the contract were also removed:
 the first was not run, and baseline already held the second.
 
-Other languages are unchanged and NOT RUN.

@@ -30,6 +30,37 @@
       "contrasts": [
         "CT02"
       ]
+    },
+    {
+      "id": "CT06",
+      "kind": "mixed",
+      "expect": [
+        "Report the timeout copy behind one gateway. Retain the labels, which differ and are exhaustive."
+      ],
+      "contrasts": [
+        "CT01",
+        "CT02"
+      ]
+    },
+    {
+      "id": "CT07",
+      "kind": "mixed",
+      "expect": [
+        "Report the attempt count behind one gateway. Treat the sealed switches as compile-connected, not silent divergence."
+      ],
+      "contrasts": [
+        "CT02"
+      ]
+    },
+    {
+      "id": "CT08",
+      "kind": "mixed",
+      "expect": [
+        "Report the gateway timeout. Retain the eligibility predicates, which look alike but have independent owners."
+      ],
+      "contrasts": [
+        "CT01"
+      ]
     }
   ]
 }

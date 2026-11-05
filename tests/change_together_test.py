@@ -27,10 +27,13 @@ class ChangeTogetherIntegrity(unittest.TestCase):
         for packet in self.inputs:
             self.assertFalse(forbidden & set(packet))
 
-    def test_rust_lens_holds_both_decisions(self):
-        lens = (SKILL / "references/lenses/rust/duplication.md").read_text()
-        self.assertIn("beyond the assigned area", lens)
-        self.assertIn("compile error", lens.replace("\n", " "))
+    def test_lenses_hold_their_decisions(self):
+        lenses = SKILL / "references/lenses"
+        for directory in ("", "rust/", "typescript/", "java/"):
+            self.assertIn("beyond the assigned area", (lenses / directory / "duplication.md").read_text())
+        for directory in ("rust/", "typescript/", "java/"):
+            text = (lenses / directory / "duplication.md").read_text().replace("\n", " ")
+            self.assertIn("compile error", text)
 
 
 if __name__ == "__main__":
