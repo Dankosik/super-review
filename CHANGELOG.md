@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.6.0 — 2026-11-06
+
+- Have duplication reviews in Go, Rust, TypeScript and Java search the whole snapshot beyond their assigned area, so a large review can find copies across its partitions.
+- Judge a copy the Rust, TypeScript or Java compiler connects by the extra edit it costs, not as silent divergence. Go has no equivalent connection.
+- In a whole-project review, read lens, profile and aspect wording about changed source or a diff as the included source.
+- Keep the eight base lenses, read-only review policy, rule IDs, native adapters and result contracts unchanged.
+- Evidence is limited and recorded in `evals/change-together`: a small Rust replay on real code, and one static run per arm for the other languages, where only Java changed.
+
 ## 3.5.0 — 2026-09-23
 
 - Route Codex specialist tasks to GPT-6 Luna/medium only for bounded local questions with complete context; use GPT-6 Sol/medium for cross-file, preservation-sensitive, uncertain, or incomplete questions. An explicit user model/effort selection still wins.
