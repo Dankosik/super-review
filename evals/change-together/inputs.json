@@ -1,0 +1,51 @@
+{
+  "description": "Neutral packets for change-together decisions. Give a reviewer exactly one input object.",
+  "inputs": [
+    {
+      "id": "CT01",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: worker/src/boot.rs. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "worker/src/boot.rs": "pub fn identity(configured: Option<String>) -> String {\n    configured.unwrap_or_else(|| hostname().to_string_lossy().into_owned())\n}\n",
+        "api/src/boot.rs": "pub fn replica(configured: Option<String>) -> String {\n    configured.unwrap_or_else(|| hostname().to_string_lossy().into_owned())\n}\n",
+        "telemetry/src/lib.rs": "pub struct Resource { pub instance_id: String }\n"
+      },
+      "context": [
+        "Both binaries depend on telemetry, which publishes the value as the service instance identity."
+      ]
+    },
+    {
+      "id": "CT02",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: worker/src/boot.rs. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "worker/src/boot.rs": "fn sampler(kind: config::Kind, ratio: f64) -> telemetry::Sampler {\n    match kind {\n        config::Kind::On => telemetry::Sampler::On,\n        config::Kind::Off => telemetry::Sampler::Off,\n        config::Kind::Ratio => telemetry::Sampler::Ratio(ratio),\n    }\n}\n",
+        "api/src/boot.rs": "fn sampler(kind: config::Kind, ratio: f64) -> telemetry::Sampler {\n    match kind {\n        config::Kind::On => telemetry::Sampler::On,\n        config::Kind::Off => telemetry::Sampler::Off,\n        config::Kind::Ratio => telemetry::Sampler::Ratio(ratio),\n    }\n}\n"
+      },
+      "context": [
+        "The config and telemetry crates are leaves that must not import each other; both binaries compose them."
+      ]
+    },
+    {
+      "id": "CT03",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: worker/src/boot.rs. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "worker/src/boot.rs": "fn histograms() -> Vec<(&'static str, &'static [f64])> {\n    vec![\n        (http::DURATION_METRIC, http::DURATION_BUCKETS),\n        (db::WAIT_METRIC, db::WAIT_BUCKETS),\n    ]\n}\n\nasync fn wait_for_signal() {\n    let mut term = signal(SignalKind::terminate()).unwrap_or_else(|_| exit(1));\n    term.recv().await;\n}\n",
+        "api/src/boot.rs": "fn histograms() -> Vec<(&'static str, &'static [f64])> {\n    vec![\n        (http::DURATION_METRIC, http::DURATION_BUCKETS),\n        (db::WAIT_METRIC, db::WAIT_BUCKETS),\n        (grpc::HANDLING_METRIC, grpc::HANDLING_BUCKETS),\n    ]\n}\n\nasync fn wait_for_signal() {\n    let mut term = signal(SignalKind::terminate()).unwrap_or_else(|_| exit(1));\n    term.recv().await;\n}\n",
+        "telemetry/src/lib.rs": "pub const DEFAULT_BUCKETS: &[f64] = &[0.1, 1.0, 10.0];\npub fn install(histograms: &[(&str, &[f64])]) { /* a name not listed renders DEFAULT_BUCKETS */ }\n",
+        "docs/lifecycle.md": "# Lifecycle\n\nSignal handling and teardown stay separate in each binary. Extract a shared lifecycle crate only when shared behavior change outweighs its API cost.\n"
+      },
+      "context": []
+    }
+  ]
+}
