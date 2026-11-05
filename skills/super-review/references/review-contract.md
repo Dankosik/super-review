@@ -7,7 +7,9 @@ scope. Review the selected Go, TypeScript, Rust, and Java production source and
 the context needed to understand it. Read whole affected declarations and
 relevant callers. For a change review, a recommendation must arise from the
 change; another file may participate in that refactoring, but unrelated old code is not a cleanup
-backlog. For a whole-project review, every included file is a target. Draft,
+backlog. For a whole-project review, every included file is a target, and lens,
+profile or aspect wording about changed source or a diff means that included
+source. Draft,
 closed, and merged PRs remain reviewable when their source exists.
 
 Exclude tests (`*_test.go`, TS `*.test.*`/`*.spec.*`, Java known test source-sets
