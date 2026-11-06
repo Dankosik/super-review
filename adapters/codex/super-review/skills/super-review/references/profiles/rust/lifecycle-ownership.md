@@ -13,6 +13,21 @@ clarify ownership, but moving a guard to a helper can release it earlier. Owned
 data or shared handles moved into tasks may legitimately outlive the caller.
 Read the relevant task contract and actual uses before replacing them with borrows.
 
+Distinguish the lifetime of shared storage from the authority to publish or start
+work. A subscriber or a temporary upgraded Weak may retain storage without being
+a publisher. Before removing a counter or separate owner, identify what will
+still establish the last-publisher or completion boundary; an Arc count is not
+automatically the same fact.
+
+When simplifying notification or cleanup, follow callbacks through the proposed
+mechanism, including cloning, replacing or dropping caller-supplied values and
+waking a task. A synchronous dependency call can invoke user code even without
+an await. Keep a staged wakeup or destruction when it separates callbacks from
+guarded mutation. Moving delivery outside a lock can change publication order
+or atomicity; fewer locks or a channel alone does not establish an equivalent,
+clearer ownership protocol. Use this check to assess the proposed simplification,
+not to start a separate concurrency-defect audit.
+
 Explain the reading benefit and preserve affected drop, transfer and cancellation
 boundaries. Do not turn this profile into a search for leaks, deadlocks, races
 or unsafe-code defects, or a reason to prescribe a new async runtime.

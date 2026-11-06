@@ -43,6 +43,11 @@ coverage remains `unfinished`, never an empty clean result.
   supported alternatives; do not invent a source gap or a remedy. For a proposal,
   show how an actual declaration/use becomes clearer, the remaining tradeoff,
   and the strongest source-supported keep alternative. Scale explanation to the change.
+  When a structural proposal's benefit depends on the resulting shape, include a
+  minimal sketch of the relevant types, signatures, owner or transition. Show
+  which relationships disappear and which still need an owner; a pattern name
+  alone is insufficient. Omit a sketch for a self-explanatory local edit. This is
+  a bounded illustration, not a complete patch or a claim of tested equivalence.
 - Preserve: relevant contracts/effects and constraints implicated by the proposal;
   identify what is known versus still unverified. Do not invent a remedy to fill fields.
 - Affected files: verified paths and real dependencies; distinguish inspected from

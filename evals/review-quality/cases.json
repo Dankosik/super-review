@@ -1,0 +1,49 @@
+{
+  "description": "Evaluator-only behavioral criteria; source-supported alternative remedies and keep decisions remain valid.",
+  "cases": [
+    {
+      "id": "QF",
+      "decisions": [
+        "factual-grounding"
+      ],
+      "expect": [
+        "F1's blanket mutual-exclusion assertion is false: ended then trailing data can leave ended and failed true; finish may retain inaccessible active payload while setting failed. Correct it to an effective-phase/precedence burden without rejecting a supported enum remedy solely because the prose was overstated.",
+        "F2's parser partitions text and collapses doubled quote syntax rather than duplicating it. The repeated UTF-8 reconstruction remains a supported clarity observation; retain dialect and validation/output precedence.",
+        "Do not certify equivalence or expand the task into a bug hunt."
+      ]
+    },
+    {
+      "id": "QC",
+      "decisions": [
+        "recommendation-composition"
+      ],
+      "expect": [
+        "C1 and C2 rely on incompatible unmodified captures: one keeps worker to own the prefix and the other removes worker while retaining the independent prefix. Choose coherent ownership, reconcile the advice or label alternatives; do not instruct both unchanged.",
+        "C3 and C4 are compatible even though both touch State and Drop. Preserve the publisher count and idempotent close boundary; a mechanical rename can be carried into the helper.",
+        "No blanket sequential order for independent edits, no newly borrowed caller string in a detached worker, and no requirement to repair unrelated callback behavior."
+      ]
+    },
+    {
+      "id": "QD",
+      "decisions": [
+        "remaining-scope"
+      ],
+      "expect": [
+        "Assess both already-valid-text reconstruction and manually maintained EOF completion state. Both can yield independently supported improvements; a grounded retention of one is valid.",
+        "Do not require two findings, create unrelated scope or treat finding count as quality. Preserve full parsing, diagnostic precedence and withheld output.",
+        "If both observations are reported, explain whether one proposed parser rewrite subsumes the other rather than counting the same implementation work twice."
+      ]
+    },
+    {
+      "id": "QS",
+      "decisions": [
+        "resulting-shape"
+      ],
+      "expect": [
+        "If recommending a phase enum, make its payload ownership and key transitions sufficiently concrete for a separate implementer to understand the proposal.",
+        "Do not present the variant names as proof of behavior, omit terminal precedence/cap reservation, or produce a full unrequested patch.",
+        "Keep original constructor cap/history only when the current contract or consumer needs it; do not anticipate the later maintenance request, which the reviewer has not received."
+      ]
+    }
+  ]
+}

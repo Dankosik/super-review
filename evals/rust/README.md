@@ -20,3 +20,9 @@ derive/macros, representation and conditional Tokio/Serde/clap/Axum decisions.
 Its neutral input objects and evaluator expectations are separate; existing
 R01-R12 remain unchanged regression inputs. See its explicit execution limits
 before making a behavioral-quality claim.
+
+Use [Rust maintenance](maintenance/README.md) for the disclosed generation-study
+sources: linked states and budgets, conversion round trips, required staging,
+and publisher/storage lifetime. It records a bounded baseline/candidate review
+comparison and preserves existing clear-code and diagnostic counterexamples;
+it is not a fresh superiority benchmark.

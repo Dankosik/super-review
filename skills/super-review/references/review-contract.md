@@ -96,6 +96,13 @@ supported by source evidence, net benefit or effective convention, and the
 relevant preservation constraints. Unresolved remedies stay out of implementation
 advice; specialists need not settle cross-lens tradeoffs before reporting.
 
+One useful candidate does not complete the assigned question. Continue through
+the remaining declarations, transformations and selected profiles in that scope;
+return independent supported burdens as well as the first one. A proposed fix
+may remove several observations, so do not count them twice. Finish the existing
+pass, without a finding quota, another lens or a new whole-source review. Clear
+remaining code can legitimately add no candidates.
+
 ## Coverage
 
 Each task ends as `completed`, `not applicable` with a structural reason, or
