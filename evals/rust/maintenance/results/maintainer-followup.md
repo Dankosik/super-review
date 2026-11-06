@@ -1,0 +1,3 @@
+One correction: [maintenance/README.md:127](/Users/daniil/Projects/Opensource/super-review.codex-rust-review-research/evals/rust/maintenance/README.md:127) says “three bounded comparisons,” but the report documents four pairs: RM01, RM02, RM03, and RM06. Change this to “four source-local comparisons,” or “three clarified instruction areas” if referring to the edited resources.
+
+No supported substantive correction to the three instruction resources or assessment claims. The wording preserves retention cases, distinguishes names from guarantees, confines concurrency checks to proposed simplifications, and limits conclusions to the disclosed comparisons.

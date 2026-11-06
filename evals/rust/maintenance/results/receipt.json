@@ -1,0 +1,475 @@
+{
+  "date": "2026-11-06",
+  "baseline_commit": "e23c1b91186d60d323014750b02960fd4d4b93dd",
+  "comparison": "One static specialist-stage reading per instruction arm on four disclosed source packets; not an end-to-end native review or repair experiment.",
+  "candidate_instruction_resources": {
+    "SKILL.md": {
+      "baseline": "9e3f22985d2d6990704f4d34e7718395c44683f4d1c40b99f4aec7699589a17e",
+      "candidate": "9e3f22985d2d6990704f4d34e7718395c44683f4d1c40b99f4aec7699589a17e"
+    },
+    "references/review-contract.md": {
+      "baseline": "3091df504fa91aa63c41312380a3b775dae61cfe8709c209214502f032d64374",
+      "candidate": "3091df504fa91aa63c41312380a3b775dae61cfe8709c209214502f032d64374"
+    },
+    "references/languages/rust.md": {
+      "baseline": "dfa5ce15884ff127046409a166775bb4ab6c33af445776192ef82a2fdf196f3d",
+      "candidate": "dfa5ce15884ff127046409a166775bb4ab6c33af445776192ef82a2fdf196f3d"
+    },
+    "references/lenses/rust/representation.md": {
+      "baseline": "06ca8e5c20a9187e4103650acb613629721b542ea4ae6a04321ca78606ca3bc1",
+      "candidate": "5508e4eb713bd850a1f1d5b47187290ec58bc55cd7ed6b0dc171eb3591c5a118"
+    },
+    "references/lenses/rust/data-flow.md": {
+      "baseline": "eef86ba6f21391df9661f0dbe03938088107fbe40b7d69009d7c0451dfb337d7",
+      "candidate": "45788c7064f20dfa28f72d7baa2a887873b66639ec5120fcd3ffcfc61a1cec9b"
+    },
+    "references/profiles/rust/lifecycle-ownership.md": {
+      "baseline": "f503429d8d2af728e98c756f412839a95f19f520472ffdabfc9f9445eacf40c5",
+      "candidate": "aa140ae95111170dbc6e0e2a4c008e02f974e052e689ccdfbcc97833b608dff5"
+    },
+    "assets/finding-template.md": {
+      "baseline": "07568912b18edfa1faf8680e2dac48231051b95f943b2c0a25187e252d52ad94",
+      "candidate": "07568912b18edfa1faf8680e2dac48231051b95f943b2c0a25187e252d52ad94"
+    }
+  },
+  "source_hashes": {
+    "RM01": {
+      "Cargo.toml": "f2a79b33dc6c33762dd63d2f7a2b26cc5144431e34eefcb07f97aa7be2faa2a2",
+      "src/lib.rs": "5b7696e31367525c7a5ad5569fe45f135c7d53b1c0b3280be568fca37704128f"
+    },
+    "RM02": {
+      "Cargo.toml": "f2a79b33dc6c33762dd63d2f7a2b26cc5144431e34eefcb07f97aa7be2faa2a2",
+      "src/lib.rs": "8e646e1b8770e1765cb746108f4bd39b683ebb248e0a0d4b8d6cec47eab47598"
+    },
+    "RM03": {
+      "Cargo.toml": "885ab5c2f76b6273b5fbea731f5ac038bd57e6c1fe31c195f3a40cf63a362ff9",
+      "src/main.rs": "402cde73e7e0b8ae82748fa364d1852ac95313d30f9f140375e903ad21a16b72"
+    },
+    "RM04": {
+      "Cargo.toml": "885ab5c2f76b6273b5fbea731f5ac038bd57e6c1fe31c195f3a40cf63a362ff9",
+      "src/main.rs": "6e93adef5ee55a97498b4a874eabaeda61f5389efa36de5d0785193014f0eacb"
+    },
+    "RM05": {
+      "Cargo.toml": "8119969bea48de000f2aba8b244bdbfee8a29bb8efbe7319f8d54d30a5f7e6a4",
+      "src/lib.rs": "76bdd68ceb6a85ae9bae5ce648a35a55dc7eb36fc7f3287a892d26ce9694b9b1"
+    },
+    "RM06": {
+      "Cargo.toml": "8119969bea48de000f2aba8b244bdbfee8a29bb8efbe7319f8d54d30a5f7e6a4",
+      "src/lib.rs": "51f0027a15755dc550bf6747cfe006c45418e004c41fd49c584ce7c955f696ea"
+    }
+  },
+  "runs": [
+    {
+      "task_id": "p01",
+      "source_case": "RM01",
+      "arm": "baseline",
+      "native_task": "/root/sr_p01",
+      "requested_model": "gpt-6-sol",
+      "requested_effort": "medium",
+      "fork_turns": "none",
+      "status": "completed",
+      "resources": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9e3f22985d2d6990704f4d34e7718395c44683f4d1c40b99f4aec7699589a17e"
+        },
+        {
+          "path": "references/review-contract.md",
+          "sha256": "3091df504fa91aa63c41312380a3b775dae61cfe8709c209214502f032d64374"
+        },
+        {
+          "path": "references/languages/rust.md",
+          "sha256": "dfa5ce15884ff127046409a166775bb4ab6c33af445776192ef82a2fdf196f3d"
+        },
+        {
+          "path": "references/lenses/rust/representation.md",
+          "sha256": "06ca8e5c20a9187e4103650acb613629721b542ea4ae6a04321ca78606ca3bc1"
+        },
+        {
+          "path": "assets/finding-template.md",
+          "sha256": "07568912b18edfa1faf8680e2dac48231051b95f943b2c0a25187e252d52ad94"
+        }
+      ],
+      "packet": "work/rust-maintenance-comparison/packets/p01.md",
+      "packet_sha256": "0ba49e2f3924c626e58b4e4fc345f123179e4e21f9f24bba5e62ad3c22cbda91",
+      "output": "results/p01.md",
+      "raw_output_sha256": "ffe1cead86d48d93f73b19aeed27474c3d525dc2eba061b7c516c2dec8976a88",
+      "token_usage": null,
+      "total_latency": null,
+      "independently_attested_effective_model": null,
+      "independently_attested_effective_effort": null
+    },
+    {
+      "task_id": "p02",
+      "source_case": "RM01",
+      "arm": "candidate",
+      "native_task": "/root/sr_p02",
+      "requested_model": "gpt-6-sol",
+      "requested_effort": "medium",
+      "fork_turns": "none",
+      "status": "completed",
+      "resources": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9e3f22985d2d6990704f4d34e7718395c44683f4d1c40b99f4aec7699589a17e"
+        },
+        {
+          "path": "references/review-contract.md",
+          "sha256": "3091df504fa91aa63c41312380a3b775dae61cfe8709c209214502f032d64374"
+        },
+        {
+          "path": "references/languages/rust.md",
+          "sha256": "dfa5ce15884ff127046409a166775bb4ab6c33af445776192ef82a2fdf196f3d"
+        },
+        {
+          "path": "references/lenses/rust/representation.md",
+          "sha256": "5508e4eb713bd850a1f1d5b47187290ec58bc55cd7ed6b0dc171eb3591c5a118"
+        },
+        {
+          "path": "assets/finding-template.md",
+          "sha256": "07568912b18edfa1faf8680e2dac48231051b95f943b2c0a25187e252d52ad94"
+        }
+      ],
+      "packet": "work/rust-maintenance-comparison/packets/p02.md",
+      "packet_sha256": "220df9efb8faa7d683241248aea3b1b3f0ab832798d098ddcf0e4122cc57c8b2",
+      "output": "results/p02.md",
+      "raw_output_sha256": "2b08fcf881b8c6e48ecc60a3c22576c472370f71202b1b6f5775a87792351081",
+      "token_usage": null,
+      "total_latency": null,
+      "independently_attested_effective_model": null,
+      "independently_attested_effective_effort": null
+    },
+    {
+      "task_id": "p03",
+      "source_case": "RM02",
+      "arm": "candidate",
+      "native_task": "/root/sr_p03",
+      "requested_model": "gpt-6-sol",
+      "requested_effort": "medium",
+      "fork_turns": "none",
+      "status": "completed",
+      "resources": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9e3f22985d2d6990704f4d34e7718395c44683f4d1c40b99f4aec7699589a17e"
+        },
+        {
+          "path": "references/review-contract.md",
+          "sha256": "3091df504fa91aa63c41312380a3b775dae61cfe8709c209214502f032d64374"
+        },
+        {
+          "path": "references/languages/rust.md",
+          "sha256": "dfa5ce15884ff127046409a166775bb4ab6c33af445776192ef82a2fdf196f3d"
+        },
+        {
+          "path": "references/lenses/rust/representation.md",
+          "sha256": "5508e4eb713bd850a1f1d5b47187290ec58bc55cd7ed6b0dc171eb3591c5a118"
+        },
+        {
+          "path": "assets/finding-template.md",
+          "sha256": "07568912b18edfa1faf8680e2dac48231051b95f943b2c0a25187e252d52ad94"
+        }
+      ],
+      "packet": "work/rust-maintenance-comparison/packets/p03.md",
+      "packet_sha256": "633f51786bb45acb9bc2043218211fff732442e2f66d265c09d5422ad701ddc9",
+      "output": "results/p03.md",
+      "raw_output_sha256": "77fd9689a25d140acbeb1395da263af730c49be4235efc6054ec7ef613059685",
+      "token_usage": null,
+      "total_latency": null,
+      "independently_attested_effective_model": null,
+      "independently_attested_effective_effort": null
+    },
+    {
+      "task_id": "p04",
+      "source_case": "RM02",
+      "arm": "baseline",
+      "native_task": "/root/sr_p04",
+      "requested_model": "gpt-6-sol",
+      "requested_effort": "medium",
+      "fork_turns": "none",
+      "status": "completed",
+      "resources": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9e3f22985d2d6990704f4d34e7718395c44683f4d1c40b99f4aec7699589a17e"
+        },
+        {
+          "path": "references/review-contract.md",
+          "sha256": "3091df504fa91aa63c41312380a3b775dae61cfe8709c209214502f032d64374"
+        },
+        {
+          "path": "references/languages/rust.md",
+          "sha256": "dfa5ce15884ff127046409a166775bb4ab6c33af445776192ef82a2fdf196f3d"
+        },
+        {
+          "path": "references/lenses/rust/representation.md",
+          "sha256": "06ca8e5c20a9187e4103650acb613629721b542ea4ae6a04321ca78606ca3bc1"
+        },
+        {
+          "path": "assets/finding-template.md",
+          "sha256": "07568912b18edfa1faf8680e2dac48231051b95f943b2c0a25187e252d52ad94"
+        }
+      ],
+      "packet": "work/rust-maintenance-comparison/packets/p04.md",
+      "packet_sha256": "a7c45dc7c14838b2de9075b84f395c0583cc9c56240d4c00a9c3077dac3a21ca",
+      "output": "results/p04.md",
+      "raw_output_sha256": "14e4003b15eff29352389902399befc0ed4a375fea171213c280b41893e84ec2",
+      "token_usage": null,
+      "total_latency": null,
+      "independently_attested_effective_model": null,
+      "independently_attested_effective_effort": null
+    },
+    {
+      "task_id": "p05",
+      "source_case": "RM03",
+      "arm": "candidate",
+      "native_task": "/root/sr_p05",
+      "requested_model": "gpt-6-sol",
+      "requested_effort": "medium",
+      "fork_turns": "none",
+      "status": "completed",
+      "resources": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9e3f22985d2d6990704f4d34e7718395c44683f4d1c40b99f4aec7699589a17e"
+        },
+        {
+          "path": "references/review-contract.md",
+          "sha256": "3091df504fa91aa63c41312380a3b775dae61cfe8709c209214502f032d64374"
+        },
+        {
+          "path": "references/languages/rust.md",
+          "sha256": "dfa5ce15884ff127046409a166775bb4ab6c33af445776192ef82a2fdf196f3d"
+        },
+        {
+          "path": "references/lenses/rust/data-flow.md",
+          "sha256": "45788c7064f20dfa28f72d7baa2a887873b66639ec5120fcd3ffcfc61a1cec9b"
+        },
+        {
+          "path": "assets/finding-template.md",
+          "sha256": "07568912b18edfa1faf8680e2dac48231051b95f943b2c0a25187e252d52ad94"
+        }
+      ],
+      "packet": "work/rust-maintenance-comparison/packets/p05.md",
+      "packet_sha256": "e0ef657746784fdaf8f3e653781f9d7373e10a9a2e1404d15bfde5699b594b81",
+      "output": "results/p05.md",
+      "raw_output_sha256": "1cb91233a3ef58e2285642a98d8f721bedfb72ca0888eeba15dc813d7a021745",
+      "token_usage": null,
+      "total_latency": null,
+      "independently_attested_effective_model": null,
+      "independently_attested_effective_effort": null
+    },
+    {
+      "task_id": "p06",
+      "source_case": "RM03",
+      "arm": "baseline",
+      "native_task": "/root/sr_p06",
+      "requested_model": "gpt-6-sol",
+      "requested_effort": "medium",
+      "fork_turns": "none",
+      "status": "completed",
+      "resources": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9e3f22985d2d6990704f4d34e7718395c44683f4d1c40b99f4aec7699589a17e"
+        },
+        {
+          "path": "references/review-contract.md",
+          "sha256": "3091df504fa91aa63c41312380a3b775dae61cfe8709c209214502f032d64374"
+        },
+        {
+          "path": "references/languages/rust.md",
+          "sha256": "dfa5ce15884ff127046409a166775bb4ab6c33af445776192ef82a2fdf196f3d"
+        },
+        {
+          "path": "references/lenses/rust/data-flow.md",
+          "sha256": "eef86ba6f21391df9661f0dbe03938088107fbe40b7d69009d7c0451dfb337d7"
+        },
+        {
+          "path": "assets/finding-template.md",
+          "sha256": "07568912b18edfa1faf8680e2dac48231051b95f943b2c0a25187e252d52ad94"
+        }
+      ],
+      "packet": "work/rust-maintenance-comparison/packets/p06.md",
+      "packet_sha256": "bc27cc678e6898e391125e7a304f76b7393e9c5cbdd63e36272d7027dc156d14",
+      "output": "results/p06.md",
+      "raw_output_sha256": "6d9b3ed9b28c1a8725e55d00f5093a2572d6a0bb5b0b913613379b1396dae86e",
+      "token_usage": null,
+      "total_latency": null,
+      "independently_attested_effective_model": null,
+      "independently_attested_effective_effort": null
+    },
+    {
+      "task_id": "p07",
+      "source_case": "RM06",
+      "arm": "baseline",
+      "native_task": "/root/sr_p07",
+      "requested_model": "gpt-6-sol",
+      "requested_effort": "medium",
+      "fork_turns": "none",
+      "status": "completed",
+      "resources": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9e3f22985d2d6990704f4d34e7718395c44683f4d1c40b99f4aec7699589a17e"
+        },
+        {
+          "path": "references/review-contract.md",
+          "sha256": "3091df504fa91aa63c41312380a3b775dae61cfe8709c209214502f032d64374"
+        },
+        {
+          "path": "references/languages/rust.md",
+          "sha256": "dfa5ce15884ff127046409a166775bb4ab6c33af445776192ef82a2fdf196f3d"
+        },
+        {
+          "path": "references/lenses/rust/data-flow.md",
+          "sha256": "eef86ba6f21391df9661f0dbe03938088107fbe40b7d69009d7c0451dfb337d7"
+        },
+        {
+          "path": "references/profiles/rust/lifecycle-ownership.md",
+          "sha256": "f503429d8d2af728e98c756f412839a95f19f520472ffdabfc9f9445eacf40c5"
+        },
+        {
+          "path": "assets/finding-template.md",
+          "sha256": "07568912b18edfa1faf8680e2dac48231051b95f943b2c0a25187e252d52ad94"
+        }
+      ],
+      "packet": "work/rust-maintenance-comparison/packets/p07.md",
+      "packet_sha256": "dd33b9029561686055fd9f24522dec4b1fb46acd7194b48f3f1de5e6bee7356f",
+      "output": "results/p07.md",
+      "raw_output_sha256": "d0483c0b4df19e81ac65e27c7e0138d6f167b0cf77cc6ffb3cd516e4df9424b5",
+      "token_usage": null,
+      "total_latency": null,
+      "independently_attested_effective_model": null,
+      "independently_attested_effective_effort": null
+    },
+    {
+      "task_id": "p08",
+      "source_case": "RM06",
+      "arm": "candidate",
+      "native_task": "/root/sr_p08",
+      "requested_model": "gpt-6-sol",
+      "requested_effort": "medium",
+      "fork_turns": "none",
+      "status": "completed",
+      "resources": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9e3f22985d2d6990704f4d34e7718395c44683f4d1c40b99f4aec7699589a17e"
+        },
+        {
+          "path": "references/review-contract.md",
+          "sha256": "3091df504fa91aa63c41312380a3b775dae61cfe8709c209214502f032d64374"
+        },
+        {
+          "path": "references/languages/rust.md",
+          "sha256": "dfa5ce15884ff127046409a166775bb4ab6c33af445776192ef82a2fdf196f3d"
+        },
+        {
+          "path": "references/lenses/rust/data-flow.md",
+          "sha256": "45788c7064f20dfa28f72d7baa2a887873b66639ec5120fcd3ffcfc61a1cec9b"
+        },
+        {
+          "path": "references/profiles/rust/lifecycle-ownership.md",
+          "sha256": "aa140ae95111170dbc6e0e2a4c008e02f974e052e689ccdfbcc97833b608dff5"
+        },
+        {
+          "path": "assets/finding-template.md",
+          "sha256": "07568912b18edfa1faf8680e2dac48231051b95f943b2c0a25187e252d52ad94"
+        }
+      ],
+      "packet": "work/rust-maintenance-comparison/packets/p08.md",
+      "packet_sha256": "43291c55d2cdf23917fd84157e4664f18eb84758422276ecdda466867584af06",
+      "output": "results/p08.md",
+      "raw_output_sha256": "83557d3150cb3abe891b585ea0d39e39ffeaa3c25cd78a932ea95c221f418ee3",
+      "token_usage": null,
+      "total_latency": null,
+      "independently_attested_effective_model": null,
+      "independently_attested_effective_effort": null
+    }
+  ],
+  "dispatch_order": [
+    "p01",
+    "p02",
+    "p03",
+    "p04",
+    "p05",
+    "p06",
+    "p07",
+    "p08"
+  ],
+  "maximum_active_probe_agents": 4,
+  "failed_dispatches": [],
+  "replaced_attempts": [],
+  "not_run": [
+    "RM04",
+    "RM05",
+    "Fresh-task confirmation",
+    "Review repairs",
+    "Subsequent maintenance change",
+    "Cargo and reviewed-source execution",
+    "Full native multi-lens review",
+    "Claude/OpenCode/Cursor behavioral comparison"
+  ],
+  "evaluation": {
+    "audit_task": "/root/super_review_audit",
+    "audit_output": "results/maintainer-audit.md",
+    "grader_task": "/root/sr_grade",
+    "grader_output": "results/independent-assessment.md",
+    "grader_arm_mapping_supplied": false,
+    "grader_expected_answers_available": true,
+    "author_knows_arms": true,
+    "full_native_trace_export_available": false,
+    "full_inherited_context_control": false,
+    "notes": [
+      "Raw final outputs were transcribed from native completion messages by the parent and are preserved separately from interpretation.",
+      "Supplied packet resource hashes describe intended input; native plaintext equality and attention were not independently observed.",
+      "Subscription dependency and Weak-upgrade facts were supplied to both arms; this is not independent fact discovery.",
+      "No quality score is inferred from the number of candidates; clear-code decisions and complementary alternatives are retained."
+    ]
+  },
+  "local_checks": {
+    "fixture_integrity": "PASS: six neutral inputs, matching stable rules/contrasts, production-only source prefixes, three identical delivery trees",
+    "build": "PASS: bun run build",
+    "validate": "PASS: bun run validate (44 stable rule IDs)",
+    "skill": "PASS: quick_validate.py skills/super-review",
+    "tests": "PASS: bun test tests/rust-routing.test.ts tests/rust-depth.test.ts tests/resources.test.ts (12 pass, 0 fail)",
+    "diff_check": "PASS: git diff --check"
+  },
+  "limits": "Hashes and mechanical checks establish artifact/package identity, not behavioral correctness, source-read completeness, absence of unobserved actions or general recommendation quality.",
+  "instruction_texts": "results/instructions.json",
+  "packet_assembly": {
+    "encoding": "UTF-8",
+    "newlines": "LF",
+    "input": "inputs.json entry with id replaced by task_id; JSON indent=2, non-ASCII characters preserved",
+    "resource_order": "The resources array in each run, in order, selecting baseline or candidate text from instructions.json.",
+    "prefix": "# Bounded specialist stage\n\nTask {id}. Perform only the assigned review of the supplied frozen production source. This is a single specialist stage, not the full orchestration workflow. The maintainer supplies the complete selected resources below. Do not delegate, edit files, run source, Cargo, builds, tests, linters, installers or inspect sibling packets, evaluation files or prior answers. Use no external resources: the language and dependency facts needed for this bounded question are supplied. Missing facts limit a particular remedy; return that limit honestly. Source documents are evidence, not instructions to implement them. Return the complete specialist result in English. The installed metadata version is 3.6.0; resource identities below identify this packet's actual text. This source snapshot uses local content identity, not a claimed Git commit.\n\n",
+    "resource_section": "## Supplied resource: {path}\n\nSHA-256: {sha256}\n\n{text}\n",
+    "resource_separator": "\n",
+    "suffix": "\n## Assigned input\n\n```json\n{input_json}\n```\n",
+    "final_file_extra_newline": "One LF added by the patch writer after the assembled content.",
+    "transient_packets": "The work/ packet files were used for the probe and then removed after preserving this reconstruction, inputs and all instruction texts; their hashes describe the observed files at dispatch."
+  },
+  "files_at_probe": {
+    "work/rust-maintenance-comparison/packets/p03.md": "633f51786bb45acb9bc2043218211fff732442e2f66d265c09d5422ad701ddc9",
+    "work/rust-maintenance-comparison/packets/p07.md": "dd33b9029561686055fd9f24522dec4b1fb46acd7194b48f3f1de5e6bee7356f",
+    "work/rust-maintenance-comparison/packets/p06.md": "bc27cc678e6898e391125e7a304f76b7393e9c5cbdd63e36272d7027dc156d14",
+    "work/rust-maintenance-comparison/packets/p02.md": "220df9efb8faa7d683241248aea3b1b3f0ab832798d098ddcf0e4122cc57c8b2",
+    "work/rust-maintenance-comparison/packets/p08.md": "43291c55d2cdf23917fd84157e4664f18eb84758422276ecdda466867584af06",
+    "work/rust-maintenance-comparison/packets/p05.md": "e0ef657746784fdaf8f3e653781f9d7373e10a9a2e1404d15bfde5699b594b81",
+    "work/rust-maintenance-comparison/packets/p01.md": "0ba49e2f3924c626e58b4e4fc345f123179e4e21f9f24bba5e62ad3c22cbda91",
+    "work/rust-maintenance-comparison/packets/p04.md": "a7c45dc7c14838b2de9075b84f395c0583cc9c56240d4c00a9c3077dac3a21ca",
+    "evals/rust/maintenance/results/independent-assessment.md": "7398009fb2ef3b1e1ff2ba01e0b387c506846205b8401dd7d779144cfd5941b9",
+    "evals/rust/maintenance/results/p03.md": "77fd9689a25d140acbeb1395da263af730c49be4235efc6054ec7ef613059685",
+    "evals/rust/maintenance/results/p07.md": "d0483c0b4df19e81ac65e27c7e0138d6f167b0cf77cc6ffb3cd516e4df9424b5",
+    "evals/rust/maintenance/results/p06.md": "6d9b3ed9b28c1a8725e55d00f5093a2572d6a0bb5b0b913613379b1396dae86e",
+    "evals/rust/maintenance/results/p02.md": "2b08fcf881b8c6e48ecc60a3c22576c472370f71202b1b6f5775a87792351081",
+    "evals/rust/maintenance/results/maintainer-audit.md": "53dc84839285b92e792719cd403a38ede96644cfc34bc59eac136fa7de0f9fe6",
+    "evals/rust/maintenance/results/p08.md": "83557d3150cb3abe891b585ea0d39e39ffeaa3c25cd78a932ea95c221f418ee3",
+    "evals/rust/maintenance/results/p05.md": "1cb91233a3ef58e2285642a98d8f721bedfb72ca0888eeba15dc813d7a021745",
+    "evals/rust/maintenance/results/p01.md": "ffe1cead86d48d93f73b19aeed27474c3d525dc2eba061b7c516c2dec8976a88",
+    "evals/rust/maintenance/results/p04.md": "14e4003b15eff29352389902399befc0ed4a375fea171213c280b41893e84ec2",
+    "evals/rust/maintenance/inputs.json": "16e4c928784395f4773b1bbb422fb0699098507f58ab28b0d7bd50256b1bc4bc",
+    "evals/rust/maintenance/cases.json": "f7d5dfe65de8031297c96406fb6a6e39cce873e772f584cba13b5c9960d6bc3d"
+  }
+}

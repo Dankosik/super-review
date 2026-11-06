@@ -69,12 +69,16 @@ supporting context. Explain
 the reading/maintenance task, supported transformation, net benefit, source-supported keep
 alternative, and relevant preservation constraints. Include affected files and
 originating candidate IDs. Make the bounded change usable by a coding agent;
-small examples may help, but a full patch or new feature design is unnecessary.
+retain the minimal resulting-shape sketch when a structural recommendation needs
+it to show the improvement. Do not replace it with only a pattern name, or expand
+a clear local edit into a design exercise. A full patch or new feature design is unnecessary.
 Repeat for **every** accepted recommendation, including merged contributions.
 
 ## Implementation order
 
 State only real dependencies, independent accepted changes, or labeled alternatives.
+Use the reconciled resulting design: recommendations that were alternatives must
+not become consecutive mandatory steps. Name any remaining shared prerequisite.
 Unresolved observations are not implementation steps. Do not manufacture a project
 for a simple change.
 

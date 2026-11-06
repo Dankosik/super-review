@@ -1,0 +1,77 @@
+{
+  "description": "Evaluator-only expectations. A different supported remedy or a grounded decision to retain code is valid; do not grade keyword counts.",
+  "cases": [
+    {
+      "id": "RM01",
+      "rule": "rust.representation.express-concepts",
+      "contrasts": [
+        "RM02"
+      ],
+      "expect": [
+        "Identify the relationship between count, pending, ended and failed through construction and transitions; a data-carrying phase enum is a supported candidate, not a required spelling.",
+        "Assess remaining budget versus max/reserved from actual consumers; preserve whole-pair reservation before output and the output-limit stop boundary.",
+        "Preserve first-error terminal behavior and zero-budget/ended precedence. Do not imply that the proposal was compiled or proved equivalent."
+      ]
+    },
+    {
+      "id": "RM02",
+      "rule": "rust.representation.express-concepts",
+      "contrasts": [
+        "RM01"
+      ],
+      "expect": [
+        "Recognize that the decoder already puts mutually exclusive phases and their payloads in State and stores the remaining capacity.",
+        "Do not demand new typestate wrappers, split independently varying facts into mutually exclusive choices or reduce memory by changing streaming/output behavior.",
+        "A source-specific small improvement is allowed; do not require a finding or award points for one."
+      ]
+    },
+    {
+      "id": "RM03",
+      "rule": "rust.data.make-transformations-visible",
+      "contrasts": [
+        "RM04"
+      ],
+      "expect": [
+        "Examine parsing already-valid UTF-8 as bytes followed by repeated String::from_utf8 conversions; distinguish a concrete comprehension burden from an unsupported correctness allegation.",
+        "A chars/String transformation is a supported option when preserving the stated dialect, but a grounded byte-based alternative is valid too.",
+        "Retain complete parsing before header/width validation and withheld output until validation completes, including write/flush failure reporting. Do not streamline away diagnostic categories or precedence."
+      ]
+    },
+    {
+      "id": "RM04",
+      "rule": "rust.data.make-transformations-visible",
+      "contrasts": [
+        "RM03"
+      ],
+      "expect": [
+        "Recognize field-oriented parsing as an already coherent unit of work; do not demand an explicit parser-state type merely because a peer example uses one.",
+        "The output's chars/encode_utf8 round trip can be compared with byte quote escaping; no speedup is established.",
+        "Keep buffering and Unicode text semantics. Fewer containers alone is insufficient to replace complete-document validation with streaming output."
+      ]
+    },
+    {
+      "id": "RM05",
+      "rule": "rust.data.make-transformations-visible",
+      "contrasts": [
+        "RM06"
+      ],
+      "expect": [
+        "Separate publisher lifetime from the Arc<Mutex<State>> lifetime retained by subscriptions; do not equate strong-reference count with the number of brokers.",
+        "Retain queue mutation before unlock and callbacks/destruction after unlock when considering a simpler mechanism. Waker cloning, replacement and destruction participate in that ownership protocol.",
+        "Handwritten queue/waker coordination can carry a real maintenance cost, but replacing it with channels must account for atomic publication, receive cancellation and callback timing. A bug-only allegation or unproved equivalent channel rewrite is not a ready clarity recommendation."
+      ]
+    },
+    {
+      "id": "RM06",
+      "rule": "rust.data.make-transformations-visible",
+      "contrasts": [
+        "RM05"
+      ],
+      "expect": [
+        "Do not remove the explicit broker count solely because Subscription stores Weak: a temporary upgrade in Subscription::drop can outlive the final Broker's own Arc, whereas dropping the final publisher has immediate close semantics.",
+        "A separate publisher owner can be considered if its added boundary removes manual lifecycle coordination under the same contract; retaining the current counter is also valid.",
+        "Consider send/drop callbacks only to assess a proposed ownership simplification; no independent deadlock audit or promise of tested equivalence. Sending after releasing the shared guard is not by itself a remedy preserving global publication order."
+      ]
+    }
+  ]
+}

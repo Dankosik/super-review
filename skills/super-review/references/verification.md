@@ -35,6 +35,15 @@ gap outside implementation advice. Do not turn a positioning failure into either
 acceptance of an unsupported claim or rejection of a separately supported burden.
 This uses already supplied matching bytes, not another full scan.
 
+Check the factual relationship in the explanation, not just its source location.
+Trace the relevant construction or branch and a source-supported countercase:
+can the named fields coexist, does this operation add or remove data, and is a
+guarantee enforced by the type or only by the current control flow? Distinguish
+raw stored values from the effective state callers can observe. Correct an
+overstated explanation when the narrower maintenance burden survives; an accurate
+remedy does not make an inaccurate premise acceptable. This is bounded evidence
+for the recommendation, not a new correctness audit of the program.
+
 Separate two decisions: is the observation supported, and is the remedy ready
 for implementation? A sound observation with an unsupported remedy survives as
 `unresolved`, with its specific gap, unless a revised supported remedy resolves
@@ -77,6 +86,15 @@ or renaming and API stability can conflict. Choose a coherent supported change o
 label real alternatives with tradeoffs. Merge by underlying change and affected
 scope, not merely the rule or similar wording. Preserve all participating locations
 and useful rationale; do not give a coding agent contradictory mandatory edits.
+
+Compare the proposed resulting interfaces, owners and data flow at shared sites.
+Two individually valid remedies can depend on incompatible intermediate choices:
+one may borrow from an owner another removes. Compose a compatible result, state a
+real prerequisite, or present alternatives; do not accept both unchanged because
+each passed against the original source. Edits sharing a file are not inherently
+in conflict. Independent improvements remain independent, and a renamed symbol
+can simply be carried through a compatible extraction. Reassess only the advice
+whose premise a selected recommendation changes.
 
 Map every accepted candidate to the final report, including merges. Keep rejected
 and unresolved candidates in a compact decision appendix; coverage status remains
