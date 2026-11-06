@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.7.0 — 2026-11-06
+
+- Guide Rust reviews toward representations with fewer manually maintained relationships and clearer data transformations, while retaining required staging and lifecycle guarantees.
+- Verify factual premises, complete the assigned scope after the first finding, and include a minimal resulting-shape sketch when structural advice needs one.
+- Reconcile recommendations against a coherent resulting design, preserving compatible edits and distinguishing genuine alternatives.
+- Preserve sixteen bounded static review outputs, independent assessments, and a code-only application with matching follow-up edits. Results are mixed; general quality gains, runtime correctness and maintenance-time savings are not established.
+- Keep the eight base questions, 44 rule IDs, read-only review scope, native adapters and model profiles unchanged.
+
 ## 3.6.0 — 2026-11-06
 
 - Have duplication reviews in Go, Rust, TypeScript and Java search the whole snapshot beyond their assigned area, so a large review can find copies across its partitions.
