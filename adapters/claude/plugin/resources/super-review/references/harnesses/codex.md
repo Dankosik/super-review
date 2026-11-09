@@ -9,7 +9,12 @@ effort. Use [native source access](source-access.md) and the workflow's neutral
 task packet. Read the installed skill and resources through ordinary file tools.
 
 Use one lens per fresh native child context, without inherited conversation or
-peer reports. Select a model for each assigned task from its pinned scope and
+peer reports. Spawn each child as the default agent: omit `agent_type`. The
+roles the spawn tool lists come from the reviewed repository or the user's agent
+library, and a role's own instructions and output format replace this review's
+packet, even when its name is `specialist` or `reviewer`. Repeat the candidate
+format in the packet. A child that returns another format, such as a single
+decision record, has not completed its task: rerun it as the default agent. Select a model for each assigned task from its pinned scope and
 known source signals, then pass the model and `medium` reasoning effort as native
 spawn arguments. Use `gpt-6-luna` only when the question is bounded to local
 declarations and complete, available callers, with no cross-file contract,
