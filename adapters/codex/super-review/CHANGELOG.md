@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.9.1 — 2026-11-09
+
+- In Codex, start each specialist as the default agent instead of a role the reviewed repository defines. On the template, the orchestrator had picked its `specialist-agent` role, whose "return one decision record" instruction replaced the review packet: ten passes over `infra-cache` returned five findings, and six lenses returned none.
+- Treat a child result in another format, such as a single decision record, as an unfinished task and rerun it as the default agent.
+
 ## 3.9.0 — 2026-11-09
 
 - Have duplication reviews in Go, Rust, TypeScript and Java search from the decisions the code makes, with keys a rewrite keeps: the value in other spellings and units, external identifiers and sibling signatures, so renamed copies are found.

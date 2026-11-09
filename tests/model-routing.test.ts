@@ -20,6 +20,10 @@ test("active adapters expose the selected model family and native effort control
   expect(codex).toContain("`gpt-6-sol`");
   expect(codex).toContain("An explicit user specialist model/effort choice overrides");
   expect(codex).not.toContain("gpt-5.6-terra");
+  // A repository role such as `specialist-agent` replaces the review packet's
+  // output contract; children must run as the default agent.
+  expect(codex).toContain("omit `agent_type`");
+  expect(codex).toContain("rerun it as the default agent");
   for (const path of ["adapters/claude/skill.md", "adapters/claude/orchestrator.md", "adapters/claude/specialist.md"]) {
     const match = /^---\n([\s\S]*?)\n---/.exec(read(path));
     const role = Bun.YAML.parse(match![1]) as Record<string, unknown>;
