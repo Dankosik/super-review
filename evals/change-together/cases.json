@@ -61,6 +61,94 @@
       "contrasts": [
         "CT01"
       ]
+    },
+    {
+      "id": "CT09",
+      "kind": "useful",
+      "expect": [
+        "Report that webhooks/src/send.rs still classifies retries with the old 502 | 503 set the change replaced; anchor in the change and recommend one owner of the retry status set.",
+        "Do not judge whether 429 should be retried."
+      ],
+      "contrasts": [
+        "CT10"
+      ]
+    },
+    {
+      "id": "CT10",
+      "kind": "retain",
+      "expect": [
+        "Keep counts_toward_trip separate: it encodes a different, documented breaker policy with an independent owner.",
+        "Return no candidate."
+      ],
+      "contrasts": [
+        "CT09"
+      ]
+    },
+    {
+      "id": "CT11",
+      "kind": "useful",
+      "expect": [
+        "Report the worker's 8_388_608 check as a renamed copy of MAX_UPLOAD_BYTES found by the value in another spelling; recommend one shared owner.",
+        "Do not require the copy to share a name; preserve the TooLarge error."
+      ],
+      "contrasts": [
+        "CT12"
+      ]
+    },
+    {
+      "id": "CT12",
+      "kind": "retain",
+      "expect": [
+        "Keep the metrics buffer capacity separate: equal value, unrelated decision with its own reason.",
+        "Return no candidate."
+      ],
+      "contrasts": [
+        "CT11"
+      ]
+    },
+    {
+      "id": "CT13",
+      "kind": "useful",
+      "expect": [
+        "Observe that as_str and FromStr are two hand-maintained tables over one key set and that the reverse match with a `_` arm is not compile-connected; recommend deriving parsing from the exhaustive as_str, for example through a variant list, and name the remaining variant-list edit.",
+        "Treat it as a coordinated-edit burden, not a current defect; both tables are complete today."
+      ],
+      "contrasts": [
+        "CT14"
+      ]
+    },
+    {
+      "id": "CT14",
+      "kind": "retain",
+      "expect": [
+        "Keep the design: parsing already derives from as_str through ALL, so the names live in one table; the variant list is a smaller remaining edit, not a candidate.",
+        "Do not recommend a derive crate, another mapping or a test."
+      ],
+      "contrasts": [
+        "CT13"
+      ]
+    },
+    {
+      "id": "CT15",
+      "kind": "useful",
+      "expect": [
+        "Report the chart's proxy-body-size as a partner copy of maxBodyBytes outside Go source, anchored in server/limits.go; recommend one owner such as a chart value passed to the server.",
+        "Read the YAML as evidence only; do not review chart style."
+      ],
+      "contrasts": [
+        "CT16"
+      ]
+    },
+    {
+      "id": "CT16",
+      "kind": "retain",
+      "expect": [
+        "Keep the design: the chart's one value feeds both the ingress annotation and MAX_BODY_BYTES; the Go fallback is a local default.",
+        "Return no candidate for the 1 << 20 default."
+      ],
+      "contrasts": [
+        "CT15"
+      ]
     }
   ]
 }

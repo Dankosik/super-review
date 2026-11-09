@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.9.0 — 2026-11-09
+
+- Have duplication reviews in Go, Rust, TypeScript and Java search from the decisions the code makes, with keys a rewrite keeps: the value in other spellings and units, external identifiers and sibling signatures, so renamed copies are found.
+- When a change edits a decision, search for the old value too, so a copy the change left behind is reported.
+- Read both directions of a table over a key set: a reverse lookup ending in a wildcard is not connected by the compiler.
+- Treat configuration, charts, migrations, schemas and protocol files as possible partners, anchored in reviewed source; a local-run fallback is not a second owner.
+- In a live replay on `jobs-worker`, the known histogram copy was named in 2 of 3 runs, against 0 of 2 for 3.8.0. Small packets showed no regression. The eight base questions, 44 rule IDs and the read-only scope are unchanged.
+
 ## 3.8.0 — 2026-11-09
 
 - Have Rust reviews recommend deleting comments that restate or contradict the code, while keeping reasons, external constraints and doc comments that become help or API text.

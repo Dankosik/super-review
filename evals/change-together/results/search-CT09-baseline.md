@@ -1,0 +1,19 @@
+<!-- model: claude-sonnet-5-5; native Claude Code subagent, fresh context; 2026-11-09 -->
+## Task result: CT09
+
+- Snapshot: local snapshot at head, change diff supplied in packet CT09; source location is the packet's `files`.
+- Instructions: super-review review-contract, rust language note and rust duplication lens; content identity unverified.
+- Assignment: lens `duplication`, profile `rust.duplication.share-knowledge`, scope `delivery/src/retry.rs` (change review). No team override.
+- Status: completed
+- Inspected evidence: `Cargo.toml` (edition 2024, rust-version 1.90), `delivery/src/retry.rs` (`RETRY_STATUSES`, `retryable`), `webhooks/src/send.rs` (`should_redeliver`), the diff, and the context fact. The snapshot has no other files, so there are no other callers or copies to search.
+- Coverage: the one changed declaration and the one other copy of the status-code decision in the snapshot are both read. Test code, generated files and vendor trees are absent from the snapshot. Nothing required is missing.
+- New applicability signals: none
+
+## C-CT09-1: The retry-status decision is encoded in two places, and the change updated only one of them
+
+- Change anchor: `delivery/src/retry.rs`, `RETRY_STATUSES`, head/new: `&[429, 502, 503]`. The diff adds 429 to the old `&[502, 503]`. The other copy is `webhooks/src/send.rs`, `should_redeliver`, supporting context: `matches!(status, 502 | 503)`. That function still has the old list, so after this change the two copies disagree on 429. The edit shows the coordinated-edit cost this lens looks for: the policy changed in one file and the second copy was not touched.
+- Basis: `rust.duplication.share-knowledge`. This is a repeated domain decision, not a convention-only point.
+- Observation: The context states that both services retry outbound HTTP calls "under the one retry policy the platform team documents for upstream status codes". So the two lists express one decision and are not independent concepts. Their contents were identical (502, 503) before the change. After the change `delivery` treats 429 as retryable and `webhooks` does not. Nothing connects the copies, because one is a slice constant and the other is a `matches!` pattern, so the compiler cannot flag the drift. A maintainer who changes the policy must know to edit both files, and nothing in the code points them to the second one. The snapshot has no stated reason for `webhooks` to omit 429, so the divergence reads as drift from the shared policy, not as a deliberate difference.
+- Remedy: Give the status list one owner and have both callers use it. `delivery::retry::RETRY_STATUSES` and `retryable` are already public and already hold the decision. `webhooks::send::should_redeliver` could call `retryable(status)`, or both could move into a small shared module or crate. Where the shared form should live is a dependency-direction decision. The snapshot has no `webhooks` manifest, so whether `webhooks` may depend on `delivery` cannot be checked. Sketch: `pub fn should_redeliver(status: u16) -> bool { delivery::retry::retryable(status) }`. If `webhooks` is meant to retry a different set, the strongest keep alternative is to leave the lists separate and name that difference at the `webhooks` site, which makes the 429 gap visible as deliberate.
+- Preserve: `retryable` keeps its `u16 -> bool` signature and the same linear lookup. Whether `webhooks` should now retry 429 is a behavior change, so it needs to be chosen explicitly. The packet does not establish that either way. Consumers of `should_redeliver` outside the snapshot are unknown, and the snapshot contains none.
+- Affected files: inspected `delivery/src/retry.rs` and `webhooks/src/send.rs`. Still needed: the `webhooks` crate manifest, to judge whether a dependency on `delivery` is acceptable, and the callers of `should_redeliver`.

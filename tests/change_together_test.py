@@ -30,7 +30,12 @@ class ChangeTogetherIntegrity(unittest.TestCase):
     def test_lenses_hold_their_decisions(self):
         lenses = SKILL / "references/lenses"
         for directory in ("", "rust/", "typescript/", "java/"):
-            self.assertIn("beyond the assigned area", (lenses / directory / "duplication.md").read_text())
+            text = (lenses / directory / "duplication.md").read_text().replace("\n", " ")
+            self.assertIn("beyond the assigned area", text)
+            for decision in ("Search from decisions", "the old value and old names",
+                             "outside reviewed source", "read both directions",
+                             "Name the searched decisions"):
+                self.assertIn(decision, text)
         for directory in ("rust/", "typescript/", "java/"):
             text = (lenses / directory / "duplication.md").read_text().replace("\n", " ")
             self.assertIn("compile error", text)
