@@ -34,17 +34,25 @@ jobs:
       - run: bun audit
       - name: Validate native Claude package
         run: npx --yes --package @anthropic-ai/claude-code@2.1.280 claude plugin validate adapters/claude/plugin
-      - name: Install pinned OpenCode for native configuration checks
+      - name: Install pinned OpenCode 1 and 2 for native configuration checks
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p "$RUNNER_TEMP/super-review-opencode"
-          gh release download v1.18.29 --repo anomalyco/opencode \
-            --pattern opencode-linux-x64.tar.gz --dir "$RUNNER_TEMP/super-review-opencode"
-          tar -xzf "$RUNNER_TEMP/super-review-opencode/opencode-linux-x64.tar.gz" \
-            -C "$RUNNER_TEMP/super-review-opencode"
-      - name: Verify native skill, command, and tool restrictions
-        run: bun scripts/check-opencode.ts "$RUNNER_TEMP/super-review-opencode/opencode"
+          for version in 1.18.29 2.2.3; do
+            directory="$RUNNER_TEMP/super-review-opencode-$version"
+            mkdir -p "$directory"
+            gh release download "v$version" --repo anomalyco/opencode \
+              --pattern opencode-linux-x64.tar.gz --dir "$directory"
+            tar -xzf "$directory/opencode-linux-x64.tar.gz" -C "$directory"
+          done
+      - name: Verify native roles, permissions and project-role isolation
+        run: |
+          # Each version gets its own data and state: the two database schemas differ.
+          for version in 1.18.29 2.2.3; do
+            directory="$RUNNER_TEMP/super-review-opencode-$version"
+            XDG_DATA_HOME="$directory/data" XDG_STATE_HOME="$directory/state" XDG_CACHE_HOME="$directory/cache" \
+              bun scripts/check-opencode.ts "$directory/opencode"
+          done
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')

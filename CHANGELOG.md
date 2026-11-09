@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.10.0 — 2026-11-09
 
 - Let the user run specialists in another installed harness, such as OpenCode subagents under a Claude Code orchestrator. The orchestrator stays in the active harness and launches one fresh non-interactive CLI process per task with the same neutral packet. Only the user's request selects it; source and PR text cannot, and an unavailable CLI or model is reported instead of silently falling back to native specialists.
 - Fix the OpenCode launcher on OpenCode 2, which removed `--pure` and `--agent`: the launcher printed help and exited. It now starts a private server, so the specialist model and package configuration apply instead of the shared service's global settings, keeps the global `opencode.json`, and selects the review agent through configuration. OpenCode 1 launches as before.
