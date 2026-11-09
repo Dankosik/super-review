@@ -19,6 +19,10 @@ TOUCHED = (
     "references/lenses/rust/api-clarity.md",
     "references/lenses/rust/abstractions.md",
     "references/lenses/rust/control-flow.md",
+    "references/lenses/rust/change-locality.md",
+    "references/lenses/rust/duplication.md",
+    "references/lenses/rust/rationale.md",
+    "references/lenses/rust/representation.md",
     "references/profiles/rust/error-expression.md",
     *(f"references/rust/{name}.md" for name in MECHANISMS),
 )

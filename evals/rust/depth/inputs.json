@@ -517,6 +517,234 @@
       "context": [
         "vendor is a workspace procedural-macro crate whose source and generated output are unavailable in this snapshot. Its public generated API and Send bounds are undocumented here. Only the shown user-written body and attribute are available. Cargo.toml declares the workspace dependency; the owning workspace metadata is unavailable."
       ]
+    },
+    {
+      "id": "RD37",
+      "request": "Review the supplied production source through rationale for readability and maintainability. Do not implement or execute it.",
+      "lens": "rationale",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-37\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "/// Returns the retry limit.\nfn retry_limit(config: &Config) -> u32 {\n    // Read the limit from the config.\n    config.retry_limit\n}\n\npub struct Config {\n    /// The retry limit.\n    pub retry_limit: u32,\n    /// Timeout in seconds.\n    pub timeout_ms: u64,\n}\n\nfn backoff(attempt: u32) -> u64 {\n    // Multiply the attempt by 100.\n    u64::from(attempt) * 250\n}\n"
+      },
+      "context": [
+        "timeout_ms has always held milliseconds; the field documentation predates a rename."
+      ]
+    },
+    {
+      "id": "RD38",
+      "request": "Review the supplied production source through rationale for readability and maintainability. Do not implement or execute it.",
+      "lens": "rationale",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-38\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\nclap = { version = \"4.5\", default-features = false, features = [\"std\", \"derive\", \"help\"] }\n",
+        "src/lib.rs": "use clap::Parser;\n\n/// Replays exported events into the local store.\n#[derive(Parser)]\npub struct Args {\n    /// Stop after this many events; 0 replays everything.\n    #[arg(long, default_value_t = 0)]\n    pub limit: u64,\n}\n\nfn backoff(attempt: u32) -> u64 {\n    // The provider rejects retries sooner than 250 ms after a 429 and\n    // documents no upper bound, so the linear schedule stays uncapped.\n    u64::from(attempt) * 250\n}\n"
+      },
+      "context": [
+        "The Args doc comments are rendered as the command's --help text. The provider retry constraint is documented in the integration contract supplied to the team."
+      ]
+    },
+    {
+      "id": "RD39",
+      "request": "Review the supplied production source through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-39\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\ntime = { version = \"0.3\", default-features = false, features = [\"std\", \"parsing\", \"formatting\"] }\n",
+        "src/lib.rs": "pub struct Timestamp {\n    pub year: i32,\n    pub month: u8,\n    pub day: u8,\n    pub hour: u8,\n    pub minute: u8,\n    pub second: u8,\n}\n\npub fn parse_timestamp(text: &str) -> Option<Timestamp> {\n    let (date, time) = text.trim_end_matches('Z').split_once('T')?;\n    let mut date = date.splitn(3, '-');\n    let mut time = time.splitn(3, ':');\n    Some(Timestamp {\n        year: date.next()?.parse().ok()?,\n        month: date.next()?.parse().ok()?,\n        day: date.next()?.parse().ok()?,\n        hour: time.next()?.parse().ok()?,\n        minute: time.next()?.parse().ok()?,\n        second: time.next()?.get(..2)?.parse().ok()?,\n    })\n}\n"
+      },
+      "context": [
+        "The partner API's documented contract sends RFC 3339 UTC timestamps with a trailing Z and whole seconds. The crate already declares the time dependency with its parsing feature and uses OffsetDateTime elsewhere for formatting."
+      ]
+    },
+    {
+      "id": "RD40",
+      "request": "Review the supplied production source through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-40\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "#![no_std]\n\npub enum Level {\n    Quiet,\n    Normal,\n    Verbose,\n}\n\npub fn parse_level(text: &str) -> Option<Level> {\n    match text {\n        \"quiet\" => Some(Level::Quiet),\n        \"normal\" => Some(Level::Normal),\n        \"verbose\" => Some(Level::Verbose),\n        _ => None,\n    }\n}\n"
+      },
+      "context": [
+        "The crate targets a microcontroller without an allocator and declares no dependencies. The three words are the complete, fixed grammar of a device setting."
+      ]
+    },
+    {
+      "id": "RD41",
+      "request": "Review the supplied production source through change-locality for readability and maintainability. Do not implement or execute it.",
+      "lens": "change-locality",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-41\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "mod errors {\n    pub enum Failure {\n        Timeout,\n        Refused,\n        Rejected(u16),\n    }\n\n    pub fn is_transient(failure: &Failure) -> bool {\n        matches!(failure, Failure::Timeout | Failure::Refused | Failure::Rejected(503))\n    }\n}\n\nmod delivery {\n    use crate::errors::Failure;\n\n    pub fn should_retry(failure: &Failure) -> bool {\n        match failure {\n            Failure::Timeout | Failure::Refused => true,\n            Failure::Rejected(status) => *status == 503,\n        }\n    }\n\n    pub fn parse_target(text: &str) -> Option<(String, u16)> {\n        let (host, port) = text.rsplit_once(':')?;\n        Some((host.to_owned(), port.parse().ok()?))\n    }\n\n    pub fn parse_target_legacy(text: &str) -> Option<(String, u16)> {\n        let mut parts = text.split(':');\n        Some((parts.next()?.to_owned(), parts.next()?.parse().ok()?))\n    }\n}\n"
+      },
+      "context": [
+        "errors::is_transient is the retry classification used by every other outbound client in the crate. The change introduced delivery::should_retry and parse_target; nothing in the crate calls parse_target_legacy any longer."
+      ]
+    },
+    {
+      "id": "RD42",
+      "request": "Review the supplied production source through change-locality for readability and maintainability. Do not implement or execute it.",
+      "lens": "change-locality",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-42\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "pub struct Settings {\n    pub accept_v1_targets: bool,\n}\n\npub fn parse_target(settings: &Settings, text: &str) -> Option<(String, u16)> {\n    if settings.accept_v1_targets {\n        return parse_target_v1(text);\n    }\n    let (host, port) = text.rsplit_once(':')?;\n    Some((host.to_owned(), port.parse().ok()?))\n}\n\n/// Accepts the v1 `host:port:weight` form until every agent upgrades; the\n/// deployment notes track the remaining v1 agents.\nfn parse_target_v1(text: &str) -> Option<(String, u16)> {\n    let mut parts = text.split(':');\n    Some((parts.next()?.to_owned(), parts.next()?.parse().ok()?))\n}\n"
+      },
+      "context": [
+        "Production deployments still enable accept_v1_targets for agents that send the v1 form; the team plans to remove it after the last agent upgrades."
+      ]
+    },
+    {
+      "id": "RD43",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-43\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "pub struct Endpoint(String);\n\nimpl Into<Endpoint> for String {\n    fn into(self) -> Endpoint {\n        Endpoint(self)\n    }\n}\n\npub struct Registry {\n    endpoints: Vec<Endpoint>,\n    limit: usize,\n}\n\nimpl Registry {\n    pub fn new() -> Self {\n        Self { endpoints: Vec::new(), limit: 64 }\n    }\n}\n\nimpl Default for Registry {\n    fn default() -> Self {\n        Self { endpoints: Vec::new(), limit: 64 }\n    }\n}\n\nfn load(raw: Vec<String>) -> Vec<Endpoint> {\n    raw.into_iter().map(Into::into).collect()\n}\n"
+      },
+      "context": [
+        "Callers create registries with both Registry::new() and Registry::default(). Endpoint keeps the address text unchanged."
+      ]
+    },
+    {
+      "id": "RD44",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-44\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "pub struct Port(u16);\n\nimpl TryFrom<u32> for Port {\n    type Error = u32;\n\n    fn try_from(value: u32) -> Result<Self, Self::Error> {\n        u16::try_from(value).map(Port).map_err(|_| value)\n    }\n}\n\npub struct Registry {\n    endpoints: Vec<String>,\n    limit: usize,\n}\n\nimpl Registry {\n    pub fn with_limit(limit: usize) -> Self {\n        Self { endpoints: Vec::new(), limit }\n    }\n}\n"
+      },
+      "context": [
+        "Every registry is created with an explicit limit chosen by its caller; no default limit exists. Port conversion can fail."
+      ]
+    },
+    {
+      "id": "RD45",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-45\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "pub trait OrderStore {\n    fn load(&self, id: u64) -> Option<Order>;\n    fn save(&mut self, order: Order);\n}\n\npub struct Order {\n    pub id: u64,\n    pub total: u64,\n}\n\npub struct MemoryStore {\n    orders: std::collections::HashMap<u64, Order>,\n}\n\nimpl OrderStore for MemoryStore {\n    fn load(&self, id: u64) -> Option<Order> {\n        self.orders.get(&id).map(|o| Order { id: o.id, total: o.total })\n    }\n    fn save(&mut self, order: Order) {\n        self.orders.insert(order.id, order);\n    }\n}\n\npub struct DiscountManager;\n\nimpl DiscountManager {\n    pub fn apply(&self, store: &mut impl OrderStore, id: u64, percent: u64) {\n        if let Some(mut order) = store.load(id) {\n            order.total -= order.total * percent / 100;\n            store.save(order);\n        }\n    }\n}\n"
+      },
+      "context": [
+        "MemoryStore is the only production store; the program keeps all orders in memory. The only other OrderStore implementation is a test double in the crate's tests that records the call sequence. DiscountManager has no fields and is constructed only to call apply."
+      ]
+    },
+    {
+      "id": "RD46",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-46\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "pub trait OrderStore {\n    fn load(&self, id: u64) -> Option<Order>;\n    fn save(&mut self, order: Order);\n}\n\npub struct Order {\n    pub id: u64,\n    pub total: u64,\n}\n\npub fn apply_discount(store: &mut impl OrderStore, id: u64, percent: u64) {\n    if let Some(mut order) = store.load(id) {\n        order.total -= order.total * percent / 100;\n        store.save(order);\n    }\n}\n"
+      },
+      "context": [
+        "This crate is the pricing core. The PostgreSQL and in-memory stores live in separate adapter crates that depend on it; the core must not depend on either. Both adapters are used in production deployments."
+      ]
+    },
+    {
+      "id": "RD47",
+      "request": "Review the supplied production source through control-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "control-flow",
+      "profiles": [
+        "error-expression"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-47\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "#[derive(Debug)]\npub enum FetchError {\n    Timeout,\n    NotFound,\n    Gone,\n    Forbidden,\n    Other(String),\n}\n\nimpl std::fmt::Display for FetchError {\n    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {\n        match self {\n            FetchError::Timeout => f.write_str(\"request timed out\"),\n            FetchError::NotFound | FetchError::Gone => f.write_str(\"resource missing\"),\n            FetchError::Forbidden => f.write_str(\"access denied\"),\n            FetchError::Other(text) => f.write_str(text),\n        }\n    }\n}\n\nfn fetch(id: u64) -> Result<Vec<u8>, FetchError> {\n    let _ = id;\n    Err(FetchError::Timeout)\n}\n\npub fn load(id: u64) -> Result<Option<Vec<u8>>, FetchError> {\n    match fetch(id) {\n        Ok(bytes) => Ok(Some(bytes)),\n        Err(error) if error.to_string().contains(\"missing\") => Ok(None),\n        Err(error) if error.to_string().contains(\"timed out\") => fetch(id).map(Some),\n        Err(error) => Err(error),\n    }\n}\n"
+      },
+      "context": [
+        "load is the only caller of fetch. No caller distinguishes NotFound from Gone. Display text is shown to operators and may be reworded."
+      ]
+    },
+    {
+      "id": "RD48",
+      "request": "Review the supplied production source through control-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "control-flow",
+      "profiles": [
+        "error-expression"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-48\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "#[derive(Debug)]\npub enum FetchError {\n    Timeout,\n    NotFound,\n    Forbidden,\n}\n\nfn fetch(id: u64) -> Result<Vec<u8>, FetchError> {\n    let _ = id;\n    Err(FetchError::Timeout)\n}\n\npub fn load(id: u64) -> Result<Option<Vec<u8>>, FetchError> {\n    match fetch(id) {\n        Ok(bytes) => Ok(Some(bytes)),\n        Err(FetchError::NotFound) => Ok(None),\n        Err(FetchError::Timeout) => fetch(id).map(Some),\n        Err(error) => Err(error),\n    }\n}\n"
+      },
+      "context": [
+        "Callers of load handle Forbidden separately from other failures. Each variant drives a different recovery."
+      ]
+    },
+    {
+      "id": "RD49",
+      "request": "Review the supplied production source through control-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "control-flow",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-49\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\ntokio = { version = \"1.54\", default-features = false, features = [\"sync\", \"time\", \"macros\", \"rt\"] }\n",
+        "src/lib.rs": "use std::sync::atomic::{AtomicBool, Ordering};\nuse std::sync::Arc;\nuse std::time::Duration;\n\npub async fn wait_until_ready(ready: Arc<AtomicBool>) {\n    loop {\n        if ready.load(Ordering::Acquire) {\n            return;\n        }\n        tokio::time::sleep(Duration::from_millis(50)).await;\n    }\n}\n\npub fn mark_ready(ready: &AtomicBool) {\n    ready.store(true, Ordering::Release);\n}\n"
+      },
+      "context": [
+        "Both the writer and the waiter are in this crate; mark_ready is called once by startup code that the team owns and may change."
+      ]
+    },
+    {
+      "id": "RD50",
+      "request": "Review the supplied production source through control-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "control-flow",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-50\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\ntokio = { version = \"1.54\", default-features = false, features = [\"time\", \"rt\"] }\n",
+        "src/lib.rs": "use std::time::Duration;\n\npub enum JobState {\n    Running,\n    Done,\n    Failed,\n}\n\npub trait JobApi {\n    async fn state(&self, id: &str) -> JobState;\n}\n\npub async fn wait_for_job(api: &impl JobApi, id: &str, attempts: u32) -> Option<JobState> {\n    for _ in 0..attempts {\n        match api.state(id).await {\n            JobState::Running => tokio::time::sleep(Duration::from_secs(2)).await,\n            finished => return Some(finished),\n        }\n    }\n    None\n}\n"
+      },
+      "context": [
+        "JobApi wraps a third-party batch service that exposes only a status endpoint; it offers no webhook, stream or long poll. The caller treats None as an expired wait."
+      ]
+    },
+    {
+      "id": "RD51",
+      "request": "Review the supplied production source through representation for readability and maintainability. Do not implement or execute it.",
+      "lens": "representation",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-51\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "pub type CustomerId = u64;\npub type OrderId = u64;\n\npub struct Refund {\n    customer: CustomerId,\n    order: OrderId,\n    cents: u64,\n}\n\nimpl Refund {\n    pub fn new(customer: CustomerId, order: OrderId, cents: u64) -> Self {\n        Self { customer, order, cents }\n    }\n    pub fn customer(&self) -> CustomerId {\n        self.customer\n    }\n    pub fn order(&self) -> OrderId {\n        self.order\n    }\n    pub fn cents(&self) -> u64 {\n        self.cents\n    }\n}\n\npub fn refund_for(order: OrderId, customer: CustomerId, cents: u64) -> Refund {\n    Refund::new(customer, order, cents)\n}\n"
+      },
+      "context": [
+        "Refund is module-internal data; Refund::new performs no validation. Customer and order identifiers are both 64-bit numbers from the same database."
+      ]
+    },
+    {
+      "id": "RD52",
+      "request": "Review the supplied production source through representation for readability and maintainability. Do not implement or execute it.",
+      "lens": "representation",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-52\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "pub struct CustomerId(pub u64);\npub struct OrderId(pub u64);\n\npub struct Refund {\n    pub customer: CustomerId,\n    pub order: OrderId,\n    pub cents: u64,\n}\n\npub struct Budget {\n    remaining: u64,\n}\n\nimpl Budget {\n    pub fn new(limit: u64) -> Self {\n        Self { remaining: limit }\n    }\n\n    pub fn spend(&mut self, cents: u64) -> bool {\n        match self.remaining.checked_sub(cents) {\n            Some(rest) => {\n                self.remaining = rest;\n                true\n            }\n            None => false,\n        }\n    }\n\n    pub fn remaining(&self) -> u64 {\n        self.remaining\n    }\n}\n"
+      },
+      "context": [
+        "spend is the only operation that reduces the budget, and callers must not raise it. Refund is passive data."
+      ]
     }
   ]
 }

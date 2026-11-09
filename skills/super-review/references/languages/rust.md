@@ -19,7 +19,7 @@ section can supply preservation context, not authority to review another lens.
 
 | Mechanism | Existing owners | Reference |
 | --- | --- | --- |
-| Tokio task groups, shutdown or selection | data-flow/lifecycle-ownership; control-flow | [Tokio](../rust/tokio.md) |
+| Tokio task groups, shutdown, selection or waiting for a condition | data-flow/lifecycle-ownership; control-flow | [Tokio](../rust/tokio.md) |
 | Serde wire shape or deserialization lifetime | representation; api-clarity | [Serde](../rust/serde.md) |
 | clap argument grammar or repeated command knowledge | api-clarity; change-locality | [clap](../rust/clap.md) |
 | Axum HTTP contract or adapter/application boundary | api-clarity; function-cohesion/effects-separation | [Axum](../rust/axum.md) |

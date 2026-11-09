@@ -18,6 +18,13 @@ downcasting and panic/recovery contracts. Unavailable evidence limits a rewrite,
 not an otherwise demonstrated clarity observation. Missing error handling and
 runtime failures are not this profile's subject.
 
+Shape an error for the consumers that act on it. A caller matching on `Display`
+text couples recovery to wording; a kind or variant states the decision, and
+the rewrite must preserve which inputs take each arm. A variant that inspected
+callers, diagnostics, `Display` and downcasting all treat like another adds
+matching without a decision behind it; an empty consumer search alone does not
+establish that.
+
 An existing canonical `From` can make propagation direct. A local `map_err` that
 captures a path, operation or identifier expresses context that `From` alone does
 not know. Retain owned diagnostic data and the underlying source when required;

@@ -23,6 +23,12 @@ commitments, not cosmetic wrappers. Inspect consumers, inference, function value
 and relevant impls before changing signatures. Missing downstream context limits
 the remedy; it does not establish that a breaking change is harmless.
 
+Implement `From`, not `Into`: the blanket impl supplies `Into`, while a direct
+`Into` impl hides the conversion from `T::from` calls and `?`. A zero-argument
+`new` that only builds a value describes the same construction as `Default`;
+when both exist, one can delegate to the other so the reader learns it once.
+A `new` with effects such as spawning or registration is not a `Default`.
+
 `AsRef` supplies a view; `Borrow` additionally requires compatible equality,
 ordering and hashing where implemented. A domain newtype with different comparison
 semantics need not expose `Borrow<str>`. `Deref` opens an implicit target API and

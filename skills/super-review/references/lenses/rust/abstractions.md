@@ -14,6 +14,12 @@ Neither dispatch choice is inherently better. Inspect uses before changing bound
 associated types or public implementability. Dyn compatibility and supported
 async-trait usage may rule out an apparently simpler signature.
 
+A trait whose only other implementation is a test double for internal
+choreography forwards calls without hiding variation; the production code pays
+for an interface the program does not need. A struct constructed only to invoke
+one action usually hides a function. Names such as manager, service or helpers
+invite this ownership check; they do not establish a finding by themselves.
+
 Macros can legitimately capture syntax or share structure. Replace one with a
 function only when the same job remains clear without changing evaluation or
 ownership. Preserve relevant trait and macro contracts. Avoid new frameworks
