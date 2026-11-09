@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.8.0 — 2026-11-09
 
 - Have Rust reviews recommend deleting comments that restate or contradict the code, while keeping reasons, external constraints and doc comments that become help or API text.
 - Weigh a handwritten general mechanism (date, URL or CLI parsing, encodings, backoff policies) against a declared dependency or `std`, and surface a new crate as a named decision instead of rejecting it by default.
