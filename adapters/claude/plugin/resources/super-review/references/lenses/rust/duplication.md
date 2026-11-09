@@ -15,10 +15,21 @@ An exhaustive `match` or a required struct field connects its copies through a
 compile error, so such a copy costs an extra edit rather than silent divergence;
 judge it by that cost.
 
-Compare implicated handwritten mechanics with existing helpers and supported
-standard-library operations. Name the exact operation and why its contract fits
-more directly; retain domain adaptation. A familiar loop can be clearer than a
-reusable callback or macro. Do not add a crate or raise MSRV merely to save lines.
+Compare implicated handwritten mechanics with existing helpers, supported
+standard-library operations and the owning crate's declared dependencies. Name
+the exact operation and why its contract fits more directly; retain domain
+adaptation. A familiar loop can be clearer than a reusable callback or macro.
+Do not add a crate or raise MSRV merely to save lines.
+
+A handwritten non-trivial general mechanism, such as a date, URL or CLI grammar
+parser, an encoding, or a backoff policy with jitter and caps, repeats knowledge
+a maintained implementation already owns: its edge cases, parsing and failure
+handling. A one-line formula is not such a mechanism. Weigh
+that owned surface, not the line count. When a declared dependency or `std`
+supplies the matching contract, recommend it. When only a new crate would,
+report the owned surface and leave adopting the crate as a named dependency
+decision. A tiny fixed grammar, an explicit std-only or `no_std` constraint, or
+a semantic difference can justify custom code; fewer dependencies alone do not.
 
 Preserve relevant ordering, ownership, failure and evaluation behavior. A
 repeated match can remain clear when its cases change independently. Retaining

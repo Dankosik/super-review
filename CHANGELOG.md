@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.8.0 — 2026-11-09
+
+- Have Rust reviews recommend deleting comments that restate or contradict the code, while keeping reasons, external constraints and doc comments that become help or API text.
+- Weigh a handwritten general mechanism (date, URL or CLI parsing, encodings, backoff policies) against a declared dependency or `std`, and surface a new crate as a named decision instead of rejecting it by default.
+- Flag a rule copied from its existing owner, and a superseded path, shim or fallback kept without a selecting consumer.
+- Cover `From` over `Into`, duplicated `new`/`Default` construction, mock-only traits, one-action objects, Display-text error matching, error variants every consumer treats alike, sleep-polling loops over internal state, type aliases for identifiers and getter layers on passive internal data.
+- Decisions transferred from the `rust-service-template-rest` Rust skills, with sixteen contrasting inputs RD37-RD52 and a recorded baseline/candidate comparison: four of eight useful-change inputs improved, four tied, none regressed, and no retain contrast produced a finding. Keep the eight base questions, 44 rule IDs and read-only scope unchanged.
+
 ## 3.7.0 — 2026-11-06
 
 - Guide Rust reviews toward representations with fewer manually maintained relationships and clearer data transformations, while retaining required staging and lifecycle guarantees.

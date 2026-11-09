@@ -398,6 +398,182 @@
       "contrasts": [
         "RD15"
       ]
+    },
+    {
+      "id": "RD37",
+      "rule": "rust.rationale.explain-constraints",
+      "expect": [
+        "Recommend deleting the doc and inline comments that restate the name or statement, and correct or remove the two stale ones (seconds versus timeout_ms; 100 versus 250).",
+        "Ground staleness in inspected source; do not request new comments on every item or invent a reason for the 250 constant."
+      ],
+      "contrasts": [
+        "RD38"
+      ]
+    },
+    {
+      "id": "RD38",
+      "rule": "rust.rationale.explain-constraints",
+      "expect": [
+        "Retain the clap doc comments as rendered help text and the provider comment as an external constraint.",
+        "Do not recommend deleting accurate reason or interface text, or moving it into names."
+      ],
+      "contrasts": [
+        "RD37"
+      ]
+    },
+    {
+      "id": "RD39",
+      "rule": "rust.duplication.share-knowledge",
+      "expect": [
+        "Observe that parse_timestamp hand-implements RFC 3339 splitting that the declared time dependency already owns; recommend its Rfc3339 parser and building Timestamp from the result.",
+        "Frame the benefit as removing an owned grammar, not as fixing a defect; do not recommend a new crate, and name any input the stricter parser would newly reject."
+      ],
+      "contrasts": [
+        "RD40"
+      ]
+    },
+    {
+      "id": "RD40",
+      "rule": "rust.duplication.share-knowledge",
+      "expect": [
+        "Retain the direct match: a fixed three-word grammar in a no_std crate without dependencies needs no parser crate.",
+        "Do not recommend adding a dependency or deriving a parser."
+      ],
+      "contrasts": [
+        "RD39"
+      ]
+    },
+    {
+      "id": "RD41",
+      "rule": "rust.change.localize-existing-variation",
+      "expect": [
+        "Recommend delivery use errors::is_transient instead of its local copy of the retry classification.",
+        "Recommend removing parse_target_legacy, which nothing selects; keep the two observations independently supported."
+      ],
+      "contrasts": [
+        "RD42"
+      ]
+    },
+    {
+      "id": "RD42",
+      "rule": "rust.change.localize-existing-variation",
+      "expect": [
+        "Retain the v1 path: a current deployment selects it and its removal condition is already recorded next to it.",
+        "Do not recommend deleting the compatibility path or adding another selection mechanism."
+      ],
+      "contrasts": [
+        "RD41"
+      ]
+    },
+    {
+      "id": "RD43",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Recommend implementing From<String> for Endpoint instead of Into, so Endpoint::from and ? conversions work.",
+        "Observe that new() and Default repeat the same construction and limit; recommend one delegating to the other, without changing the limit."
+      ],
+      "contrasts": [
+        "RD44"
+      ]
+    },
+    {
+      "id": "RD44",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Retain TryFrom for the fallible conversion and the explicit with_limit constructor without a Default.",
+        "Do not recommend adding Default, new() or an infallible From."
+      ],
+      "contrasts": [
+        "RD43"
+      ]
+    },
+    {
+      "id": "RD45",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Observe that OrderStore exists only for a choreography test double and DiscountManager only to call apply; recommend the concrete store and a free function.",
+        "Treat the Manager name only as a prompt; ground the observation in uses, and do not recommend a different mocking framework."
+      ],
+      "contrasts": [
+        "RD46"
+      ]
+    },
+    {
+      "id": "RD46",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Retain the trait: it carries a required dependency direction with two production implementations in other crates.",
+        "Do not recommend collapsing it to a concrete type or adding dyn dispatch."
+      ],
+      "contrasts": [
+        "RD45"
+      ]
+    },
+    {
+      "id": "RD47",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Observe that load chooses recovery by matching Display text; recommend matching variants, which removes coupling to operator-facing wording.",
+        "State that Other text containing those words currently takes the recovery arms and the rewrite changes that; treat merging NotFound and Gone as a supported option given the stated consumers, not a requirement."
+      ],
+      "contrasts": [
+        "RD48"
+      ]
+    },
+    {
+      "id": "RD48",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Retain the variant match: each arm expresses a distinct recovery that callers depend on.",
+        "Do not recommend an error crate, string context or merging variants."
+      ],
+      "contrasts": [
+        "RD47"
+      ]
+    },
+    {
+      "id": "RD49",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Recommend a tokio watch channel (or equivalent notification) whose wait names the readiness condition, replacing the sleep-and-recheck loop owned on both sides by this crate.",
+        "Preserve the one-way ready transition; do not justify the change only by latency or CPU."
+      ],
+      "contrasts": [
+        "RD50"
+      ]
+    },
+    {
+      "id": "RD50",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Retain the bounded polling loop: the external service offers no notification and the loop already has a cadence and terminal condition.",
+        "Do not recommend a notification mechanism the provider lacks or an unbounded wait."
+      ],
+      "contrasts": [
+        "RD49"
+      ]
+    },
+    {
+      "id": "RD51",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Observe that the aliases leave customer and order identifiers distinguishable only by position, while refund_for and Refund::new take them in opposite orders; recommend newtypes for the two identifiers.",
+        "Recommend plain fields instead of the getter layer on this passive internal data; do not report a defect or invent an invariant."
+      ],
+      "contrasts": [
+        "RD52"
+      ]
+    },
+    {
+      "id": "RD52",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Retain the private remaining field behind spend, which keeps reductions in one operation, and the public passive Refund fields with their newtypes.",
+        "Do not recommend getters for Refund or exposing remaining."
+      ],
+      "contrasts": [
+        "RD51"
+      ]
     }
   ]
 }

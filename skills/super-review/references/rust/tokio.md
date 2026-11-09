@@ -39,6 +39,12 @@ when changing that expression. Cancellation safety is operation-specific; neithe
 an `.await` nor a borrowed future establishes it. Treat this only as preservation
 of a proposed clarity change, not a search for races, leaks or async defects.
 
+A sleep-and-recheck loop over state the same code base writes hides the
+condition it waits for behind a flag and a cadence. An existing completion or
+change notification, such as a join, `watch` or `CancellationToken`, can name
+that condition. Polling remains the clear form for external state that offers
+no notification, given an owner, cadence and terminal condition.
+
 Sources: [JoinSet](https://docs.rs/tokio/latest/tokio/task/struct.JoinSet.html),
 [JoinHandle](https://docs.rs/tokio/latest/tokio/task/struct.JoinHandle.html),
 [TaskTracker](https://docs.rs/tokio-util/latest/tokio_util/task/task_tracker/struct.TaskTracker.html),

@@ -20,6 +20,14 @@ relationships. A remaining budget may replace a limit and consumed count when
 neither original value is needed; keep stored history, reservations, snapshots or
 derived values that carry an existing invariant or justified cost bound.
 
+A type alias names a type but does not give the concept a home: two aliases of
+one primitive leave readers to track which value is which by position. A newtype
+gives identifiers or units that share a primitive their own concept. Keep an
+invariant-bearing field private behind the operations that maintain it. Getters
+over private fields of passive internal data restate the field list; a public
+type may keep fields private for layout or evolution freedom under the shared
+compatibility judgment.
+
 Distinguish a useful semantic name from a stronger type guarantee. An explicit
 wildcard variant can remove the need to connect parsing with empty-iterator
 behavior, but a variant containing a Vec does not prove that Vec nonempty.

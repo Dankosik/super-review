@@ -29,6 +29,34 @@ retain their existing neutral treatment. Library notes stay outside the global
 aspect catalog and are selected only from the owning crate's source and question.
 They do not grant another lens's coverage or revive disabled owner rules.
 
+## Template-derived decisions (RD37-RD52)
+
+Baseline: Super Review 3.7.0 at `fc2c605`. The source is the Rust skill set and
+repository contract of `Dankosik/rust-service-template-rest` at `230dacac`
+(`.agents/skills/rust-*` and the comment and engineering rules in `AGENTS.md`).
+A read of those skills against the 3.7.0 Rust lenses found decisions the skills
+make that the lenses left unstated or stated in the opposite direction. Only
+readability and maintainability decisions were transferred; the skills'
+correctness, security, reliability and testing methods stay outside this
+product's scope. Template-specific conventions, such as omitting
+`#[non_exhaustive]` on workspace types or naming that service's canonical owners,
+are team policy for a `SUPER_REVIEW.md`, not defaults.
+
+| Decision | Instruction action | Contrasts |
+| --- | --- | --- |
+| Comments restating code or stale against it; reasons and product-output docs stay | Rust rationale: removal direction and intra-doc links; replaces "keep accurate existing explanations" | RD37-38 |
+| Handwritten general mechanism versus declared dependency, `std` or a new-crate decision | Rust duplication | RD39-40 |
+| Local copy of an owner's rule; superseded path, shim or fallback kept alive | Rust change-locality | RD41-42 |
+| `From` not `Into`; a plain zero-argument `new` delegating to or from `Default` | Rust api-clarity | RD43-44 |
+| Trait existing only for a choreography test double; one-action objects | Rust abstractions | RD45-46 |
+| Display-text matching; variants every inspected consumer treats alike | Rust error-expression | RD47-48 |
+| Sleep-and-recheck loop over internal state versus an available notification; routing for waiting | Tokio note, control-flow; Rust context routing | RD49-50 |
+| Type alias versus newtype; private invariant fields versus getter layers | Rust representation | RD51-52 |
+
+No rule ID, lens, profile, worker or routing default is added. The diff to each
+lens is the evidence of the instruction change; behavioral evidence is recorded
+under Evidence status.
+
 ## Replay and grading
 
 `inputs.json` contains independent neutral packets. Give a reviewer exactly one
@@ -76,3 +104,48 @@ Canonical edits are applied once. The three generated skill payloads use the sam
 Git subtree as the canonical skill, matching the copy operation in scripts/build.ts;
 unchanged package content remains on the baseline tree. No release/version or
 marketplace change is included. Sources and version limits are in [sources.md](sources.md).
+
+### RD37-RD52 behavioral comparison (2026-11-09)
+
+Fresh-context specialist runs in native Claude Code subagents, model
+`claude-sonnet-5-5`, one lens and one packet per run. Baseline resources were
+extracted from `fc2c605`; the candidate is this change. Each reviewer received
+only its own arm's contract, Rust context, assigned lens/profiles and finding
+template plus one packet; never `cases.json`, this README or peer outputs. The
+maintainer graded final outputs against `cases.json` without blinding. Raw
+outputs are in [results/2026-11-09-template-skills](results/2026-11-09-template-skills/).
+
+Round 1 ran every positive input in both arms and every retain contrast in the
+candidate. A fresh independent maintainer audit of the diff then found rules that
+leaned toward bug prevention (`#[must_use]`, help-as-error), wording that
+contradicted existing retain conditions, and three inputs whose expectations
+rewarded reporting a defect (RD39 offsets, RD43 differing limits, RD51 swapped
+arguments). Those rules were removed or narrowed, the inputs rewritten as
+behavior-preserving burdens, and every affected run repeated in round 2. Round 2
+supersedes round 1 for RD37, RD39, RD43, RD44, RD47, RD48, RD51 and RD52.
+
+| Input | Baseline 3.7.0 | Candidate (final) |
+| --- | --- | --- |
+| RD37 restating and stale comments | Found both (r2) | Found both (r2) |
+| RD39 handwritten RFC 3339 parser | Found (r2) | Found (r2) |
+| RD41 copied retry rule, unused legacy parser | Found both (r1) | Found both (r1) |
+| RD43 `Into` impl, duplicated `new`/`Default` | Found both (r2) | Found both (r2) |
+| RD45 mock-only trait, one-action manager | Manager only; trait kept as a test seam (r1) | Both (r1) |
+| RD47 Display-text matching, undistinguished variants | Display matching only (r1) | Both; merge offered as optional (r2) |
+| RD49 sleep-and-recheck readiness loop | No candidate (r1) | Found, after the routing fix below (r1) |
+| RD51 identifier aliases, getter layer | Aliases only (r2) | Both (r2) |
+| RD38, 40, 42, 46, 50 retain contrasts | Not run | Retained (r1) |
+| RD44, 48, 52 retain contrasts | Not run | Retained (r2) |
+
+Result: four positive inputs improved, four tied, none regressed, and no retain
+contrast produced a candidate. The 3.7.0 lenses already produced the comment,
+parser, copied-rule and conversion findings, so those additions mainly make
+existing behavior explicit and keep it stable. The first RD49 candidate run
+found nothing because the Rust context routed only task groups, shutdown and
+selection to the Tokio note that held the new guidance; the routing row now
+includes waiting for a condition.
+
+Limits: one run per arm and input, one model, nonblind grading by the author of
+the change, baseline retain contrasts not run, and authored fixtures rather than
+real changes. This shows the new decisions are reachable without false positives
+on their contrasts; it is not a measured general quality gain.
