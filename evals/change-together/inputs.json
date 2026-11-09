@@ -91,6 +91,128 @@
       "context": [
         "Both timeouts bound the same gateway call. Order eligibility and billing eligibility are owned by different teams and have changed independently before."
       ]
+    },
+    {
+      "id": "CT09",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Change review of delivery/src/retry.rs at head; the change is the supplied diff against its base. Other supplied files are the rest of a private, unreleased snapshot at head; no team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "delivery/src/retry.rs": "pub const RETRY_STATUSES: &[u16] = &[429, 502, 503];\n\npub fn retryable(status: u16) -> bool {\n    RETRY_STATUSES.contains(&status)\n}\n",
+        "webhooks/src/send.rs": "pub fn should_redeliver(status: u16) -> bool {\n    matches!(status, 502 | 503)\n}\n"
+      },
+      "context": [
+        "Both services retry outbound HTTP calls under the one retry policy the platform team documents for upstream status codes."
+      ],
+      "change": "--- a/delivery/src/retry.rs\n+++ b/delivery/src/retry.rs\n@@ -1,1 +1,1 @@\n-pub const RETRY_STATUSES: &[u16] = &[502, 503];\n+pub const RETRY_STATUSES: &[u16] = &[429, 502, 503];\n"
+    },
+    {
+      "id": "CT10",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Change review of delivery/src/retry.rs at head; the change is the supplied diff against its base. Other supplied files are the rest of a private, unreleased snapshot at head; no team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "delivery/src/retry.rs": "pub const RETRY_STATUSES: &[u16] = &[429, 502, 503];\n\npub fn retryable(status: u16) -> bool {\n    RETRY_STATUSES.contains(&status)\n}\n",
+        "breaker/src/trip.rs": "/// Gateway failures open the circuit; throttling (429) must not, because the\n/// upstream recovers on its own schedule.\npub fn counts_toward_trip(status: u16) -> bool {\n    matches!(status, 502 | 503)\n}\n"
+      },
+      "context": [
+        "The circuit breaker policy is owned by a different team from the retry policy."
+      ],
+      "change": "--- a/delivery/src/retry.rs\n+++ b/delivery/src/retry.rs\n@@ -1,1 +1,1 @@\n-pub const RETRY_STATUSES: &[u16] = &[502, 503];\n+pub const RETRY_STATUSES: &[u16] = &[429, 502, 503];\n"
+    },
+    {
+      "id": "CT11",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: api/src/limits.rs. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "api/src/limits.rs": "/// Largest upload the public API accepts.\npub const MAX_UPLOAD_BYTES: usize = 8 * 1024 * 1024;\n",
+        "worker/src/ingest.rs": "pub enum IngestError { TooLarge }\n\npub fn admit(body: &[u8]) -> Result<(), IngestError> {\n    if body.len() > 8_388_608 {\n        return Err(IngestError::TooLarge);\n    }\n    Ok(())\n}\n"
+      },
+      "context": [
+        "The worker ingests the same uploads after the API has accepted them; product documents one upload limit."
+      ]
+    },
+    {
+      "id": "CT12",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: api/src/limits.rs. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "api/src/limits.rs": "/// Largest upload the public API accepts.\npub const MAX_UPLOAD_BYTES: usize = 8 * 1024 * 1024;\n",
+        "metrics/src/batch.rs": "pub struct Batch { buffer: Vec<u8> }\n\nimpl Batch {\n    pub fn new() -> Self {\n        Self { buffer: Vec::with_capacity(8_388_608) }\n    }\n}\n"
+      },
+      "context": [
+        "The metrics batch buffer size was chosen from exporter throughput measurements and is unrelated to uploads."
+      ]
+    },
+    {
+      "id": "CT13",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: notify/src/channel.rs. A private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "notify/src/channel.rs": "use std::str::FromStr;\n\n#[derive(Clone, Copy, Debug, PartialEq, Eq)]\npub enum Channel {\n    Email,\n    Sms,\n    Push,\n}\n\nimpl Channel {\n    pub fn as_str(self) -> &'static str {\n        match self {\n            Channel::Email => \"email\",\n            Channel::Sms => \"sms\",\n            Channel::Push => \"push\",\n        }\n    }\n}\n\npub struct UnknownChannel;\n\nimpl FromStr for Channel {\n    type Err = UnknownChannel;\n\n    fn from_str(text: &str) -> Result<Self, Self::Err> {\n        match text {\n            \"email\" => Ok(Channel::Email),\n            \"sms\" => Ok(Channel::Sms),\n            \"push\" => Ok(Channel::Push),\n            _ => Err(UnknownChannel),\n        }\n    }\n}\n"
+      },
+      "context": [
+        "Channel names are stored in the database and sent by clients; parsing and rendering must stay inverse. Variants are added a few times a year."
+      ]
+    },
+    {
+      "id": "CT14",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: notify/src/channel.rs. A private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"fixture\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.90\"\n",
+        "notify/src/channel.rs": "use std::str::FromStr;\n\n#[derive(Clone, Copy, Debug, PartialEq, Eq)]\npub enum Channel {\n    Email,\n    Sms,\n    Push,\n}\n\nimpl Channel {\n    pub const ALL: [Channel; 3] = [Channel::Email, Channel::Sms, Channel::Push];\n\n    pub fn as_str(self) -> &'static str {\n        match self {\n            Channel::Email => \"email\",\n            Channel::Sms => \"sms\",\n            Channel::Push => \"push\",\n        }\n    }\n}\n\npub struct UnknownChannel;\n\nimpl FromStr for Channel {\n    type Err = UnknownChannel;\n\n    fn from_str(text: &str) -> Result<Self, Self::Err> {\n        Channel::ALL\n            .into_iter()\n            .find(|channel| channel.as_str() == text)\n            .ok_or(UnknownChannel)\n    }\n}\n"
+      },
+      "context": [
+        "Channel names are stored in the database and sent by clients; parsing and rendering must stay inverse."
+      ]
+    },
+    {
+      "id": "CT15",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: server/limits.go. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "go.mod": "module example.com/fixture\n\ngo 1.24\n",
+        "server/limits.go": "package server\n\nimport \"net/http\"\n\nconst maxBodyBytes = 1 << 20\n\nfunc limitBody(w http.ResponseWriter, r *http.Request) {\n\tr.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)\n}\n",
+        "deploy/chart/values.yaml": "ingress:\n  annotations:\n    nginx.ingress.kubernetes.io/proxy-body-size: 1m\n"
+      },
+      "context": [
+        "The ingress must admit every body the server accepts; operators change the chart without reading Go code."
+      ]
+    },
+    {
+      "id": "CT16",
+      "request": "Review the assigned area through duplication for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [],
+      "scope": "Assigned area: server/limits.go. Other supplied files are the rest of a private, unreleased snapshot; no external API commitment or team override.",
+      "files": {
+        "go.mod": "module example.com/fixture\n\ngo 1.24\n",
+        "server/limits.go": "package server\n\nimport (\n\t\"net/http\"\n\t\"os\"\n\t\"strconv\"\n)\n\nfunc maxBodyBytes() int64 {\n\tlimit, err := strconv.ParseInt(os.Getenv(\"MAX_BODY_BYTES\"), 10, 64)\n\tif err != nil {\n\t\treturn 1 << 20\n\t}\n\treturn limit\n}\n\nfunc limitBody(w http.ResponseWriter, r *http.Request) {\n\tr.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes())\n}\n",
+        "deploy/chart/values.yaml": "maxBodyBytes: 1048576\n",
+        "deploy/chart/templates/ingress.yaml": "apiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: api\n  annotations:\n    nginx.ingress.kubernetes.io/proxy-body-size: \"{{ .Values.maxBodyBytes }}\"\n",
+        "deploy/chart/templates/deployment.yaml": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: api\nspec:\n  template:\n    spec:\n      containers:\n        - name: api\n          env:\n            - name: MAX_BODY_BYTES\n              value: \"{{ .Values.maxBodyBytes }}\"\n"
+      },
+      "context": [
+        "The Go default applies only to local runs; every deployment uses the chart."
+      ]
     }
   ]
 }
