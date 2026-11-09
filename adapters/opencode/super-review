@@ -26,6 +26,31 @@ if ! command -v "$opencode_bin" >/dev/null 2>&1; then
   exit 127
 fi
 export OPENCODE_CONFIG_DIR="$review_root"
+# Agents and permissions in the reviewed repository's .opencode must not
+# replace or widen the review roles.
+export OPENCODE_DISABLE_PROJECT_CONFIG=1
+
+if "$opencode_bin" --help 2>&1 | grep -q -- '--standalone'; then
+  # OpenCode 2 attaches to a shared background service that ignores this
+  # environment, so run a private server. OPENCODE_CONFIG_DIR replaces the
+  # global directory there: keep the user's global config file for models and
+  # providers, and select the review agent and specialist model last.
+  if [ -z "${OPENCODE_CONFIG:-}" ]; then
+    global_dir=${XDG_CONFIG_HOME:-"$HOME/.config"}/opencode
+    for name in opencode.jsonc opencode.json config.json; do
+      if [ -f "$global_dir/$name" ]; then
+        export OPENCODE_CONFIG="$global_dir/$name"
+        break
+      fi
+    done
+  fi
+  export OPENCODE_CONFIG_CONTENT="{\"default_agent\":\"super-review\",\"agent\":{\"super-review-specialist\":{\"model\":\"$worker_model\"}}}"
+  if [ "$#" -eq 0 ]; then
+    exec "$opencode_bin" --standalone
+  fi
+  exec "$opencode_bin" --standalone --prompt "Use Super Review for this request: $*"
+fi
+
 if [ "$#" -eq 0 ]; then
   exec "$opencode_bin" --pure --agent super-review
 fi

@@ -12,7 +12,7 @@ supplement, not replace, existing Go/TypeScript/Rust judgment and full-review ca
 
 ## Inputs and isolation
 
-`packets.md` contains neutral inputs S01-S12. Give a model only its selected
+`packets.md` contains neutral inputs S01-S14. Give a model only its selected
 section, the common preamble, the corresponding installed production instructions
 and the listed source files through a controlled read-only fixture root. Set that
 root explicitly; the manifest records bytes, not a fictional Git revision. The

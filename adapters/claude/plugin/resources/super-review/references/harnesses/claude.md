@@ -12,8 +12,11 @@ there; pass resolved absolute resource and source paths to specialists.
 Delegate each selected lens to `super-review:specialist` through native Agent in
 fresh contexts. Supply the workflow's neutral packet, not the parent conversation
 or peer reports. Read, Glob, Grep and Bash provide source access; Bash is limited
-by the review instructions to acquisition and inspection. Edit/Write tools are
-not exposed, but the shell is not a read-only sandbox.
+by the review instructions to acquisition and inspection, plus launching
+specialists in another harness the user explicitly requested, through
+[external specialists](external.md) with background Bash and its completion
+notifications. Edit/Write tools are not exposed, but the shell is not a
+read-only sandbox.
 
 Prefer foreground calls (`run_in_background: false`) and native parallel calls
 for independent tasks. If the host runs a child in the background, use its native

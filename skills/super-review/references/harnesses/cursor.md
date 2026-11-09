@@ -36,7 +36,9 @@ If the requested model is unknown, blocked or rejected, or this Cursor version
 cannot select it per call, stop affected dispatch and explain the exact capability
 gap. Ask for an available choice or explicit permission to inherit; do not
 silently fall back. Do not change providers, use external model APIs or bypass
-Cursor's plan/admin restrictions. If Cursor reports a different effective model,
+Cursor's plan/admin restrictions. An explicit user request to run specialists in
+another installed harness is not a Cursor model override: follow
+[external specialists](external.md) for those tasks. If Cursor reports a different effective model,
 disclose the mismatch and stop further affected launches pending the user's
 choice. Preserve completed results and distinguish them from unmet model/scope
 requirements. If the effective model is not exposed, record it as unverified,
