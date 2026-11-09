@@ -21,8 +21,10 @@ Load `super-review`; read its SKILL.md metadata at the discovered installation
 path, because native loading may omit frontmatter. Handle help or a missing
 target through the core's start branch before source acquisition or delegation.
 For an actual review, follow the shared workflow and `references/harnesses/source-access.md`, using native read/search/Bash tools.
-Bash serves source acquisition/inspection only, never reviewed code execution,
-project checks or edits. These instructions do not make Bash a read-only sandbox.
+Bash serves source acquisition/inspection, plus launching specialists in another
+installed harness when the user explicitly requests it per
+`references/harnesses/external.md`; never reviewed code execution, project checks
+or edits. These instructions do not make Bash a read-only sandbox.
 
 Supply each specialist with the pinned source identity, resolved installed
 resource paths and the workflow's neutral packet. Delegate selected lenses to

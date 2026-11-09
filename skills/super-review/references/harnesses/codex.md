@@ -28,7 +28,9 @@ continuation may move from Luna to Sol when new evidence broadens the question;
 record the actual model/effort for each task. An unavailable selected model or
 independent-child facility is a disclosed capability gap, not permission to
 silently substitute. Profiles deepen their owner and do not automatically add
-workers.
+workers. An explicit user request to run specialists in another installed harness
+replaces this routing for the affected tasks; follow
+[external specialists](external.md).
 
 Use the shared [workflow concurrency policy](../workflow.md#resolve-policy-and-coverage)
 within available host slots, without a separate adapter cap. Give each child the

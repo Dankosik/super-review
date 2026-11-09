@@ -2,7 +2,7 @@
 name: super-review
 description: "Use for an explicitly requested Super Review: independent readability and maintainability review of Go, TypeScript (including React 19, Next.js 16, Tailwind and shadcn/ui), Rust, or Java PRs or local source."
 metadata:
-  version: "3.9.1"
+  version: "3.10.0"
 ---
 
 # Super Review
@@ -16,9 +16,11 @@ for advice, without claiming tested equivalence.
 
 ## Start or explain
 
-Use only the active adapter: [Codex](references/harnesses/codex.md),
+Orchestrate through the active adapter: [Codex](references/harnesses/codex.md),
 [Claude Code](references/harnesses/claude.md), [Cursor](references/harnesses/cursor.md),
-or the installed OpenCode role.
+or the installed OpenCode role. When the user explicitly asks to run specialists
+in another installed harness, launch them there through
+[external specialists](references/harnesses/external.md).
 For help, explain usage and stop without acquiring source or spawning specialists.
 If an actual review has no identifiable target after considering the request and
 available context, ask only for that target. A selected PR, local changes or an
