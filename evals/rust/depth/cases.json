@@ -574,6 +574,182 @@
       "contrasts": [
         "RD51"
       ]
+    },
+    {
+      "id": "RD53",
+      "rule": "rust.functions.extract-for-clarity",
+      "expect": [
+        "Observe that add_line and apply_bulk update summarize's accumulators through &mut parameters, so neither can be read without the caller's local state, and that build_totals only forwards to the struct literal; recommend inlining them into the loop.",
+        "Keep line_cents, which names a value both steps use; do not justify the change by line count or recommend a new accumulator type or trait."
+      ],
+      "contrasts": [
+        "RD54"
+      ]
+    },
+    {
+      "id": "RD54",
+      "rule": "rust.functions.extract-for-clarity",
+      "expect": [
+        "Retain checked_line_cents: its name, input, result and failure state a complete decision the caller uses without reading the body.",
+        "Do not recommend inlining it because it has one call site, or splitting summarize further."
+      ],
+      "contrasts": [
+        "RD53"
+      ]
+    },
+    {
+      "id": "RD55",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Observe that LineSink repeats std::io::Write for two types that already implement it, and that RowFilter carries one operation whose implementations hold no state; recommend taking a Write destination and a function or closure for the filter.",
+        "Treat dyn versus generic dispatch as neutral; do not recommend a new trait, an enum framework or a dependency, and do not ground the finding in the implementation count alone."
+      ],
+      "contrasts": [
+        "RD56"
+      ]
+    },
+    {
+      "id": "RD56",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Retain Codec: its three operations must agree on one format and share the implementation's state, downstream crates implement it, and no standard trait has this contract.",
+        "Do not recommend separate closures, std::io::Write, a closed enum or a concrete type."
+      ],
+      "contrasts": [
+        "RD55"
+      ]
+    },
+    {
+      "id": "RD57",
+      "rule": "rust.data.make-transformations-visible",
+      "expect": [
+        "Observe that every operation already has exclusive access through &mut self, so Arc<Mutex<..>> states sharing that no code uses, and that clone followed by clear is a transfer written as a copy; recommend a plain Vec field and moving the rows out, for example with std::mem::take.",
+        "Explain the ownership story the reader gains; do not justify the change only by allocation or lock cost, and do not treat the clone or the Arc as a finding by its spelling."
+      ],
+      "contrasts": [
+        "RD58"
+      ]
+    },
+    {
+      "id": "RD58",
+      "rule": "rust.data.make-transformations-visible",
+      "expect": [
+        "Retain the shared Arc<Mutex<..>>, which several threads actually use, and the cloned snapshot, which must leave the rows pending until acknowledge.",
+        "Do not recommend std::mem::take, a plain Vec field or borrowing the rows out of the lock."
+      ],
+      "contrasts": [
+        "RD57"
+      ]
+    },
+    {
+      "id": "RD59",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Observe that the two durations are stored as integers whose unit lives in the field name and is re-applied at every use, and that the Vec is kept sorted and duplicate-free by hand; recommend Duration fields and an ordered set such as BTreeSet.",
+        "Name the relationships that disappear (unit at each use, contains-then-sort); account for the regions() result type, and do not justify the change by lookup speed."
+      ],
+      "contrasts": [
+        "RD60"
+      ]
+    },
+    {
+      "id": "RD60",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Retain the integer fields of the wire type, converted once at the boundary, and the Vec, whose order and duplicates are meaningful.",
+        "Do not recommend Duration fields in ProbeSettings, a serde adapter, a set or merging the two types."
+      ],
+      "contrasts": [
+        "RD59"
+      ]
+    },
+    {
+      "id": "RD61",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Observe that retry_delay's signature names the whole configuration while it needs one duration, so a call does not show which setting it depends on, and that tenant_dir's conversion parameters serve one caller that must build a String to satisfy them; recommend the base delay or RetryConfig as the parameter and concrete &Path and &str inputs.",
+        "Show a before/after call; do not recommend a trait, a new configuration type or generalizing other arguments."
+      ],
+      "contrasts": [
+        "RD62"
+      ]
+    },
+    {
+      "id": "RD62",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Retain open_store's AsRef<Path> parameter, which its actual callers use with several types, and listener's &HttpConfig, whose every field it reads.",
+        "Do not recommend a concrete &Path parameter or passing HttpConfig's fields individually."
+      ],
+      "contrasts": [
+        "RD61"
+      ]
+    },
+    {
+      "id": "RD63",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Observe that collect_uploads returns its new result through a caller-supplied vector that is always empty, and that largest and largest_upload declare a failure no path produces, so callers write an error arm for nothing; recommend returning the Vec (or an iterator) and a plain u64, removing StatsError.",
+        "Show the resulting call; do not report a defect, and do not recommend an Option or a new error type without evidence that absence matters to callers."
+      ],
+      "contrasts": [
+        "RD64"
+      ]
+    },
+    {
+      "id": "RD64",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Retain the batch parameter, where refilling caller-owned storage is the operation, and Wrapping's Result, which the shared trait signature fixes.",
+        "Do not recommend returning a new Vec from drain_ready or an infallible signature for Wrapping."
+      ],
+      "contrasts": [
+        "RD63"
+      ]
+    },
+    {
+      "id": "RD65",
+      "rule": "rust.rationale.explain-constraints",
+      "expect": [
+        "Observe that the three bare allow attributes leave a maintainer unable to tell a deliberate exception from a leftover; recommend recording the reason on the two deliberate ones, for example #[expect(..., reason = \"...\")], which this crate's 1.85 baseline supports, and removing legacy_checksum together with its dead_code suppression.",
+        "Do not enumerate other lint violations, assess whether the cast is sound, or recommend restructuring frame's parameters without a caller burden."
+      ],
+      "contrasts": [
+        "RD66"
+      ]
+    },
+    {
+      "id": "RD66",
+      "rule": "rust.rationale.explain-constraints",
+      "expect": [
+        "Retain both suppressions with their adjacent reasons: each states why the exception is deliberate.",
+        "Do not recommend #[expect] or a reason attribute argument, which need Rust 1.81 while this crate supports 1.75, and do not recommend deleting the reason comments."
+      ],
+      "contrasts": [
+        "RD65"
+      ]
+    },
+    {
+      "id": "RD67",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Observe that Format, include_header and width offer choices no caller makes, and that the glob re-export publishes header, body and pad, which only render uses; recommend render(report) with the fixed layout and private helpers behind an explicit export.",
+        "Ground both observations in the stated consumers; do not recommend a trait, a builder or a new crate, and do not treat a single-variant enum as a finding by itself."
+      ],
+      "contrasts": [
+        "RD68"
+      ]
+    },
+    {
+      "id": "RD68",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Retain Format, include_header and width, each of which a current caller varies, and the explicit export list with private helpers.",
+        "Do not recommend removing options, hard-coding the layout, or widening or narrowing visibility."
+      ],
+      "contrasts": [
+        "RD67"
+      ]
     }
   ]
 }

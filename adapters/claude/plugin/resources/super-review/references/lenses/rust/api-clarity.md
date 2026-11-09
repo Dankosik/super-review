@@ -29,6 +29,43 @@ Implement `From`, not `Into`: the blanket impl supplies `Into`, while a direct
 when both exist, one can delegate to the other so the reader learns it once.
 A `new` with effects such as spawning or registration is not a `Default`.
 
+An inherent method that does what a standard trait names keeps that capability
+out of the code that would use it: `to_string` without `Display` is absent from
+formatting, a `from_str` or `parse` function without `FromStr` from `str::parse`,
+an `iter` without `IntoIterator` from `for`, a plain `add` or `eq` from
+operators and generic bounds. It also misleads where its contract differs from
+the trait's. Recommend the trait when its semantics fit and a consumer would
+use it; keep a domain verb for an operation that is not that conversion. An
+operator impl should mean what the operator means: `+` that appends to a log or
+`<<` that sends surprises the reader in the same way. A public library type
+without `Debug`, or without the comparison traits its users would reach for,
+leaves a gap downstream crates cannot fill; inside an application, add a trait
+when a use appears.
+
+A signature also speaks through what it accepts, returns and promises.
+`&Vec<T>`, `&String`, `&PathBuf` or `&Box<T>`, as a parameter or a result,
+names the container where `&[T]`, `&str`, `&Path` or `&T` names the contents,
+and a `&Option<T>` parameter makes every caller own an `Option` where
+`Option<&T>` accepts both. Conversion generics such as `impl Into<String>` or
+`AsRef<Path>` serve a library's varied callers; in application code whose
+callers are known they add a type parameter to read and a conversion to find.
+A closure parameter asks for the least it needs: `FnOnce` if it is called once,
+`FnMut` if called repeatedly, `Fn` only if it must be callable through a shared
+reference. A returned type that borrows from an argument shows it with `'_`, as
+in `Iter<'_>`, where a bare `Iter` hides the borrow.
+
+A `Result` whose error no path produces, an `Option` that is always `Some`, or
+an `async fn` that never awaits makes each caller handle or await something
+that cannot happen; a trait or callback signature that fixes the shape is the
+reason to keep it. A result
+written into a `&mut` parameter that every caller creates empty is a return
+value; keep the parameter where refilling caller-owned storage is the
+operation. A parameter that hands over a whole configuration or state for one
+field hides which fact the call depends on. A tuple result whose members a
+reader cannot tell apart without the documentation, such as
+`(bool, usize, usize)`, leaves their meaning to position at every call; a pair
+with a natural order, such as the two halves of a split, is fine.
+
 `AsRef` supplies a view; `Borrow` additionally requires compatible equality,
 ordering and hashing where implemented. A domain newtype with different comparison
 semantics need not expose `Borrow<str>`. `Deref` opens an implicit target API and

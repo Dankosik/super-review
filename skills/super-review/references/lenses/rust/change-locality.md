@@ -22,6 +22,18 @@ recommend removing it. A public or external path follows the shared
 compatibility judgment; when a current consumer keeps either path alive, its
 selection and removal condition belong where a maintainer will find them.
 
+Rust can make the compiler list the places a change must visit. An exhaustive
+`match` over an enum this crate owns, a struct literal without
+`..Default::default()` and a pattern without `..` turn a new variant or field
+into an error at every site that must decide. A `_` arm, a rest pattern or a
+default fill takes those sites off the list, and the next change then depends
+on a search. Recommend the exhaustive form where each site makes a decision per
+variant or field. Keep the wildcard for a foreign or `#[non_exhaustive]` type
+and for a remainder that is uniform by intent, and the default fill where new
+fields should stay invisible to that caller. Likewise, a set of strings or
+integers the crate defines and compares in several modules becomes one visible
+set as an enum.
+
 Conditional platform or feature implementations may deliberately have parallel
 shapes without coexisting. Preserve that distinction and public paths/re-exports.
 Narrowing visibility or moving a type can affect downstream users despite unchanged

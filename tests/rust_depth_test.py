@@ -13,17 +13,23 @@ DELIVERIES = (
     ROOT / "adapters/codex/super-review/skills/super-review",
     ROOT / "adapters/cursor/plugin/resources/super-review",
 )
-MECHANISMS = ("tokio", "serde", "clap", "axum")
+MECHANISMS = ("tokio", "serde", "clap", "axum", "errors", "tracing")
 TOUCHED = (
+    "references/languages.md",
     "references/languages/rust.md",
     "references/lenses/rust/api-clarity.md",
     "references/lenses/rust/abstractions.md",
     "references/lenses/rust/control-flow.md",
     "references/lenses/rust/change-locality.md",
+    "references/lenses/rust/data-flow.md",
     "references/lenses/rust/duplication.md",
+    "references/lenses/rust/function-cohesion.md",
+    "references/lenses/rust/naming.md",
     "references/lenses/rust/rationale.md",
     "references/lenses/rust/representation.md",
+    "references/profiles/rust/dependency-boundaries.md",
     "references/profiles/rust/error-expression.md",
+    "references/profiles/rust/lifecycle-ownership.md",
     *(f"references/rust/{name}.md" for name in MECHANISMS),
 )
 
