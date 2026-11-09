@@ -745,6 +745,236 @@
       "context": [
         "spend is the only operation that reduces the budget, and callers must not raise it. Refund is passive data."
       ]
+    },
+    {
+      "id": "RD53",
+      "request": "Review the supplied production source through function-cohesion for readability and maintainability. Do not implement or execute it.",
+      "lens": "function-cohesion",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-53\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "pub struct Line<'a> {\n    pub sku: &'a str,\n    pub quantity: u32,\n    pub unit_cents: u64,\n}\n\npub struct Totals {\n    pub subtotal_cents: u64,\n    pub discount_cents: u64,\n    pub units: u32,\n}\n\npub fn summarize(lines: &[Line<'_>], bulk_threshold: u32, bulk_percent: u64) -> Totals {\n    let mut subtotal_cents = 0;\n    let mut discount_cents = 0;\n    let mut units = 0;\n    for line in lines {\n        add_line(line, &mut subtotal_cents, &mut units);\n        apply_bulk(line, bulk_threshold, bulk_percent, &mut discount_cents);\n    }\n    build_totals(subtotal_cents, discount_cents, units)\n}\n\nfn add_line(line: &Line<'_>, subtotal_cents: &mut u64, units: &mut u32) {\n    *subtotal_cents += line_cents(line);\n    *units += line.quantity;\n}\n\nfn apply_bulk(line: &Line<'_>, bulk_threshold: u32, bulk_percent: u64, discount_cents: &mut u64) {\n    if line.quantity >= bulk_threshold {\n        *discount_cents += line_cents(line) * bulk_percent / 100;\n    }\n}\n\nfn line_cents(line: &Line<'_>) -> u64 {\n    u64::from(line.quantity) * line.unit_cents\n}\n\nfn build_totals(subtotal_cents: u64, discount_cents: u64, units: u32) -> Totals {\n    Totals { subtotal_cents, discount_cents, units }\n}\n"
+      },
+      "context": [
+        "add_line, apply_bulk and build_totals each have exactly one call site, in summarize. line_cents is called from add_line and apply_bulk."
+      ]
+    },
+    {
+      "id": "RD54",
+      "request": "Review the supplied production source through function-cohesion for readability and maintainability. Do not implement or execute it.",
+      "lens": "function-cohesion",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-54\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "pub struct Line<'a> {\n    pub sku: &'a str,\n    pub quantity: u32,\n    pub unit_cents: u64,\n}\n\n#[derive(Default)]\npub struct Totals {\n    pub subtotal_cents: u64,\n    pub units: u32,\n}\n\n#[derive(Debug)]\npub enum LineError {\n    ZeroQuantity { sku: String },\n    TooLarge { sku: String },\n}\n\npub fn summarize(lines: &[Line<'_>]) -> Result<Totals, LineError> {\n    let mut totals = Totals::default();\n    for line in lines {\n        totals.subtotal_cents += checked_line_cents(line)?;\n        totals.units += line.quantity;\n    }\n    Ok(totals)\n}\n\nfn checked_line_cents(line: &Line<'_>) -> Result<u64, LineError> {\n    if line.quantity == 0 {\n        return Err(LineError::ZeroQuantity { sku: line.sku.to_owned() });\n    }\n    u64::from(line.quantity)\n        .checked_mul(line.unit_cents)\n        .ok_or_else(|| LineError::TooLarge { sku: line.sku.to_owned() })\n}\n"
+      },
+      "context": [
+        "checked_line_cents has exactly one call site, in summarize."
+      ]
+    },
+    {
+      "id": "RD55",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-55\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::fs::File;\nuse std::io::{self, Write};\n\npub struct Row {\n    pub name: String,\n    pub active: bool,\n}\n\npub trait LineSink {\n    fn write_line(&mut self, line: &str) -> io::Result<()>;\n}\n\nimpl LineSink for File {\n    fn write_line(&mut self, line: &str) -> io::Result<()> {\n        writeln!(self, \"{line}\")\n    }\n}\n\nimpl LineSink for Vec<u8> {\n    fn write_line(&mut self, line: &str) -> io::Result<()> {\n        writeln!(self, \"{line}\")\n    }\n}\n\npub trait RowFilter {\n    fn keep(&self, row: &Row) -> bool;\n}\n\npub struct ActiveOnly;\n\nimpl RowFilter for ActiveOnly {\n    fn keep(&self, row: &Row) -> bool {\n        row.active\n    }\n}\n\npub struct Everything;\n\nimpl RowFilter for Everything {\n    fn keep(&self, _row: &Row) -> bool {\n        true\n    }\n}\n\npub fn export(rows: &[Row], filter: &dyn RowFilter, sink: &mut dyn LineSink) -> io::Result<()> {\n    for row in rows {\n        if filter.keep(row) {\n            sink.write_line(&row.name)?;\n        }\n    }\n    Ok(())\n}\n"
+      },
+      "context": [
+        "export has two callers in this crate: the CLI passes a File and ActiveOnly; the preview handler passes a Vec<u8> and Everything. There are no other LineSink or RowFilter implementations, and neither trait is used outside this crate."
+      ]
+    },
+    {
+      "id": "RD56",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All supplied production source in a released library; the Codec extension point remains supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-56\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "#[derive(Debug, Clone, PartialEq)]\npub struct Row {\n    pub name: String,\n    pub count: u64,\n}\n\n#[derive(Debug)]\npub struct DecodeError {\n    pub line: usize,\n}\n\npub trait Codec {\n    fn content_type(&self) -> &'static str;\n    fn encode(&self, rows: &[Row]) -> Vec<u8>;\n    fn decode(&self, bytes: &[u8]) -> Result<Vec<Row>, DecodeError>;\n}\n\npub struct Delimited {\n    pub delimiter: char,\n}\n\nimpl Codec for Delimited {\n    fn content_type(&self) -> &'static str {\n        if self.delimiter == '\\t' {\n            \"text/tab-separated-values\"\n        } else {\n            \"text/csv\"\n        }\n    }\n\n    fn encode(&self, rows: &[Row]) -> Vec<u8> {\n        let mut out = String::new();\n        for row in rows {\n            out.push_str(&row.name);\n            out.push(self.delimiter);\n            out.push_str(&row.count.to_string());\n            out.push('\\n');\n        }\n        out.into_bytes()\n    }\n\n    fn decode(&self, bytes: &[u8]) -> Result<Vec<Row>, DecodeError> {\n        let text = std::str::from_utf8(bytes).map_err(|_| DecodeError { line: 0 })?;\n        text.lines()\n            .enumerate()\n            .map(|(index, line)| {\n                let (name, count) = line\n                    .split_once(self.delimiter)\n                    .ok_or(DecodeError { line: index + 1 })?;\n                let count = count.parse().map_err(|_| DecodeError { line: index + 1 })?;\n                Ok(Row { name: name.to_owned(), count })\n            })\n            .collect()\n    }\n}\n\npub fn export(codec: &dyn Codec, rows: &[Row]) -> (&'static str, Vec<u8>) {\n    (codec.content_type(), codec.encode(rows))\n}\n\npub fn append(codec: &dyn Codec, stored: &[u8], rows: &[Row]) -> Result<Vec<u8>, DecodeError> {\n    let mut all = codec.decode(stored)?;\n    all.extend_from_slice(rows);\n    Ok(codec.encode(&all))\n}\n"
+      },
+      "context": [
+        "Codec is this library's documented extension point: downstream crates implement it for their own formats, and the HTTP layer picks an implementation at runtime from the Accept header. Delimited is one of two implementations shipped here; the other, JsonLines, is in a sibling module not shown."
+      ]
+    },
+    {
+      "id": "RD57",
+      "request": "Review the supplied production source through data-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "data-flow",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-57\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::sync::{Arc, Mutex};\n\n#[derive(Clone)]\npub struct Row {\n    pub key: String,\n    pub value: i64,\n}\n\npub struct Batcher {\n    pending: Arc<Mutex<Vec<Row>>>,\n    limit: usize,\n}\n\nimpl Batcher {\n    pub fn new(limit: usize) -> Self {\n        Self { pending: Arc::new(Mutex::new(Vec::new())), limit }\n    }\n\n    pub fn push(&mut self, row: Row) -> Option<Vec<Row>> {\n        let mut pending = self.pending.lock().unwrap_or_else(|poisoned| poisoned.into_inner());\n        pending.push(row);\n        if pending.len() < self.limit {\n            return None;\n        }\n        let batch = pending.clone();\n        pending.clear();\n        Some(batch)\n    }\n\n    pub fn flush(&mut self) -> Vec<Row> {\n        let mut pending = self.pending.lock().unwrap_or_else(|poisoned| poisoned.into_inner());\n        let batch = pending.clone();\n        pending.clear();\n        batch\n    }\n}\n"
+      },
+      "context": [
+        "One importer task owns the Batcher; it is never cloned or shared, and the pending Arc is not handed out anywhere. Callers send the returned batch and never read the Batcher's rows afterwards. Row's Clone has no other use in the crate."
+      ]
+    },
+    {
+      "id": "RD58",
+      "request": "Review the supplied production source through data-flow for readability and maintainability. Do not implement or execute it.",
+      "lens": "data-flow",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-58\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::sync::{Arc, Mutex, MutexGuard};\n\n#[derive(Clone)]\npub struct Row {\n    pub key: String,\n    pub value: i64,\n}\n\n#[derive(Clone, Default)]\npub struct Outbox {\n    pending: Arc<Mutex<Vec<Row>>>,\n}\n\nimpl Outbox {\n    pub fn push(&self, row: Row) {\n        self.rows().push(row);\n    }\n\n    pub fn snapshot(&self) -> Vec<Row> {\n        self.rows().clone()\n    }\n\n    pub fn acknowledge(&self, sent: usize) {\n        self.rows().drain(..sent);\n    }\n\n    fn rows(&self) -> MutexGuard<'_, Vec<Row>> {\n        self.pending.lock().unwrap_or_else(|poisoned| poisoned.into_inner())\n    }\n}\n"
+      },
+      "context": [
+        "Producer threads each hold a clone of Outbox and push concurrently. One sender thread calls snapshot, sends those rows, and calls acknowledge with their count only after the remote side confirms; a failed send calls snapshot again and retries the same rows."
+      ]
+    },
+    {
+      "id": "RD59",
+      "request": "Review the supplied production source through representation for readability and maintainability. Do not implement or execute it.",
+      "lens": "representation",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-59\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::time::Duration;\n\npub struct ProbeConfig {\n    pub timeout_ms: u64,\n    pub interval_secs: u64,\n    regions: Vec<String>,\n}\n\nimpl ProbeConfig {\n    pub fn new(timeout_ms: u64, interval_secs: u64) -> Self {\n        Self { timeout_ms, interval_secs, regions: Vec::new() }\n    }\n\n    pub fn add_region(&mut self, region: String) {\n        if !self.regions.contains(&region) {\n            self.regions.push(region);\n            self.regions.sort();\n        }\n    }\n\n    pub fn remove_region(&mut self, region: &str) {\n        self.regions.retain(|existing| existing != region);\n    }\n\n    pub fn regions(&self) -> &[String] {\n        &self.regions\n    }\n}\n\npub fn deadline_budget(config: &ProbeConfig, attempts: u32) -> Duration {\n    Duration::from_millis(config.timeout_ms) * attempts\n        + Duration::from_secs(config.interval_secs) * attempts.saturating_sub(1)\n}\n\npub fn next_probe_in(config: &ProbeConfig, elapsed: Duration) -> Duration {\n    Duration::from_secs(config.interval_secs).saturating_sub(elapsed)\n}\n\npub fn is_slow(config: &ProbeConfig, took: Duration) -> bool {\n    took > Duration::from_millis(config.timeout_ms)\n}\n"
+      },
+      "context": [
+        "Startup code in this crate builds ProbeConfig from settings it has already parsed; ProbeConfig is not serialized. Region order has no meaning: reports print the regions sorted and without duplicates, and the only reader of regions() iterates it."
+      ]
+    },
+    {
+      "id": "RD60",
+      "request": "Review the supplied production source through representation for readability and maintainability. Do not implement or execute it.",
+      "lens": "representation",
+      "profiles": [],
+      "scope": "All supplied production source in a private service crate; the published configuration file format remains supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-60\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\nserde = { version = \"1.0\", features = [\"derive\"] }\n",
+        "src/lib.rs": "use serde::Deserialize;\nuse std::time::Duration;\n\n#[derive(Deserialize)]\npub struct ProbeSettings {\n    pub timeout_ms: u64,\n    pub interval_secs: u64,\n    pub regions: Vec<String>,\n}\n\npub struct ProbePlan {\n    pub timeout: Duration,\n    pub interval: Duration,\n    pub regions: Vec<String>,\n}\n\nimpl From<ProbeSettings> for ProbePlan {\n    fn from(settings: ProbeSettings) -> Self {\n        Self {\n            timeout: Duration::from_millis(settings.timeout_ms),\n            interval: Duration::from_secs(settings.interval_secs),\n            regions: settings.regions,\n        }\n    }\n}\n\npub fn probe_order(plan: &ProbePlan) -> &[String] {\n    &plan.regions\n}\n"
+      },
+      "context": [
+        "ProbeSettings mirrors the published configuration file; operators' documentation names the keys timeout_ms and interval_secs. Regions are probed in the listed order, and an operator may list a region twice to probe it twice per cycle. The rest of the crate uses ProbePlan."
+      ]
+    },
+    {
+      "id": "RD61",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-61\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::path::{Path, PathBuf};\nuse std::time::Duration;\n\npub struct AppConfig {\n    pub http: HttpConfig,\n    pub storage: StorageConfig,\n    pub retry: RetryConfig,\n}\n\npub struct HttpConfig {\n    pub bind: String,\n    pub request_timeout: Duration,\n}\n\npub struct StorageConfig {\n    pub root: PathBuf,\n    pub max_object_bytes: u64,\n}\n\npub struct RetryConfig {\n    pub base_delay: Duration,\n    pub max_attempts: u32,\n}\n\npub fn retry_delay(config: &AppConfig, attempt: u32) -> Duration {\n    config.retry.base_delay * 2u32.saturating_pow(attempt)\n}\n\npub fn tenant_dir<P: AsRef<Path>, S: Into<String>>(root: P, tenant: S) -> PathBuf {\n    let tenant: String = tenant.into();\n    root.as_ref().join(tenant)\n}\n\npub fn object_path(config: &AppConfig, tenant: &str, key: &str) -> PathBuf {\n    tenant_dir(&config.storage.root, tenant.to_owned()).join(key)\n}\n"
+      },
+      "context": [
+        "This is an internal module of a binary crate. retry_delay has two callers, the uploader and the webhook sender; each is handed the whole AppConfig only to pass it to retry_delay. tenant_dir has one caller, object_path."
+      ]
+    },
+    {
+      "id": "RD62",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production source in a released library; the stated public signatures remain supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-62\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::fs;\nuse std::io;\nuse std::path::{Path, PathBuf};\nuse std::time::Duration;\n\npub struct Store {\n    root: PathBuf,\n}\n\nimpl Store {\n    pub fn root(&self) -> &Path {\n        &self.root\n    }\n}\n\npub fn open_store<P: AsRef<Path>>(root: P) -> io::Result<Store> {\n    let root = root.as_ref();\n    fs::create_dir_all(root)?;\n    Ok(Store { root: root.to_path_buf() })\n}\n\npub struct HttpConfig {\n    pub bind: String,\n    pub request_timeout: Duration,\n    pub max_connections: usize,\n    pub user_agent: String,\n}\n\npub struct Listener {\n    pub address: String,\n    pub backlog: usize,\n    pub idle_after: Duration,\n    pub banner: String,\n}\n\npub fn listener(config: &HttpConfig) -> Listener {\n    Listener {\n        address: config.bind.clone(),\n        backlog: config.max_connections * 2,\n        idle_after: config.request_timeout * 3,\n        banner: format!(\"{} listening on {}\", config.user_agent, config.bind),\n    }\n}\n"
+      },
+      "context": [
+        "This crate is a published library. Its README and downstream callers pass string literals, String, PathBuf and &Path to open_store. listener reads every field of HttpConfig."
+      ]
+    },
+    {
+      "id": "RD63",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-63\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "#[derive(Clone, Copy, PartialEq, Eq)]\npub enum Kind {\n    Upload,\n    Download,\n}\n\npub struct Event {\n    pub kind: Kind,\n    pub bytes: u64,\n}\n\n#[derive(Debug)]\npub enum StatsError {\n    Unavailable,\n}\n\npub fn collect_uploads(events: &[Event], out: &mut Vec<u64>) {\n    for event in events {\n        if event.kind == Kind::Upload {\n            out.push(event.bytes);\n        }\n    }\n}\n\npub fn largest(sizes: &[u64]) -> Result<u64, StatsError> {\n    Ok(sizes.iter().copied().max().unwrap_or(0))\n}\n\npub fn largest_upload(events: &[Event]) -> Result<u64, StatsError> {\n    let mut sizes = Vec::new();\n    collect_uploads(events, &mut sizes);\n    largest(&sizes)\n}\n"
+      },
+      "context": [
+        "Every caller passes collect_uploads a freshly created empty Vec. No code in the crate constructs a StatsError; the two callers of largest_upload each match on the Result and log the Err arm."
+      ]
+    },
+    {
+      "id": "RD64",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability. Do not implement or execute it.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-64\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "use std::collections::VecDeque;\n\npub struct Event {\n    pub bytes: u64,\n}\n\n#[derive(Debug)]\npub enum StatsError {\n    Overflow,\n}\n\npub fn drain_ready(queue: &mut VecDeque<Event>, limit: usize, batch: &mut Vec<Event>) {\n    batch.clear();\n    let ready = limit.min(queue.len());\n    batch.extend(queue.drain(..ready));\n}\n\npub trait Aggregate {\n    fn total(&self, batch: &[Event]) -> Result<u64, StatsError>;\n}\n\npub struct Wrapping;\n\nimpl Aggregate for Wrapping {\n    fn total(&self, batch: &[Event]) -> Result<u64, StatsError> {\n        Ok(batch.iter().fold(0u64, |sum, event| sum.wrapping_add(event.bytes)))\n    }\n}\n\npub struct Checked;\n\nimpl Aggregate for Checked {\n    fn total(&self, batch: &[Event]) -> Result<u64, StatsError> {\n        batch\n            .iter()\n            .try_fold(0u64, |sum, event| sum.checked_add(event.bytes))\n            .ok_or(StatsError::Overflow)\n    }\n}\n"
+      },
+      "context": [
+        "The worker loop owns one batch vector for its whole life and passes it to drain_ready on every iteration; reusing that allocation is a recorded requirement of this loop. The loop holds a &dyn Aggregate chosen from configuration, and both implementations run in production."
+      ]
+    },
+    {
+      "id": "RD65",
+      "request": "Review the supplied production source through rationale for readability and maintainability. Do not implement or execute it.",
+      "lens": "rationale",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-65\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[lints.clippy]\npedantic = { level = \"warn\", priority = -1 }\n",
+        "src/lib.rs": "#[allow(clippy::too_many_arguments)]\npub(crate) fn frame(\n    version: u8,\n    kind: u8,\n    flags: u8,\n    stream: u32,\n    sequence: u32,\n    window: u16,\n    checksum: u32,\n    payload: &[u8],\n) -> Vec<u8> {\n    let mut out = Vec::new();\n    out.push(version);\n    out.push(kind);\n    out.push(flags);\n    out.extend_from_slice(&stream.to_be_bytes());\n    out.extend_from_slice(&sequence.to_be_bytes());\n    out.extend_from_slice(&window.to_be_bytes());\n    out.extend_from_slice(&checksum.to_be_bytes());\n    out.extend_from_slice(payload);\n    out\n}\n\n#[allow(clippy::cast_possible_truncation)]\npub(crate) fn bucket(hash: u64, buckets: u32) -> u32 {\n    (hash % u64::from(buckets)) as u32\n}\n\npub(crate) fn checksum(bytes: &[u8]) -> u32 {\n    bytes.iter().fold(0u32, |sum, byte| sum.wrapping_mul(31).wrapping_add(u32::from(*byte)))\n}\n\n#[allow(dead_code)]\npub(crate) fn legacy_checksum(bytes: &[u8]) -> u32 {\n    bytes.iter().fold(0u32, |sum, byte| sum.rotate_left(5) ^ u32::from(*byte))\n}\n"
+      },
+      "context": [
+        "frame, bucket and checksum are called from sibling modules not shown. A search of the snapshot finds no call to legacy_checksum, in any target or feature. frame's parameters are the wire frame's seven header fields in wire order, then its payload. bucket's remainder is always below buckets."
+      ]
+    },
+    {
+      "id": "RD66",
+      "request": "Review the supplied production source through rationale for readability and maintainability. Do not implement or execute it.",
+      "lens": "rationale",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-66\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.75\"\n\n[lints.clippy]\npedantic = { level = \"warn\", priority = -1 }\n",
+        "src/lib.rs": "// The parameters are the wire frame's seven header fields in wire order, then its payload.\n#[allow(clippy::too_many_arguments)]\npub(crate) fn frame(\n    version: u8,\n    kind: u8,\n    flags: u8,\n    stream: u32,\n    sequence: u32,\n    window: u16,\n    checksum: u32,\n    payload: &[u8],\n) -> Vec<u8> {\n    let mut out = Vec::new();\n    out.push(version);\n    out.push(kind);\n    out.push(flags);\n    out.extend_from_slice(&stream.to_be_bytes());\n    out.extend_from_slice(&sequence.to_be_bytes());\n    out.extend_from_slice(&window.to_be_bytes());\n    out.extend_from_slice(&checksum.to_be_bytes());\n    out.extend_from_slice(payload);\n    out\n}\n\n// The remainder is below `buckets`, so it always fits in u32.\n#[allow(clippy::cast_possible_truncation)]\npub(crate) fn bucket(hash: u64, buckets: u32) -> u32 {\n    (hash % u64::from(buckets)) as u32\n}\n\npub(crate) fn checksum(bytes: &[u8]) -> u32 {\n    bytes.iter().fold(0u32, |sum, byte| sum.wrapping_mul(31).wrapping_add(u32::from(*byte)))\n}\n"
+      },
+      "context": [
+        "frame, bucket and checksum are called from sibling modules not shown."
+      ]
+    },
+    {
+      "id": "RD67",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [
+        "dependency-boundaries"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-67\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "mod render;\n\npub use render::*;\n",
+        "src/render.rs": "pub struct Row {\n    pub label: String,\n    pub value: u64,\n}\n\npub struct Report {\n    pub title: String,\n    pub rows: Vec<Row>,\n}\n\npub enum Format {\n    Text,\n}\n\npub struct RenderOptions {\n    pub format: Format,\n    pub include_header: bool,\n    pub width: usize,\n}\n\npub fn render(report: &Report, options: &RenderOptions) -> String {\n    let mut out = String::new();\n    if options.include_header {\n        out.push_str(&header(report, options.width));\n    }\n    match options.format {\n        Format::Text => out.push_str(&body(report, options.width)),\n    }\n    out\n}\n\npub fn header(report: &Report, width: usize) -> String {\n    format!(\"{}\\n{}\\n\", pad(&report.title, width), \"-\".repeat(width))\n}\n\npub fn body(report: &Report, width: usize) -> String {\n    report\n        .rows\n        .iter()\n        .map(|row| format!(\"{}{:>8}\\n\", pad(&row.label, width - 8), row.value))\n        .collect()\n}\n\npub fn pad(text: &str, width: usize) -> String {\n    format!(\"{text:<width$}\")\n}\n"
+      },
+      "context": [
+        "The crate's only consumer is this workspace's CLI binary. It calls render in two places, both with RenderOptions { format: Format::Text, include_header: true, width: 80 }. header, body and pad are used only inside render.rs. No other crate depends on this one and it is not published."
+      ]
+    },
+    {
+      "id": "RD68",
+      "request": "Review the supplied production source through abstractions for readability and maintainability. Do not implement or execute it.",
+      "lens": "abstractions",
+      "profiles": [
+        "dependency-boundaries"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-68\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n",
+        "src/lib.rs": "mod render;\n\npub use render::{render, Format, RenderOptions, Report, Row};\n",
+        "src/render.rs": "pub struct Row {\n    pub label: String,\n    pub value: u64,\n}\n\npub struct Report {\n    pub title: String,\n    pub rows: Vec<Row>,\n}\n\npub enum Format {\n    Text,\n    Tsv,\n}\n\npub struct RenderOptions {\n    pub format: Format,\n    pub include_header: bool,\n    pub width: usize,\n}\n\npub fn render(report: &Report, options: &RenderOptions) -> String {\n    match options.format {\n        Format::Text => text(report, options),\n        Format::Tsv => tsv(report),\n    }\n}\n\nfn text(report: &Report, options: &RenderOptions) -> String {\n    let mut out = String::new();\n    if options.include_header {\n        out.push_str(&format!(\"{}\\n{}\\n\", pad(&report.title, options.width), \"-\".repeat(options.width)));\n    }\n    for row in &report.rows {\n        out.push_str(&format!(\"{}{:>8}\\n\", pad(&row.label, options.width - 8), row.value));\n    }\n    out\n}\n\nfn tsv(report: &Report) -> String {\n    report.rows.iter().map(|row| format!(\"{}\\t{}\\n\", row.label, row.value)).collect()\n}\n\nfn pad(text: &str, width: usize) -> String {\n    format!(\"{text:<width$}\")\n}\n"
+      },
+      "context": [
+        "The crate's only consumer is this workspace's CLI binary. `report show` builds RenderOptions from its --tsv and --no-header flags and the terminal width; `report mail` passes Format::Text, a header and width 72."
+      ]
     }
   ]
 }

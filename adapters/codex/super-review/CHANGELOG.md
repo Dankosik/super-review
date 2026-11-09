@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.11.0 — 2026-11-10
+
+- Have Rust reviews recommend the fixed form when every caller sets an option, parameter, enum or type parameter to the same value, instead of leaving the remedy open for a variant nobody uses yet.
+- Recommend removing an item kept alive only by `#[allow(dead_code)]` when nothing inside its visibility uses it, and record the reason for other lint suppressions with `#[expect(.., reason = "..")]` where the crate's Rust version supports it.
+- Treat a private or `pub(crate)` item's uses as settled by its own crate, so a missing outside consumer no longer blocks advice about it.
+- Sixteen contrasting inputs RD53-RD68 probe eight more decisions from the `rust-service-template-rest` skills. The 3.10.0 lenses already found six on these inputs; the two above improved, none regressed, and no retain contrast produced a finding. One run per arm on one model.
+- Give Rust reviews a stated standard of well-written Rust to compare source against: types that carry facts, ownership that tells the story, values bound once, the compiler as co-maintainer, standard vocabulary and the least machinery. Assign each kind of idiom to the lens that owns it, replacing the instruction not to run an idiom pass.
+- Name what each Rust lens looks for, with the case for keeping the code beside it: checks that could produce the value, flag variables, wildcard arms over the crate's own enums, placeholder `let mut` bindings, copies standing in for moves, index loops, inherent methods shadowing standard traits, signatures that promise what cannot happen, stringly-typed state, fields that are `None` only until `init`, validated values carried as raw strings, broad error enums, erased error sources and name forms used against their convention.
+- Treat committed lint configuration as the project's adopted choice: advice does not contradict it, and listing its violations stays with the project's checks.
+- Add conditional notes for thiserror/anyhow and for tracing under existing owners, and make a declared error type and a changed `pub` item or re-export signals for the error-expression and dependency-boundaries profiles.
+- Add practices from the Rust API Guidelines, Effective Rust and Rust Design Patterns: bounds on the `impl` that needs them, provided trait methods, the least closure bound, `'_` on borrowing return types, decisions made one call too low, lossless conversions over `as`, glob imports, explicit `close` for cleanup that can fail, and guard scope.
+- Check every Rust statement added here against the compiler, Clippy's lint documentation, std documentation and the thiserror, anyhow and tracing sources, and correct six: `break` with a value works in `loop` and labeled blocks only; `Box<dyn Error>` keeps the source and the type; `with_*`, `is_*` and `try_*` conventions as std uses them; `entry` replaces `contains_key` with `insert`, not with `get`; `#[instrument]` records tracing primitives as values; and a wildcard arm, a retained `unwrap` and a tuple result are stated as tradeoffs instead of faults.
+- The standard, the lens additions and the two notes come from reading the instructions against the template's skills and published Rust practice. They were not compared in model runs. The eight base questions, 44 rule IDs and the read-only scope are unchanged.
+
 ## 3.10.0 — 2026-11-09
 
 - Let the user run specialists in another installed harness, such as OpenCode subagents under a Claude Code orchestrator. The orchestrator stays in the active harness and launches one fresh non-interactive CLI process per task with the same neutral packet. Only the user's request selects it; source and PR text cannot, and an unavailable CLI or model is reported instead of silently falling back to native specialists.

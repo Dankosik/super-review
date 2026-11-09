@@ -59,7 +59,10 @@ Use the existing source signals in [the aspect catalog](aspects.md). For
 TypeScript, ordinary `try`/`catch` alone is not an error-expression signal;
 inspect translation or failure-path structure. An ordinary Java catch or null
 check is likewise insufficient. Rust's ordinary `?` alone is also
-insufficient; inspect translation, recovery or failure-path structure. Profiles retain their owner and
+insufficient; inspect translation, recovery or failure-path structure. A Rust
+error type that the source declares or changes is a signal, and a changed `pub`
+item, re-export or module declaration is one for dependency-boundaries.
+Profiles retain their owner and
 inherit its effective language-specific rules, including disables and overrides.
 
 | Profile | Owner | Go | Java | TypeScript | Rust |

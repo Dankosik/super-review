@@ -28,6 +28,14 @@ or atomicity; fewer locks or a channel alone does not establish an equivalent,
 clearer ownership protocol. Use this check to assess the proposed simplification,
 not to start a separate concurrency-defect audit.
 
+Cleanup that can fail, block or must be awaited has no way to report from
+`Drop`. An explicit `close`, `flush` or `shutdown` that returns its outcome
+shows the caller where completion happens, with `Drop` as the best-effort
+fallback. A guard that lives to the end of a long function because nothing
+scopes it leaves the reader to work out where the lock or borrow is needed; a
+block, or a helper that returns the value, shows the critical section. Keep the
+updates that must change together under one guard when narrowing it.
+
 Explain the reading benefit and preserve affected drop, transfer and cancellation
 boundaries. Do not turn this profile into a search for leaks, deadlocks, races
 or unsafe-code defects, or a reason to prescribe a new async runtime.

@@ -23,22 +23,47 @@ section can supply preservation context, not authority to review another lens.
 | Serde wire shape or deserialization lifetime | representation; api-clarity | [Serde](../rust/serde.md) |
 | clap argument grammar or repeated command knowledge | api-clarity; change-locality | [clap](../rust/clap.md) |
 | Axum HTTP contract or adapter/application boundary | api-clarity; function-cohesion/effects-separation | [Axum](../rust/axum.md) |
+| thiserror or anyhow error types, conversions or context chains | control-flow/error-expression; api-clarity | [error crates](../rust/errors.md) |
+| tracing spans, events or instrumentation | function-cohesion/effects-separation; control-flow/error-expression | [tracing](../rust/tracing.md) |
 
 For a proposed API, distinguish stabilization of the operation, const use and
 syntax position. A dependency's advertised MSRV does not establish the minimum
 of every feature/transitive-resolution combination. Missing resolution evidence
 limits that specific replacement; it is not permission to run Cargo or upgrade.
 
-**Judgment.** Apply Rust knowledge inside the assigned lens, not as another broad
-idiom pass. Prefer an understandable ownership and call contract over cleverness.
-Local mutation, ordinary loops, explicit matches, owned values and concrete types
-can already be the clearest expression. Compare implicated handwritten mechanics
-with existing helpers and supported standard-library operations. Establish the
-exact contract and availability before recommending a replacement. Clippy's
-pedantic and restriction lints are not automatically team policy. Do not produce
-formatting chores or dependency migrations without an in-scope benefit.
-Never run Cargo, rustc, Clippy, rustfmt, build scripts or procedural macros during
-review. Missing expansion or generated source remains an evidence gap.
+**Craft.** Read the source against how an experienced Rust author would write
+the same operation today, under the same contract and baseline. Well-written
+Rust lets types carry the facts (states, units, validity, absence) so later code
+does not check them again. Its ownership tells the story: borrow to read, own to
+keep, share only what is shared. It binds a value once, from the expression that
+decides it. It keeps the compiler as a co-maintainer: exhaustive matches,
+privacy and results that must be handled report a later change at the places
+that must answer it. It speaks the standard vocabulary of std types, traits and
+name forms before inventing its own, and uses the least machinery that owns the
+job: a function before a type, a concrete type before a generic with one use,
+`pub(crate)` before `pub`. Where the source falls short of this and the gap costs a reader or
+the next change something you can name, report it, however small.
+
+**Idiom owners.** Idiom is evidence inside the assigned lens, not a separate
+pass. Patterns, `?` and branch forms belong to control-flow; bindings, moves and
+iteration to data-flow; a standard operation replacing handwritten mechanics to
+duplication; signatures and standard traits to api-clarity; types that carry
+facts to representation; conventional name forms to naming; helpers and layers
+to function-cohesion and abstractions. Report an idiom under the lens that owns
+it and leave the others to their owners.
+
+**Judgment.** An idiom earns a recommendation by what it removes: a branch, a
+binding, a second check, a lookup, another place to edit. Local mutation, an
+ordinary loop, an explicit match, an owned value or a concrete type is often
+already that form; shorter or more functional is not the measure. Establish the
+exact contract and availability before recommending a replacement. Committed
+lint configuration (`[lints]` tables, `clippy.toml`, `rustfmt.toml`) is the
+project's adopted choice: do not recommend what it denies, and leave listing its
+violations to the project's own checks. Lints it does not enable are not team
+policy. Do not produce formatting chores or dependency migrations without an
+in-scope benefit. Never run Cargo, rustc, Clippy, rustfmt, build scripts or
+procedural macros during review. Missing expansion or generated source remains
+an evidence gap.
 
 **Preservation.** Check only properties implicated by a proposed transformation:
 borrowing versus consuming, aliasing and mutation, error types and sources,
@@ -47,7 +72,10 @@ not create independent data; cloning an `Arc` preserves shared ownership. A
 collection can deliberately snapshot data or end a borrow. Public signatures,
 trait implementations, auto traits, lifetime captures, serialization and FFI
 layouts can constrain a local simplification. Inspect available consumers;
-absence from literal search does not prove no downstream use. Apply the shared
+absence from literal search does not prove no downstream use. Visibility bounds
+that doubt: a private or `pub(crate)` item has no consumer outside its module or
+crate, so the complete crate at the snapshot, across its targets, features and
+`cfg` branches, settles its uses. Apply the shared
 contract's compatibility judgment without claiming compilation, equivalence or soundness.
 
 **Production scope.** Path and generated-header filtering is not a Rust parser or
@@ -63,6 +91,9 @@ assigned lens and owner profiles. The shared workflow owns coverage; these are
 not extra workers or a mandatory all-module packet.
 
 Background: [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/),
+[Effective Rust](https://effective-rust.com/),
+[Rust Design Patterns](https://rust-unofficial.github.io/patterns/),
+[std error conventions](https://doc.rust-lang.org/std/error/trait.Error.html),
 [Cargo MSRV](https://doc.rust-lang.org/cargo/reference/rust-version.html),
 [workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html),
 [targets](https://doc.rust-lang.org/cargo/reference/cargo-targets.html),

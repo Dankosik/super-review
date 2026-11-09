@@ -57,6 +57,30 @@ No rule ID, lens, profile, worker or routing default is added. The diff to each
 lens is the evidence of the instruction change; behavioral evidence is recorded
 under Evidence status.
 
+## Template decisions probed before editing (RD53-RD68)
+
+Baseline: Super Review 3.10.0 at `fffcf9d`. The source is the same skill set at
+`7b8ce1f`; the Rust skills are unchanged since the RD37-RD52 transfer. This pass
+took the decisions those skills make that the lenses still do not state, wrote
+a useful-change input and a retain contrast for each, and ran the baseline
+first. Prose was added only where the baseline missed.
+
+| Decision | Baseline result | Instruction action | Contrasts |
+| --- | --- | --- | --- |
+| Helpers tied to the caller's local state, and forwarders | Found | None | RD53-54 |
+| A custom trait repeating a standard one; a one-operation trait with stateless implementations | Found | None | RD55-56 |
+| Shared ownership no code shares; a copy that is a transfer | Found | None | RD57-58 |
+| Quantities stored as integers; a set kept by hand in a `Vec` | Found | None | RD59-60 |
+| A parameter broader than the function reads; conversion generics for one caller | Found | None | RD61-62 |
+| A result returned through an always-fresh out-parameter; a failure no path produces | Found | None | RD63-64 |
+| Lint suppressions without a reason; dead code kept by `allow(dead_code)` | Reasons found; removal left unresolved | Rust rationale: suppressions and dead code. Rust context: visibility bounds the consumer search | RD65-66 |
+| Options every caller sets alike; helpers published by a glob re-export | Export found; options left unresolved | Rust abstractions: a choice nobody makes | RD67-68 |
+
+Both misses had one cause. The reviewer saw the burden and then left the remedy
+unresolved over a use the source does not show: a possible second format, and
+an outside consumer of a `pub(crate)` function. No rule ID, lens, profile,
+worker or routing default is added.
+
 ## Replay and grading
 
 `inputs.json` contains independent neutral packets. Give a reviewer exactly one
@@ -149,3 +173,42 @@ Limits: one run per arm and input, one model, nonblind grading by the author of
 the change, baseline retain contrasts not run, and authored fixtures rather than
 real changes. This shows the new decisions are reachable without false positives
 on their contrasts; it is not a measured general quality gain.
+
+### RD53-RD68 behavioral comparison (2026-11-10)
+
+Fresh-context specialist runs in native Claude Code subagents, model
+`claude-sonnet-5-5` as recorded in each transcript, one lens and one packet per
+run. Baseline resources were extracted from `fffcf9d`; the candidate is this
+change. Each reviewer received its own arm's resource root and one packet
+directory, never `cases.json`, this README or peer outputs. A scan of each
+transcript's tool calls found no path outside those two directories. The
+maintainer graded final outputs against `cases.json` without blinding. Raw
+outputs are in [results/2026-11-10-template-skills-2](results/2026-11-10-template-skills-2/).
+
+Round 1 ran every useful-change input on the baseline, then RD65 and RD67 and
+all eight retain contrasts on the candidate. The RD66 run reported a defect in
+the fixture itself: its comment, and RD65's context fact, called the frame's
+seven header fields and payload "eight header fields". Both packets were
+corrected and the unexplained `HEADER_LEN` constant removed. Round 1 also
+showed the `#[expect(.., reason)]` remedy in the baseline run and not in the
+candidate run, so that sentence was added to the rationale lens. Round 2 reran
+RD65 in both arms and RD66 in the candidate, and supersedes round 1 for them.
+
+| Input | Baseline 3.10.0 | Candidate (final) |
+| --- | --- | --- |
+| RD53, 55, 57, 59, 61, 63 | Found both parts (r1) | Lens unchanged; not rerun |
+| RD65 bare suppressions, dead function | Reasons found; removing the dead function left unresolved (r1, r2) | Removal recommended; `#[expect]` with a reason on both others (r2) |
+| RD67 unvaried options, glob re-export | Export found; options left unresolved (r1) | Both (r1) |
+| RD54, 56, 58, 60, 62, 64, 68 retain contrasts | Not run | Retained (r1) |
+| RD66 retain contrast | Not run | Retained; `#[expect]` not recommended at MSRV 1.75 (r2) |
+
+Result: two useful-change inputs improved, six were already found and left
+without new prose, none regressed, and no retain contrast produced a candidate
+on a correct fixture.
+
+Limits: one run per arm and input except RD65, one model, nonblind grading by
+the author of the change, baseline retain contrasts not run, and authored
+fixtures rather than real changes. The six inputs the baseline found show that
+an isolated packet with stated consumer facts is not where those decisions are
+lost; this comparison says nothing about recall inside a large partition of a
+real review.

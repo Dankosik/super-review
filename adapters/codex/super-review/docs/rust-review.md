@@ -13,6 +13,14 @@ useful traits, explicit representations and supported rationale. Every lens can
 favor retaining the code. Clones, loops, owned inputs and `dyn Trait` are not
 findings by themselves.
 
+The Rust context states the standard reviewers compare source against: types
+that carry facts, ownership that tells the story, values bound once, the
+compiler as co-maintainer, standard vocabulary and the least machinery. It
+assigns each kind of idiom to the lens that owns it, so idiomatic expression is
+reviewed inside the eight questions and not as a ninth pass. Each lens names
+the forms it looks for beside the case for keeping the code. Conditional notes
+cover Tokio, Serde, clap, Axum, thiserror/anyhow and tracing.
+
 ## Sources and scope
 
 The guidance is an original synthesis of the
