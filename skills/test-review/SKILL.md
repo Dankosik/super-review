@@ -2,7 +2,7 @@
 name: test-review
 description: "Use for an explicitly requested Test Review: would the tests of Rust source in a PR or local tree fail if a plausible bug appeared, decided by reading, with each finding shown by a mistake no test would catch and the check that would catch it, or by a quoted team rule."
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
 ---
 
 # Test Review
@@ -26,7 +26,9 @@ For help, explain usage and stop. If no target can be identified from the
 request, ask only for that. Otherwise orchestrate through the active
 adapter, [Claude Code](references/harnesses/claude.md) or
 [Codex](references/harnesses/codex.md), following
-[the workflow](references/workflow.md).
+[the workflow](references/workflow.md). When the user explicitly asks to run
+agents in another installed harness, such as OpenCode, start them there
+through [external agents](references/harnesses/external.md).
 
 Each specialist gets one question and [the contract](references/contract.md).
 You decide every candidate yourself and deliver
