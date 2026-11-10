@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.13.0 — 2026-11-10
+
+- Let the user run Defect Review readers and challengers, and Test Review specialists, in another installed harness, such as OpenCode subagents under a Claude Code orchestrator, as Super Review already allows. Asked for "subagents through OpenCode Go", the Defect Review orchestrator had refused because its role allowed Bash only to find and read source, and fell back to Claude subagents. Each skill now has its own `references/harnesses/external.md`. OpenCode has no installed Defect or Test Review role, so each process defines a read-only one through `OPENCODE_CONFIG_CONTENT` (deny everything but read, glob, grep and shell), with project configuration disabled and a private server. Only the user's request selects the harness and model, and an unavailable CLI or model is reported instead of silently falling back. Defect Review is now 0.5.0 and Test Review 0.4.0. Not yet tried in a model run.
+
 ## 3.12.1 — 2026-11-10
 
 - Fix the OpenCode launcher when it is started through a symbolic link, such as one in `~/.local/bin`: it took the link's directory for the package and found no review agents. It now follows links to the package.
