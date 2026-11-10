@@ -41,14 +41,23 @@ for (const [language, prefix] of [["go", "go"], ["typescript", "ts"], ["rust", "
   const actual = [...ids].filter(id => id.startsWith(prefix + ".")).sort();
   if (!actual.length || JSON.stringify(actual) !== JSON.stringify(expected.sort())) errors.push(language + " rule IDs changed: document migration and update the manifest intentionally.");
 }
-for (const role of ["super-review", "super-review-specialist"]) {
-  const config = frontmatter(await readFile(join(root, "adapters/opencode/agents/" + role + ".md"), "utf8"));
-  if (config.permission?.["*"] !== "deny") errors.push(role + " does not deny unlisted tools.");
-  if (config.model) errors.push(role + " unexpectedly pins a user model.");
-  if (config.mode !== (role === "super-review" ? "primary" : "subagent")) errors.push(role + " runs at the wrong level.");
+const openCodeRoles: Record<string, string[]> = {
+  "super-review": ["super-review-specialist"],
+  "defect-review": ["defect-reader", "defect-challenger"],
+  "test-review": ["test-reader"],
+};
+for (const [primary, children] of Object.entries(openCodeRoles)) {
+  for (const role of [primary, ...children]) {
+    const config = frontmatter(await readFile(join(root, "adapters/opencode/agents/" + role + ".md"), "utf8"));
+    if (config.permission?.["*"] !== "deny") errors.push(role + " does not deny unlisted tools.");
+    if (config.model) errors.push(role + " unexpectedly pins a user model.");
+    if (config.mode !== (role === primary ? "primary" : "subagent")) errors.push(role + " runs at the wrong level.");
+    const delegates = Object.keys(config.permission?.task ?? {}).filter(name => config.permission.task[name] === "allow").sort();
+    if (JSON.stringify(delegates) !== JSON.stringify(role === primary ? [...children].sort() : [])) errors.push(role + " delegates to unexpected roles.");
+  }
+  const command = frontmatter(await readFile(join(root, "adapters/opencode/commands/" + primary + ".md"), "utf8"));
+  if (command.agent !== primary || command.subtask !== false) errors.push("Command would prevent primary orchestration: " + primary);
 }
-const command = frontmatter(await readFile(join(root, "adapters/opencode/commands/super-review.md"), "utf8"));
-if (command.agent !== "super-review" || command.subtask !== false) errors.push("Command would prevent primary orchestration.");
 for (const path of ["plugin.json", ".codex-plugin/plugin.json", "adapters/claude/plugin/.claude-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json", "adapters/cursor/plugin/.cursor-plugin/plugin.json"]) {
   const native = JSON.parse(await readFile(join(root, path), "utf8"));
   if (native.name !== "super-review" || native.version.split("+")[0] !== manifest.version) errors.push("Native identity/version mismatch: " + path);
@@ -68,7 +77,10 @@ for (const role of ["orchestrator", "specialist"]) {
 }
 if (claudeEntry.model !== "opus" || claudeEntry.effort) errors.push("Claude command must select Opus and inherit session effort.");
 const openCodeModels = JSON.parse(await readFile(join(root, "adapters/opencode/opencode.json"), "utf8"));
-if (openCodeModels.agent?.["super-review-specialist"]?.model !== "{env:SUPER_REVIEW_SPECIALIST_MODEL}" || openCodeModels.model) errors.push("OpenCode must require an explicit specialist without overriding the orchestrator.");
+for (const role of Object.values(openCodeRoles).flat()) {
+  if (openCodeModels.agent?.[role]?.model !== "{env:SUPER_REVIEW_SPECIALIST_MODEL}") errors.push("OpenCode must require an explicit model for " + role + ".");
+}
+if (openCodeModels.model) errors.push("OpenCode must not override the orchestrator model.");
 const catalog = JSON.parse(await readFile(join(root, ".agents/plugins/marketplace.json"), "utf8"));
 if (catalog.plugins[0]?.source?.path !== "./adapters/codex/super-review") errors.push("The project catalog must point at the native Codex package.");
 const cursorMarketplace = JSON.parse(await readFile(join(root, ".cursor-plugin/marketplace.json"), "utf8"));

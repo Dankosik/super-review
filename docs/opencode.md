@@ -2,6 +2,9 @@
 
 Extract the versioned OpenCode ZIP and use its `super-review` launcher, or set
 `OPENCODE_CONFIG_DIR` to that extracted directory and run `/super-review`.
+The package also carries Defect Review and Test Review: run `/defect-review`
+or `/test-review` in the same session. The launcher opens Super Review; the
+command switches to that review's agent.
 The launcher preserves the caller's current directory for local review. It
 works with OpenCode 1 and 2. On OpenCode 2 it starts a private server
 (`--standalone`), because the shared background service ignores the launcher's
@@ -20,8 +23,11 @@ or the existing configuration file at
 `~/.config/super-review/opencode-specialist-model`. The orchestrator keeps its
 configured model. The adapter adds no runtime dependency or custom tool.
 
-Native read, glob, grep and Bash tools inspect source. The primary role can
-invoke only `super-review-specialist`; the specialist cannot delegate. Both omit
+Native read, glob, grep and Bash tools inspect source. Each primary role can
+invoke only its own subagents: `super-review` starts `super-review-specialist`,
+`defect-review` starts `defect-reader` and `defect-challenger`, and
+`test-review` starts `test-reader`. Subagents cannot delegate and all use the
+specialist model. Both omit
 edit/write tools, but Bash is not a read-only sandbox. The skill limits it to
 source acquisition and inspection. Native task results carry full review reports.
 

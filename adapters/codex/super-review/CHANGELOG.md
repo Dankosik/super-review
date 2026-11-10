@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.14.0 — 2026-11-10
+
+- Ship Defect Review 0.6.0 and Test Review 0.5.0 in the OpenCode package. Run `/defect-review` or `/test-review` in a session the `super-review` launcher opened. Each review has its own primary role and subagents: `defect-review` starts only `defect-reader` and `defect-challenger`, and `test-review` starts only `test-reader`. Every role denies all tools but read, glob, grep and shell, and no subagent can delegate or load a skill. The subagents use the specialist model the launcher or `SUPER_REVIEW_SPECIALIST_MODEL` selects, and project configuration cannot replace them. Each skill gains `references/harnesses/opencode.md`.
+- The native OpenCode check now covers all seven roles, their commands and skills, including a reviewed repository that defines roles with the same names. It passed locally on OpenCode 2.2.3; OpenCode 1.18.29 is checked in CI. No review has been run through these roles yet.
+
 ## 3.13.0 — 2026-11-10
 
 - Let the user run Defect Review readers and challengers, and Test Review specialists, in another installed harness, such as OpenCode subagents under a Claude Code orchestrator, as Super Review already allows. Asked for "subagents through OpenCode Go", the Defect Review orchestrator had refused because its role allowed Bash only to find and read source, and fell back to Claude subagents. Each skill now has its own `references/harnesses/external.md`. OpenCode has no installed Defect or Test Review role, so each process defines a read-only one through `OPENCODE_CONFIG_CONTENT` (deny everything but read, glob, grep and shell), with project configuration disabled and a private server. Only the user's request selects the harness and model, and an unavailable CLI or model is reported instead of silently falling back. Defect Review is now 0.5.0 and Test Review 0.4.0. Not yet tried in a model run.

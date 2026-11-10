@@ -123,6 +123,7 @@ explains the split.
 ```text
 /super-review:defects Review crates/infra-cache in the current project.
 $defect-review Hunt for bugs in this PR.
+/defect-review Hunt for bugs in this PR.   (OpenCode)
 ```
 
 Independent readers each take one lens, or a related pair for a small
@@ -141,7 +142,7 @@ behavior is a deliberate choice whose stated reason holds, the finding is
 reported as disputed, with the cost and the decision side by side.
 
 Like Super Review, this skill only reads: it does not clone, copy, build or
-run your project. Rust only, in Claude Code and Codex. See
+run your project. Rust only, in Claude Code, Codex and OpenCode. See
 [the design](docs/defect-review.md) and
 [the contract](skills/defect-review/references/contract.md).
 
@@ -153,6 +154,7 @@ It shares no policy with the other two.
 ```text
 /super-review:tests Review the tests of crates/infra-cache in the current project.
 $test-review Would the tests in this PR notice a mistake in what it changes?
+/test-review Would the tests in this PR notice a mistake?   (OpenCode)
 ```
 
 A finding names a promised behavior that no test pins down and shows it with
@@ -166,7 +168,7 @@ your tests catch are counted, not reported, and the review says what it did
 not probe.
 
 It only reads: it does not build or run your tests, so it is not a
-mutation-score tool. Rust only, in Claude Code and Codex. See
+mutation-score tool. Rust only, in Claude Code, Codex and OpenCode. See
 [the design](docs/test-review.md) and
 [the contract](skills/test-review/references/contract.md).
 
