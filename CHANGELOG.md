@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.12.1 — 2026-11-10
 
 - Fix the OpenCode launcher when it is started through a symbolic link, such as one in `~/.local/bin`: it took the link's directory for the package and found no review agents. It now follows links to the package.
 
