@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.12.1 — 2026-11-10
+
+- Fix the OpenCode launcher when it is started through a symbolic link, such as one in `~/.local/bin`: it took the link's directory for the package and found no review agents. It now follows links to the package.
+
 ## 3.12.0 — 2026-11-10
 
 - Add Defect Review 0.4.0, a separate experimental skill in the same plugin that hunts bugs in Rust source by reading it. Independent readers each take one lens, or a related pair for a small change: results, boundaries, errors, time, lifecycle, shared state, stated facts and team rules. In a change review they also read removed lines and the callers of what changed. A bug needs a trace through the code (a trigger real use can produce, each step as a quoted line, what the affected party observes), a stated expectation with its basis (a written statement, what the code declares about itself, or a named engineering principle), a harm, and survival of an independent challenge. A written promise is not a precondition, and a document that describes harmful behavior does not settle the claim.

@@ -1,7 +1,16 @@
 #!/bin/sh
 set -eu
 
-review_root=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+# Follow symbolic links to the package: a link in a bin directory is not it.
+self=$0
+while [ -L "$self" ]; do
+  target=$(readlink "$self")
+  case "$target" in
+    /*) self=$target ;;
+    *) self=$(dirname -- "$self")/$target ;;
+  esac
+done
+review_root=$(CDPATH='' cd -- "$(dirname -- "$self")" && pwd)
 worker_file=${XDG_CONFIG_HOME:-"$HOME/.config"}/super-review/opencode-specialist-model
 worker_model=${SUPER_REVIEW_SPECIALIST_MODEL:-}
 if [ -z "$worker_model" ] && [ -f "$worker_file" ]; then
