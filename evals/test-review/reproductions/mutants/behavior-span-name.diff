@@ -1,0 +1,13 @@
+diff --git a/crates/infra-cache/src/observe.rs b/crates/infra-cache/src/observe.rs
+index 3f14700f..b5ffb679 100644
+--- a/crates/infra-cache/src/observe.rs
++++ b/crates/infra-cache/src/observe.rs
+@@ -221,7 +221,7 @@ impl<'a> OperationGuard<'a> {
+     ) -> Self {
+         let span = tracing::info_span!(
+             "cache",
+-            otel.name = operation.command(),
++            otel.name = operation.label(),
+             otel.kind = "client",
+             db.system.name = "redis",
+             db.operation.name = operation.command(),

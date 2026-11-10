@@ -1,0 +1,13 @@
+diff --git a/crates/infra-cache/src/lib.rs b/crates/infra-cache/src/lib.rs
+index 26183932..626cf03a 100644
+--- a/crates/infra-cache/src/lib.rs
++++ b/crates/infra-cache/src/lib.rs
+@@ -674,7 +674,7 @@ fn valid_namespace(name: &str) -> bool {
+         return false;
+     }
+     let rest = bytes.len();
+-    rest <= 63
++    rest <= 64
+         && bytes.all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'_')
+ }
+ 

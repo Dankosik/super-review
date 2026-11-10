@@ -1,0 +1,12 @@
+diff --git a/crates/infra-cache/src/connection.rs b/crates/infra-cache/src/connection.rs
+index cfee08a9..7483b88d 100644
+--- a/crates/infra-cache/src/connection.rs
++++ b/crates/infra-cache/src/connection.rs
+@@ -628,7 +628,6 @@ impl<'a> Rotation<'a> {
+             Ok(password) => password,
+             Err(error) => return RefreshOutcome::ReadFailed(error),
+         };
+-        self.unreadable_logged = false;
+         if password == self.authenticated_password {
+             return RefreshOutcome::Unchanged;
+         }

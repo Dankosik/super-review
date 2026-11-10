@@ -17,6 +17,8 @@ credential is required by this repository. Missing execution capability means
 | Duplication across areas and compile-connected copies | [change-together](change-together/README.md) |
 | Factual premises, remaining-scope attention, structural sketches, recommendation compatibility and application | [review-quality](review-quality/README.md) |
 | Native delegation, local snapshots and delivery | [native-host](native-host/README.md) and the current adapter configuration tests |
+| Defect Review proof, challenge or lens rules | [defect-review](defect-review/README.md): a review of a real repository, with the maintainer checking each trace; fixture checks do not apply |
+| Test Review proof or question rules | [test-review](test-review/README.md): a review of a real repository, with the maintainer checking each mutant and witness by reading |
 | Historical routing, model selection or waiting experiments | Their own revision-specific protocols; do not apply a 2.x runtime experiment to 3.x by text substitution. |
 
 Do not run every historical experiment for an unrelated edit. New input should

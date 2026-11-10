@@ -1,0 +1,13 @@
+diff --git a/crates/infra-cache/src/connection.rs b/crates/infra-cache/src/connection.rs
+index cfee08a9..0f8066c6 100644
+--- a/crates/infra-cache/src/connection.rs
++++ b/crates/infra-cache/src/connection.rs
+@@ -316,7 +316,7 @@ impl Link {
+         let mut connection = guard.generation.connection.clone();
+         let result = tokio::select! {
+             biased;
+-            _ = context.wait_stopped() => Err(ErrorType::Timeout),
++            _ = context.wait_stopped() => Err(ErrorType::Io),
+             () = guard.generation.retired.cancelled() => Err(ErrorType::Io),
+             result = command.query_async(&mut connection) => {
+                 result.map_err(|error| observe::error_type(&error))

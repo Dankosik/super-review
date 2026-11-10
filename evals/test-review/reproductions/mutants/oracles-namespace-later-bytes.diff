@@ -1,0 +1,13 @@
+diff --git a/crates/infra-cache/src/lib.rs b/crates/infra-cache/src/lib.rs
+index 26183932..13ce584f 100644
+--- a/crates/infra-cache/src/lib.rs
++++ b/crates/infra-cache/src/lib.rs
+@@ -675,7 +675,7 @@ fn valid_namespace(name: &str) -> bool {
+     }
+     let rest = bytes.len();
+     rest <= 63
+-        && bytes.all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'_')
++        && bytes.all(|byte| byte.is_ascii_alphabetic() || byte.is_ascii_digit() || byte == b'_')
+ }
+ 
+ /// Write the prefixed key as one Redis argument without a temporary String.

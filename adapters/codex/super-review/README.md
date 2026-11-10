@@ -5,6 +5,11 @@ Specialists examine distinct questions; the orchestrator verifies their evidence
 and keeps every accepted recommendation. Works with GitHub PRs, local changes,
 or an explicitly requested whole project.
 
+The same plugin carries two experimental reviews for Rust that ask other
+questions: [Defect Review](#defect-review-experimental-rust) hunts bugs, and
+[Test Review](#test-review-experimental-rust) asks whether the tests would
+notice a mistake. All three only read the code.
+
 Super Review 3 uses native file/search, Git/GitHub and agent tools. It ships no
 MCP server, custom source reader, result daemon or consumer dependencies. The
 review instructions remain read-only; the host's permissions govern its tools.
@@ -107,6 +112,63 @@ Spring Modulith adoption, universal mapper or interface-per-service is required.
 See [Spring routing and owners](skills/super-review/references/spring.md) and the
 maintainer-only [sources and contrasting cases](https://github.com/Dankosik/super-review/tree/main/evals/spring).
 These additions do not claim measured model-quality gains from fixture checks.
+
+## Defect Review (experimental, Rust)
+
+A separate skill in the same plugin hunts bugs. Super Review stays about
+readability and never reports defects; Defect Review never comments on
+readability. They share no policy. [The family design](docs/review-family.md)
+explains the split.
+
+```text
+/super-review:defects Review crates/infra-cache in the current project.
+$defect-review Hunt for bugs in this PR.
+```
+
+Independent readers each take one lens, or a related pair for a small
+change: results, boundaries, errors, time, lifecycle, shared state, stated
+facts, team rules. A bug needs a trace
+through the code (a trigger real use can produce, each step as a quoted line,
+and what the affected party observes), a stated expectation with its basis, a
+harm to someone, and survival of an independent challenge. Nothing has to be
+written down in advance for something to be a bug, and a document that
+describes harmful behavior does not make it right.
+
+The challenge is what holds false positives down. A second agent gets each
+claim with its trace and without the finder's reasoning, follows the trigger
+through the source itself, and tries to show it is not a bug. When the
+behavior is a deliberate choice whose stated reason holds, the finding is
+reported as disputed, with the cost and the decision side by side.
+
+Like Super Review, this skill only reads: it does not clone, copy, build or
+run your project. Rust only, in Claude Code and Codex. See
+[the design](docs/defect-review.md) and
+[the contract](skills/defect-review/references/contract.md).
+
+## Test Review (experimental, Rust)
+
+A third skill asks whether the tests would fail if a plausible bug appeared.
+It shares no policy with the other two.
+
+```text
+/super-review:tests Review the tests of crates/infra-cache in the current project.
+$test-review Would the tests in this PR notice a mistake in what it changes?
+```
+
+A finding names a promised behavior that no test pins down and shows it with
+a mutant (one small, plausible mistake in production code, as a diff that is
+never applied), why each test that reaches that code would still pass, and a
+witness: the check that holds for the original code and fails for the mutant.
+The witness shows the mutant is a real behavior change, and it is the test to
+add. A test that breaks a written team rule for tests, such as a fixed sleep
+where the rule asks for synchronization, is proven by quoting both. Mutants
+your tests catch are counted, not reported, and the review says what it did
+not probe.
+
+It only reads: it does not build or run your tests, so it is not a
+mutation-score tool. Rust only, in Claude Code and Codex. See
+[the design](docs/test-review.md) and
+[the contract](skills/test-review/references/contract.md).
 
 ## Models and results
 

@@ -14,19 +14,23 @@ function frontmatter(text: string): any {
   if (!match) throw new Error("Missing frontmatter");
   return Bun.YAML.parse(match[1]);
 }
+// A skill is self-contained: finished text, and links that stay inside its own files.
+function checkMarkdown(skillRoot: string, files: string[], file: string, text: string) {
+  if (/\[TODO[:\]]/.test(text)) errors.push("Unfinished scaffold: " + file);
+  for (const match of text.matchAll(/\]\(([^)]+)\)/g)) {
+    const target = match[1].split("#")[0];
+    if (!target || /^[a-z]+:\/\//i.test(target)) continue;
+    const path = resolve(dirname(file), decodeURIComponent(target));
+    if (relative(skillRoot, path).startsWith("..") || !files.includes(path)) errors.push("Missing or unpackaged link: " + relative(root, file) + " -> " + target);
+  }
+}
 const entry = frontmatter(await readFile(join(skill, "SKILL.md"), "utf8"));
 if (entry.name !== "super-review" || !entry.description || entry.metadata?.version !== manifest.version) errors.push("Skill identity/version mismatch.");
 const ids = new Set<string>();
 const runtimeFiles = await walk(skill);
 for (const file of runtimeFiles.filter(p => p.endsWith(".md"))) {
   const text = await readFile(file, "utf8");
-  if (/\[TODO[:\]]/.test(text)) errors.push("Unfinished scaffold: " + file);
-  for (const match of text.matchAll(/\]\(([^)]+)\)/g)) {
-    const target = match[1].split("#")[0];
-    if (!target || /^[a-z]+:\/\//i.test(target)) continue;
-    const path = resolve(dirname(file), decodeURIComponent(target));
-    if (relative(skill, path).startsWith("..") || !runtimeFiles.includes(path)) errors.push("Missing or unpackaged link: " + relative(root, file) + " -> " + target);
-  }
+  checkMarkdown(skill, runtimeFiles, file, text);
   if (file.includes("/lenses/")) for (const match of text.matchAll(/^## ((?:go|ts|rust|java)\.[a-z0-9.-]+)$/gm)) {
     if (ids.has(match[1])) errors.push("Duplicate rule ID: " + match[1]);
     ids.add(match[1]);
@@ -93,6 +97,34 @@ for (const directory of ["skills/super-review", "adapters/claude/plugin", "adapt
 }
 for (const file of [".codex-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json", "adapters/cursor/plugin/.cursor-plugin/plugin.json"]) {
   if (JSON.parse(await readFile(join(root, file), "utf8")).mcpServers) errors.push("Legacy server declaration in " + file);
+}
+// Defect Review and Test Review: separate skills with their own contracts, versions and roles.
+// Both read only: no role may hold Write or Edit.
+for (const [name, command, title] of [
+  ["defect-review", "defects", "Defect Review"],
+  ["test-review", "tests", "Test Review"],
+] as const) {
+  const skillRoot = join(root, "skills", name);
+  const files = await walk(skillRoot);
+  const identity = frontmatter(await readFile(join(skillRoot, "SKILL.md"), "utf8"));
+  if (identity.name !== name || !identity.description || !/^\d+\.\d+\.\d+$/.test(identity.metadata?.version ?? "")) errors.push(title + " skill identity is incomplete.");
+  for (const file of files.filter(p => p.endsWith(".md"))) checkMarkdown(skillRoot, files, file, await readFile(file, "utf8"));
+  for (const file of files) for (const packageRoot of ["adapters/claude/plugin/resources/" + name, "adapters/codex/super-review/skills/" + name]) {
+    const packaged = join(root, packageRoot, relative(skillRoot, file));
+    if (!(await readFile(file)).equals(await readFile(packaged).catch(() => Buffer.alloc(0)))) errors.push("Stale " + title + " policy: " + packageRoot + "/" + relative(skillRoot, file));
+  }
+  const role = name.split("-")[0];
+  const route = frontmatter(await readFile(join(root, "adapters/claude/plugin/skills/" + command + "/SKILL.md"), "utf8"));
+  if (route.context !== "fork" || route.background !== false || route.agent !== "super-review:" + role + "-orchestrator" || route["disable-model-invocation"] !== true || route.model !== "opus" || route.effort) errors.push("Claude " + command + " command routing differs from the explicit isolated review.");
+  const reader = ["Read", "Glob", "Grep", "Bash"];
+  const roles: Array<[string, readonly string[]]> = [["orchestrator", ["Agent", ...reader]], ["specialist", reader]];
+  if (name === "defect-review") roles.push(["challenger", reader]);
+  for (const [suffix, expectedTools] of roles) {
+    const agent = frontmatter(await readFile(join(root, "adapters/claude/plugin/agents/" + role + "-" + suffix + ".md"), "utf8"));
+    if (agent.model !== "opus" || agent.effort) errors.push("Claude " + role + "-" + suffix + " must select Opus and inherit session effort.");
+    const allowed = agent.tools.split(",").map((s: string) => s.trim()).sort();
+    if (JSON.stringify(allowed) !== JSON.stringify([...expectedTools].sort())) errors.push("Unexpected Claude native tools: " + role + "-" + suffix);
+  }
 }
 if (errors.length) throw new Error(errors.join("\n"));
 console.log("Validated skill links, " + ids.size + " stable rule IDs, native payloads, versions, and adapter routing.");

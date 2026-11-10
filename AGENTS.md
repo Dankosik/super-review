@@ -13,6 +13,23 @@ coordination in `references/workflow.md`, and result fields in `assets/`.
 Adapters own native tools, model selection and result collection, not a second
 review policy. Version 3 has no custom source-reader or result-store runtime.
 
+`skills/defect-review` and `skills/test-review` are separate skills, each
+with its own contract, lenses or questions, roles and version.
+Defect Review hunts bugs with independent readers and an independent
+challenge; Test Review asks whether the tests would fail if a plausible bug
+appeared. Like Super Review, both only read: no role clones, copies, builds
+or runs the reviewed project or holds a tool for writing files, and a
+finding is proven by a trace through quoted lines.
+[The family design](docs/review-family.md) records why. No skill depends on
+another at run time. Do not let one skill's criterion into another: a defect
+is not a readability finding, and a weak test is not a defect.
+
+For these two skills, settle the design before writing instructions, and do
+not treat a model run as a step in writing them. Keep them short: state the
+bar and where bugs or gaps live, and leave out procedure for recording the
+reviewer's own work. A review of a real
+repository is the maintainer's choice.
+
 Give a lens a concrete question and a decision that can favor changing or
 retaining code. Keep technical preservation constraints, the eight base
 questions, stable rule IDs, independent recipients and configured model profiles.

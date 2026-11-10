@@ -8,10 +8,17 @@ const claude = join(root, "adapters/claude/plugin");
 await rm(claude, { recursive: true, force: true });
 await mkdir(join(claude, ".claude-plugin"), { recursive: true });
 await mkdir(join(claude, "skills/review"), { recursive: true });
+await mkdir(join(claude, "skills/defects"), { recursive: true });
+await mkdir(join(claude, "skills/tests"), { recursive: true });
 await mkdir(join(claude, "agents"), { recursive: true });
 await cp(join(root, "skills/super-review"), join(claude, "resources/super-review"), { recursive: true });
 await cp(join(root, "adapters/claude/skill.md"), join(claude, "skills/review/SKILL.md"));
-for (const role of ["orchestrator", "specialist"]) {
+// Defect Review and Test Review are separate skills with their own contracts; they share only the plugin.
+for (const [skill, command] of [["defect-review", "defects"], ["test-review", "tests"]]) {
+  await cp(join(root, "skills", skill), join(claude, "resources", skill), { recursive: true });
+  await cp(join(root, `adapters/claude/${command}-skill.md`), join(claude, `skills/${command}/SKILL.md`));
+}
+for (const role of ["orchestrator", "specialist", "defect-orchestrator", "defect-specialist", "defect-challenger", "test-orchestrator", "test-specialist"]) {
   await cp(join(root, `adapters/claude/${role}.md`), join(claude, `agents/${role}.md`));
 }
 for (const file of ["LICENSE", "PRIVACY.md", "THIRD_PARTY_NOTICES.md"]) await cp(join(root, file), join(claude, file));

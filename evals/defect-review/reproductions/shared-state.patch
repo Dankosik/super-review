@@ -1,0 +1,56 @@
+diff --git a/crates/infra-cache/src/tests.rs b/crates/infra-cache/src/tests.rs
+index e13d3534..251d2609 100644
+--- a/crates/infra-cache/src/tests.rs
++++ b/crates/infra-cache/src/tests.rs
+@@ -2188,3 +2188,51 @@ fn reliability_auth_errors_are_sanitized_through_the_dependency_log_bridge() {
+         );
+     });
+ }
++
++// Promise (docs/guides/cache.md, "Select and configure"): `command_timeout`
++// "Its default is `2s`, a hang guard rather than a latency target: a slow reply
++// is waited for, and a reply that never comes stops waiting. The inclusive
++// range is `1ms` to `10s`." `CacheOptions::command_timeout`: "Bound for one
++// command, including the wait for a reconnect."
++// The server answers in order; its reply to the maintenance PING, and so to
++// the GET queued behind it, arrives after `ping_delay`.
++async fn get_behind_a_slow_server_reply(ping_delay: Duration) -> (Result<Option<Vec<u8>>, crate::Unavailable>, Duration) {
++    let server = FakeServer::start().await;
++    *server
++        .observed
++        .ping_reply_delays
++        .lock()
++        .expect("delay lock") = [ping_delay].into();
++    let cache = Cache::start(CacheOptions {
++        command_timeout: Duration::from_secs(10),
++        ..options(&format!("redis://{}", server.address), true, true, None)
++    })
++    .expect("start connect");
++    let namespace = cache.namespace("slow");
++    server
++        .wait_for(Duration::from_secs(10), "no maintenance PING", || {
++            server.command_count("PING", None) >= 1
++        })
++        .await;
++    let started = tokio::time::Instant::now();
++    let result = namespace.get("key").await;
++    (result, started.elapsed())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn dr_a_slow_reply_within_command_timeout_is_waited_for_control() {
++    let (result, elapsed) = get_behind_a_slow_server_reply(Duration::from_secs(3)).await;
++    eprintln!("control: result={result:?} elapsed={elapsed:?}");
++    assert_eq!(result, Ok(None));
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn dr_a_slow_reply_within_command_timeout_is_waited_for() {
++    let (result, elapsed) = get_behind_a_slow_server_reply(Duration::from_secs(7)).await;
++    eprintln!("repro: result={result:?} elapsed={elapsed:?}");
++    assert_eq!(
++        result,
++        Ok(None),
++        "a reply after 7 s is inside the 10 s command_timeout (elapsed {elapsed:?})"
++    );
++}

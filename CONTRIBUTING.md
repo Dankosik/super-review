@@ -13,6 +13,8 @@ lockfile changes. During development, run the checks whose inputs changed:
 | Changed inputs | Verification |
 | --- | --- |
 | Canonical skills, adapter templates or packaged documents | `bun run build`, then `bun run validate`; inspect generated diffs. |
+| Defect Review skill or its Claude roles | `bun run build`, `bun run validate`, `bun test tests/defect-review.test.ts`. Fixture checks cannot show that a reader finds a bug or that a trace holds; that takes a review of a real repository, which is the maintainer's choice. |
+| Test Review skill or its Claude roles | `bun run build`, `bun run validate`, `bun test tests/test-review.test.ts`. The same limit applies. |
 | Fixtures or tests | The affected `bun test <path>` suite; include changed-input dependents. |
 | TypeScript scripts, tests or configuration | `bun run typecheck` and affected tests. |
 | Source-view, location or acquisition instructions | `bun test tests/source-evidence.test.ts` plus contrasting source-evidence evaluation inputs. Disposable Git tests verify semantics, not agent compliance. |

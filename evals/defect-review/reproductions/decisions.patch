@@ -1,0 +1,73 @@
+diff --git a/crates/infra-cache/src/tests.rs b/crates/infra-cache/src/tests.rs
+index e13d3534..6619d487 100644
+--- a/crates/infra-cache/src/tests.rs
++++ b/crates/infra-cache/src/tests.rs
+@@ -2188,3 +2188,68 @@ fn reliability_auth_errors_are_sanitized_through_the_dependency_log_bridge() {
+         );
+     });
+ }
++
++// Decision (docs/decisions/cache-decisions.md, "Histogram only, with
++// `error_type` on failed series"): `outcome` (`hit`, `miss`, `ok`, `error`,
++// `timeout`, `cancelled`). Recommended use (docs/guides/cache.md,
++// Observability): "Alert on the `error` and `timeout` outcomes of the
++// histogram instead." A caller that cancels its own context against a healthy
++// cache is not a cache problem, so the recommended alert must stay silent.
++#[test]
++fn decisions_caller_cancellation_on_a_healthy_cache_does_not_fire_the_outage_alert() {
++    use operation_context::OperationContext;
++
++    let recorder = observation_recorder();
++    let runtime = tokio::runtime::Builder::new_current_thread()
++        .enable_all()
++        .build()
++        .expect("test runtime");
++    metrics::with_local_recorder(&recorder, || {
++        runtime.block_on(async {
++            let server = FakeServer::start().await;
++            let cache = Cache::start(CacheOptions {
++                command_timeout: Duration::from_secs(5),
++                ..options(&format!("redis://{}", server.address), true, true, None)
++            })
++            .expect("cache");
++            let namespace = cache.namespace("healthy");
++            // Control: the cache answers.
++            assert_eq!(namespace.get("ready").await, Ok(None));
++            let parent = OperationContext::with_timeout(Duration::from_secs(5));
++            let context = parent.child_context();
++            // The caller's own scope is cancelled (for example a sibling call failed).
++            parent.cancel();
++            assert_eq!(
++                namespace.get_with_context("cancelled", &context).await,
++                Err(crate::Unavailable)
++            );
++            // The cache is still healthy afterwards.
++            assert_eq!(namespace.get("after").await, Ok(None));
++        });
++    });
++    let scrape = recorder.handle().render();
++    let alerting: Vec<&str> = scrape
++        .lines()
++        .filter(|line| {
++            line.starts_with("cache_operation_duration_seconds_count{")
++                && (line.contains("outcome=\"timeout\"") || line.contains("outcome=\"error\""))
++        })
++        .collect();
++    assert!(
++        alerting.is_empty(),
++        "outage alert series recorded with no cache problem: {alerting:?}"
++    );
++}
++
++// Decision (docs/decisions/cache-decisions.md, "Resolved dependency graph"):
++// "`socket2` 0.6.5 remains a direct edge because redis does not re-export
++// `TcpKeepalive`, which sets keepalive retries." This compiles only if redis
++// does re-export it, with retries available.
++#[test]
++fn decisions_redis_reexports_tcp_keepalive_with_retries() {
++    let keepalive = redis::io::tcp::socket2::TcpKeepalive::new()
++        .with_time(Duration::from_secs(30))
++        .with_interval(Duration::from_secs(10))
++        .with_retries(3);
++    let _settings = redis::io::tcp::TcpSettings::default().set_keepalive(keepalive);
++}
