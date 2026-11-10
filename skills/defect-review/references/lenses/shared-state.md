@@ -5,7 +5,10 @@
 ## Expect
 
 - One caller's failure, slowness or disappearance costs other callers
-  nothing beyond what the failure itself makes unavoidable.
+  nothing the failure does not force.
+- A shared resource is retired only for a failure that leaves it unusable
+  for others: a broken transport, a protocol out of step. A well-formed
+  refusal of one request is not that.
 - A shared value is never seen half-updated.
 - A decision is applied to the state it was made on.
 - A stale owner cannot overwrite a newer one.

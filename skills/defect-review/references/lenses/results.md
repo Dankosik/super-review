@@ -6,8 +6,9 @@
 
 - An operation returns and does what its name, signature and description
   say, for every input its type admits.
-- Boundaries behave as stated or, where nothing is stated, like their
-  neighbors: empty, absent, zero, one, the maximum, a repeated call.
+- Boundaries behave as stated: empty, absent, zero, one, the maximum, a
+  repeated call. Where nothing is stated, the operation still gives an
+  answer its name and type allow, and does not panic or hang.
 - Absence, emptiness and failure are different answers.
 - A result that reports success means the effect happened, once.
 - An invariant a constructor establishes holds after every later operation.

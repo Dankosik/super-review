@@ -8,9 +8,14 @@ Someone acts on each.
 
 ## Expect
 
-- A failure is reported as its cause.
+- A failure is reported as its cause, as precisely as those who act on the
+  report need: a caller that branches on it, an operator who alerts or
+  diagnoses by it.
 - Every channel tells the same story.
-- A failure is never reported as success, absence or a default.
+- A failure is not passed off as success, absence or a default. Where the
+  code degrades on purpose, such as a cache failure served as a miss, the
+  failure stays visible to an operator and the substitute is safe for what
+  the caller does with it.
 - A failure belongs to whoever caused it: a request's own failure is not
   charged to a shared resource, and a broken resource is not passed off as
   the request's failure.
@@ -29,7 +34,10 @@ cause is renamed.
   rejected credentials, a caller leaving reported as a timeout.
 - A catch-all that folds a distinguishable cause into a general one when a
   name for it exists.
-- An error mapped to `None`, an empty result or a default.
+- An error mapped to `None`, an empty result or a default with nothing
+  recording it, or where the caller then acts on the substitute as fact:
+  "could not check" taken for "not there", a failed lookup taken for the
+  permissive default.
 - The returned error says one thing and the metric label or log event
   another; one channel skipped on an early return.
 - A failure counted twice, or not at all.
@@ -41,5 +49,6 @@ cause is renamed.
 ## Not a bug
 
 An error message you would word differently. A general error where nothing
-downstream could act on the difference. What else the failure damages
+downstream could act on the difference. Deliberate degradation that stays
+visible and whose substitute is safe. What else the failure damages
 belongs to [shared-state](shared-state.md).

@@ -4,8 +4,8 @@
 
 ## Expect
 
-- Whatever is started has an owner that learns how it ended, including by
-  error or panic.
+- Whatever something else depends on has an owner that learns how it ended,
+  including by error or panic. Work nothing depends on may be detached.
 - Whatever is started is ended when its owner goes away or the service
   stops.
 - Whatever is acquired is released on every path out: early return, error, a

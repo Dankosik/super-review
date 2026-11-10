@@ -8,7 +8,8 @@ value into a row, a key or a response.
 
 ## Expect
 
-- A value outside the accepted set is refused where it enters.
+- A value outside the accepted set never takes effect as if it were valid.
+  It is refused where it enters, or replaced in a way the project states.
 - A conversion keeps the value or fails; nothing is silently truncated,
   wrapped, rounded away or read in another unit.
 - What is written can be read back as the same value.
@@ -38,5 +39,5 @@ what should be accepted with what the code accepts, in both directions.
 ## Not a bug
 
 Input refused where you would have accepted it, or the reverse, with nobody
-harmed. Hardening against hostile input, unless the effect is an ordinary bug
+harmed. Unknown fields accepted on purpose for compatibility. Hardening against hostile input, unless the effect is an ordinary bug
 for ordinary callers.

@@ -78,6 +78,34 @@ role has a tool for writing files. It reads the working tree, or a PR's
 commits through Git and GitHub. That is an instruction backed by the host's
 permission mode, not a sandbox the skill enforces.
 
+## Where the principles draw the line
+
+The lenses name engineering principles, and several of them are judgment
+calls. These are the lines they draw:
+
+- **Degrading on purpose is allowed.** A cache failure served as a miss is
+  not a bug when the failure stays visible to an operator and the substitute
+  is safe for what the caller does with it. It is one when "could not check"
+  is taken for "not there".
+- **A failure is reported as precisely as someone acts on it.** Merging two
+  causes under one name is fine until a caller branches on the name or an
+  operator alerts on it.
+- **A shared resource is retired only for a failure that breaks it for
+  others**: a broken transport, a protocol out of step. A well-formed refusal
+  of one request is not that.
+- **A timeout leaves the outcome unknown.** A request already sent may still
+  take effect. The bug is reporting that as a clean failure for something
+  that is then repeated and must not happen twice, or local work that keeps
+  running and publishes its result.
+- **A wait needs a bound that reaches it.** A caller's timeout counts when
+  the caller is polling the wait. It does not reach a spawned task or a
+  blocking call.
+- **Detached work is fine when nothing depends on it.**
+- **Lenient input is fine when it is stated.** An invalid value must not
+  take effect as if it were valid.
+- **An unstated boundary** must still give an answer the operation's name
+  and type allow, without a panic or a hang.
+
 ## Current limits
 
 - Rust only. Claude Code and Codex only.

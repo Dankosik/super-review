@@ -4,12 +4,16 @@
 
 ## Expect
 
-- Every wait can end: by a limit, a cancellation or the peer.
+- Every wait ends: by its own limit, or by a caller's limit or cancellation
+  that actually reaches it. A caller's timeout does not reach a spawned
+  task, a blocking call or a wait the caller is no longer polling.
 - A budget is spent once. Inner steps get what remains, and the total stays
   inside what the caller was given.
 - The reason reported for ending is the real one: the limit, the caller
   leaving, the peer closing.
-- Work whose caller was told it failed does not quietly take effect later.
+- A wait cut short leaves the outcome unknown, not failed. Local work that
+  can be stopped is stopped, and a caller is not led to repeat what may
+  already have taken effect and must not happen twice.
 - Retries, backoff and intervals are bounded and paced.
 
 ## Look for
@@ -32,6 +36,10 @@ what is left running. Add up what a caller waits in total.
 - Backoff that exceeds its cap, never resets after success, or resets on
   every failure.
 - Wall-clock time where elapsed time was meant.
+- A timeout reported as plain failure for an operation that is not
+  idempotent, and then retried.
+- Local work that keeps running after its caller's deadline and still
+  publishes its result.
 
 For "the caller went away", name the suspension point where the future is
 dropped and what runs afterwards.
@@ -39,5 +47,7 @@ dropped and what runs afterwards.
 ## Not a bug
 
 A timeout value you would choose differently. A wait with no limit where
-nothing depends on it ending. A number that differs between a document and a
+nothing depends on it ending, or one that a caller's limit reaches. A
+request already sent that takes effect after a timeout, when nothing can
+recall it and the caller is not told it failed for certain. A number that differs between a document and a
 constant belongs to [stated-facts](stated-facts.md).
