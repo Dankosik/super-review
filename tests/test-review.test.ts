@@ -65,7 +65,8 @@ test("delivery copies are identical and only the adapters that support it carry 
     for (const name of names) expect(read(`${packageRoot}/${name}`)).toBe(read(`skills/test-review/${name}`));
   }
   expect(existsSync(resolve(root, "adapters/cursor/plugin/resources/test-review"))).toBe(false);
-  expect(files(resolve(root, "adapters/opencode")).some(file => file.includes("test-review"))).toBe(false);
+  for (const role of ["test-review", "test-reader"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
+  expect(read("scripts/package.py")).toContain('"test-review"');
 });
 
 test("no role in the plugin can write files, and no execution machinery remains", () => {

@@ -16,7 +16,8 @@ target = DIST / "opencode"
 if target.exists():
     shutil.rmtree(target)
 shutil.copytree(ROOT / "adapters/opencode", target)
-shutil.copytree(ROOT / "skills/super-review", target / "skills/super-review")
+for name in ["super-review", "defect-review", "test-review"]:
+    shutil.copytree(ROOT / "skills" / name, target / "skills" / name)
 for name in ["docs", "examples"]:
     shutil.copytree(ROOT / name, target / name)
 for name in ["README.md", "LICENSE", "PRIVACY.md", "CONTRIBUTING.md", "CHANGELOG.md", "THIRD_PARTY_NOTICES.md"]:

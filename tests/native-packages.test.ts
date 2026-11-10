@@ -34,12 +34,34 @@ test("Claude native tools and plugin-relative entrypoint support file-based reso
   }
 });
 
-test("OpenCode permits native source access and limits specialist delegation", () => {
-  for (const role of ["super-review", "super-review-specialist"]) {
-    const agent = metadata(`adapters/opencode/agents/${role}.md`);
-    expect(agent.permission["*"]).toBe("deny");
-    for (const tool of ["read", "glob", "grep", "bash"]) expect(agent.permission[tool]).toBe("allow");
-    if (role === "super-review") expect(agent.permission.task).toEqual({ "*": "deny", "super-review-specialist": "allow" });
-    else expect(agent.permission.task).toBeUndefined();
+test("OpenCode permits native source access and limits delegation to each review's own roles", () => {
+  const primaries: Record<string, string[]> = {
+    "super-review": ["super-review-specialist"],
+    "defect-review": ["defect-reader", "defect-challenger"],
+    "test-review": ["test-reader"],
+  };
+  for (const [primary, children] of Object.entries(primaries)) {
+    for (const role of [primary, ...children]) {
+      const agent = metadata(`adapters/opencode/agents/${role}.md`);
+      expect(agent.permission["*"]).toBe("deny");
+      for (const tool of ["read", "glob", "grep", "bash"]) expect(agent.permission[tool]).toBe("allow");
+      for (const tool of ["edit", "write", "webfetch"]) expect(agent.permission[tool]).toBeUndefined();
+      expect(agent.model).toBeUndefined();
+      if (role === primary) {
+        expect(agent.mode).toBe("primary");
+        expect(agent.permission.task).toEqual({ "*": "deny", ...Object.fromEntries(children.map(child => [child, "allow"])) });
+        expect(agent.permission.skill).toEqual({ "*": "deny", [primary]: "allow" });
+        const command = metadata(`adapters/opencode/commands/${primary}.md`);
+        expect(command.agent).toBe(primary);
+        expect(command.subtask).toBe(false);
+      } else {
+        expect(agent.mode).toBe("subagent");
+        expect(agent.permission.task).toBeUndefined();
+        expect(agent.permission.skill).toBeUndefined();
+      }
+    }
   }
+  const models = JSON.parse(read("adapters/opencode/opencode.json")).agent;
+  expect(Object.keys(models).sort()).toEqual(["defect-challenger", "defect-reader", "super-review-specialist", "test-reader"]);
+  for (const entry of Object.values(models) as any[]) expect(entry.model).toBe("{env:SUPER_REVIEW_SPECIALIST_MODEL}");
 });

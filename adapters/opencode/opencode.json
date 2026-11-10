@@ -3,6 +3,15 @@
   "agent": {
     "super-review-specialist": {
       "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
+    },
+    "defect-reader": {
+      "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
+    },
+    "defect-challenger": {
+      "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
+    },
+    "test-reader": {
+      "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
     }
   }
 }

@@ -95,5 +95,6 @@ test("delivery copies are identical and only the adapters that support it carry 
     for (const name of names) expect(read(`${packageRoot}/${name}`)).toBe(read(`skills/defect-review/${name}`));
   }
   expect(existsSync(resolve(root, "adapters/cursor/plugin/resources/defect-review"))).toBe(false);
-  expect(files(resolve(root, "adapters/opencode")).some(file => file.includes("defect"))).toBe(false);
+  for (const role of ["defect-review", "defect-reader", "defect-challenger"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
+  expect(read("scripts/package.py")).toContain('"defect-review"');
 });
