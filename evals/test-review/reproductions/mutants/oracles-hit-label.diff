@@ -1,0 +1,13 @@
+diff --git a/crates/infra-cache/src/observe.rs b/crates/infra-cache/src/observe.rs
+index 3f14700f..85080ef0 100644
+--- a/crates/infra-cache/src/observe.rs
++++ b/crates/infra-cache/src/observe.rs
+@@ -98,7 +98,7 @@ impl Outcome {
+     /// needs no second label.
+     fn label(self) -> &'static str {
+         match self {
+-            Self::Hit => "hit",
++            Self::Hit => "miss",
+             Self::Miss => "miss",
+             Self::Ok => "ok",
+             Self::Cancelled => "cancelled",

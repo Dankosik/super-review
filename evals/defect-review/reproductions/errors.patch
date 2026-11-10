@@ -1,0 +1,63 @@
+diff --git a/crates/infra-cache/src/tests.rs b/crates/infra-cache/src/tests.rs
+index e13d3534..9105fa20 100644
+--- a/crates/infra-cache/src/tests.rs
++++ b/crates/infra-cache/src/tests.rs
+@@ -2188,3 +2188,58 @@ fn reliability_auth_errors_are_sanitized_through_the_dependency_log_bridge() {
+         );
+     });
+ }
++
++// Defect-review reproductions (DR-errors). Only test code is added.
++
++/// `CacheError::InvalidCa`: "cache root CA is invalid" (src/lib.rs). A root CA
++/// file whose PEM block decodes but holds no certificate is an invalid root CA.
++#[test]
++fn dr_errors_a_root_ca_whose_pem_block_is_not_a_certificate_is_invalid_ca() {
++    let file = write_pem("CERTIFICATE", b"not a der certificate");
++    let err = on_runtime(|| {
++        Cache::start(options(
++            "rediss://:hunter2@127.0.0.1:6379",
++            false,
++            false,
++            Some(file.path().to_path_buf()),
++        ))
++        .map(|_| ())
++        .unwrap_err()
++    });
++    assert_eq!(err, CacheError::InvalidCa);
++}
++
++/// `CacheError::InvalidClientCertificate`: "cache client certificate is
++/// invalid"; `InvalidClientKey` is documented as "The file held no usable PEM
++/// private key, or the key does not belong to the client certificate" (src/lib.rs).
++/// A usable key with a certificate file whose PEM block is not a certificate.
++#[test]
++fn dr_errors_a_client_certificate_whose_pem_block_is_not_a_certificate_is_invalid_certificate() {
++    let (_, key) = client_identity();
++    let cert = write_pem("CERTIFICATE", b"not a der certificate");
++    let err = on_runtime(|| {
++        Cache::start(with_client_certificate(
++            TLS_DSN,
++            cert.path().to_path_buf(),
++            key.path().to_path_buf(),
++        ))
++        .map(|_| ())
++        .unwrap_err()
++    });
++    assert_eq!(err, CacheError::InvalidClientCertificate);
++}
++
++/// Control: a well-formed certificate with its own key is admitted.
++#[test]
++fn dr_errors_control_a_valid_certificate_and_key_are_admitted() {
++    let (cert, key) = client_identity();
++    on_runtime(|| {
++        Cache::start(with_client_certificate(
++            TLS_DSN,
++            cert.path().to_path_buf(),
++            key.path().to_path_buf(),
++        ))
++        .map(|_| ())
++        .expect("matching pair admitted")
++    });
++}

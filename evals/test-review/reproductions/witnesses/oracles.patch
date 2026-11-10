@@ -1,0 +1,88 @@
+diff --git a/crates/infra-cache/src/tests.rs b/crates/infra-cache/src/tests.rs
+index e13d3534..232c303a 100644
+--- a/crates/infra-cache/src/tests.rs
++++ b/crates/infra-cache/src/tests.rs
+@@ -2188,3 +2188,83 @@ fn reliability_auth_errors_are_sanitized_through_the_dependency_log_bridge() {
+         );
+     });
+ }
++
++// Witness (oracles): docs/decisions/cache-decisions.md, "Histogram only":
++// "Hit, miss, and error counts are the `_count` series of
++// `cache_operation_duration_seconds`. Labels are ... `outcome` (`hit`, `miss`, ...)".
++#[test]
++fn witness_a_hit_records_into_the_hit_series() {
++    use tokio::io::{AsyncReadExt, AsyncWriteExt};
++
++    let recorder = observation_recorder();
++    let runtime = tokio::runtime::Builder::new_current_thread()
++        .enable_all()
++        .build()
++        .expect("test runtime");
++    metrics::with_local_recorder(&recorder, || {
++        runtime.block_on(async {
++            let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
++                .await
++                .expect("hit listener");
++            let address = listener.local_addr().expect("listener address");
++            tokio::spawn(async move {
++                let Ok((mut stream, _)) = listener.accept().await else {
++                    return;
++                };
++                // Every command is answered in order; `GET` returns a value.
++                let mut request = [0; 512];
++                loop {
++                    let read = stream.read(&mut request).await.unwrap_or(0);
++                    if read == 0 {
++                        return;
++                    }
++                    let mut reply = Vec::new();
++                    let mut lines = request[..read].split(|&b| b == b'\n');
++                    while let Some(line) = lines.next() {
++                        if line.first() != Some(&b'*') {
++                            continue;
++                        }
++                        let _length = lines.next();
++                        if lines.next().is_some_and(|name| name.starts_with(b"GET")) {
++                            reply.extend_from_slice(b"$5\r\nvalue\r\n");
++                        } else {
++                            reply.extend_from_slice(b"+OK\r\n");
++                        }
++                    }
++                    if stream.write_all(&reply).await.is_err() {
++                        return;
++                    }
++                }
++            });
++            let cache = admitted(&format!("redis://{address}"), true, true);
++            let namespace = cache.namespace("hits");
++            assert_eq!(namespace.get("key").await, Ok(Some(b"value".to_vec())));
++        });
++    });
++    let scrape = recorder.handle().render();
++    let series = "cache_operation_duration_seconds_count{cache=\"hits\",operation=\"get\",outcome=\"hit\"} 1";
++    assert!(
++        scrape.lines().any(|line| line == series),
++        "{series} missing from {scrape}"
++    );
++}
++
++// Witness (oracles): src/lib.rs `Cache::namespace` "# Panics":
++// "Panics if `name` does not match `^[a-z][a-z0-9_]{0,63}$`."
++#[test]
++#[should_panic(expected = "cache namespace")]
++fn witness_a_namespace_name_one_past_the_length_bound_panics() {
++    let cache = admitted("redis://127.0.0.1:6379", true, true);
++    let name = "a".repeat(65);
++    let name = Box::leak(name.into_boxed_str());
++    let _ = cache.namespace(name);
++}
++
++// Witness (oracles): same promise; an uppercase letter after the first byte
++// is outside `[a-z0-9_]`.
++#[test]
++#[should_panic(expected = "cache namespace")]
++fn witness_a_namespace_name_with_an_uppercase_later_byte_panics() {
++    let cache = admitted("redis://127.0.0.1:6379", true, true);
++    let _ = cache.namespace("aB");
++}

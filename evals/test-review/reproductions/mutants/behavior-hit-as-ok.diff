@@ -1,0 +1,13 @@
+diff --git a/crates/infra-cache/src/lib.rs b/crates/infra-cache/src/lib.rs
+index 26183932..ba24378e 100644
+--- a/crates/infra-cache/src/lib.rs
++++ b/crates/infra-cache/src/lib.rs
+@@ -376,7 +376,7 @@ impl CacheNamespace {
+         let command = self.keyed_command(operation, key, 0, 0);
+         self.run(&context, operation, command, |value: &Option<Vec<u8>>| {
+             if value.is_some() {
+-                Outcome::Hit
++                Outcome::Ok
+             } else {
+                 Outcome::Miss
+             }

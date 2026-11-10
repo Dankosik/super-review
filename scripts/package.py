@@ -2,6 +2,7 @@
 """Build deterministic install archives; no review logic or model access."""
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import zipfile
@@ -38,6 +39,13 @@ assets = [
     archive(f"super-review-{VERSION}-opencode.zip", opencode_files),
     archive(f"super-review-{VERSION}-skill.zip", skill_files),
 ]
+# Defect Review and Test Review ship as their own standalone skills, under their own versions.
+for name in ["defect-review", "test-review"]:
+    root = ROOT / "skills" / name
+    version = re.search(r'^  version: "([^"]+)"$', (root / "SKILL.md").read_text(), re.M).group(1)
+    assets.append(archive(f"{name}-{version}-skill.zip", [
+        (p, name + "/" + p.relative_to(root).as_posix()) for p in root.rglob("*") if p.is_file()
+    ]))
 claude_root = ROOT / "adapters/claude/plugin"
 assets.append(archive(f"super-review-{VERSION}-claude.zip", [
     (p, "super-review/" + p.relative_to(claude_root).as_posix())

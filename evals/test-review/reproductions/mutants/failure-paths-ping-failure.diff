@@ -1,0 +1,12 @@
+diff --git a/crates/infra-cache/src/connection.rs b/crates/infra-cache/src/connection.rs
+index cfee08a9..8678a9db 100644
+--- a/crates/infra-cache/src/connection.rs
++++ b/crates/infra-cache/src/connection.rs
+@@ -542,7 +542,6 @@ async fn maintain(
+                 let deadline = Instant::now() + command_timeout.min(CONNECTED_EXCHANGE_TIMEOUT);
+                 if let Err(error) = query_until::<()>(generation, &redis::Cmd::ping(), deadline).await {
+                     tracing::warn!(error.type = error.label(), "cache_ping_failed");
+-                    return;
+                 }
+                 next_ping = Instant::now() + PING_INTERVAL;
+             }

@@ -1,0 +1,13 @@
+diff --git a/crates/infra-cache/src/connection.rs b/crates/infra-cache/src/connection.rs
+index cfee08a9..7b06b778 100644
+--- a/crates/infra-cache/src/connection.rs
++++ b/crates/infra-cache/src/connection.rs
+@@ -461,7 +461,7 @@ async fn setup_attempt<'a>(
+     )
+     .await
+     {
+-        Err(_elapsed) => Err(ErrorType::Timeout),
++        Err(_elapsed) => Err(ErrorType::Io),
+         // The server disconnected the new connection before publication.
+         Ok(Ok(_)) if retired.is_cancelled() => Err(ErrorType::Io),
+         Ok(connected) => connected,

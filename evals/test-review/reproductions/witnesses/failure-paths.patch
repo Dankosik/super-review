@@ -1,0 +1,167 @@
+diff --git a/crates/infra-cache/src/tests.rs b/crates/infra-cache/src/tests.rs
+index e13d3534..1bee7e63 100644
+--- a/crates/infra-cache/src/tests.rs
++++ b/crates/infra-cache/src/tests.rs
+@@ -2188,3 +2188,162 @@ fn reliability_auth_errors_are_sanitized_through_the_dependency_log_bridge() {
+         );
+     });
+ }
++
++// Guide, "Failure and budgets": "A PING failure retires the generation even
++// with no traffic, so unanswered slots from cancelled callers cannot remain
++// forever." The PING budget is `min(command_timeout, 5 s)`.
++#[tokio::test]
++async fn witness_a_failed_maintenance_ping_replaces_a_silent_connection_without_traffic() {
++    let server = FakeServer::start().await;
++    let cache = admitted(&format!("redis://{}", server.address), true, true);
++    let namespace = cache.namespace("silent_peer");
++    assert_eq!(namespace.get("ready").await, Ok(None));
++    let old = server.stall_existing();
++    // No cache call from here on: only maintenance can notice the silent peer.
++    server
++        .wait_for(
++            Duration::from_secs(5),
++            "a silent connection was kept after its maintenance PING failed",
++            || server.connections() > old && server.closed_through(old),
++        )
++        .await;
++}
++
++// `ErrorType::Timeout`: "The operation context stopped (its deadline,
++// including `command_timeout`, or caller cancellation)". Outcome label: "A
++// timeout keeps its own value". Guide: a failed series carries `error_type`.
++#[tokio::test]
++async fn witness_a_dispatched_command_that_outlives_its_context_records_timeout() {
++    use operation_context::OperationContext;
++
++    let recorder = observation_recorder();
++    let _recorder = metrics::set_default_local_recorder(&recorder);
++    let server = FakeServer::start().await;
++    let cache = Cache::start(CacheOptions {
++        command_timeout: Duration::from_secs(30),
++        ..options(&format!("redis://{}", server.address), true, true, None)
++    })
++    .expect("start cache");
++    let namespace = cache.namespace("late_reply");
++    assert_eq!(namespace.get("ready").await, Ok(None));
++    server.stall_existing();
++    let context = OperationContext::with_timeout(Duration::from_millis(100));
++    assert_eq!(
++        namespace.get_with_context("late", &context).await,
++        Err(crate::Unavailable)
++    );
++    assert_eq!(server.command_count("GET", Some("late_reply:late")), 1);
++    let scrape = recorder.handle().render();
++    let series = "cache_operation_duration_seconds_count{cache=\"late_reply\",operation=\"get\",outcome=\"timeout\",error_type=\"timeout\"} 1";
++    assert!(scrape.contains(series), "{series} missing from {scrape}");
++}
++
++// `ErrorType::Timeout`: "... a setup or probe bound elapsed ...". `CacheProbe`:
++// "Failure text is `cache ping failed: <error.type>` only."
++#[tokio::test]
++async fn witness_a_setup_that_outlives_its_bound_is_reported_as_timeout() {
++    use health::Probe;
++
++    let server = FakeServer::start().await;
++    server
++        .observed
++        .silence_all
++        .store(true, std::sync::atomic::Ordering::SeqCst);
++    let cache = admitted(&format!("redis://{}", server.address), true, true);
++    let refused = tokio::time::timeout(Duration::from_secs(10), cache.probe().check())
++        .await
++        .expect("the setup bound ends the attempt")
++        .expect_err("a silent server never completes setup");
++    assert_eq!(refused.to_string(), "cache ping failed: timeout");
++}
++
++// Guide, "Observability": `error.type` reports "a password file that cannot be
++// read when a connection opens, as `auth`".
++#[tokio::test]
++#[expect(
++    clippy::disallowed_methods,
++    reason = "test-owned temporary file setup or rotation completes before the corresponding fixture assertion"
++)]
++async fn witness_an_unreadable_password_file_at_connection_setup_is_reported_as_auth() {
++    use health::Probe;
++
++    let server = FakeServer::start().await;
++    let file = tempfile::NamedTempFile::new().expect("password file");
++    std::fs::write(file.path(), "hunter2\n").expect("write password");
++    let cache = Cache::start(with_password_file(
++        &format!("redis://{}", server.address),
++        file.path().to_path_buf(),
++    ))
++    .expect("admission reads the file");
++    // No await since start: on this current-thread runtime the supervisor has
++    // not begun its first setup, which must read the file again.
++    file.close().expect("remove password file");
++    let refused = tokio::time::timeout(Duration::from_secs(5), cache.probe().check())
++        .await
++        .expect("the setup attempt ends")
++        .expect_err("the password file is gone");
++    assert_eq!(refused.to_string(), "cache ping failed: auth");
++}
++
++// Guide: "A later unreadable or empty file logs `cache_password_file_unreadable`
++// once per outage and preserves a usable connection and its accepted password."
++#[tokio::test]
++#[expect(
++    clippy::disallowed_methods,
++    reason = "test-owned temporary file setup or rotation completes before the corresponding fixture assertion"
++)]
++async fn witness_each_password_file_outage_logs_its_own_warning() {
++    let recorder = observation_recorder();
++    let _recorder = metrics::set_default_local_recorder(&recorder);
++    let captured = CapturedLogs::default();
++    let writer = captured.clone();
++    let subscriber = tracing_subscriber::fmt()
++        .without_time()
++        .with_ansi(false)
++        .with_writer(move || writer.clone())
++        .finish();
++    let _subscriber = tracing::subscriber::set_default(subscriber);
++    let server = FakeServer::start().await;
++    let password = ephemeral_password();
++    server.require_password(&password);
++    let file = tempfile::NamedTempFile::new().expect("password file");
++    std::fs::write(file.path(), format!("{password}\n")).expect("password");
++    let cache = Cache::start(with_password_file(
++        &format!("redis://{}", server.address),
++        file.path().to_path_buf(),
++    ))
++    .expect("start cache");
++    assert_eq!(cache.namespace("outages").get("ready").await, Ok(None));
++    let sampled = |outcome: &str, count: usize| {
++        password_refresh_samples(&recorder).contains(&format!(
++            "cache_password_file_refreshes_total{{outcome=\"{outcome}\",reason=\"none\"}} {count}"
++        ))
++    };
++
++    std::fs::remove_file(file.path()).expect("first outage");
++    server
++        .wait_for(Duration::from_secs(8), "first outage was not read", || {
++            sampled("read_failed", 1)
++        })
++        .await;
++    std::fs::write(file.path(), format!("{password}\n")).expect("file restored");
++    server
++        .wait_for(Duration::from_secs(8), "restored file was not read", || {
++            sampled("unchanged", 1)
++        })
++        .await;
++    std::fs::remove_file(file.path()).expect("second outage");
++    server
++        .wait_for(Duration::from_secs(8), "second outage was not read", || {
++            sampled("read_failed", 2)
++        })
++        .await;
++    assert_eq!(
++        captured
++            .rendered()
++            .matches("cache_password_file_unreadable")
++            .count(),
++        2,
++        "each outage logs once"
++    );
++}

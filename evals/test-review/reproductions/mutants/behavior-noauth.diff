@@ -1,0 +1,13 @@
+diff --git a/crates/infra-cache/src/observe.rs b/crates/infra-cache/src/observe.rs
+index 3f14700f..c70d3a8e 100644
+--- a/crates/infra-cache/src/observe.rs
++++ b/crates/infra-cache/src/observe.rs
+@@ -294,7 +294,7 @@ pub(crate) fn error_type(error: &redis::RedisError) -> ErrorType {
+         return ErrorType::Timeout;
+     }
+     // RESP3 authenticates inside `HELLO`, whose refusal is a plain server error.
+-    if matches!(error.code(), Some("WRONGPASS" | "NOAUTH")) {
++    if matches!(error.code(), Some("WRONGPASS")) {
+         return ErrorType::Auth;
+     }
+     match error.kind() {

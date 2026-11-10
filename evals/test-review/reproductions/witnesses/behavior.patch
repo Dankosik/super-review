@@ -1,0 +1,186 @@
+diff --git a/crates/infra-cache/src/tests.rs b/crates/infra-cache/src/tests.rs
+index e13d3534..7c72341e 100644
+--- a/crates/infra-cache/src/tests.rs
++++ b/crates/infra-cache/src/tests.rs
+@@ -2188,3 +2188,181 @@ fn reliability_auth_errors_are_sanitized_through_the_dependency_log_bridge() {
+         );
+     });
+ }
++
++// docs/guides/cache.md, "Wire feature-owned behavior": "`namespace` panics
++// unless the name matches `^[a-z][a-z0-9_]{0,63}$`."
++#[test]
++#[should_panic(expected = "cache namespace")]
++fn witness_a_namespace_name_one_past_the_length_bound_panics() {
++    let cache = admitted("redis://127.0.0.1:6379", true, true);
++    let name = Box::leak("a".repeat(65).into_boxed_str());
++    let _ = cache.namespace(name);
++}
++
++// docs/guides/cache.md, "Select and configure": "`cache.password_file` names a
++// file that holds the password alone (one trailing line break is ignored)".
++#[tokio::test]
++#[expect(
++    clippy::disallowed_methods,
++    reason = "test-owned temporary file setup or rotation completes before the corresponding fixture assertion"
++)]
++async fn witness_a_password_file_drops_only_one_trailing_line_break() {
++    let server = FakeServer::start().await;
++    server.require_password("secret\n");
++    let file = tempfile::NamedTempFile::new().expect("password file");
++    std::fs::write(file.path(), "secret\n\n").expect("password with two line breaks");
++    let cache = Cache::start(with_password_file(
++        &format!("redis://{}", server.address),
++        file.path().to_path_buf(),
++    ))
++    .expect("start cache");
++    assert_eq!(cache.namespace("one_break").get("ready").await, Ok(None));
++}
++
++// docs/guides/cache.md, "Observability": "`outcome` (`hit`, `miss`, `ok`,
++// `error`, `timeout`, or `cancelled`) ... Hit, miss, and error counts are the
++// `_count` series."; src/lib.rs: "a hit returns the bytes".
++#[test]
++fn witness_a_stored_value_is_returned_and_recorded_as_a_hit() {
++    let recorder = observation_recorder();
++    let runtime = tokio::runtime::Builder::new_current_thread()
++        .enable_all()
++        .build()
++        .expect("test runtime");
++    metrics::with_local_recorder(&recorder, || {
++        runtime.block_on(async {
++            let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
++                .await
++                .expect("hit listener");
++            let address = listener.local_addr().expect("listener address");
++            tokio::spawn(async move {
++                use tokio::io::AsyncWriteExt;
++                while let Ok((stream, _)) = listener.accept().await {
++                    tokio::spawn(async move {
++                        let (read, mut write) = stream.into_split();
++                        let mut read = tokio::io::BufReader::new(read);
++                        let mut line = String::new();
++                        while let Some(arguments) = read_resp_arguments(&mut read, &mut line).await
++                        {
++                            let reply: &[u8] = match arguments.first().map(String::as_str) {
++                                Some("GET") => b"$5\r\nvalue\r\n",
++                                Some("PING") => b"+PONG\r\n",
++                                _ => b"+OK\r\n",
++                            };
++                            if write.write_all(reply).await.is_err() {
++                                return;
++                            }
++                        }
++                    });
++                }
++            });
++            let cache = admitted(&format!("redis://{address}"), true, true);
++            let namespace = cache.namespace("hits");
++            assert_eq!(namespace.get("key").await, Ok(Some(b"value".to_vec())));
++        });
++    });
++    let scrape = recorder.handle().render();
++    assert!(
++        scrape.contains(
++            "cache_operation_duration_seconds_count{cache=\"hits\",operation=\"get\",outcome=\"hit\"} 1"
++        ),
++        "{scrape}"
++    );
++}
++
++// docs/guides/cache.md, "Observability": "a `HELLO` refused with `WRONGPASS`
++// or `NOAUTH`, or a password file that cannot be read when a connection
++// opens, as `auth`."
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn witness_a_hello_refused_with_noauth_is_reported_as_auth() {
++    use health::Probe;
++
++    let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
++        .await
++        .expect("noauth listener");
++    let address = listener.local_addr().expect("listener address");
++    tokio::spawn(async move {
++        use tokio::io::AsyncWriteExt;
++        while let Ok((stream, _)) = listener.accept().await {
++            tokio::spawn(async move {
++                let (read, mut write) = stream.into_split();
++                let mut read = tokio::io::BufReader::new(read);
++                let mut line = String::new();
++                while let Some(arguments) = read_resp_arguments(&mut read, &mut line).await {
++                    let reply: &[u8] = match arguments.first().map(String::as_str) {
++                        Some("HELLO") => b"-NOAUTH Authentication required.\r\n",
++                        _ => b"+OK\r\n",
++                    };
++                    if write.write_all(reply).await.is_err() {
++                        return;
++                    }
++                }
++            });
++        }
++    });
++    let cache = admitted(&format!("redis://:secret@{address}"), true, false);
++    let refused = tokio::time::timeout(Duration::from_secs(5), cache.probe().check())
++        .await
++        .expect("the first setup attempt ends")
++        .expect_err("the server refuses HELLO");
++    assert_eq!(refused.to_string(), "cache ping failed: auth");
++}
++
++// docs/guides/cache.md, "Observability": "... or a password file that cannot
++// be read when a connection opens, as `auth`."
++#[tokio::test]
++#[expect(
++    clippy::disallowed_methods,
++    reason = "test-owned temporary file setup or rotation completes before the corresponding fixture assertion"
++)]
++async fn witness_a_password_file_unreadable_when_a_connection_opens_is_auth() {
++    use health::Probe;
++
++    let server = FakeServer::start().await;
++    let file = tempfile::NamedTempFile::new().expect("password file");
++    std::fs::write(file.path(), "secret\n").expect("initial password");
++    let cache = Cache::start(with_password_file(
++        &format!("redis://{}", server.address),
++        file.path().to_path_buf(),
++    ))
++    .expect("start cache");
++    // Current-thread runtime: the supervisor has not run its first setup yet.
++    std::fs::remove_file(file.path()).expect("password file removed after admission");
++    let refused = tokio::time::timeout(Duration::from_secs(5), cache.probe().check())
++        .await
++        .expect("the first setup attempt ends")
++        .expect_err("the file cannot be read");
++    assert_eq!(refused.to_string(), "cache ping failed: auth");
++}
++
++// docs/guides/cache.md, "Observability": "The client span is `cache`,
++// exported under the name `GET`, `SET`, or `DEL` (`otel.name`)".
++#[test]
++fn witness_the_client_span_is_exported_under_the_command_name() {
++    use crate::observe::{ErrorType, NamespaceHistograms, Operation, OperationGuard};
++
++    let captured = CapturedLogs::default();
++    let writer = captured.clone();
++    let subscriber = tracing_subscriber::fmt()
++        .without_time()
++        .with_ansi(false)
++        .with_max_level(tracing::Level::DEBUG)
++        .with_writer(move || writer.clone())
++        .finish();
++    let server = crate::ServerEndpoint {
++        host: "cache.example".to_owned(),
++        port: 6379,
++        tls: true,
++    };
++    tracing::subscriber::with_default(subscriber, || {
++        let histograms = NamespaceHistograms::default();
++        for operation in [Operation::Get, Operation::Set, Operation::Delete] {
++            let _ = OperationGuard::start("spans", &histograms, operation, &server)
++                .fail(ErrorType::Io);
++        }
++    });
++    let logs = captured.rendered();
++    for command in ["GET", "SET", "DEL"] {
++        assert!(logs.contains(&format!("otel.name=\"{command}\"")), "{logs}");
++    }
++}
