@@ -1,7 +1,10 @@
 # Verify recommendations
 
 The orchestrator owns final acceptance; specialists supply evidence-backed
-observations. Apply the [contract's judgment bar](review-contract.md#judgment-and-acceptance)
+observations. A candidate is a claim to test, not a draft to forward. Answer for
+each accepted recommendation as if you wrote it: you understand why it holds and
+would make that edit yourself. Agreement with an agent is not a reason, and a
+decision row without its own reason is not a decision. Apply the [contract's judgment bar](review-contract.md#judgment-and-acceptance)
 to every candidate, including your own, across base lenses, conditional lenses,
 and profiles. A routing signal or agreement between agents is not evidence.
 A profile cannot revive a disabled or conflicting owner rule.
@@ -48,7 +51,13 @@ Separate two decisions: is the observation supported, and is the remedy ready
 for implementation? A sound observation with an unsupported remedy survives as
 `unresolved`, with its specific gap, unless a revised supported remedy resolves
 it. An inaccurate proposed name or overbuilt remedy is a reason to repair that
-proposal, not discard its supported observation. An unsupported observation is
+proposal, not discard its supported observation. Choosing between supported
+alternatives is your engineering decision: choose and say why. Leave a remedy
+unresolved only for a fact the source cannot supply, such as an external consumer,
+product intent or a team preference no rule records, and name that fact, or for a
+changed decision under the contract. Accepting with a stated risk is not a
+decision, and the observation's main point is never an optional part of its
+remedy. An unsupported observation is
 rejected or left unresolved pending identified source, never accepted because it
 sounds plausible. Self-reported confidence,
 pattern names, and peer agreement do not replace evidence.
@@ -58,7 +67,7 @@ implementation together. Make the decision at the candidate's actual scope:
 several local improvements do not become a speculative redesign when collected.
 A rejection for insufficient benefit needs a source-specific tradeoff, not just
 the presence of a new name, type, helper, or changed signature. Accept a sufficient
-improvement, revise the remedy, or retain the exact unresolved decision.
+improvement, revise the remedy, or retain the exact missing fact.
 
 Inspect only the preservation constraints implicated by that transformation,
 using the matching context from [language routing](languages.md): exact supported
@@ -71,15 +80,26 @@ For Java, inspect implicated null/absence, overload/override and generic
 signatures, mutability, evaluation timing, exception causes and resource or
 framework/proxy ownership under the selected language context.
 Do not infer equivalence from a happy-path example or empty literal search.
+Before accepting, read whether the resulting code would pass the project's lint
+policy (such as `clippy.toml`, `[lints]` or crate-level `deny`), every use of a
+changed type or name including excluded tests, name collisions, and code left
+dead once optional regions are removed. Repair or reject a remedy that fails.
 Narrow incompatible/uncertain advice or keep it unresolved; no tests, builds,
 newer APIs, or claims of tested equivalence are authorized by verification.
+
+A clarity change may change what callers, operators or logs observe: error text,
+a public variant, a runtime check a type now makes redundant. Accept it when that
+clarity is the benefit, and state the effect in the recommendation. Merging copies
+that diverged selects one behavior; name the choice. A changed decision stays
+unresolved under the contract. A precondition the specialist set for its remedy
+travels into the recommendation, or the remedy stays unresolved.
 
 | Disposition | Record |
 | --- | --- |
 | accepted | Supported observation and remedy, net benefit or explicit convention, preservation constraints, R-ID. |
 | rejected | Concrete counterevidence, outside scope, or insufficient benefit. |
 | merged | Destination R-ID and retained candidate ID, locations and independent rationale. |
-| unresolved | Supported observation or exact unverified claim, missing evidence/choice, no implementation instruction. |
+| unresolved | Supported observation or exact unverified claim, the missing fact, no implementation instruction. |
 
 Check recommendations as a set. Extraction and inlining, abstraction and locality,
 or renaming and API stability can conflict. Choose a coherent supported change or

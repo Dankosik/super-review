@@ -49,9 +49,12 @@ coverage remains `unfinished`, never an empty clean result.
   alone is insufficient. Omit a sketch for a self-explanatory local edit. This is
   a bounded illustration, not a complete patch or a claim of tested equivalence.
 - Preserve: relevant contracts/effects and constraints implicated by the proposal;
-  identify what is known versus still unverified. Do not invent a remedy to fill fields.
-- Affected files: verified paths and real dependencies; distinguish inspected from
-  still-needed consumer context. Use `none` for remaining gaps only when warranted.
+  identify what is known versus still unverified. State the remedy's observable
+  effect, `none` or what callers, operators or logs see differently, and any
+  precondition it needs. Do not invent a remedy to fill fields.
+- Affected files: verified paths and real dependencies, including excluded tests
+  and other uses the change forces to update (edit sites, not reviewed scope);
+  distinguish inspected from still-needed consumer context. Use `none` for remaining gaps only when warranted.
 
 Prefer verified paths/symbols to guessed lines. A small before/after example can
 clarify a supported change; a full patch is unnecessary. Explain evidence and

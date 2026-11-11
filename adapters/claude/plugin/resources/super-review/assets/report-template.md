@@ -1,6 +1,7 @@
 # Super Review
 
-Write in the user's language. This is an information contract, not a requirement
+Write in the language of the user's request, even when instructions and packets
+are in English. This is an information contract, not a requirement
 for empty headings or tables. Combine compact context, rules and coverage when
 none is lost. Omit an empty file map, recommendation list or implementation order
 when there are no accepted changes; state that outcome explicitly. Preserve
@@ -14,12 +15,16 @@ Lead with changes offering the clearest supported maintenance benefit, consideri
 scope and adoption cost, not bug severity or finding count. With none accepted,
 say no implementation recommendations were accepted under the completed coverage;
 do not claim perfection or absence of observations when unresolved ones remain.
+Name the recommendations with an observable effect; claim unchanged behavior only
+when none has one. Stated counts match the R headings and the decision table, and
+every R-ID is a recommendation.
 
 ## Context and status
 
 PR URL and B/H/D, or local root, review extent, selected view and both endpoint
-identities (commits, index blobs or working-file hashes);
-Super Review version; `complete` or `partial`; independent or
+identities (commits, index blobs or working-file hashes); the branch of a local
+HEAD and, when it is not the default branch or is behind its upstream, the target
+files that differ; Super Review version; `complete` or `partial`; independent or
 explicitly limited sequential execution; specialist model/profile and reasoning
 effort when available. Include trusted instruction revision/digests when exposed,
 otherwise `content identity unverified`, as defined by the contract. Do not confuse
@@ -67,8 +72,9 @@ Basis: effective rules and contributing profiles, including convention-only advi
 Connect the observation to the selected comparison or whole-source snapshot; distinguish
 supporting context. Explain
 the reading/maintenance task, supported transformation, net benefit, source-supported keep
-alternative, and relevant preservation constraints. Include affected files and
-originating candidate IDs. Make the bounded change usable by a coding agent;
+alternative, and relevant preservation constraints. State the observable effect:
+`none`, or what callers, operators or logs will see differently, with any
+precondition. Include affected files and originating candidate IDs. Make the bounded change usable by a coding agent;
 retain the minimal resulting-shape sketch when a structural recommendation needs
 it to show the improvement. Do not replace it with only a pattern name, or expand
 a clear local edit into a design exercise. A full patch or new feature design is unnecessary.
@@ -91,6 +97,6 @@ and no project checks or source edits were performed.
 | Candidate | Accepted / rejected / merged / unresolved | Reason or demonstrated observation and remaining gap | R-ID if accepted/merged |
 | --- | --- | --- | --- |
 
-Retain useful unresolved observations with their source anchors and the evidence
-or user choice needed to settle the remedy; do not silently drop them or label
+Retain useful unresolved observations with their source anchors and the missing
+fact that would settle the remedy; do not silently drop them or label
 them required changes. This appendix is traceability, not a second task list.
