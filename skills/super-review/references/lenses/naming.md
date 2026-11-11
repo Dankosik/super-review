@@ -4,8 +4,9 @@
 
 **Vocabulary.** Read the declaration and representative uses as one expression
 of intent. Which concepts must the reader distinguish, and where does the naming
-force them to reconstruct that distinction? Look for different roles sharing a
-name, one concept changing names, or names hiding units, state, or effect.
+force them to reconstruct that distinction? Look for Mysterious Names: different
+roles sharing a name, one concept changing names, or names hiding units, state,
+or effect. When no honest name comes, the concept itself is murky; say so.
 
 Recommend the smallest rename that resolves a demonstrated ambiguity. Evaluate
 it with the package qualifier, receiver, scope, and established domain vocabulary;
@@ -13,10 +14,10 @@ it with the package qualifier, receiver, scope, and established domain vocabular
 an incoming request from a stored record can matter more than longer names.
 
 Keep ordinary `ctx`, `err`, receivers, and loop indices when their scope makes
-them clear. Do not homogenize deliberately different concepts. Follow explicit
+them clear. Keep deliberately different concepts under different names. Follow explicit
 team vocabulary; otherwise another equally understandable spelling is not a
 finding. Preserve comments explaining why; renaming does not replace that context.
 
 Inspect callers and compatibility before an exported rename under the shared
-contract. Own the ambiguous vocabulary, not an unrelated
-flow or responsibility rewrite.
+contract. This lens owns the vocabulary; flow and responsibility belong to their
+own lenses.

@@ -4,9 +4,10 @@
 
 **Useful boundaries.** Which existing responsibility or variation does this
 trait, generic parameter, wrapper or macro hide, and what must callers learn
-in exchange? Prefer removing knowledge to forwarding calls through interface
-twins. A single implementation may serve a real capability boundary; its count
-alone does not establish a finding.
+in exchange? Apply the deletion test: prefer a deep boundary that removes
+knowledge to a shallow one forwarding calls through interface twins. A single
+implementation may serve a real capability boundary; its count alone does not
+establish a finding.
 
 Concrete types and functions are often enough. Generics can express capabilities;
 `dyn Trait` can express heterogeneous values or an established runtime boundary.
@@ -23,9 +24,9 @@ invite this ownership check; they do not establish a finding by themselves.
 A parameter, options field, enum or type parameter for which every inspected
 caller supplies the same value offers a choice nobody makes: callers construct
 it and readers follow a branch with one outcome. Recommend the fixed form; the
-choice can return with the caller that needs it. A possible later variant is an
-imagined requirement, not a reason to keep the surface or to leave the remedy
-unresolved. Keep a choice a current caller varies, and apply the shared
+choice can return with the caller that needs it. A surface kept for a possible
+later variant is Speculative Generality, and the remedy stays the fixed form.
+Keep a choice a current caller varies, and apply the shared
 compatibility judgment where consumers lie outside the inspected source.
 
 Before a new trait, look for the standard one. A crate trait whose
@@ -37,8 +38,8 @@ downcasting, read as an enum; keep `dyn` or generics where outside code adds
 implementations or the contract leaves the set open. A type parameter
 instantiated with one type needs, like a trait with one implementation, the
 variation or dependency direction it serves. A layer whose methods each forward
-to the next with the same arguments and result adds a place to edit without a
-decision.
+to the next with the same arguments and result is a Middle Man: it adds a place
+to edit without a decision.
 
 A bound on a generic type's declaration that only some of its methods need,
 such as `T: Clone` or `T: Debug`, makes every user of the type satisfy it; the
@@ -49,8 +50,8 @@ implementors the methods that differ.
 Macros can legitimately capture syntax or share structure. Replace one with a
 function only when the same job remains clear without changing evaluation or
 ownership. A macro that hides a `return` or `?` takes an exit out of the
-reader's sight. Preserve relevant trait and macro contracts. Avoid new frameworks
-or dependencies without an existing in-scope burden.
+reader's sight. Preserve relevant trait and macro contracts. A new framework or
+dependency answers an existing in-scope burden.
 
 For a demonstrated generic-API burden, distinguish an associated result fixed by
 an implementation from a parameter callers genuinely choose. Localize a bound to

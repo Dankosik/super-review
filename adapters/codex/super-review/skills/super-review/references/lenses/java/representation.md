@@ -4,10 +4,12 @@
 
 **Data modeling.** Does the changed representation directly name existing
 concepts and alternatives, or make readers remember positions, parallel indexes,
-magic strings, and combinations of flags? Inspect construction and consumption
+magic strings, and combinations of flags? Primitive Obsession and Data Clumps
+are the usual shapes of this burden. Inspect construction and consumption
 together. A small value class, enum, or supported record can give stable data a
 name; an existing collection may already express the relationship without a new
-domain type. Do not manufacture invariants or future business requirements.
+domain type. A stronger type expresses invariants and requirements the code
+already maintains; the product's invariants themselves stay as they are.
 
 A record is a transparent value carrier, not a universal class replacement.
 Before recommending one, inspect identity versus component equality, constructor

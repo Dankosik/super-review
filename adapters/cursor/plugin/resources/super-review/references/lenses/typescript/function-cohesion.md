@@ -6,15 +6,17 @@
 knowledge, rather than simply hide lines? Compare the whole affected function and
 its calls. Extract a cohesive transformation when the caller becomes a clearer
 account of its task; retain a linear sequence when helpers would scatter the story.
-Function length alone is not a finding. Check closure captures, `this`, callback
-identity, and async boundaries implicated by extraction.
+The finding is a scattered or tangled story, which length alone does not show.
+Check closure captures, `this`, callback identity, and async boundaries
+implicated by extraction.
 
 ## ts.functions.coherent-purpose
 
 **One responsibility.** Can a reader describe the operation without combining
 unrelated responsibilities? Separate independent calculations or adapters when the
-boundary makes their inputs and outcomes intelligible. Do not turn each branch,
-object construction, or JSX fragment into a new function or component.
+boundary makes their inputs and outcomes intelligible. A branch, object
+construction, or JSX fragment becomes its own function or component when it is a
+separate responsibility.
 
 For established UI code, distinguish presentation, state transitions, and external
 effects only where the changed function genuinely mixes separate concepts. A

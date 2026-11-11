@@ -58,5 +58,5 @@ a semantic difference can justify custom code; fewer dependencies alone do not.
 
 Preserve relevant ordering, ownership, failure and evaluation behavior. A
 repeated match can remain clear when its cases change independently. Retaining
-understandable duplication is valid; textual similarity is not a sufficient
-reason to introduce an abstraction.
+understandable duplication is valid; an abstraction answers shared knowledge,
+which textual similarity alone does not show.

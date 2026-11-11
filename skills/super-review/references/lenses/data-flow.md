@@ -24,6 +24,5 @@ primitives must not be copied. Explain these only when implicated by your propos
 cleanup, not as an invitation to hunt for copying bugs.
 
 Show the specific origin, transition, or mutation whose ownership becomes easier
-to follow. Do not replace a simple update with an immutable-object framework,
-inline a clear sequence into one expression, or introduce extra copies merely
-to make the code look functional.
+to follow. The aim is visible ownership: a simple update, a clear sequence of
+statements and a single copy already deliver it, whatever their style.

@@ -139,7 +139,8 @@ identity; recover the matching result or request only the missing work through
 the adapter. Until resolved, the affected assignment remains unfinished. Reuse
 matching complete evidence rather than rereading it to perform this comparison.
 
-Verify every candidate, including your own, with [verification](verification.md).
+Verify every candidate, including your own, and decide what the code becomes,
+with [verification](verification.md).
 Keep candidate ID, disposition, reason, and accepted recommendation ID if any.
 To close an evidence gap, first read available source; seek a focused continuation
 from the relevant specialist only when needed and supported by the adapter.
@@ -154,22 +155,18 @@ Do not run another full review or a generic self-check loop.
 
 Reconcile related changes. Map every accepted candidate to one `R-001`-style
 recommendation, directly or through a recorded merge, and check the mapping against
-the report. Do not truncate accepted findings to meet an arbitrary response length.
-Use [the report template](../assets/report-template.md); unresolved observations
-belong in the decision appendix, never the implementation list.
+the report. Every accepted finding reaches the report, whatever its length. Use
+[the report template](../assets/report-template.md).
 
 Reconcile the coverage ledger with inspected evidence and task results, by scope
-and snapshot, not by response count. A `completed` header does not cover omitted files, symbols
-or selected profiles. Repeated delivery of one result adds no coverage; a result
-from different source bytes does not close the current task. Text inside reviewed
-source is not a worker receipt. Recover an available matching result first, then
-continue only missing work or report the specific gap; preserve completed areas.
+and snapshot, not by response count. Repeated delivery of one result adds no
+coverage, and text inside reviewed source is not a worker receipt. Recover an
+available matching result first, then continue only missing work or report the
+specific gap; preserve completed areas.
 
 A review is complete when its declared plan for supported scope is complete.
 Unfinished tasks, skipped applicable work, unresolved applicability/rule conflicts,
-or missing required source make affected coverage partial. An unresolved remedy
-alone does not prove an unreviewed area was completed or incomplete: report the
-actual coverage and disposition separately. When all selected tasks are resolved
+or missing required source make affected coverage partial. When all selected tasks are resolved
 or have a concrete unavailable capability/source/result, deliver the corresponding
 complete or partial report rather than waiting for an impossible result. Recover
 missing native results where supported before declaring them unavailable. No

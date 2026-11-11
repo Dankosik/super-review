@@ -25,5 +25,5 @@ are deliberately updated by deferred code. A bare return in a tiny clear functio
 is not automatically a problem; avoid trading visible exits for hidden callbacks.
 
 Show which decisions become easier to follow at the affected branch and main
-path. A visually flatter function that requires more state tracking is not an
-improvement.
+path. The gain is less state for the reader to hold, which visual flatness alone
+does not deliver.

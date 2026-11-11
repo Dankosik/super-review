@@ -5,6 +5,7 @@
 **Representation.** Read changed data declarations and their actual construction,
 transformation, and use. Which existing concepts and relationships must a reader
 reconstruct from positions, flags, primitive values, or repeated agreements?
+Primitive Obsession and Data Clumps are the usual shapes of this burden.
 Compare the current form with the smallest representation making that knowledge
 visible, including its conversions and vocabulary.
 
@@ -17,8 +18,9 @@ become an interface hierarchy, and externally supplied values may not be closed.
 
 Related values may belong together; genuinely exclusive modes may deserve one
 explicit representation. Preserve independent flags and dynamic data. Maps or
-parallel arrays can be deliberate. Do not impose a state machine or redesign the
-product's invariants to prevent hypothetical mistakes.
+parallel arrays can be deliberate. A state machine or a stronger type expresses
+invariants the code already maintains; the product's invariants themselves stay
+as they are.
 
 Trace consumers before a type change. Preserve struct tags, marshaling methods,
 external formats, nil/empty distinctions, comparability, identity, ownership, and

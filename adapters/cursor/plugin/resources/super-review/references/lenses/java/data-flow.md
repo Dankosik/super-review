@@ -6,7 +6,7 @@
 who can mutate or retain it? Trace the changed value through relevant uses.
 Prefer local variables and direct transformations over hidden fields or captured
 mutable holders when that removes state tracking. Keep a clear local accumulator;
-mutation alone does not justify an immutable redesign.
+an immutable redesign answers an ownership burden beyond mutation itself.
 
 Choose a loop, stream pipeline, or named intermediate by the transformation it
 exposes. Side-effecting lambdas, mutable captures, and nested collectors may hide

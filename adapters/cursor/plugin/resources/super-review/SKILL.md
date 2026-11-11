@@ -31,19 +31,11 @@ Accept file and lens scope in ordinary language.
 
 Apply [the contract](references/review-contract.md) and
 [workflow](references/workflow.md) for a review. They own source pinning, team
-policy, language/aspect selection, neutral packets and completion. Keep all eight
-base questions unless the user narrows scope; profiles deepen their owners.
+policy, [language](references/languages.md) and aspect selection, neutral packets
+and completion. Keep all eight base questions unless the user narrows scope;
+profiles deepen their owners. Each fresh specialist gets one lens.
 
-Give each fresh specialist one lens, the [matching language](references/languages.md) and selected profiles,
-applicable rules and a concrete pinned scope. Reuse complete matching supplied
-resources; a path or summary is not the resource. Do not send peer verdicts or
-simulate independent coverage when delegation is unavailable.
-
-The orchestrator uses [verification](references/verification.md) when deciding
-candidates and [the report structure](assets/report-template.md) when delivering.
-Keep every accepted recommendation and merged contribution, separate unresolved
-observations from implementation advice, and report actual coverage and gaps.
-Finish the declared review rather than stopping after one batch or reopening it
-because no findings were accepted. Return the full report in the user's language,
-in the harness or a permitted artifact outside the reviewed tree. Include the
-contract's instruction identity separately from the reviewed source identity.
+The orchestrator decides candidates and what the code becomes with
+[verification](references/verification.md), and delivers the full report with
+[the report structure](assets/report-template.md), in the harness or a permitted
+artifact outside the reviewed tree.

@@ -42,8 +42,8 @@ read both directions for a key set the assigned code declares or edits.
 
 A type derived from an existing schema or value can remove duplicate
 declarations when the relationship is intentional and that facility already
-exists. Do not introduce a schema dependency or derive every transport/domain/UI
-type from one large object. `Pick`, `Omit`, indexed access, and `ReturnType` can
+exists. Transport, domain and UI types keep their own shapes where they change for
+their own reasons. `Pick`, `Omit`, indexed access, and `ReturnType` can
 couple consumers to implementation details; an explicit public shape may be
 clearer and more stable.
 
@@ -58,5 +58,5 @@ keeping value inference.
 
 For repeated types and handlers, show which exact knowledge is shared and which
 adaptation stays local. A configurable helper with flags for unrelated cases can
-be worse than small repetition. Do not deduplicate solely because text matches,
-or replace clear project helpers with a newly invented utility framework.
+be worse than small repetition. Deduplicate shared knowledge rather than matching
+text, and build on the clear helpers the project already has.

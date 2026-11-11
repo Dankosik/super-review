@@ -26,14 +26,14 @@ opening it.
 responsibilities that change for different existing reasons? A computation and
 its environment may deserve a boundary when their intermediate value is meaningful
 and the call remains comprehensible. Keep clear orchestration, including its
-error handling. Do not manufacture a service object, builder or trait solely
-to hold what can remain an ordinary function.
+error handling. What can remain an ordinary function stays one; a new service
+object, builder or trait is a question for abstractions.
 
 Signs of two stories in one function: a boolean or mode parameter that selects
 between bodies sharing little; steps at different levels, such as orchestration
-interleaved with byte or index arithmetic; a group of parameters that travels
-together through several calls and would read as one named value; a long
-closure defined mid-function whose captures hide its inputs. A method that
+interleaved with byte or index arithmetic; a Data Clump, a group of parameters
+that travels together through several calls and would read as one named value;
+a long closure defined mid-function whose captures hide its inputs. A method that
 takes `self` without reading it reads better as an associated or free function,
 unless a trait fixes its signature. A `new` that opens a connection or spawns
 work puts those effects behind the plainest name; std names such constructors

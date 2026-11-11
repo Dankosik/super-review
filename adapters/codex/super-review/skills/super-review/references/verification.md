@@ -2,12 +2,12 @@
 
 The orchestrator owns final acceptance; specialists supply evidence-backed
 observations. A candidate is a claim to test, not a draft to forward. Answer for
-each accepted recommendation as if you wrote it: you understand why it holds and
-would make that edit yourself. Agreement with an agent is not a reason, and a
-decision row without its own reason is not a decision. Apply the [contract's judgment bar](review-contract.md#judgment-and-acceptance)
+each accepted recommendation as if you wrote it: you understand from source why it
+holds and would make that edit yourself, and every decision row carries its own
+reason. Agreement between agents, self-reported confidence, routing signals and
+pattern names are leads to check, never evidence. Apply the [contract's judgment bar](review-contract.md#judgment-and-acceptance)
 to every candidate, including your own, across base lenses, conditional lenses,
-and profiles. A routing signal or agreement between agents is not evidence.
-A profile cannot revive a disabled or conflicting owner rule.
+and profiles. A profile cannot revive a disabled or conflicting owner rule.
 
 Use the task header to resolve snapshot, scope, policy and instruction identity
 under the contract before judging a block. Resolve conflicting material rather
@@ -57,14 +57,13 @@ unresolved only for a fact the source cannot supply, such as an external consume
 product intent or a team preference no rule records, and name that fact, or for a
 changed decision under the contract. Accepting with a stated risk is not a
 decision, and the observation's main point is never an optional part of its
-remedy. An unsupported observation is
-rejected or left unresolved pending identified source, never accepted because it
-sounds plausible. Self-reported confidence,
-pattern names, and peer agreement do not replace evidence.
+remedy. An unsupported observation is rejected or left unresolved pending
+identified source.
 
 Apply the contract's quality and compatibility criteria to caller and
 implementation together. Make the decision at the candidate's actual scope:
-several local improvements do not become a speculative redesign when collected.
+collecting local improvements does not by itself justify a redesign; a cause they
+jointly show is fixed under [Aim for the best version](#aim-for-the-best-version).
 A rejection for insufficient benefit needs a source-specific tradeoff, not just
 the presence of a new name, type, helper, or changed signature. Accept a sufficient
 improvement, revise the remedy, or retain the exact missing fact.
@@ -94,8 +93,9 @@ The target's own history is evidence too. When `git log` of the target files
 shows that a name or shape was introduced recently, changing it again needs a
 burden that name or shape causes, not a preference; leave specialists unaware
 of that history.
-Narrow incompatible/uncertain advice or keep it unresolved; no tests, builds,
-newer APIs, or claims of tested equivalence are authorized by verification.
+
+Narrow advice that needs a newer API or an uncertain compatibility, or keep it
+unresolved; verification reads source and claims no tested equivalence.
 
 A clarity change may change what callers, operators or logs observe: error text,
 a public variant, a runtime check a type now makes redundant. Accept it when that
@@ -111,11 +111,32 @@ travels into the recommendation, or the remedy stays unresolved.
 | merged | Destination R-ID and retained candidate ID, locations and independent rationale. |
 | unresolved | Supported observation or exact unverified claim, the missing fact, no implementation instruction. |
 
+## Aim for the best version
+
+Each specialist answered one question; you see the code with all of them, so you
+decide what it becomes. Aim for the version a strong engineer in this language
+would write today, with behavior and the project's conventions held fixed: clean,
+simple, a pleasure to read, its structure mirroring the problem it solves. Writing
+it costs nothing here, so the size of an edit is never a reason to settle for less.
+The only bar is that the result is better to read and to change than what is there
+now. Taste is welcome when you can name what the reader gains.
+
+Candidates are material, not the agenda. Rewrite a workable remedy when you see a
+better one. Where several touch the same code, design it once. When they share a
+cause, fix the cause. Then picture the code with every accepted recommendation
+applied and ask whether you would be proud to have written it. If not, finish the
+job: what is still missing becomes your own candidate under the same bar. A
+remedy you rewrite or add passes the same preservation, lint and existing-owner
+checks as any other.
+
+## Check the set
+
 Check recommendations as a set. Extraction and inlining, abstraction and locality,
-or renaming and API stability can conflict. Choose a coherent supported change or
-label real alternatives with tradeoffs. Merge by underlying change and affected
-scope, not merely the rule or similar wording. Preserve all participating locations
-and useful rationale; do not give a coding agent contradictory mandatory edits.
+or renaming and API stability can conflict. Choose a coherent supported change;
+present alternatives with tradeoffs only when the choice needs a fact the source
+cannot supply. Merge by underlying change and affected scope, not merely the rule
+or similar wording. Preserve all participating locations and useful rationale, so
+a coding agent receives one consistent set of edits.
 
 Compare the proposed resulting interfaces, owners and data flow at shared sites.
 Two individually valid remedies can depend on incompatible intermediate choices:
@@ -125,8 +146,3 @@ each passed against the original source. Edits sharing a file are not inherently
 in conflict. Independent improvements remain independent, and a renamed symbol
 can simply be carried through a compatible extraction. Reassess only the advice
 whose premise a selected recommendation changes.
-
-Map every accepted candidate to the final report, including merges. Keep rejected
-and unresolved candidates in a compact decision appendix; coverage status remains
-separate from candidate disposition. Follow the workflow's focused-gap handling,
-not a second full review. A useful outcome may contain no recommendations.

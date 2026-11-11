@@ -43,9 +43,10 @@ code declares or edits.
 
 Treat DTO mapping, construction, and boundary translation in context. Similar
 field assignments between distinct external contracts are not necessarily one
-abstraction. Do not introduce reflection, Lombok, a mapping library, or a builder
-solely to reduce line count. Do not remove an established generator/framework
-convention without a demonstrated burden in handwritten code. Generated output
+abstraction. Reflection, Lombok, a mapping library, or a builder earns its place
+by sharing knowledge, which a lower line count alone does not show. Keep an
+established generator/framework convention unless handwritten code shows a
+demonstrated burden. Generated output
 itself remains excluded.
 
 When proposing reuse, name the exact supported helper/API and preserve

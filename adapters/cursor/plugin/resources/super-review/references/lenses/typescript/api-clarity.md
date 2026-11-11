@@ -13,7 +13,7 @@ for obvious locals and useful generic results. Optional callback parameters expr
 that an argument may be omitted by the caller of that callback, not merely that a
 callback implementation may ignore it. Preserve accepted calls and return correlation
 when replacing overloads with unions. Handwritten declarations and module augmentations
-are public contracts, not implementation-free formatting opportunities.
+are public contracts; judge a change to them as an API change.
 
 Consumers include functions passed as values and types extracted from signatures,
 not only direct calls. `ReturnType`/`Parameters` use the last overload signature,

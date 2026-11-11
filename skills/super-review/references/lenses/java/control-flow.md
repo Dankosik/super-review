@@ -9,8 +9,9 @@ coherent alternatives together when early returns or extraction scatter them.
 Nesting or method length alone is not a finding.
 
 Use a supported switch expression or pattern only when it directly expresses the
-existing decision. A small switch does not need a polymorphic hierarchy; a chain
-of ternaries or `Optional` callbacks is not clearer just because it is shorter.
+existing decision. A small switch can stay a switch without a polymorphic
+hierarchy; a chain of ternaries or `Optional` callbacks earns its place by
+leaving fewer conditions to hold, which shortness alone does not deliver.
 Keep a direct loop when it makes state changes, order, early exit, or checked
 exceptions easier to understand than stream operations.
 

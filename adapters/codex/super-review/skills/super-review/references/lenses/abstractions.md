@@ -2,10 +2,11 @@
 
 ## go.abstractions.earn-the-boundary
 
-**Information hiding.** Inspect a boundary and its actual consumers. What policy,
-variation, representation, or dependency knowledge does it remove from callers?
-Compare that benefit with the concepts and navigation it adds. A wrapper that
-passes the same knowledge through another layer may add no useful boundary.
+**Information hiding.** Inspect a boundary and its actual consumers and apply the
+deletion test. What policy, variation, representation, or dependency knowledge
+does it remove from callers? Compare that benefit with the concepts and
+navigation it adds. A shallow wrapper that passes the same knowledge through
+another layer is a Middle Man; a deep one earns its place.
 
 At the consumer, consider an existing standard capability such as `io.Reader`,
 a narrow consumer interface, or a function parameter for one operation. Do not
@@ -27,5 +28,6 @@ genuinely dynamic reflection with an artificial generic framework. Judge actual
 use, not a quota of implementations or instantiations.
 
 Show what consumers no longer need to understand and preserve the observable
-contract. Neither deleting all abstractions nor introducing a new architecture
-is this lens's goal. Keep a boundary whose benefit outweighs its indirection.
+contract. The goal is boundaries that each pass the deletion test: remove the
+ones that only add a hop, deepen the ones that leak, and keep the ones whose
+benefit outweighs their indirection.

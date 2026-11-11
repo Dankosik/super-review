@@ -62,10 +62,11 @@ unresolved material conflict is a gap; an unavailable digest by itself is not.
 
 ## Judgment and acceptance
 
-Use the existing language version and technical choices. An explicitly adopted
-team convention can justify consistency advice on its own. Otherwise identify
-a concrete cost to the reader or maintainer. Do not invent future requirements,
-require a minimum finding count, or label style advice as a merge blocker.
+Work within the existing language version and technical choices. An explicitly
+adopted team convention justifies consistency advice on its own; otherwise name
+the concrete cost to the reader or maintainer. Ground each recommendation in the
+code and the needs it already has, report as many as the code warrants, and
+present them as advice rather than merge gates.
 
 Assuming the implemented solution behaves as intended, what would make it easier
 to understand or change? Bug prevention alone is outside scope. Connect each
@@ -73,13 +74,13 @@ observation to the assigned source. Compare the resulting code with the current
 code: what becomes explicit, what knowledge or coordinated editing disappears,
 and what concepts or obligations remain? Favor a demonstrated improvement; the
 current design has no presumption of superiority. Small clarity gains are valid.
-Fewer lines, a pattern name, or a metric threshold alone establishes no benefit.
+The benefit is what the reader gains; fewer lines, a pattern name or a metric
+threshold are not that gain by themselves.
 
-Judge lasting reading and maintenance cost separately from the effort to write
-the patch. A rename, helper, type, or cross-file edit is not a cost objection by
-itself; explain the navigation, duplicated knowledge, migration obligation, or
-other burden it would actually add. Do not assume a manual implementation budget
-or deadline the user has not supplied. Prefer a sufficient, coherent improvement
+Judge lasting reading and maintenance cost, not the effort of writing the patch:
+a coding agent applies it, so a rename, helper, type or cross-file edit costs
+only what it leaves for readers afterwards, such as navigation, duplicated
+knowledge or a migration obligation. Prefer a sufficient, coherent improvement
 over a smaller edit that leaves the demonstrated problem in place.
 
 Assess compatibility from the project's supported boundaries, known consumers,
@@ -94,29 +95,49 @@ API decision or a compatible remedy; do not turn hypothetical migration work int
 evidence that the existing expression is better. Preserve established external
 behavior and contracts unless their change is part of the authorized review scope.
 
-A candidate is an evidence-backed observation, not an implementation instruction.
-Investigate actual declarations and uses, including the strongest source evidence
-against the observation. Return a demonstrated in-scope burden even when its
-remedy needs revision;
-separate uncertainty about the observation from uncertainty about the remedy.
-Unsupported suspicions are not candidates. The orchestrator accepts only changes
-supported by source evidence, net benefit or effective convention, and the
-relevant preservation constraints. Unresolved remedies stay out of implementation
-advice; specialists need not settle cross-lens tradeoffs before reporting.
+A candidate is a demonstrated burden with a proposed remedy, not an
+implementation instruction; a suspicion is not one. Investigate actual
+declarations and uses, including the strongest source evidence against the
+observation. Return a demonstrated in-scope burden even when its remedy needs
+revision, keeping uncertainty about the observation apart from uncertainty about
+the remedy. The orchestrator
+accepts only changes supported by source evidence, net benefit or effective
+convention, and the relevant preservation constraints. A remedy left unresolved
+stays out of implementation advice; its observation goes to the decision
+appendix with the fact that would settle it. Specialists report
+cross-lens tradeoffs as they see them; the orchestrator settles them.
 
-One useful candidate does not complete the assigned question. Continue through
-the remaining declarations, transformations and selected profiles in that scope;
-return independent supported burdens as well as the first one. A proposed fix
-may remove several observations, so do not count them twice. Finish the existing
-pass, without a finding quota, another lens or a new whole-source review. Clear
-remaining code can legitimately add no candidates.
+The assigned question is complete when every declaration, transformation and
+selected profile in its scope has been read for it. Return each independent
+supported burden, not only the first; a fix that removes several observations
+counts once. Clear remaining code can legitimately add no candidates.
+
+## Vocabulary
+
+Name burdens and remedies with these words, so that candidates from different
+lenses that share a cause are visibly the same thing. Each word names a burden
+you still demonstrate in source.
+
+- **Burden**: the reading or change cost a reader actually pays in this code.
+- **Shared knowledge**: one decision encoded in several places that must change
+  together (the knowledge sense of DRY, not textual similarity).
+- **Deep / shallow**: a boundary is deep when much knowledge sits behind a small
+  interface, shallow when callers learn nearly as much as it hides.
+- **Deletion test**: imagine removing a boundary; if its knowledge spreads to
+  callers it earns its place, if only a hop disappears it does not.
+- **Locality**: one decision has one owner, so a change to it is one edit.
+- Fowler's smells as names for recurring burdens: **Mysterious Name**, **Data
+  Clumps**, **Primitive Obsession**, **Feature Envy**, **Shotgun Surgery**,
+  **Divergent Change**, **Speculative Generality**, **Middle Man**.
 
 ## Coverage
 
 Each task ends as `completed`, `not applicable` with a structural reason, or
 `unfinished` with missing evidence or capability. A missing response is `unfinished`,
 never a clean result. Missing evidence for the assigned question makes its coverage unfinished;
-an otherwise completed observation may still have an unresolved remedy. Record
-both separately; never hide missing source coverage behind a candidate's status.
+an otherwise completed observation may still have an unresolved remedy.
+Coverage and candidate disposition are recorded separately everywhere, in task
+results, the ledger and the report: an unresolved remedy is not a missing
+worker, and a candidate's status never stands in for missing source coverage.
 A sequential single-context review may be offered when delegation is unavailable;
 label it limited and never claim independent coverage.
