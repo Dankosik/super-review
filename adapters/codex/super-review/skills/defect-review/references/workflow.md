@@ -70,8 +70,12 @@ is still unread goes in the report.
 
 ## Challenge
 
-First merge candidates with the same cause at the same place, from any
-readers, keeping each trace. Every candidate with a trace goes to a fresh
+First merge candidates with the same cause, from any readers, keeping each
+trace. One cause often shows up at several places or through several lenses,
+such as one wrong error conversion that both misreports a failure and
+retires a shared connection: report it as one candidate with each effect's
+trace. A candidate you find yourself while reading, with a trace, joins the
+others here and goes to the challenger of the lens it belongs to. Every candidate with a trace goes to a fresh
 challenger, one per reader task; a merged candidate goes to only one of them.
 Give it the same materials, lens included, plus
 [the challenge](challenge.md), and for

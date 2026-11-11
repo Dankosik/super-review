@@ -19,9 +19,9 @@ value comes from.
 
 - The test asserts only that the code returned, did not panic, or returned
   `Ok` or `Err` without looking at the value.
-- The expected value is computed by the same code or by a copy of the
-  production logic.
-- The assertion is on the fake: what the test double was told, not what the
+- A tautological assertion: the expected value is computed by the same code
+  or by a copy of the production logic.
+- The assertion is on the mock: what the test double was told, not what the
   code under test did with it.
 - The expectation is broader than the promise: `contains` where the promise
   fixes the whole, any error where it names the variant.

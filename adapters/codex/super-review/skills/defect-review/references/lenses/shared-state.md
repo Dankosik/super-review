@@ -31,13 +31,16 @@ retirement does not answer this; what the other callers lose does.
   single command retires the connection everyone uses, a single timeout
   empties the pool.
 - The opposite: a broken resource kept in circulation.
-- A decision made on a value read before a wait and applied after it.
-- An update in several steps with a wait or a fallible call between them.
+- Check-then-act across a suspension point (TOCTOU): a decision made on a
+  value read before a wait and applied after it.
+- A lost update: an update in several steps with a wait or a fallible call
+  between them.
 - A late completion from a retired generation publishing its result.
 - A limit counted on entry and not returned on every exit.
 - A background action with its own shorter limit that fails every caller's
   work in flight.
-- A notification lost because the waiter subscribed after it was sent.
+- A lost wakeup: a notification missed because the waiter subscribed after
+  it was sent.
 
 Write the trace as a numbered order of events for two actors, with what
 permits that order.

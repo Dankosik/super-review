@@ -2,8 +2,8 @@
 
 **Does each test's result depend only on the code?**
 
-A test that can fail without a bug gets rerun until green and stops catching
-the bug it was written for. A test that can pass by luck was never checking.
+A flaky test, one that can fail without a bug, gets rerun until green and
+stops catching the bug it was written for. A test that can pass by luck was never checking.
 
 ## Promises
 

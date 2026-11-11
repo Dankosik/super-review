@@ -65,7 +65,9 @@ You own the decision on every candidate.
   uses.
 
 Merge candidates whose mutants break the same promise at the same place and
-keep the smaller mutant. Each candidate ends as proven, unproven with the
+keep the smaller mutant. Where several proven findings touch one operation,
+check whether one witness kills all their mutants; if it does, give that
+witness once and name the findings it covers. Each candidate ends as proven, unproven with the
 missing piece, or rejected with the counter-evidence.
 
 ## Report

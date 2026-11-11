@@ -20,8 +20,9 @@ and match every path in the implementation to one of them. Follow each
 boundary through the code. Check what the operation leaves behind as well as
 what it returns.
 
-- A boundary handled as its neighbor: an inclusive limit compared
-  exclusively, an empty input treated as absent, "at most N" allowing N+1.
+- A boundary handled as its neighbor (off-by-one, fence-post): an inclusive
+  limit compared exclusively, an empty input treated as absent, "at most N"
+  allowing N+1.
 - An outcome no path produces, or a path whose outcome the description
   excludes.
 - A miss reported as an empty value or the reverse; a default returned where
