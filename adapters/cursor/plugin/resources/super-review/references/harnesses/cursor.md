@@ -46,7 +46,7 @@ not as a confirmed match or a known mismatch.
 
 ## Independent tasks and collection
 
-Use a fresh native `super-review-specialist` context per assigned lens, with
+Use a fresh native `super-review-specialist` context per assigned lens or pair, with
 `readonly: true`. Do not substitute Cursor's built-in Explore/Bash/Browser agents
 for reviewers: their model profiles and roles are not this adapter's contract.
 Pass the neutral packet, pinned source identity, exact source/resource paths,

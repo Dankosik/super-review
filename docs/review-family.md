@@ -149,6 +149,8 @@ The four share only the plugin they ship in.
 | Challenger in Performance Review | An independent challenger on four lines: not hot, no cost, changed behavior, dominated | None, as in Test Review | A performance claim fails in several independent ways, and each takes reading, not one search |
 | Who measures a performance finding | Whoever applies it, before and after, in the way the saved resource demands, keeping it only if the gain shows | The review, by benchmarks; or one microbenchmark for every kind of finding | Reading proves work removed, not time saved; a single-threaded benchmark shows nothing about contention or round trips |
 | Small changes in Performance Review | Lenses paired, three readers: complexity with allocation, async with contention, I/O with repeated work | Six readers for a small change | As in Defect Review; whether pairing costs attention is unverified |
+| Small changes in Super Review | One lens per specialist by default; related pairs (six at most) only when the user asks for a compact review of a small change | Pairing by default, as in Defect and Performance Review | Super Review rests on one reader per question; pairing becomes the default only after a comparison shows no lens loses annotated improvements |
+| Large scopes in Super Review | Split a lens by area when its files are more than one specialist can read in full; announce the task count, and ask before a whole-project review starts more than forty | Coherent areas left to judgment, no bound on task count | A specialist that skims loses lines; a whole project could otherwise start an unbounded number of tasks |
 
 ## What a model run is for
 

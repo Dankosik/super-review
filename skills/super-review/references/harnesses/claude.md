@@ -9,7 +9,7 @@ foreground context. Use [native source access](source-access.md). Read the core 
 `${CLAUDE_PLUGIN_ROOT}/resources/super-review/SKILL.md` and resolve its references
 there; pass resolved absolute resource and source paths to specialists.
 
-Delegate each selected lens to `super-review:specialist` through native Agent in
+Delegate each selected lens, or compact pair, to `super-review:specialist` through native Agent in
 fresh contexts. Supply the workflow's neutral packet, not the parent conversation
 or peer reports. Read, Glob, Grep and Bash provide source access; Bash is limited
 by the review instructions to acquisition and inspection, plus launching

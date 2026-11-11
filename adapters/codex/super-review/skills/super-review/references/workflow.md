@@ -60,10 +60,34 @@ Announce scope, selected lenses/profiles and reasons, then periodic progress as 
 
 Resolve the table's lens names to their language-specific resources using
 [language routing](languages.md); the links above are Go implementations, not
-mandatory resources for TypeScript, Rust or Java. Partition mixed-language or large changes by
-language and coherent areas. Use one lens per child task. Attach
-profiles only to their owner's area; they do not automatically add workers,
-except that a profile whose owner is a conditional lens selects that owner.
+mandatory resources for TypeScript, Rust or Java. Partition mixed-language
+changes by language. Split a lens's work by area when its files are more than
+one specialist can read in full: a specialist that skims loses the lines it
+skipped. Use one lens per child task. Attach profiles only to their owner's
+area; they do not automatically add workers, except that a profile whose owner
+is a conditional lens selects that owner.
+
+When the user asks for a compact review, and only then, give one specialist a
+related pair of lenses for a small change: about three hundred changed
+production lines or fewer in one package or module, or a package or module of
+about a thousand lines reviewed whole. Larger areas keep one lens per task.
+
+| Task | Lenses |
+| --- | --- |
+| 1 | naming with api-clarity |
+| 2 | control-flow with function-cohesion |
+| 3 | abstractions with duplication |
+| 4 | data-flow with representation, when selected |
+| 5 | change-locality with placement, when selected |
+| 6 | rationale with conventions, whichever are selected |
+
+A lens whose partner is not selected runs alone. A paired task reports each
+lens's coverage separately, and the report marks the pair. Whether pairing
+costs attention is unverified, so this is not the default.
+
+Before dispatch, announce the number of tasks. When a review of a whole
+project would start more than forty, ask the user whether to narrow it or run
+it as planned.
 Use a concurrency limit of eight active child tasks by default throughout the
 review, including follow-ups. An explicit user concurrency limit overrides the
 default; actual adapter/harness capacity and rate limits remain hard bounds.
@@ -98,11 +122,11 @@ Use these three sections in each assignment; do not assume inherited context:
 | Section | Content |
 | --- | --- |
 | Review identity | PR or local target, selected comparison and both endpoint identities, source location, instruction identity from the contract, language, selected resource paths, applicable compiler/runtime and build constraints. |
-| Assignment | Task ID, one lens, selected profiles and source signals, exact files/symbols, review extent (changed source or explicitly requested whole source), user exclusions, effective rules/conflicts, known compatibility commitments, permitted context. |
+| Assignment | Task ID, one lens or a compact pair, selected profiles and source signals, exact files/symbols, review extent (changed source or explicitly requested whole source), user exclusions, effective rules/conflicts, known compatibility commitments, permitted context. |
 | Materials | Neutral diff/source anchors; complete resources or source blocks already supplied, identified by path and source revision or trusted instruction identity; locations of still-needed resources and omitted ranges. |
 
 Each child needs the [contract](review-contract.md), the matching language context
-and assigned lens from [language routing](languages.md), [candidate format](../assets/finding-template.md), and only selected
+and assigned lens or pair from [language routing](languages.md), [candidate format](../assets/finding-template.md), and only selected
 profiles. Complete matching resources already supplied in this task count as read;
 load only missing resources, preferably together. A reference, summary, or partial
 excerpt is not complete source. Reuse exact supplied source ranges; read missing

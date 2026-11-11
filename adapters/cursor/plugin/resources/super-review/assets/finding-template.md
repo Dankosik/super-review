@@ -10,12 +10,14 @@ when forwarding a candidate, or include its identity when the block travels alon
   identities (commit, index blobs or working-file hashes); source location.
 - Instructions: version and trusted package revision/resource digest when exposed,
   or `content identity unverified`, under the contract's instruction-identity rules.
-- Assignment: lens, selected profiles, exact scope and effective policy references.
+- Assignment: lens or compact pair, selected profiles, exact scope and effective
+  policy references.
 - Status: `completed`, `not applicable`, or `unfinished`; adapter enums keep their
   native spelling. For non-applicability give a structural reason.
 - Inspected evidence: verified paths/revisions, complete symbols and relevant uses.
 - Coverage: base/profile results, actual completed subcoverage, and missing required
-  evidence/capability. A profile-only task is not a full owner pass.
+  evidence/capability, for each lens of a pair separately. A profile-only task is
+  not a full owner pass.
 - New applicability signals: aspect, path/symbol, observed fact and missing question,
   or `none`. Signals are not findings or completed checks.
 
