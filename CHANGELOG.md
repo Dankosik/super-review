@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.24.0 — 2026-11-12
+
+Super Review says how it sizes a review: when to split an area, how many tasks it starts, and a compact mode for small changes.
+
+- **Splitting areas.** A lens's work is split by area when its files are more than one specialist can read in full, as in Defect Review. Before, large changes were split into "coherent areas" by judgment.
+- **Task count.** The orchestrator announces how many tasks it will start. A whole-project review that would start more than forty asks the user whether to narrow it or run it as planned.
+- **Compact review, on request.** When the user asks for a compact review of a small change (about three hundred changed production lines in one package or module, or a package of about a thousand lines reviewed whole), one specialist takes a related pair: naming with api-clarity, control-flow with function-cohesion, abstractions with duplication, data-flow with representation, change-locality with placement, rationale with conventions. A small change then takes five or six specialists instead of eight to twelve. Each lens of a pair reports its own coverage, and the report marks the pair. Whether pairing costs attention is unverified, so one lens per specialist stays the default until a comparison shows no lens loses annotated improvements.
+
+Not compared in model runs.
+
 ## 3.23.0 — 2026-11-12
 
 Child agents default to cheaper models; the user still picks the orchestrator's model and can pick the children's. Super Review 3.23.0, Defect Review 0.10.0, Test Review 0.9.0 and Performance Review 0.2.0 share these defaults.

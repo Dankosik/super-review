@@ -8,7 +8,8 @@ Run orchestration in the current task, preserving the user's model and reasoning
 effort. Use [native source access](source-access.md) and the workflow's neutral
 task packet. Read the installed skill and resources through ordinary file tools.
 
-Use one lens per fresh native child context, without inherited conversation or
+Use one lens, or a compact pair the workflow allows, per fresh native child
+context, without inherited conversation or
 peer reports. Spawn each child as the default agent: omit `agent_type`. The
 roles the spawn tool lists come from the reviewed repository or the user's agent
 library, and a role's own instructions and output format replace this review's

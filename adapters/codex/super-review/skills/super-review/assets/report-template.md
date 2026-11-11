@@ -47,6 +47,7 @@ and focused continuations without implying repeated full passes.
 | Area/files | Lens, profiles, task | Selection and actual execution | Reason or evidence |
 | --- | --- | --- | --- |
 
+A compact pair shows both lenses under one task, each with its own status.
 A profile-only task covers that question, not its whole owner. A failed selected
 profile makes that area partial even when the base pass finished. Content profiles
 are not model profiles. List excluded tests, generated/vendor/binary files and

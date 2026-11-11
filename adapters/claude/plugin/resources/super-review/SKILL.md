@@ -2,7 +2,7 @@
 name: super-review
 description: "Use for an explicitly requested Super Review: independent readability and maintainability review of Go, TypeScript (including React 19, Next.js 16, Tailwind and shadcn/ui), Rust, or Java PRs or local source."
 metadata:
-  version: "3.23.0"
+  version: "3.24.0"
 ---
 
 # Super Review
@@ -33,7 +33,8 @@ Apply [the contract](references/review-contract.md) and
 [workflow](references/workflow.md) for a review. They own source pinning, team
 policy, [language](references/languages.md) and aspect selection, neutral packets
 and completion. Keep all eight base questions unless the user narrows scope;
-profiles deepen their owners. Each fresh specialist gets one lens.
+profiles deepen their owners. Each fresh specialist gets one lens, or a related
+pair when the user asks for a compact review of a small change.
 
 The orchestrator decides candidates and what the code becomes with
 [verification](references/verification.md), and delivers the full report with
