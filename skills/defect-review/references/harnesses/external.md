@@ -22,6 +22,10 @@ non-interactive mode, model, directory and permission flags.
   provider/model`, with `OPENCODE_DISABLE_PROJECT_CONFIG=1` and
   `OPENCODE_CONFIG_CONTENT` defining `defect-reader` for this process only:
   `{"agent":{"defect-reader":{"mode":"primary","prompt":"<role>","permission":{"*":"deny","read":"allow","glob":"allow","grep":"allow","bash":"allow","external_directory":"allow"}}}}`.
+  Pass effort as a model variant, `provider/model#variant`: cached model
+  metadata may omit variants that exist, and an unknown one fails the first
+  launch, so do not probe metadata or run trial tasks. Never load the user's
+  own OpenCode configuration.
 - Codex: `codex exec` with a read-only sandbox, `-C <source root>` and `-m`.
 - Claude Code: `claude -p` with read and search tools only and `--model`.
 
@@ -55,6 +59,7 @@ provider.
 
 The final output is the result. A non-zero exit, empty output or another format
 is unread coverage; retry once for a transient failure. If the CLI is
-missing, unauthenticated or rejects the model, tell the user the cause and
-ask; do not fall back silently. Name the harness and model per task in the
+missing, unauthenticated, rejects the model or effort, or the request cannot
+be honored for any other reason, tell the user the cause and ask before
+dispatch; do not substitute a model and disclose it afterwards. Name the harness and model per task in the
 report. You still decide every candidate.

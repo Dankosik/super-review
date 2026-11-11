@@ -81,9 +81,19 @@ signatures, mutability, evaluation timing, exception causes and resource or
 framework/proxy ownership under the selected language context.
 Do not infer equivalence from a happy-path example or empty literal search.
 Before accepting, read whether the resulting code would pass the project's lint
-policy (such as `clippy.toml`, `[lints]` or crate-level `deny`), every use of a
-changed type or name including excluded tests, name collisions, and code left
-dead once optional regions are removed. Repair or reject a remedy that fails.
+policy (such as `clippy.toml`, `[lints]` or crate-level `deny`) and the other
+checks its CI or build files run, such as a duplication baseline, generated or
+template-region markers and documentation checks; read them, never run them.
+Also read every use of a changed type or name including excluded tests, name
+collisions, and code left dead once optional regions are removed. A remedy that
+introduces a type, helper or constant needs a search of the snapshot for an
+existing owner: reuse it or say why a new one is needed. Repair or reject a
+remedy that fails.
+
+The target's own history is evidence too. When `git log` of the target files
+shows that a name or shape was introduced recently, changing it again needs a
+burden that name or shape causes, not a preference; leave specialists unaware
+of that history.
 Narrow incompatible/uncertain advice or keep it unresolved; no tests, builds,
 newer APIs, or claims of tested equivalence are authorized by verification.
 

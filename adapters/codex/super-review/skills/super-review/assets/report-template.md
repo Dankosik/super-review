@@ -100,3 +100,11 @@ and no project checks or source edits were performed.
 Retain useful unresolved observations with their source anchors and the missing
 fact that would settle the remedy; do not silently drop them or label
 them required changes. This appendix is traceability, not a second task list.
+
+## For whoever implements this
+
+Close with three instructions for the person or agent that applies the report:
+implement only the accepted recommendations and leave unresolved items to their
+owners; keep each recommendation's observable effect as stated; when a
+recommendation has to be done differently or proves wrong, say so and why
+instead of changing course silently.
