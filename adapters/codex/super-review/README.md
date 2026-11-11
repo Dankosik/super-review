@@ -1,4 +1,6 @@
-<h1 align="center">Super Review</h1>
+<p align="center">
+  <img src=".github/banner.webp" alt="Super Review: an octopus with a magnifying glass reviewing code on a laptop" width="820">
+</p>
 
 <p align="center">
   <b>AI code review for readable, maintainable Go, TypeScript, Rust and Java code</b><br>
