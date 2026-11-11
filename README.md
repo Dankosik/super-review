@@ -201,8 +201,8 @@ flowchart LR
 
 | Host | Orchestrator | Specialists |
 | --- | --- | --- |
-| Codex | your model and effort | GPT-6 Luna/medium for bounded local questions; GPT-6 Sol/medium for cross-file, uncertain or preservation-sensitive work |
-| Claude Code | Opus, session effort | Opus, session effort |
+| Codex | your model and effort | GPT-6.1 Terra/high |
+| Claude Code | your session model and effort | Sonnet/medium |
 | Cursor | your chat model | `inherit` by default; request an override in the prompt |
 | OpenCode | your provider/model | your provider/model |
 
@@ -210,7 +210,8 @@ In Cursor, ask for a specialist model in the prompt, for example
 "Для subagent используй &lt;Cursor model ID&gt;". The adapter applies it
 through native per-call selection or says it cannot, without silently
 substituting; the chat model stays as is. See
-[model profiles](docs/model-profiles.md).
+[model profiles](docs/model-profiles.md). In Codex and Claude Code, a model or
+effort you name for specialists replaces the default for every child of that review.
 
 ## Team conventions
 

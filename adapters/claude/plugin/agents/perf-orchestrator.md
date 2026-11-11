@@ -1,7 +1,7 @@
 ---
 name: perf-orchestrator
 description: Coordinate a Performance Review the user started with the /super-review:perf command; it finds unneeded work on hot paths of Rust source by reading it. Do not start it yourself. When a user asks for one in a message, ask them to type the command.
-model: opus
+model: inherit
 tools: Agent, Read, Glob, Grep, Bash
 ---
 

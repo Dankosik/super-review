@@ -31,8 +31,9 @@ claude plugin update super-review@dankosik-skills
 
 Use `/super-review:review <PR URL or local scope>` in a new session. The command
 forks into the orchestrator, which uses native Agent and file/search/Bash tools.
-Specialists use the same source tools without Agent. The command, orchestrator,
-and specialists select the native Opus alias and inherit the session effort.
+Specialists use the same source tools without Agent. The orchestrator runs on the
+session's model and effort; specialists default to Sonnet at medium effort, and a
+model or effort the user names for them replaces that default.
 Check the effective version in `/status` and `/tasks` after an update.
 
 For removal:

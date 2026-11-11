@@ -71,12 +71,13 @@ const claudeEntry = frontmatter(await readFile(join(root, "adapters/claude/plugi
 if (claudeEntry.context !== "fork" || claudeEntry.background !== false || claudeEntry.agent !== "super-review:orchestrator" || claudeEntry["disable-model-invocation"] !== true) errors.push("Claude command routing differs from the explicit isolated review.");
 for (const role of ["orchestrator", "specialist"]) {
   const agent = frontmatter(await readFile(join(root, "adapters/claude/plugin/agents/" + role + ".md"), "utf8"));
-  if (agent.model !== "opus" || agent.effort) errors.push("Claude " + role + " must select Opus and inherit session effort.");
+  const [model, effort] = role === "orchestrator" ? ["inherit", undefined] : ["sonnet", "medium"];
+  if (agent.model !== model || agent.effort !== effort) errors.push("Claude " + role + " must run on " + model + (effort ? "/" + effort : " with session effort") + ".");
   const allowed = agent.tools.split(",").map((s: string) => s.trim());
   const expectedTools = role === "orchestrator" ? ["Agent", "Read", "Glob", "Grep", "Bash"] : ["Read", "Glob", "Grep", "Bash"];
   if (JSON.stringify(allowed.sort()) !== JSON.stringify(expectedTools.sort())) errors.push("Unexpected Claude native tools: " + role);
 }
-if (claudeEntry.model !== "opus" || claudeEntry.effort) errors.push("Claude command must select Opus and inherit session effort.");
+if ("model" in claudeEntry || "effort" in claudeEntry) errors.push("Claude command must leave the orchestrator on the session model and effort.");
 const openCodeModels = JSON.parse(await readFile(join(root, "adapters/opencode/opencode.json"), "utf8"));
 for (const role of Object.values(openCodeRoles).flat()) {
   if (openCodeModels.agent?.[role]?.model !== "{env:SUPER_REVIEW_SPECIALIST_MODEL}") errors.push("OpenCode must require an explicit model for " + role + ".");
@@ -129,13 +130,14 @@ for (const [name, command, title, reader, challenger] of [
   }
   const role = name.split("-")[0];
   const route = frontmatter(await readFile(join(root, "adapters/claude/plugin/skills/" + command + "/SKILL.md"), "utf8"));
-  if (route.context !== "fork" || route.background !== false || route.agent !== "super-review:" + role + "-orchestrator" || route["disable-model-invocation"] !== true || route.model !== "opus" || route.effort) errors.push("Claude " + command + " command routing differs from the explicit isolated review.");
+  if (route.context !== "fork" || route.background !== false || route.agent !== "super-review:" + role + "-orchestrator" || route["disable-model-invocation"] !== true || "model" in route || "effort" in route) errors.push("Claude " + command + " command routing differs from the explicit isolated review.");
   const tools = ["Read", "Glob", "Grep", "Bash"];
   const roles: Array<[string, readonly string[]]> = [["orchestrator", ["Agent", ...tools]], [reader, tools]];
   if (challenger) roles.push(["challenger", tools]);
   for (const [suffix, expectedTools] of roles) {
     const agent = frontmatter(await readFile(join(root, "adapters/claude/plugin/agents/" + role + "-" + suffix + ".md"), "utf8"));
-    if (agent.model !== "opus" || agent.effort) errors.push("Claude " + role + "-" + suffix + " must select Opus and inherit session effort.");
+    const [model, effort] = suffix === "orchestrator" ? ["inherit", undefined] : ["sonnet", "medium"];
+    if (agent.model !== model || agent.effort !== effort) errors.push("Claude " + role + "-" + suffix + " must run on " + model + (effort ? "/" + effort : " with session effort") + ".");
     const allowed = agent.tools.split(",").map((s: string) => s.trim()).sort();
     if (JSON.stringify(allowed) !== JSON.stringify([...expectedTools].sort())) errors.push("Unexpected Claude native tools: " + role + "-" + suffix);
   }

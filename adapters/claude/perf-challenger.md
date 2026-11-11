@@ -1,7 +1,8 @@
 ---
 name: perf-challenger
 description: Independent challenge of one Performance Review reader's claims - try to show each claimed saving is not one.
-model: opus
+model: sonnet
+effort: medium
 tools: Read, Glob, Grep, Bash
 ---
 

@@ -16,18 +16,29 @@ test("routing inputs and private judgments have matching distinct IDs", () => {
 
 test("active adapters expose the selected model family and native effort controls", () => {
   const codex = read("skills/super-review/references/harnesses/codex.md");
-  expect(codex).toContain("`gpt-6-luna`");
-  expect(codex).toContain("`gpt-6-sol`");
+  expect(codex).toContain("`gpt-6.1-terra` with `high` reasoning effort");
+  expect(codex).not.toContain("gpt-6-luna");
   expect(codex).toContain("An explicit user specialist model/effort choice overrides");
   expect(codex).not.toContain("gpt-5.6-terra");
   // A repository role such as `specialist-agent` replaces the review packet's
   // output contract; children must run as the default agent.
   expect(codex).toContain("omit `agent_type`");
   expect(codex).toContain("rerun it as the default agent");
-  for (const path of ["adapters/claude/skill.md", "adapters/claude/orchestrator.md", "adapters/claude/specialist.md"]) {
+  // The user picks the orchestrator's model; children default to Sonnet/medium
+  // and never to an Opus- or Fable-class model.
+  const expected: Record<string, [string | undefined, string | undefined]> = {
+    "adapters/claude/skill.md": [undefined, undefined],
+    "adapters/claude/orchestrator.md": ["inherit", undefined],
+    "adapters/claude/specialist.md": ["sonnet", "medium"],
+  };
+  for (const [path, [model, effort]] of Object.entries(expected)) {
     const match = /^---\n([\s\S]*?)\n---/.exec(read(path));
     const role = Bun.YAML.parse(match![1]) as Record<string, unknown>;
-    expect(role.model).toBe("opus");
-    expect(role.effort).toBeUndefined();
+    expect(role.model).toBe(model);
+    expect(role.effort).toBe(effort);
+  }
+  for (const skill of ["defect-review", "test-review", "perf-review"]) {
+    expect(read(`skills/${skill}/references/harnesses/codex.md`)).toContain("`gpt-6.1-terra` with `high` reasoning effort");
+    expect(read(`skills/${skill}/references/harnesses/claude.md`)).toContain("default to `sonnet` at `medium` effort");
   }
 });

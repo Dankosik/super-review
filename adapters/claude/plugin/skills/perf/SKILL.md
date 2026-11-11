@@ -5,7 +5,6 @@ argument-hint: "<PR URL or local scope> [files, lenses, hot paths, profile]"
 disable-model-invocation: true
 context: fork
 agent: super-review:perf-orchestrator
-model: opus
 background: false
 ---
 

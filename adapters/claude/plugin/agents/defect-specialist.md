@@ -1,7 +1,8 @@
 ---
 name: defect-specialist
 description: One assigned Defect Review lens, or a related pair, on Rust source - find bugs by reading and trace each through quoted lines.
-model: opus
+model: sonnet
+effort: medium
 tools: Read, Glob, Grep, Bash
 ---
 

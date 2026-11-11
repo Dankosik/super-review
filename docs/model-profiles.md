@@ -6,51 +6,41 @@ and effort when the host exposes them; a requested profile is not proof of use.
 
 | Harness | Orchestrator | Specialists |
 | --- | --- | --- |
-| Codex | Current task's model and effort | `gpt-6-luna` / `medium` for a bounded local question with complete context; `gpt-6-sol` / `medium` otherwise |
-| Claude Code | Native `opus`; session effort | Native `opus`; session effort |
+| Codex | Current task's model and effort | `gpt-6.1-terra` / `high` |
+| Claude Code | Session model and effort | Native `sonnet` / `medium` |
 | OpenCode | Current primary model and effort | One explicitly selected `provider/model-id`; provider's configured/default effort |
 | Cursor IDE | Current Agent chat's selected model/settings | `inherit`; an explicit user subagent choice takes precedence where native per-call selection supports it |
 
-## Codex: select for the assigned question
+Super Review, Defect Review, Test Review and Performance Review share these
+defaults. None of them picks an Opus- or Fable-class model for a child; the
+orchestrator runs on whatever the user chose for the session.
 
-Choose after pinning the source and building the area/lens assignment. Luna is
-appropriate only when the relevant declarations and callers are available and
-the answer stays within a local expression or responsibility. Examples include a
-local name whose vocabulary and uses are known, or duplication whose two owners
-and change relationship are already established. Sol handles cross-file API or
-compatibility questions, ownership and lifecycle, observable effects, conflicting
-policy, missing context, or an area whose complexity is uncertain. The same lens
-can use either model on different source. Do not reduce coverage, the eight base
-questions, source reading, or verification to justify Luna.
+## Codex: Terra at high effort
 
-Pass the selected model and `medium` effort to each native child. An explicit user
-specialist model or effort choice takes precedence. Reassess a focused
-continuation if new evidence changes its scope, and record both task identities
-and their actual models. A host that cannot run the selected model must disclose
-the gap rather than silently substitute. There is no global Codex subagent
-configuration to change.
+Every child, in every review, gets `gpt-6.1-terra` with `high` reasoning effort as
+native spawn arguments. Task size or lens does not change the choice. An explicit
+user model or effort for children takes precedence and applies to every child and
+continuation in that review. A host that cannot run the selected model must
+disclose the gap rather than silently substitute. There is no global Codex
+subagent configuration to change.
 
-These GPT-6 IDs are the current release's pinned choices, not moving aliases.
-Future releases require a deliberate compatibility and quality check. The older
+`gpt-6.1-terra` is the current release's pinned choice, not a moving alias.
+Future releases require a deliberate compatibility check. The older
 [model study](model-study.md) covers GPT-5.6 and remains historical evidence; it
-does not establish GPT-6 review quality or parity between Sol and Luna.
+does not establish GPT-6.1 review quality.
 
-## Claude Code: Opus with session effort
+## Claude Code: session model for the orchestrator, Sonnet for children
 
-The review command, orchestrator, and specialist role all select `opus`.
-On the direct Anthropic API with Claude Code 2.1.280 or later, that alias
-currently resolves to Claude Opus 5.5. Other providers have their own alias
-mapping, which can lag behind their newest available Opus. If necessary, map
-`ANTHROPIC_DEFAULT_OPUS_MODEL` to that provider's Opus 5.5 ID in native Claude
-Code configuration. Inspect the effective model rather than assuming 5.5.
-
-The roles do not pin effort, so select it in the Claude Code session before
-starting the review: `medium` for bounded work, `high` for ambiguous cross-file
-contracts or preservation constraints, and `xhigh` for unusually difficult cases.
-The native specialist role inherits that session effort; it cannot select a
-different effort per lens through the current Agent call. Use `/status` for the
-session model and `/tasks` for running specialists. Native user/managed settings
-and model restrictions retain their precedence. A fallback must be reported.
+The review commands and orchestrator roles pin no model or effort, so the
+orchestrator runs on the session's model and effort: choose them before starting
+a review. Specialists, readers and challengers select the native `sonnet` alias at
+`medium` effort in their role definitions. When the user names a model or effort
+for them, the orchestrator passes it as the Agent call's `model` and `effort` for
+every child; a model native Agent cannot select is handled through
+[external specialists](../skills/super-review/references/harnesses/external.md)
+or a question before substituting. Use `/status` for the session model and
+`/tasks` for running children. Native user/managed settings and model
+restrictions retain their precedence. A fallback must be reported.
 
 ## OpenCode and Cursor
 

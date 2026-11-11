@@ -1,7 +1,8 @@
 ---
 name: defect-challenger
 description: Independent challenge of one Defect Review reader's claims - try to show each claimed bug is not one.
-model: opus
+model: sonnet
+effort: medium
 tools: Read, Glob, Grep, Bash
 ---
 

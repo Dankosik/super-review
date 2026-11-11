@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Coordinate a Super Review the user started with the /super-review:review command, of Go, TypeScript, Rust, or Java source. Do not start it yourself. When a user asks for one in a message, ask them to type the command.
-model: opus
+model: inherit
 tools: Agent, Read, Glob, Grep, Bash
 ---
 
