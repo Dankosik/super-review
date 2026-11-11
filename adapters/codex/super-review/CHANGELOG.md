@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.19.0 — 2026-11-11
+
+The orchestrator now decides what the code should become, not only which candidates survive, and the instructions say what to aim for instead of what to avoid.
+
+- **Aim for the best version.** A new section in verification asks the orchestrator for the version a strong engineer in the language would write today, with behavior and the project's conventions held fixed. Each specialist answered one question; the orchestrator sees all of them. It rewrites a workable remedy when it sees a better one, designs code that several candidates touch once, fixes a cause that candidates from different lenses share, and then reads the accepted recommendations applied together. Anything still missing becomes its own candidate under the same bar, and a remedy it rewrites or adds passes the same preservation, lint and existing-owner checks as any other. Writing the edit costs nothing, so its size is no reason to settle for less.
+- **Shared vocabulary.** The contract names burdens with words the model already knows: shared knowledge, deep and shallow boundaries, the deletion test, locality, and Fowler's smells (Mysterious Name, Data Clumps, Primitive Obsession, Feature Envy, Shotgun Surgery, Divergent Change, Speculative Generality, Middle Man). Specialists use them in observations, so the orchestrator can see when findings from different lenses are one thing. A term names a burden still to be shown in source.
+- **Target behavior instead of prohibitions.** The judgment section of the contract and the lenses for Go, TypeScript, Rust and Java state what to aim for where they used to list what not to do. Abstractions anchors on the deletion test, naming on Mysterious Name, change-locality on Shotgun Surgery and Speculative Generality, representation on Primitive Obsession and Data Clumps. Technical guardrails (ownership and lifetimes, null and proxies, inference and evaluation order) and scope boundaries stay as they were. Rule IDs are unchanged.
+- **One place per rule.** The rule that an unresolved remedy stays out of implementation advice, the separation of coverage from candidate disposition, and the rule that agent agreement is not evidence each lived in three to five files the orchestrator reads together. Each now has one home. SKILL.md points to the workflow and contract instead of restating them.
+
+Shaped by reading, after Matt Pocock's writing-for-agents guidance. Not compared in model runs.
+
 ## 3.18.0 — 2026-11-11
 
 Four new questions for what reviewers rarely look at, and a written standard of well-written code for Go, TypeScript and Java.
