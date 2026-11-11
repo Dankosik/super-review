@@ -1,124 +1,231 @@
-# Super Review
+<h1 align="center">Super Review</h1>
 
-Independent readability and maintainability review for Go, TypeScript, Rust and Java.
-Specialists examine distinct questions; the orchestrator verifies their evidence
-and keeps every accepted recommendation. Works with GitHub PRs, local changes,
-or an explicitly requested whole project.
+<p align="center">
+  <b>AI code review for readable, maintainable Go, TypeScript, Rust and Java code</b><br>
+  Claude Code · Codex · Cursor · OpenCode
+</p>
 
-The same plugin carries two experimental reviews for Rust that ask other
-questions: [Defect Review](#defect-review-experimental-rust) hunts bugs, and
-[Test Review](#test-review-experimental-rust) asks whether the tests would
-notice a mistake. All three only read the code.
+<p align="center">
+  <a href="https://github.com/Dankosik/super-review/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/Dankosik/super-review?color=3458DB&label=release"></a>
+  <a href="https://github.com/Dankosik/super-review/actions/workflows/validate.yml"><img alt="Validate" src="https://github.com/Dankosik/super-review/actions/workflows/validate.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-3458DB"></a>
+  <img alt="Languages: Go, TypeScript, Rust, Java" src="https://img.shields.io/badge/languages-Go%20%C2%B7%20TypeScript%20%C2%B7%20Rust%20%C2%B7%20Java-1E2A78">
+</p>
 
-Super Review 3 uses native file/search, Git/GitHub and agent tools. It ships no
-MCP server, custom source reader, result daemon or consumer dependencies. The
-review instructions remain read-only; the host's permissions govern its tools.
+<p align="center">
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#what-it-reviews">What it reviews</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#defect-review-experimental-rust">Defect Review</a> ·
+  <a href="#test-review-experimental-rust">Test Review</a> ·
+  <a href="#faq">FAQ</a>
+</p>
 
-## Install
+**Super Review** is an AI code review plugin for **Claude Code, Codex, Cursor and
+OpenCode**. It reviews pull requests, local changes or a whole project in
+**Go, TypeScript, Rust and Java** for one thing: how easy the code is to read
+and change. Independent specialist agents each answer one question; an
+orchestrator checks their evidence and hands you a report of concrete,
+verified recommendations.
 
-Codex:
+It only reads. It never edits, builds or runs your code, and it never posts
+comments on your PR.
 
-```sh
-codex plugin marketplace add Dankosik/agent-skills-marketplace
-codex plugin add super-review@dankosik-skills
-```
+## Three reviews, one plugin
 
-Claude Code:
+| Review | Question it answers | Languages |
+| --- | --- | --- |
+| **Super Review** | Is this code easy to read and safe to change? | Go, TypeScript, Rust, Java |
+| **[Defect Review](#defect-review-experimental-rust)** · experimental | Where is the bug, and can you trace it through the code? | Rust |
+| **[Test Review](#test-review-experimental-rust)** · experimental | Would the tests fail if a plausible bug appeared? | Rust |
+
+The three share no policy. A readability review never reports bugs, and a bug
+hunt never comments on style. [The family design](docs/review-family.md)
+explains why.
+
+## Quick start
+
+**Claude Code**
 
 ```sh
 claude plugin marketplace add Dankosik/agent-skills-marketplace
 claude plugin install super-review@dankosik-skills
 ```
 
-Cursor IDE: install the [native Cursor adapter](docs/cursor.md) from
-`adapters/cursor/plugin`, then invoke `/super-review` in Agent chat. The guide
-covers project-local and user-wide installation. The repository marketplace
-manifest can be imported or submitted to Cursor; a public Marketplace listing
-is a separate Cursor review.
+**Codex**
 
-Start a new task/session after installing or updating. No additional waiting-tool
-configuration is needed. See [native integrations](docs/native-integrations.md)
-for updates and removal of old configuration, and [OpenCode](docs/opencode.md)
-for its standalone native adapter. A standalone skill archive is also available
-from [releases](https://github.com/Dankosik/super-review/releases).
+```sh
+codex plugin marketplace add Dankosik/agent-skills-marketplace
+codex plugin add super-review@dankosik-skills
+```
 
-## Request a review
+**Cursor**: install the [native Cursor adapter](docs/cursor.md) from
+`adapters/cursor/plugin`, project-local or user-wide. A public Cursor
+Marketplace listing is a separate Cursor review.
 
-In Codex, select the plugin or invoke `$super-review` with a PR URL or local scope.
-In Claude, use `/super-review:review`; in Cursor, use `/super-review` in the current
-Agent chat, followed by that target. For example:
+**OpenCode**: extract the OpenCode ZIP from
+[Releases](https://github.com/Dankosik/super-review/releases) and use its
+`super-review` launcher; see [the OpenCode adapter](docs/opencode.md).
 
-- Review this PR for readability and maintainability.
-- Review all production Rust in the current project, excluding tests.
-- Review my staged and unstaged changes, focusing on API clarity and naming.
+**Any agent that reads skills**: download the skill archive from
+[Releases](https://github.com/Dankosik/super-review/releases).
 
-Help explains usage without reading a target or starting specialist tasks. An
-actual review uses the target already supplied in the request or context and asks
-only when that target is missing. PRs use fixed base/head commits; working files use an identified snapshot. Local requests do not need an
-invented PR. GitHub access is needed only for remote source; existing source can
-be read locally. The plugin does not supply credentials or model subscriptions.
+Start a new session after installing or updating; nothing else needs
+configuring. [Native integrations](docs/native-integrations.md) covers updates
+and removing old configuration.
 
-The default eight questions cover naming, control flow, function cohesion, data
-flow, abstractions, duplication, API clarity and change locality. Representation
-and rationale are selected when relevant; owner profiles deepen their questions.
-Tests, generated/vendor code and unsupported languages are excluded. A targeted
-request narrows coverage explicitly; missing work is never called clean.
+### Ask for a review
 
-## Frontend quality review
+| Host | Command |
+| --- | --- |
+| Claude Code | `/super-review:review` |
+| Codex | `$super-review` or select the plugin |
+| Cursor | `/super-review` in Agent chat |
+| OpenCode | `/super-review` via the bundled launcher ([guide](docs/opencode.md)) |
 
-TypeScript/TSX reviews include source-selected profiles for **React 19, Next.js 16,
-Tailwind CSS and shadcn/ui**. They focus on state ownership, cohesive interactions,
-component contracts, server/client boundaries, explicit data paths, shared design
-knowledge and primitive composition. The eight base questions still apply;
-profiles deepen their existing owners instead of spawning four broad framework
-reviewers. Native model selection is unchanged.
+Follow the command with what to review:
+
+```text
+/super-review:review Review this PR for readability and maintainability: https://github.com/org/repo/pull/123
+/super-review:review Review my staged and unstaged changes, focusing on API clarity and naming.
+/super-review:review Review all production Rust in the current project, excluding tests.
+```
+
+Asking for help explains usage without reading anything. If the target is
+missing, the review asks for it; otherwise it starts at once.
+
+## What it reviews
+
+Every review covers eight base questions:
+
+| | Question | | Question |
+| --- | --- | --- | --- |
+| 1 | Naming | 5 | Abstractions |
+| 2 | Control flow | 6 | Duplication |
+| 3 | Function cohesion | 7 | API clarity |
+| 4 | Data flow | 8 | Change locality |
+
+Representation and rationale are added when relevant, and language and
+framework profiles deepen the questions that own them. A targeted request
+narrows coverage explicitly; work that was not done is never reported as clean.
+Tests, generated and vendored code, and unsupported languages are excluded.
+
+<details>
+<summary><b>React 19, Next.js 16, Tailwind CSS and shadcn/ui</b></summary>
+
+<br>
+
+TypeScript/TSX reviews pick framework profiles from the source and
+configuration of each package. They look at state ownership, cohesive
+interactions, component contracts, server/client boundaries, explicit data
+paths, shared design knowledge and primitive composition. Profiles deepen the
+eight base questions instead of adding four broad framework reviewers.
 
 ```text
 $super-review Review my local TypeScript/TSX changes for readability and
 maintainability in React 19, Next.js 16, Tailwind and shadcn/ui.
 ```
 
-The stack is established per package from pinned source and configuration. No
-automatic upgrades, memoization campaigns, forced Server Actions, design-system
-rewrites or bug/accessibility/performance audits are added. Locally maintained
-shadcn components are not excluded merely because a CLI originally copied them.
-JavaScript/JSX, CSS and MDX remain outside standalone target coverage; theme CSS
-and configuration can support recommendations about included TypeScript/TSX.
-Missing local implementations or configuration are reported, not guessed.
+The review does not push upgrades, memoization campaigns, forced Server
+Actions, design-system rewrites, or bug, accessibility or performance audits.
+Locally maintained shadcn components are reviewed like any other code.
+JavaScript/JSX, CSS and MDX are not standalone targets, but theme CSS and
+configuration can support a recommendation about TypeScript/TSX. Missing local
+implementations or configuration are reported, not guessed.
 
-See [routing and profile ownership](skills/super-review/references/frontend.md)
-and the maintainer-only [research and evaluation cases](https://github.com/Dankosik/super-review/tree/main/evals/frontend).
+See [frontend routing and profiles](skills/super-review/references/frontend.md).
 
-## Spring and Spring Boot quality review
+</details>
 
-Java reviews select applicable Spring profiles for bean wiring/configuration,
-application operations, HTTP contracts/errors, managed lifecycle and value shapes.
-Each profile deepens one existing Java owner; there is no broad Spring agent,
-new rule namespace or mandatory framework-wide pass. The eight base questions,
-scoped team rules and native model selection remain unchanged.
+<details>
+<summary><b>Spring and Spring Boot</b></summary>
+
+<br>
+
+Java reviews select Spring profiles for bean wiring and configuration,
+application operations, HTTP contracts and errors, managed lifecycle and value
+shapes. Each profile deepens one existing Java question; there is no broad
+Spring agent and no mandatory framework-wide pass.
 
 ```text
 $super-review Review this Java/Spring PR for readability and maintainability.
 Use only the Spring modules actually established in each owning module.
 ```
 
-Compatibility includes Framework/Boot, the actual web and Spring Data modules,
-Persistence API/provider, validation and serialization dependencies, not just JDK.
-MVC, WebFlux and client-only WebClient use are distinguished. Clear interfaces,
-transactional operations, constructors, annotations, entities and separate DTOs
-are retained when their contracts justify them. No reactive migration, ORM change,
-Spring Modulith adoption, universal mapper or interface-per-service is required.
+Compatibility takes in Framework/Boot, the actual web and Spring Data modules,
+the persistence API and provider, validation and serialization dependencies,
+not just the JDK. MVC, WebFlux and client-only WebClient use are told apart.
+Clear interfaces, transactional operations, constructors, annotations, entities
+and separate DTOs stay when their contracts justify them. No reactive
+migration, ORM change, Spring Modulith adoption, universal mapper or
+interface-per-service is required.
 
-See [Spring routing and owners](skills/super-review/references/spring.md) and the
-maintainer-only [sources and contrasting cases](https://github.com/Dankosik/super-review/tree/main/evals/spring).
-These additions do not claim measured model-quality gains from fixture checks.
+See [Spring routing and owners](skills/super-review/references/spring.md).
+
+</details>
+
+### What you get
+
+Each recommendation names the source, the improvement it shows, the proposed
+change and what the change must preserve. The report lists file coverage,
+every candidate decision and useful open observations. A good review may
+suggest a local clarification, a structural improvement, or leaving clear code
+alone. Hand accepted recommendations to a coding task to implement and test.
+
+## How it works
+
+```mermaid
+flowchart LR
+    T["PR, local changes<br/>or whole project"] --> O["Orchestrator<br/>pins the source"]
+    O --> S1["Specialist:<br/>naming"]
+    O --> S2["Specialist:<br/>control flow"]
+    O --> S3["Specialist:<br/>API clarity"]
+    O --> S4["…one per<br/>question"]
+    S1 & S2 & S3 & S4 --> V["Orchestrator<br/>verifies evidence"]
+    V --> R["Report:<br/>recommendations<br/>+ coverage"]
+```
+
+- **Pinned source.** PRs are read at fixed base and head commits; local work
+  at an identified snapshot. A local review needs no PR.
+- **Native tools only.** Super Review uses the host's own file, search, Git,
+  GitHub and agent tools. It ships no MCP server, custom source reader, result
+  daemon or runtime dependencies. The host's permissions govern those tools.
+- **Your accounts.** GitHub access is needed only for remote source. The
+  plugin supplies no credentials or model subscriptions.
+
+### Models
+
+| Host | Orchestrator | Specialists |
+| --- | --- | --- |
+| Codex | your model and effort | GPT-6 Luna/medium for bounded local questions; GPT-6 Sol/medium for cross-file, uncertain or preservation-sensitive work |
+| Claude Code | Opus, session effort | Opus, session effort |
+| Cursor | your chat model | `inherit` by default; request an override in the prompt |
+| OpenCode | your provider/model | your provider/model |
+
+In Cursor, ask for a specialist model in the prompt, for example
+"Для subagent используй &lt;Cursor model ID&gt;". The adapter applies it
+through native per-call selection or says it cannot, without silently
+substituting; the chat model stays as is. See
+[model profiles](docs/model-profiles.md).
+
+## Team conventions
+
+Put a `SUPER_REVIEW.md` at the repository root with explicit language, paths,
+lens and action. A rule can add, refine, override or disable a stable rule
+within its declared scope. PR policy comes from the target commit; local
+policy from the recorded revision.
+
+The file is optional: when it is confirmed absent, the defaults apply. When it
+cannot be read, that is a policy gap, not permission to assume defaults or to
+use a policy proposed by the PR. All 44 `go.*`, `ts.*`, `rust.*` and `java.*`
+rule IDs are stable across version 3.
+
+See [the team-rules contract](skills/super-review/references/team-rules.md)
+and [an example](examples/team-rules/SUPER_REVIEW.md).
 
 ## Defect Review (experimental, Rust)
 
-A separate skill in the same plugin hunts bugs. Super Review stays about
-readability and never reports defects; Defect Review never comments on
-readability. They share no policy. [The family design](docs/review-family.md)
-explains the split.
+A separate skill in the same plugin hunts bugs in Rust.
 
 ```text
 /super-review:defects Review crates/infra-cache in the current project.
@@ -126,30 +233,30 @@ $defect-review Hunt for bugs in this PR.
 /defect-review Hunt for bugs in this PR.   (OpenCode)
 ```
 
-Independent readers each take one lens, or a related pair for a small
-change: results, boundaries, errors, time, lifecycle, shared state, stated
-facts, team rules. A bug needs a trace
-through the code (a trigger real use can produce, each step as a quoted line,
-and what the affected party observes), a stated expectation with its basis, a
-harm to someone, and survival of an independent challenge. Nothing has to be
-written down in advance for something to be a bug, and a document that
-describes harmful behavior does not make it right.
+Independent readers each take one lens, or a related pair for a small change:
+results, boundaries, errors, time, lifecycle, shared state, stated facts and
+team rules. A bug needs:
 
-The challenge is what holds false positives down. A second agent gets each
-claim with its trace and without the finder's reasoning, follows the trigger
-through the source itself, and tries to show it is not a bug. When the
-behavior is a deliberate choice whose stated reason holds, the finding is
-reported as disputed, with the cost and the decision side by side.
+- a **trace** through the code: a trigger real use can produce, each step as a
+  quoted line, and what the affected party observes;
+- a **stated expectation** with its basis, and a **harm** to someone;
+- survival of an **independent challenge**.
 
-Like Super Review, this skill only reads: it does not clone, copy, build or
-run your project. Rust only, in Claude Code, Codex and OpenCode. See
-[the design](docs/defect-review.md) and
-[the contract](skills/defect-review/references/contract.md).
+Nothing has to be written down in advance for something to be a bug, and a
+document describing harmful behavior does not make it right.
+
+The challenge keeps false positives down. A second agent gets each claim with
+its trace but without the finder's reasoning, follows the trigger through the
+source itself and tries to show it is not a bug. When the behavior is a
+deliberate choice whose stated reason holds, the finding is reported as
+disputed, with the cost and the decision side by side.
+
+Rust only, in Claude Code, Codex and OpenCode. See [the design](docs/defect-review.md)
+and [the contract](skills/defect-review/references/contract.md).
 
 ## Test Review (experimental, Rust)
 
-A third skill asks whether the tests would fail if a plausible bug appeared.
-It shares no policy with the other two.
+A third skill asks whether your tests would fail if a plausible bug appeared.
 
 ```text
 /super-review:tests Review the tests of crates/infra-cache in the current project.
@@ -157,59 +264,74 @@ $test-review Would the tests in this PR notice a mistake in what it changes?
 /test-review Would the tests in this PR notice a mistake?   (OpenCode)
 ```
 
-A finding names a promised behavior that no test pins down and shows it with
-a mutant (one small, plausible mistake in production code, as a diff that is
-never applied), why each test that reaches that code would still pass, and a
-witness: the check that holds for the original code and fails for the mutant.
-The witness shows the mutant is a real behavior change, and it is the test to
-add. A test that breaks a written team rule for tests, such as a fixed sleep
-where the rule asks for synchronization, is proven by quoting both. Mutants
-your tests catch are counted, not reported, and the review says what it did
-not probe.
+A finding names a promised behavior that no test pins down, and shows it with:
 
-It only reads: it does not build or run your tests, so it is not a
-mutation-score tool. Rust only, in Claude Code, Codex and OpenCode. See
-[the design](docs/test-review.md) and
-[the contract](skills/test-review/references/contract.md).
+- a **mutant**: one small, plausible mistake in production code, as a diff
+  that is never applied;
+- why each test that reaches that code **would still pass**;
+- a **witness**: a check that holds for the original code and fails for the
+  mutant. It proves the mutant changes behavior, and it is the test to add.
 
-## Models and results
+A test that breaks a written team rule for tests, such as a fixed sleep where
+the rule asks for synchronization, is shown by quoting both. Mutants your tests
+catch are counted, not reported, and the review says what it did not probe.
 
-Codex keeps the user's orchestrator model and effort. Each specialist uses
-GPT-6 Luna/medium for a bounded local question with complete context, or
-GPT-6 Sol/medium for cross-file, uncertain, or preservation-sensitive work.
-Claude Code uses Opus for the review command, orchestrator, and specialists;
-effort follows the session setting. OpenCode uses the user's explicit provider/model.
-Cursor specialists default to `inherit`, using the parent chat's model. Request a
-specialist override in the prompt, such as "Для subagent используй <Cursor model ID>";
-the adapter applies it through supported native per-call selection, or discloses
-the capability gap without silently substituting. The chat model is not changed.
-See [model profiles](docs/model-profiles.md). Delegation and result collection use
-native host facilities, with no plugin-owned timer or result store.
+It does not build or run your tests, so it is not a mutation-score tool. Rust
+only, in Claude Code, Codex and OpenCode. See [the design](docs/test-review.md)
+and [the contract](skills/test-review/references/contract.md).
 
-Each recommendation identifies the source, demonstrated improvement, proposed
-change and relevant preservation constraints. The report includes file coverage,
-all candidate decisions and useful unresolved observations. A useful review may
-recommend a local clarification or a structural improvement, or retain clear code.
-Hand accepted recommendations to a coding task for implementation and testing.
+## FAQ
 
-Super Review does not run project code/checks or post comments. It does not assess
-bugs, security, product requirements or test coverage, and does not claim tested
-refactoring equivalence. Completed coverage is not exhaustive discovery.
+<details>
+<summary><b>Does Super Review change or run my code?</b></summary>
 
-## Team conventions
+No. All three reviews only read. They do not clone, copy, build or run your
+project, run its checks, or post comments on a PR.
 
-Use root `SUPER_REVIEW.md` with explicit language, paths, lens and action. Rules
-may add, refine, override or disable a stable rule within their declared scope.
-PR policy comes from the target commit; local policy uses the recorded revision.
-The file is optional: confirmed absence uses defaults. Failed access is a policy
-gap, not permission to assume defaults or use a PR's proposed replacement.
-See [the contract](skills/super-review/references/team-rules.md) and
-[examples](examples/team-rules/SUPER_REVIEW.md). All 44 `go.*`, `ts.*`, `rust.*`
-and `java.*`
-rule IDs remain unchanged in version 3.
+</details>
 
-[Validation](docs/validation.md) separates package checks from model evidence.
-The [instruction audit](docs/instruction-audit.md) explains the unreleased 3.0.1
-scope corrections, retained coverage defaults and unexecuted evaluation cases.
-[Design](docs/design.md) · [Contributing](CONTRIBUTING.md) · [Privacy](PRIVACY.md) ·
-[Changelog](CHANGELOG.md) · [MIT License](LICENSE)
+<details>
+<summary><b>Does it find bugs or security issues?</b></summary>
+
+Super Review does not: it assesses readability and maintainability only, not
+bugs, security, product requirements or test coverage. For bugs in Rust, use
+the experimental [Defect Review](#defect-review-experimental-rust); for gaps
+in Rust tests, [Test Review](#test-review-experimental-rust).
+
+</details>
+
+<details>
+<summary><b>Is a clean report a guarantee?</b></summary>
+
+No. The report says exactly what was covered, and completed coverage is not
+exhaustive discovery. Super Review does not claim that a suggested refactoring
+is tested to be equivalent.
+
+</details>
+
+<details>
+<summary><b>Which languages and file types are supported?</b></summary>
+
+Go, TypeScript/TSX, Rust and Java for Super Review; Rust for Defect Review
+and Test Review. Tests, generated and vendored code are excluded from
+Super Review. JavaScript/JSX, CSS and MDX are not standalone targets.
+
+</details>
+
+## Documentation
+
+- [Design](docs/design.md) and [the review family](docs/review-family.md)
+- [Model profiles](docs/model-profiles.md) and [native integrations](docs/native-integrations.md)
+- [Cursor](docs/cursor.md) and [OpenCode](docs/opencode.md) adapters
+- [Validation](docs/validation.md): package checks kept apart from model evidence
+- [Instruction audit](docs/instruction-audit.md): 3.0.1 scope corrections and coverage defaults
+- Maintainer evaluation cases: [frontend](https://github.com/Dankosik/super-review/tree/main/evals/frontend), [Spring](https://github.com/Dankosik/super-review/tree/main/evals/spring). Fixture checks do not claim measured model-quality gains.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Also: [Privacy](PRIVACY.md) ·
+[Changelog](CHANGELOG.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+
+## License
+
+[MIT](LICENSE) © Dankosik
