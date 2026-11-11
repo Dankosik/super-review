@@ -34,9 +34,25 @@ configuration or login.
 
 ## Collect
 
-Start processes in the background and collect each exit through the active
-harness's completion notice, within the usual limit of agents at once. The
-final output is the result. A non-zero exit, empty output or another format
+Keep your processes apart from everyone else's: other reviews may run on
+the same machine with the same command line. Give this review its own
+directory outside the reviewed tree and start each process with absolute
+paths, recording its PID and, when it ends, its exit code there:
+`(<command> >task.out 2>task.err </dev/null; echo $? >task.exit) & echo $! >task.pid`.
+Wait on, retry or stop only those PIDs. Never select processes by name or
+command line, as `pgrep -f` or `pkill -f` do, and never read other runs'
+files or the harness's shared logs. Count other reviews' processes only to
+keep the machine's total near the usual limit of agents at once.
+
+Do not end your turn while your processes run: an orchestrator whose turn
+ends can be torn down with everything it started, as your adapter says.
+Wait through the active harness's completion notice where it reaches you,
+otherwise in a foreground shell call that blocks until your exit files
+appear or the call's time limit nears, and repeat. A process that dies with
+a transport error just as your turn ended was stopped by you, not by the
+provider.
+
+The final output is the result. A non-zero exit, empty output or another format
 is unread coverage; retry once for a transient failure. If the CLI is
 missing, unauthenticated or rejects the model, tell the user the cause and
 ask; do not fall back silently. Name the harness and model per task in the

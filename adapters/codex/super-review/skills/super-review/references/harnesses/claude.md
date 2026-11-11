@@ -14,8 +14,10 @@ fresh contexts. Supply the workflow's neutral packet, not the parent conversatio
 or peer reports. Read, Glob, Grep and Bash provide source access; Bash is limited
 by the review instructions to acquisition and inspection, plus launching
 specialists in another harness the user explicitly requested, through
-[external specialists](external.md) with background Bash and its completion
-notifications. Edit/Write tools are not exposed, but the shell is not a
+[external specialists](external.md). The command runs you as a forked turn
+that ends at your first reply without a tool call, and external processes end
+with it; their completion notices do not reach you, so wait for them in
+foreground Bash calls of up to ten minutes each. Edit/Write tools are not exposed, but the shell is not a
 read-only sandbox.
 
 Prefer foreground calls (`run_in_background: false`) and native parallel calls

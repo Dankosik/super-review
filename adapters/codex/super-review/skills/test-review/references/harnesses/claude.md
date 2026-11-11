@@ -12,6 +12,8 @@ worktree isolation. Wait for every result; a missing one is unread coverage.
 All roles select `opus` and inherit the session's effort; `high` fits this
 review. They have no tools for writing files. The shell is still not a
 sandbox, so running nothing from the reviewed project is an instruction to
-follow. Bash may also start specialists in another harness the user
-explicitly asked for, per [external agents](external.md), in the background
-with completion notices.
+follow. Bash may also start specialists in another harness the user explicitly
+asked for, per [external agents](external.md). The command runs you as a
+forked turn that ends at your first reply without a tool call, and the
+processes you started end with it; their completion notices do not reach
+you. Wait for them in foreground Bash calls of up to ten minutes each.

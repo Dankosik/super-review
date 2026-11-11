@@ -16,6 +16,11 @@ When the PR's commits are not there, fetch them: that adds objects and moves
 no branch or working file. If you cannot, read through GitHub and say in the
 report that code outside the changed files could not be searched.
 
+Other sessions may change a local tree while agents read it. Before the
+report, check HEAD and the status of the scope's files again. If either
+changed, name the changed files in the report: findings in them may rest on
+two versions.
+
 Locate the documents and team rule sources for the reviewed area once. Every
 reader gets the same list. It says where statements about the code live; it
 is not a list of suspected bugs.
@@ -37,10 +42,13 @@ Select every lens whose signal is present, and say which were left out and
 why. A small change is not a reason to drop one.
 
 One lens per reader. For a small change, about three hundred changed lines
-or fewer in one package, give one reader a related pair instead: results
-with boundaries, errors with time, lifecycle with shared-state, stated-facts
-with team-rules. Split a large scope by package. Readers overlap on purpose,
-and merging is yours.
+or fewer in one package, or a package of about a thousand lines reviewed
+whole, give one reader a related pair instead: results with boundaries,
+errors with time, lifecycle with shared-state, stated-facts with
+team-rules. Split a large scope by package, and split a lens by area when
+its files are more than one reader can read in full: a reader that skims
+loses the lines it skipped. Readers overlap on purpose, and merging is
+yours.
 
 ## Readers
 
@@ -50,18 +58,29 @@ exact files, for a change review the change itself with its removed lines,
 the located documents, and the paths of the contract, its lens, the
 [language context](languages/rust.md) and the
 [result format](../assets/finding-template.md). Never give it an expected
-bug, a suspected line or another reader's result.
+bug, a suspected line or another reader's result, nor what was settled
+before this review: earlier findings or fixes, decisions to respect,
+severity. A reader that inherits conclusions repeats them.
 
 Run up to eight agents at once unless the user sets another limit.
 
+Read each reader's list of what in its scope it could not read. Give that
+part, once, to a fresh reader with the same lens and only those files. What
+is still unread goes in the report.
+
 ## Challenge
 
-Every candidate with a trace goes to a fresh challenger, one per reader
-task. Give it the same materials, lens included, plus
+First merge candidates with the same cause at the same place, from any
+readers, keeping each trace. Every candidate with a trace goes to a fresh
+challenger, one per reader task; a merged candidate goes to only one of them.
+Give it the same materials, lens included, plus
 [the challenge](challenge.md), and for
 each candidate only the expectation and basis, location, trigger, harm and
 proof. Strip the reader's reasoning, its notes on intent and its confidence.
 Candidates proven only by quotation need no challenger; check them yourself.
+A trace the reader left incomplete is not one: finish the missing step from
+the source yourself before the challenge, or the candidate is unproven. Do
+not hand a challenger the job of completing it.
 
 ## Decide
 
@@ -70,8 +89,11 @@ challenger's tone or agreement between agents is not evidence.
 
 - **Walk each trace yourself.** Every quoted line is there, each step
   follows, nothing rests on unread code, and it ends at something the
-  affected party observes. Read missing code yourself when it is at hand;
-  do not rewrite the trace into a different claim.
+  affected party observes. A step about behavior that neither you nor the
+  challenger read in source or documentation, the standard library's or a
+  database server's included, rests on memory, and the candidate is
+  unproven. Read missing code yourself when it is at hand; do not rewrite
+  the trace into a different claim.
 - **Check the basis.** A `written` basis is verbatim and read plainly. A
   `declared` basis says no more than the declaration. A `principle` names
   someone at this place who relies on it. Taste is rejected.
@@ -83,7 +105,6 @@ challenger's tone or agreement between agents is not evidence.
 - **Settle disagreements.** On a fact, from the source. On whether the
   behavior is acceptable when both have the facts right, the candidate is
   disputed.
-- **Merge** candidates with the same cause at the same place.
 
 | Outcome | When |
 | --- | --- |
@@ -93,6 +114,17 @@ challenger's tone or agreement between agents is not evidence.
 | rule violation | The code breaks a checkable team rule, by quotation. A rule about behavior needs a trace and is a bug. |
 | unproven | A step is missing, or no challenge was carried out. |
 | rejected | A step does not follow, the trigger cannot occur, the expectation is wrong, nobody is affected, or out of scope. |
+
+## Siblings
+
+Look for siblings of each bug that stood. A mistake made once is often made
+again: the same call elsewhere, the same format parsed in another place, the
+client and server sides of one check, the startup and running paths of one
+wait. Search the repository for such places and give them to one fresh
+reader with that bug's lens, the bug as the pattern to test and the places
+as its files. This is the one task that gets a known
+bug. A sibling needs its own trace and challenge; one outside the scope is
+reported once as pre-existing. Decide siblings as above.
 
 ## Report
 
