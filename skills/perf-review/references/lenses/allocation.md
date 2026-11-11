@@ -34,6 +34,14 @@ only read, compared or lent and then dropped was not needed.
   test emptiness.
 - A copy of a large buffer that is then only read: `to_vec` of a slice, a
   `String` made from bytes that could be parsed in place.
+- Deserializing through `serde_json::Value` and then into a type, or into
+  owned `String` fields, where a typed parse or borrowed `&str` or `Cow`
+  fields would do.
+- A boxed future per call: `#[async_trait]` methods or `Box::pin` on a hot
+  path, where a native `async fn` in a trait or a generic would do and the
+  trait is not used through `dyn`.
+- A routine failure built as a heavyweight error: an `anyhow::Error` per
+  element on a path where failure is normal.
 
 ## Not a finding
 

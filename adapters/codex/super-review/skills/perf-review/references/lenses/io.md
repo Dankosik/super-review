@@ -33,6 +33,9 @@ what sets that number.
   created per request instead of shared.
 - A whole file or response read into memory to use a prefix or one field,
   where a streaming read would stop early.
+- A query per request that filters, joins or sorts on columns no index in
+  the repository's migrations covers. The plan is the database's: without
+  the plan or the table sizes, the candidate is unproven.
 
 ## Not a finding
 
@@ -40,6 +43,9 @@ what sets that number.
   batch would change what callers rely on: errors per item, partial success,
   ordering, transaction boundaries. A batch that changes those is a
   tradeoff.
+- A batch or buffer that holds an item until it fills, offered as a plain
+  gain. It raises throughput and that item's latency: a tradeoff, unless a
+  flush bound keeps the latency callers expect.
 - A flush or `fsync` per write that a durability promise requires; output a
   reader needs at once, such as an interactive protocol or a log that must
   reach the pipe before a crash.

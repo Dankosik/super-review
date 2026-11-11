@@ -15,9 +15,10 @@ anyone hopes for. It reads the code and documents itself.
 
 Take each claim through all four.
 
-1. **The path is not hot.** Follow the callers yourself. Is the code
-   reached once at startup, once per connection, behind a cache, only on an
-   error path? Does the multiplier the claim names reach this code, or does
+1. **The path is not hot.** Follow the callers yourself. Measured against
+   the program's unit of work, is the code reached once for many units,
+   behind a cache, or on an error path real input rarely takes? Does the
+   multiplier the claim names reach this code, or does
    something upstream keep it small: a protocol limit, a configuration
    bound, a fixed-size type? For a library, "no caller here loops over it"
    defeats nothing when the interface is for per-item use.
@@ -25,16 +26,18 @@ Take each claim through all four.
    what each line does. Is every quoted line there? Does the callee or
    dependency, at the version the lockfile resolves, already avoid the
    work: capacity reserved, a borrow returned, a buffer or cache inside,
-   a reference count where the claim saw a copy? A claim that the compiler
-   removes or keeps a cost needs a profile, a benchmark or a documented
-   guarantee, from you as from the reader.
+   a reference count where the claim saw a copy? A claim about what the
+   compiler, the hardware or a database does needs a profile, a benchmark,
+   a query plan or a documented guarantee, from you as from the reader.
 3. **The cheaper form changes behavior.** Run the sketch through the inputs
    the entry admits: empty, one, duplicates, a failure halfway, a dropped
    future, a panic while a lock is held. Does it keep results, their order,
-   errors and when they surface, drop timing, `Send` and `Sync`, the public
-   API, and what other callers observe of locking and timing? A change the
-   team could accept makes the claim a tradeoff; one callers rely on makes
-   it fall.
+   errors and when they surface, what has happened when something fails,
+   drop timing, `Send` and `Sync`, the public API, and what other callers
+   observe of locking and timing? Does an item now wait longer for a batch
+   or a buffer? Does it build within the project's `rust-version`, features
+   and targets? A change the team could accept makes the claim a tradeoff;
+   one callers rely on, or a form that does not build, makes it fall.
 4. **A larger cost swallows the saving.** Find the largest cost on the same
    path for the same resource. Is the saving still visible to a caller or
    operator beside it? A network wait swallows a CPU saving's effect on

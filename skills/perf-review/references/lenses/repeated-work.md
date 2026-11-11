@@ -31,6 +31,10 @@ them changes between passes.
 - A table, map or set rebuilt from constant data on every call.
 - A value formatted for a log line before the logging macro, so the work is
   done even when that level is disabled.
+- A span per element: `#[instrument]` on a function called per element,
+  recording its arguments on every enabled call.
+- A metric looked up by name and labels on every call, where a handle kept
+  from registration would do.
 
 ## Not a finding
 

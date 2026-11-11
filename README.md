@@ -299,9 +299,10 @@ Independent readers each take one lens, or a related pair for a small change:
 complexity, allocation, async, I/O, contention and repeated work. A finding
 needs:
 
-- a **hot path**: where the code is called from and why it runs often, per
-  request, per element or in a loop, on the evidence of the source, a
-  document, a profile you supply, or your word;
+- a **hot path**: where the code is called from and why it runs often for
+  the program's unit of work (a request, a message, one run of a
+  command-line tool), on the evidence of the source, a document, a profile
+  you supply, or your word;
 - a **cost trace**: the work done for one unit, each step as a quoted line,
   counted against what multiplies it ("one allocation per row × rows in the
   request"), never invented milliseconds;
@@ -311,13 +312,18 @@ needs:
   cold, the work is not done, the cheaper form changes behavior or a larger
   cost swallows the saving.
 
-A cheaper form that changes the public API, needs `unsafe` or makes the code
-notably harder to read is reported as a tradeoff, with both sides. Findings
-are ranked by the work they remove, not by severity labels.
+A cheaper form that changes the public API, needs `unsafe`, makes the code
+notably harder to read or buys throughput with each item's latency is
+reported as a tradeoff, with both sides. Findings are ranked by the work
+they remove, not by severity labels. For a whole project the review starts
+from where work enters the program and lists those entries. Candidates that
+wait only on whether a path is hot come back to you as questions.
 
 It runs no benchmark or profiler, so it shows work removed, not time saved.
 The report ends by asking whoever applies a finding to measure before and
-after and to keep the change only if the gain shows. Rust only, in Claude
+after in the way the saved resource demands, a benchmark for CPU and load at
+production concurrency for contention, and to keep the change only if the
+gain shows. Rust only, in Claude
 Code, Codex and OpenCode. See
 [the design](docs/review-family.md#how-performance-review-shows-a-cost) and
 [the contract](skills/perf-review/references/contract.md).

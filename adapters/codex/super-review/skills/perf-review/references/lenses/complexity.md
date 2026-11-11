@@ -39,6 +39,8 @@ then what each iteration does with other collections.
   where nothing needs the order.
 - The same subproblem computed again in recursion where its result could be
   kept (memoization).
+- Over-parallelization: `par_iter`, a thread or a task per item over inputs
+  small enough that splitting and joining cost more than the work.
 
 ## Not a finding
 
@@ -53,3 +55,5 @@ then what each iteration does with other collections.
   such as `retain` or `sort`.
 - A faster pass over rows beside the query that fetched them, offered as a
   latency gain: the query is the wait, and the pass saves CPU.
+- Sequential CPU work that could run in parallel: splitting it spends more
+  CPU for less latency, a tradeoff at most.

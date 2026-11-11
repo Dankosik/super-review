@@ -25,9 +25,11 @@ With no candidates, say so.
   the multiplier; where you looked for something that already avoids the
   work) or `none` with the missing step.
 - Cheaper form: a minimal sketch, and what it keeps: results, order, errors,
-  drop timing, `Send` and `Sync`, public API. Anything it changes, named.
-- Resource: what is saved, and the largest cost on the same path for that
-  resource.
+  what has happened on a failure halfway, drop timing, `Send` and `Sync`,
+  public API; and that it builds within the project's `rust-version`,
+  features and targets. Anything it changes, named.
+- Resource: what is saved, the largest cost on the same path for that
+  resource, and any work that only moved.
 
 ## Challenger result
 

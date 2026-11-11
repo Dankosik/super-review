@@ -46,3 +46,7 @@ and the awaits that do not use each other's results.
   is required: a transaction, a protocol, a rate limit.
 - Overlapping awaits against something that serializes them anyway, such as
   one connection or a pool of one: the wait does not shrink.
+- Overlapping operations that have effects, offered as a plain gain. Run
+  sequentially, the second never starts when the first fails; overlapped
+  with `try_join!` or a `JoinSet`, it has started and may have taken
+  effect. That is a tradeoff.

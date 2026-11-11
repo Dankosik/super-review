@@ -32,7 +32,17 @@ documentation or the resolved dependency version, not from memory.
   guards held across an `.await` and costs more per lock.
 - **Files in Tokio.** `tokio::fs` sends each operation to the blocking pool,
   so many small reads or writes are many hand-offs; a buffer in front of the
-  file batches them. `block_in_place` needs the multi-thread runtime.
+  file batches them.
+- **What a cheaper form may use.** `rust-version` in `Cargo.toml` bounds the
+  language and the standard library: `OnceLock` needs 1.70, `LazyLock` 1.80,
+  native `async fn` in traits 1.75, and such a trait cannot be used through
+  `dyn`. Enabled features bound what a dependency offers: `block_in_place`
+  needs Tokio's multi-thread runtime.
+- **Tracing and errors.** `#[instrument]` records every argument it does not
+  `skip`, mostly through `Debug`, whenever its span is enabled.
+  `anyhow::Error` allocates when created and captures a backtrace when the
+  environment enables backtraces; say whether production does, or that it
+  is unknown.
 - **Standard output.** `println!` locks stdout on every call, and stdout is
   line-buffered, so each line is a write.
 - **Compiled patterns.** `Regex::new` compiles on every call; the `regex`

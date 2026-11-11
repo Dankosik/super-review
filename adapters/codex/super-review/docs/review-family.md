@@ -61,22 +61,29 @@ identify source -> independent readers -> proof by trace
 ## How Performance Review shows a cost
 
 A performance finding has four parts. The **hot path**: where the code is
-reached from and why it runs often, per request, per element of an input,
-inside a loop, on the evidence of the source, a document or benchmark in the
-repository, a profile or the user's words. The **cost trace**: the work done
+reached from and why it runs often, measured against the program's unit of
+work (a request, a message, one run of a command-line tool), on the evidence
+of the source, a document or benchmark in the repository, a profile or the
+user's words. The **cost trace**: the work done
 for one unit as quoted lines, into callees and dependencies at their locked
 versions, and what multiplies it, written as a count ("one `String`
 allocation per row × rows in the request"), never as invented milliseconds.
 The **cheaper form**: a sketch and what it keeps, results, order, errors,
-drop timing, `Send` and `Sync`, the public API. The **resource**: what is
+drop timing, `Send` and `Sync`, the public API, and that it builds for the
+project's Rust version, features and targets. The **resource**: what is
 saved, set beside the path's dominant cost for that resource.
 
 Lenses divide unneeded work by where it lives: complexity, allocation,
 async, I/O, contention and repeated work. A cheaper form that changes
-something the team must weigh is a tradeoff, shown with both sides. Because
-reading shows work removed, not time saved, the report ends with what to do
-before applying anything: measure before and after, and keep a change only
-if the gain shows.
+something the team must weigh is a tradeoff, shown with both sides,
+including a batch or overlap that buys throughput with latency or changes
+what has happened when something fails. For a whole project the review
+starts from where work enters the program and reports the entries it used.
+A candidate that waits only on whether its path is hot becomes a question to
+the user. Because reading shows work removed, not time saved, the report
+ends with what to do before applying anything: measure before and after in
+the way the saved resource demands, and keep a change only if the gain
+shows.
 
 ## Why nothing is run
 
@@ -126,14 +133,21 @@ The four share only the plugin they ship in.
 | Challenger in Test Review | None; the orchestrator searches for a test the specialist missed | A second agent per question | The one way a test-gap claim fails is an overlooked test, and that is a search, not a debate |
 | Size of the instructions | One contract per review, a workflow for the orchestrator, lenses or questions | Separate files for proof, verification, expectations and coverage bookkeeping | A capable reader needs the bar and where bugs live, not a procedure for recording its own work |
 | What makes a performance finding | A hot path with its basis, a cost trace, a cheaper form with the same behavior, the resource saved | Patterns known to be slow, reported wherever they appear | A clone that runs once costs nothing; advice without a hot path is churn |
+| What makes a path hot | Running per unit of the program's work: a request, a message, one run of a command-line tool with its startup; an error path when real input takes it routinely | A fixed list of cold places: startup, connections, error paths | A tool that scripts call thousands of times spends its life starting up; a parse that fails on half the tokens is the main path |
+| Whole-project scope in Performance Review | Start from where work enters the program and review what the entries reach; report the entries and what was not reached | Every reader reading every file and finding entries again | Hotness starts at an entry; the list in the report shows a missed entry, unlike a ledger nobody sees |
+| A hot path nobody has established | A question to the user, in its own report section | Buried among unproven candidates | One sentence or a profile from the user settles it |
 | How a cost is shown | Work per unit times its multiplier, read from the source and from dependencies at their locked versions | Running benchmarks or profilers; estimated milliseconds | A count can be checked by opening the lines; an invented timing cannot be checked at all |
 | Profiles and benchmark output | Evidence when the user supplies them or the repository commits them | Ignored because the review runs nothing | They are the best evidence that a path is hot, and using them runs nothing |
 | Claims about code generation | Count work the semantics require; an optimizer claim either way needs a profile, a benchmark or a documented guarantee | Readers and challengers arguing about what the compiler does | Neither side reads the compiler's output, so such a claim decides nothing alone |
 | A cheaper form that changes something | A `tradeoff` with both sides: public API, `unsafe`, a new dependency, staleness, notably harder reading | Dropped; or recommended as a plain speedup | The saving is real and its cost is the team's to weigh, as with disputed bugs |
+| Throughput against latency | A batch, buffer, overlap or parallel split that buys one with the other, or starts work an earlier failure would have stopped, is a tradeoff | Batching, concurrency and parallelism as plain gains | They change what a caller waits for and what has happened when something fails |
+| Where a cheaper form must build | Within the project's `rust-version`, edition, enabled features and targets | Any current Rust | Advice that does not build for the project saves nothing |
+| Neighboring costs | Memory footprint, build profiles, the global allocator and compile time are out of scope; a database's plan and cache behavior need a plan or a profile | Left to each reader | Each run would otherwise draw the line differently |
+| Constant work per request | Reported compactly, one row each with its quoted line | A full section per finding | They are the most numerous and each saves the least; the reader should reach the larger findings first |
 | A saving beside a larger cost | Reported with the dominant cost for the same resource; rejected only when that cost hides it from everyone | Rejected whenever something else on the path is slower | A network wait dominates a request's latency, not the CPU spent per request |
 | Order of performance findings | By work removed per unit: complexity class, then I/O or a wait per element, then allocation per element, then constant work | Severity labels or estimated speedups | The order follows from the trace; a percentage would be invented |
 | Challenger in Performance Review | An independent challenger on four lines: not hot, no cost, changed behavior, dominated | None, as in Test Review | A performance claim fails in several independent ways, and each takes reading, not one search |
-| Who measures a performance finding | Whoever applies it, before and after, keeping it only if the gain shows | The review, by benchmarks | Reading proves work removed, not time saved; the run belongs to whoever changes the code |
+| Who measures a performance finding | Whoever applies it, before and after, in the way the saved resource demands, keeping it only if the gain shows | The review, by benchmarks; or one microbenchmark for every kind of finding | Reading proves work removed, not time saved; a single-threaded benchmark shows nothing about contention or round trips |
 | Small changes in Performance Review | Lenses paired, three readers: complexity with allocation, async with contention, I/O with repeated work | Six readers for a small change | As in Defect Review; whether pairing costs attention is unverified |
 
 ## What a model run is for

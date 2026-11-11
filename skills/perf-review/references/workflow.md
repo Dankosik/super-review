@@ -27,11 +27,20 @@ targets, and any profile, flamegraph or benchmark output the user supplied.
 Every reader gets the same list. It says where evidence of what runs often
 lives; it is not a list of hot paths or suspected waste.
 
+For whole-project source, also locate where work enters the program: request
+handlers, message consumers, the main loop or command dispatch of a
+command-line tool, scheduled jobs, the public interface of a library, the
+functions the repository's benchmarks call and the frames of a supplied
+profile. Readers get the packages and modules those entries reach. List the
+entries in the report, and the code they do not reach as not reviewed, so a
+missing entry shows. An entry says where work starts, not which path is hot.
+For a PR or local changes, the scope stays the change.
+
 ## Lenses
 
 | Lens | Asks | Selected when the area has |
 | --- | --- | --- |
-| [complexity](lenses/complexity.md) | Does the work grow with the input faster than the result needs? | Loops, searches, sorts or collections over input whose size callers set. |
+| [complexity](lenses/complexity.md) | Does the work grow with the input faster than the result needs? | Loops, searches, sorts, collections or parallel iterators over input whose size callers set. |
 | [allocation](lenses/allocation.md) | Does each unit allocate or copy what it could borrow, reuse or size once? | Owned values built per element or per request. |
 | [async](lenses/async.md) | Does async code keep the executor free and run independent waits together? | `async` code, spawned tasks, async locks. |
 | [io](lenses/io.md) | Does each unit cost more round trips, system calls or connections than it needs? | Database, network, file or inter-process calls. |
@@ -54,7 +63,8 @@ overlap on purpose, and merging is yours.
 Start each reader in a fresh context with nothing from this conversation or
 from other readers. Give it the target and revision, its lens or pair, the
 exact files, for a change review the change itself with its removed lines,
-the located evidence of load, and the paths of the contract, its lens, the
+the located evidence of load, for a whole project the entries, and the
+paths of the contract, its lens, the
 [language context](languages/rust.md) and the
 [result format](../assets/finding-template.md). Never give it an expected
 inefficiency, a suspected line or another reader's result, nor what was
@@ -99,7 +109,8 @@ challenger's tone or agreement between agents is not evidence.
 - **Check the hot path.** Its basis is a caller, a loop, a document, a
   measurement or the user's words. Code that looks central is not a basis.
 - **Check the cheaper form.** Walk it through the inputs the entry admits:
-  empty, one, duplicates, a failure halfway, a dropped future. Name
+  empty, one, duplicates, a failure halfway, a dropped future. Check that it
+  builds within the project's `rust-version`, features and targets. Name
   everything it changes.
 - **Weigh the challenge as an argument, not a ruling.** A `falls` needs
   specific quoted counter-evidence; check it. "The compiler optimizes this"
@@ -120,7 +131,9 @@ challenger's tone or agreement between agents is not evidence.
 Rank what stood by the work it removes per unit: a change of complexity
 class first, then a round trip, system call or blocking wait per element,
 then an allocation or copy per element, then constant work per request.
-Within a class, the larger multiplier first.
+Within a class, the larger multiplier first. Constant work per request is
+reported compactly. A candidate unproven only for want of evidence that its
+path is hot becomes a question to the user in the report.
 
 ## Siblings
 

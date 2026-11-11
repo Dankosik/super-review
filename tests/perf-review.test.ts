@@ -39,6 +39,10 @@ test("a finding needs a hot path, a cost trace, a cheaper form and a resource", 
   expect(contract).toContain("**tradeoff**");
   expect(contract).toContain("Do not invent milliseconds or percentages.");
   expect(contract).toContain("Read the removed lines");
+  expect(contract).toContain("Hot is relative to the program's unit of work");
+  expect(contract).toContain("within the `rust-version`, edition, dependencies and enabled\nfeatures in `Cargo.toml`");
+  for (const outside of ["memory footprint", "build profiles", "the global allocator", "compile time"]) expect(contract).toContain(outside);
+  expect(read("skills/perf-review/references/workflow.md")).toContain("For whole-project source, also locate where work enters the program");
   const template = read("skills/perf-review/assets/finding-template.md");
   for (const basis of ["`source`", "`document`", "`measurement`", "`user`"]) expect(template).toContain(basis);
   expect(template).toContain("`traced`");
@@ -63,10 +67,13 @@ test("the challenge is independent and its verdicts are arguments the orchestrat
   expect(read("adapters/claude/plugin/agents/perf-challenger.md")).toContain("you are not told what anyone hopes for");
 });
 
-test("the report ranks by work removed and hands measurement to whoever applies it", () => {
+test("the report ranks by work removed, asks the user what only they know, and hands measurement to whoever applies it", () => {
   const report = flat("skills/perf-review/assets/report-template.md");
-  for (const section of ["## Findings", "## Tradeoffs", "## Unproven and rejected", "## Before applying"]) expect(report).toContain(section);
+  for (const section of ["## Findings", "### Constant work per request", "## Tradeoffs", "## Needs your confirmation", "## Unproven and rejected", "## Before applying"]) expect(report).toContain(section);
   expect(report).toContain("a change of complexity class first, then a round trip, system call or blocking wait per element, then an allocation or copy per element, then constant work per request");
+  expect(report).toContain("Measure a release build on the same machine and workload, before and after, in the way the saved resource demands");
+  expect(report).toContain("A single-threaded benchmark shows nothing here.");
+  expect(report).toContain("Keep the existing tests passing");
   expect(report).toContain("Apply a change only when the measurement shows the gain.");
   expect(report).toContain("Do not adjust the measurement");
 });
