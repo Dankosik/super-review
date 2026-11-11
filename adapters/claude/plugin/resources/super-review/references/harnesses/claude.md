@@ -26,16 +26,14 @@ completion/result facility and wait for every full result before reconciliation.
 Do not poll or send routine reminders. Missing results remain unfinished; add only
 source-justified continuations, each with its own task identity.
 
-The command, orchestrator, and specialists select the native `opus` alias, which
-resolves according to the configured provider and may need an explicit native
-provider mapping to reach its newest Opus. They inherit the session's effort:
-choose `medium` for a bounded review, `high` for ambiguous
-cross-file contracts or preservation constraints, and `xhigh` only when those
-questions remain unusually difficult. Set the session effort before starting a
-review; the native specialist role does not vary effort per lens. Record the
-effective model/effort where the host exposes them. User/managed restrictions and
-native model precedence still apply; a substituted or unavailable Opus is a
-disclosed capability gap, not a successful Opus run. A specialist model the user
+You run on the session's model and effort, which the user chose. Specialists
+default to the native `sonnet` alias at `medium` effort. When the user names a
+specialist model or effort, pass it as the Agent call's `model` and `effort`
+for every specialist and continuation in this review; do not raise either on
+your own judgment. Record the effective model/effort where the host exposes
+them. User/managed restrictions and native model precedence still apply; a
+substituted or unavailable model is a disclosed capability gap, not a
+successful run on it. A specialist model the user
 names that native Agent cannot select is not such a gap: check whether an installed
 harness from [external specialists](external.md) offers it and ask whether to run
 specialists there, otherwise ask before substituting. Missing nested delegation or

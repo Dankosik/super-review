@@ -5,7 +5,6 @@ argument-hint: "<PR URL or local scope> [files, lenses]"
 disable-model-invocation: true
 context: fork
 agent: super-review:defect-orchestrator
-model: opus
 background: false
 ---
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.23.0 — 2026-11-12
+
+Child agents default to cheaper models; the user still picks the orchestrator's model and can pick the children's. Super Review 3.23.0, Defect Review 0.10.0, Test Review 0.9.0 and Performance Review 0.2.0 share these defaults.
+
+- **Claude Code.** The review commands and orchestrators no longer pin `opus`: the orchestrator runs on the session's model and effort. Specialists, readers and challengers select `sonnet` at `medium` effort. No child defaults to an Opus- or Fable-class model.
+- **Codex.** Every child gets `gpt-6.1-terra` with `high` reasoning effort. Super Review no longer chooses between `gpt-6-luna` and `gpt-6-sol` per task.
+- **Explicit choice wins.** A model or effort the user names for children applies to every child and continuation of that review; in Claude Code the orchestrator passes it as the Agent call's `model` and `effort`. The orchestrator does not raise either on its own judgment.
+
+Not compared in model runs.
+
 ## 3.22.0 — 2026-11-12
 
 Super Review now asks whether code lives where a reader would look for it.

@@ -14,18 +14,11 @@ roles the spawn tool lists come from the reviewed repository or the user's agent
 library, and a role's own instructions and output format replace this review's
 packet, even when its name is `specialist` or `reviewer`. Repeat the candidate
 format in the packet. A child that returns another format, such as a single
-decision record, has not completed its task: rerun it as the default agent. Select a model for each assigned task from its pinned scope and
-known source signals, then pass the model and `medium` reasoning effort as native
-spawn arguments. Use `gpt-6-luna` only when the question is bounded to local
-declarations and complete, available callers, with no cross-file contract,
-ownership, lifecycle, observable-effect, compatibility, or policy uncertainty.
-Use `gpt-6-sol` for every other task, including incomplete context or a mixed
-area whose complexity is not yet known. A lens name, small diff, or economy
-request alone does not establish that Luna is adequate. Preserve the assigned
-lens, profiles, source extent, and evidence requirements on either model.
-An explicit user specialist model/effort choice overrides this routing. A focused
-continuation may move from Luna to Sol when new evidence broadens the question;
-record the actual model/effort for each task. An unavailable selected model or
+decision record, has not completed its task: rerun it as the default agent.
+Pass `gpt-6.1-terra` with `high` reasoning effort as native spawn arguments for
+every child. An explicit user specialist model/effort choice overrides this
+routing for every child and continuation in the review; do not change either on
+your own judgment. Record the actual model/effort for each task. An unavailable selected model or
 independent-child facility is a disclosed capability gap, not permission to
 silently substitute. Profiles deepen their owner and do not automatically add
 workers. An explicit user request to run specialists in another installed harness

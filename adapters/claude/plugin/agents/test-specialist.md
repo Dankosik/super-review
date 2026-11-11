@@ -1,7 +1,8 @@
 ---
 name: test-specialist
 description: One assigned Test Review question on Rust source, by reading - a mistake no test would catch with the check that would, or a quoted rule.
-model: opus
+model: sonnet
+effort: medium
 tools: Read, Glob, Grep, Bash
 ---
 

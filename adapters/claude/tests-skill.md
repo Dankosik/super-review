@@ -5,7 +5,6 @@ argument-hint: "<PR URL or local scope> [files, questions]"
 disable-model-invocation: true
 context: fork
 agent: super-review:test-orchestrator
-model: opus
 background: false
 ---
 

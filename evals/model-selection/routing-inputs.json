@@ -17,10 +17,10 @@
   },
   {
     "id": "focused-continuation",
-    "task": "A completed local naming pass used Luna. A focused continuation now needs to decide whether the name appears in a public wire format and check downstream callers. Choose a native Codex specialist model and effort for the continuation."
+    "task": "A completed local naming pass is finished. A focused continuation now needs to decide whether the name appears in a public wire format and check downstream callers. Choose a native Codex specialist model and effort for the continuation."
   },
   {
     "id": "explicit-override",
-    "task": "The user explicitly requests gpt-6-sol at high effort for every specialist. A local naming assignment is otherwise bounded and complete. Choose a native Codex specialist model and effort."
+    "task": "The user explicitly requests gpt-6-sol at medium effort for every specialist. A local naming assignment is otherwise bounded and complete. Choose a native Codex specialist model and effort."
   }
 ]
