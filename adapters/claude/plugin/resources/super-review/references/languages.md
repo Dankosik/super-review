@@ -76,6 +76,7 @@ inherit its effective language-specific rules, including disables and overrides.
 | unused-surface | abstractions | [Go](profiles/unused-surface.md) | [Java](profiles/java/unused-surface.md) | [TS](profiles/typescript/unused-surface.md) | [Rust](profiles/rust/unused-surface.md) |
 | defensive-checks | control-flow | [Go](profiles/defensive-checks.md) | [Java](profiles/java/defensive-checks.md) | [TS](profiles/typescript/defensive-checks.md) | [Rust](profiles/rust/defensive-checks.md) |
 | diagnostics | rationale | [Go](profiles/diagnostics.md) | [Java](profiles/java/diagnostics.md) | [TS](profiles/typescript/diagnostics.md) | [Rust](profiles/rust/diagnostics.md) |
+| existing-helpers | duplication | [Go](profiles/existing-helpers.md) | [Java](profiles/java/existing-helpers.md) | [TS](profiles/typescript/existing-helpers.md) | [Rust](profiles/rust/existing-helpers.md) |
 
 ## Frontend frameworks in TypeScript
 

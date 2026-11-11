@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.25.0 — 2026-11-12
+
+Super Review now asks who already does what a new helper does.
+
+- **New profile: existing-helpers** (owner duplication) for Go, TypeScript, Rust and Java. For each small function a change adds for a general operation (strings, collections, numbers, time, paths, retries, parsing, comparison), often at the bottom of a file, it searches in order: the standard library at the project's language version, a helper already in the repository under any name, a dependency already declared, and only for logic with real edge cases a widely used new dependency, named as a cost for the team to weigh. The reverse case too: the same helper written in several files is extracted once it has a second user today, to where the project keeps such helpers or to the concept it serves; a use that might come later is Speculative Generality. A replacement must behave the same on the edges callers reach (empty and absent values, Unicode, rounding, ordering and ties, errors); a helper with domain meaning, or a two-line one whose replacement needs a dependency, stays. Each language lists its version-bound standard operations and the edges that differ.
+- **Verification** applies the existing-owner search to helpers the change adds, not only to remedies the review proposes.
+
+Shaped by reading. Not compared in model runs.
+
 ## 3.24.0 — 2026-11-12
 
 Super Review says how it sizes a review: when to split an area, how many tasks it starts, and a compact mode for small changes.

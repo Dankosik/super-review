@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 const root = resolve(import.meta.dir, "..");
 const read = (path: string) => readFileSync(resolve(root, path), "utf8");
 const lenses = ["naming", "control-flow", "function-cohesion", "data-flow", "abstractions", "duplication", "api-clarity", "change-locality", "representation", "rationale", "conventions", "placement"];
-const profiles = ["lifecycle-ownership", "dependency-boundaries", "effects-separation", "error-expression", "unused-surface", "defensive-checks", "diagnostics"];
+const profiles = ["lifecycle-ownership", "dependency-boundaries", "effects-separation", "error-expression", "unused-surface", "defensive-checks", "diagnostics", "existing-helpers"];
 
 test("all languages share routing without loading a language-specific child fallback", () => {
   for (const path of ["skills/super-review/SKILL.md", "skills/super-review/references/workflow.md", "skills/super-review/references/verification.md", "adapters/claude/specialist.md", "adapters/opencode/agents/super-review-specialist.md"]) {
@@ -22,7 +22,7 @@ test("all languages share routing without loading a language-specific child fall
   expect((workflow.match(/^\| \[[a-z-]+\]\(lenses\//gm) ?? []).length).toBe(8);
   const catalog = read("skills/super-review/references/aspects.md");
   expect((catalog.match(/\| lens \|/g) ?? []).length).toBe(4);
-  expect((catalog.match(/\| profile \|/g) ?? []).length).toBe(7);
+  expect((catalog.match(/\| profile \|/g) ?? []).length).toBe(8);
   expect(read("skills/super-review/references/languages/rust.md")).toContain("../languages.md");
   expect(existsSync(resolve(root, "adapters/opencode/lib/languages.ts"))).toBe(false);
 });

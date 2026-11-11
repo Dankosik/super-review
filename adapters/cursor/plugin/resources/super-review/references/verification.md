@@ -87,7 +87,9 @@ Also read every use of a changed type or name including excluded tests, name
 collisions, and code left dead once optional regions are removed. A remedy that
 introduces a type, helper or constant needs a search of the snapshot for an
 existing owner: reuse it or say why a new one is needed. Repair or reject a
-remedy that fails.
+remedy that fails. The same search applies to a helper the change itself adds:
+an owner that already exists in the snapshot, the standard library or a
+declared dependency makes the new helper a candidate under existing-helpers.
 
 The target's own history is evidence too. When `git log` of the target files
 shows that a name or shape was introduced recently, changing it again needs a

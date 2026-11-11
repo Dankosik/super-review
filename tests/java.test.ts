@@ -13,6 +13,7 @@ const owners: Record<string, string> = {
   "unused-surface": "abstractions",
   "defensive-checks": "control-flow",
   "diagnostics": "rationale",
+  "existing-helpers": "duplication",
 };
 
 test("Java routing, exclusions and owner identities stay in native instruction packages", () => {
