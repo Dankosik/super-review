@@ -10,5 +10,6 @@
   "go.change.localize-existing-variation",
   "go.representation.express-concepts",
   "go.rationale.explain-constraints",
-  "go.conventions.follow-established-approach"
+  "go.conventions.follow-established-approach",
+  "go.placement.find-it-where-it-belongs"
 ]

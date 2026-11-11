@@ -10,5 +10,6 @@
   "rust.change.localize-existing-variation",
   "rust.representation.express-concepts",
   "rust.rationale.explain-constraints",
-  "rust.conventions.follow-established-approach"
+  "rust.conventions.follow-established-approach",
+  "rust.placement.find-it-where-it-belongs"
 ]

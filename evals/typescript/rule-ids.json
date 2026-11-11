@@ -10,5 +10,6 @@
   "ts.change.localize-existing-variation",
   "ts.representation.express-concepts",
   "ts.rationale.explain-constraints",
-  "ts.conventions.follow-established-approach"
+  "ts.conventions.follow-established-approach",
+  "ts.placement.find-it-where-it-belongs"
 ]

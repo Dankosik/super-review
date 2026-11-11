@@ -53,6 +53,7 @@ Existing `go.*`, `ts.*` and `rust.*` IDs retain their meaning; Java uses separat
 | representation | [Go](lenses/representation.md) | [Java](lenses/java/representation.md) | [TS](lenses/typescript/representation.md) | [Rust](lenses/rust/representation.md) |
 | rationale | [Go](lenses/rationale.md) | [Java](lenses/java/rationale.md) | [TS](lenses/typescript/rationale.md) | [Rust](lenses/rust/rationale.md) |
 | conventions | [Go](lenses/conventions.md) | [Java](lenses/java/conventions.md) | [TS](lenses/typescript/conventions.md) | [Rust](lenses/rust/conventions.md) |
+| placement | [Go](lenses/placement.md) | [Java](lenses/java/placement.md) | [TS](lenses/typescript/placement.md) | [Rust](lenses/rust/placement.md) |
 
 ## Contextual profiles
 

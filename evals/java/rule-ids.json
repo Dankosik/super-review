@@ -10,5 +10,6 @@
   "java.change.localize-existing-variation",
   "java.representation.express-concepts",
   "java.rationale.explain-constraints",
-  "java.conventions.follow-established-approach"
+  "java.conventions.follow-established-approach",
+  "java.placement.find-it-where-it-belongs"
 ]

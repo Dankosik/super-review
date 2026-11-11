@@ -42,8 +42,9 @@ operation replacing handwritten mechanics to duplication; signatures, overloads,
 `Optional` results and checked exceptions to api-clarity; records, enums, sealed
 types and value classes to representation; name forms to naming; helpers,
 classes, inheritance and interfaces to function-cohesion and abstractions; the
-project's established way of handling a concern to conventions. Report an idiom
-under the lens that owns it and leave the others to their owners.
+project's established way of handling a concern to conventions; where a
+declaration lives to placement. Report an idiom under the lens that owns it
+and leave the others to their owners.
 
 **Judgment.** An idiom earns a recommendation by what it removes: a null check,
 a branch, a mutable field, a second check, another place to edit. Favor
