@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.22.0 — 2026-11-12
+
+Super Review now asks whether code lives where a reader would look for it.
+
+- **New conditional lens: placement** (`go`/`ts`/`rust`/`java.placement.find-it-where-it-belongs`). For each declaration a change adds or moves: which package, module, directory or file would a reader who knows the concept but not the code open first, and does it live there? The lens names what it looks for with words a model already knows: Feature Envy at module level, Divergent Change at file level, a grab-bag `util` or `common`, colocation with the only user, and drift from the layout the module already uses consistently (by feature or by layer; one precedent is not a layout). A recommendation names the destination and the search it saves; code stays put when a move saves no search. Each language names what a move costs: Go's package as the unit and `internal/`; Rust's module path as part of the name, `pub use` to keep it and visibility that moves with the item; TypeScript's import paths, barrels, `exports`, module evaluation, framework-fixed files and `"use client"` boundaries; Java's package-private visibility, fully qualified names in reflection, `module-info` and Spring scanning. One decision spread across files stays with change-locality, dependency direction with dependency-boundaries, and the way a concern is handled with conventions.
+- Selected when a change adds, moves or renames files, modules, packages or directories, puts a declaration where the name describes another concept, grows a file with another responsibility, or adds to a `util`-like location. 52 stable rule IDs.
+
+Shaped by reading. Not compared in model runs.
+
 ## 3.21.0 — 2026-11-11
 
 A fourth skill, **Performance Review** 0.1.0 (experimental, Rust): it finds work a hot path does not need and proposes a cheaper form with the same observable behavior. Super Review, Defect Review and Test Review are unchanged.

@@ -51,8 +51,9 @@ moves and iteration to data-flow; a standard operation replacing handwritten
 mechanics to duplication; signatures and standard traits to api-clarity; types
 that carry facts to representation; conventional name forms to naming; helpers
 and layers to function-cohesion and abstractions; the project's established way
-of handling a concern to conventions. Report an idiom under the lens that owns
-it and leave the others to their owners.
+of handling a concern to conventions; where an item lives to placement.
+Report an idiom under the lens that owns it and leave the others to their
+owners.
 
 **Judgment.** An idiom earns a recommendation by what it removes: a branch, a
 binding, a second check, a lookup, another place to edit. Local mutation, an
