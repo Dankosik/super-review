@@ -54,7 +54,7 @@ if "$opencode_bin" --help 2>&1 | grep -q -- '--standalone'; then
     done
   fi
   worker="{\"model\":\"$worker_model\"}"
-  export OPENCODE_CONFIG_CONTENT="{\"default_agent\":\"super-review\",\"agent\":{\"super-review-specialist\":$worker,\"defect-reader\":$worker,\"defect-challenger\":$worker,\"test-reader\":$worker}}"
+  export OPENCODE_CONFIG_CONTENT="{\"default_agent\":\"super-review\",\"agent\":{\"super-review-specialist\":$worker,\"defect-reader\":$worker,\"defect-challenger\":$worker,\"test-reader\":$worker,\"perf-reader\":$worker,\"perf-challenger\":$worker}}"
   if [ "$#" -eq 0 ]; then
     exec "$opencode_bin" --standalone
   fi

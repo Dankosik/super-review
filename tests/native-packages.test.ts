@@ -39,6 +39,7 @@ test("OpenCode permits native source access and limits delegation to each review
     "super-review": ["super-review-specialist"],
     "defect-review": ["defect-reader", "defect-challenger"],
     "test-review": ["test-reader"],
+    "perf-review": ["perf-reader", "perf-challenger"],
   };
   for (const [primary, children] of Object.entries(primaries)) {
     for (const role of [primary, ...children]) {
@@ -62,6 +63,6 @@ test("OpenCode permits native source access and limits delegation to each review
     }
   }
   const models = JSON.parse(read("adapters/opencode/opencode.json")).agent;
-  expect(Object.keys(models).sort()).toEqual(["defect-challenger", "defect-reader", "super-review-specialist", "test-reader"]);
+  expect(Object.keys(models).sort()).toEqual(["defect-challenger", "defect-reader", "perf-challenger", "perf-reader", "super-review-specialist", "test-reader"]);
   for (const entry of Object.values(models) as any[]) expect(entry.model).toBe("{env:SUPER_REVIEW_SPECIALIST_MODEL}");
 });

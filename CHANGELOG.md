@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.21.0 — 2026-11-11
+
+A fourth skill, **Performance Review** 0.1.0 (experimental, Rust): it finds work a hot path does not need and proposes a cheaper form with the same observable behavior. Super Review, Defect Review and Test Review are unchanged.
+
+- **What a finding is.** Four parts, each checkable from the quoted lines: the hot path (where the code is reached from and why it runs often, on the evidence of the source, a document or benchmark in the repository, a profile the user supplies, or the user's words); a cost trace that counts the work for one unit and what multiplies it, into callees and dependencies at their `Cargo.lock` versions, never as invented milliseconds; a cheaper form and what it keeps (results, order, errors, drop timing, `Send` and `Sync`, public API); and the resource saved, set beside the path's largest cost for that resource. A candidate with a gap is unproven. A cheaper form that changes the public API, needs `unsafe`, adds a dependency or notably hurts readability is a tradeoff, with both sides shown.
+- **Six lenses**, one per independent reader, paired for a small change: complexity with allocation, async with contention, io with repeated-work. Each asks one question and has Expect, Look for and Not a finding sections, using names a model already knows: asymptotics, needless clone, allocation per iteration, blocking call on the async executor, lock held across `.await`, N+1, round trip, buffering and batching, contention and false sharing, loop-invariant work.
+- **Independent challenge** on four lines: the path is not hot, the work is not done, the cheaper form changes behavior, a larger cost swallows the saving. A claim about what the compiler does, from either side, needs a profile, a benchmark or a documented guarantee. Verdicts are `stands`, `falls` or `tradeoff`; the orchestrator walks every trace and decides.
+- **Report.** Outcomes are finding, tradeoff, unproven and rejected, ranked by work removed per unit: a change of complexity class, then a round trip or blocking wait per element, then an allocation per element, then constant work. It ends with instructions for whoever applies a finding: measure before and after, keep the change only if the gain shows, and say so when it does not.
+- **Reading only.** Nothing is built, run, benchmarked or profiled.
+- **Delivery.** `/super-review:perf` in Claude Code with the `perf-orchestrator`, `perf-reader` and `perf-challenger` roles, `$perf-review` in Codex, `/perf-review` in OpenCode with its own roles, and external harnesses on explicit request. The standalone archive is `perf-review-0.1.0-skill.zip`.
+- The design is recorded in the [family design](docs/review-family.md).
+
+Shaped by reading. Not used on a real repository and not compared in model runs.
+
 ## 3.20.0 — 2026-11-11
 
 Defect Review 0.9.0 and Test Review 0.8.0 get the writing changes of 3.19 that fit their own bar. Super Review's instructions are unchanged.
