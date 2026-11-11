@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.19.1 — 2026-11-11
+
+Republishes 3.19.0 with the same review instructions. The 3.19.0 GitHub release was created by hand before the tag's release job ran and was then deleted; releases are immutable, so that tag can carry no release. This version's release comes from the tag's own CI job. AGENTS.md now records how a release is published.
+
 ## 3.19.0 — 2026-11-11
 
 The orchestrator now decides what the code should become, not only which candidates survive, and the instructions say what to aim for instead of what to avoid.

@@ -60,3 +60,11 @@ quality. Record actual model/effort and raw failures as well as successes before
 claiming gains. Do not promote an experimental coverage/routing default without
 its behavioral comparison; context savings alone are insufficient. Publication,
 tags, marketplace updates and review comments need their own accepted scope.
+
+An accepted release ends at pushing the `v<version>` tag on the merged main
+commit: the `release` job in `.github/workflows/validate.yml` packages that tag
+and creates the GitHub release itself, and fails if one already exists. Releases
+are immutable: a tag whose release was published once can never carry another,
+even after that release is deleted, so a broken release needs a new version. Wait for
+that job, then pin the tag and its commit in the marketplace's `catalog.json`
+as [CONTRIBUTING.md](CONTRIBUTING.md) describes.
