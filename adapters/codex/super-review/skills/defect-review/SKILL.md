@@ -2,7 +2,7 @@
 name: defect-review
 description: "Use for an explicitly requested Defect Review: independent readers hunt bugs in Rust source of a PR or local tree by reading it, each bug traced through quoted lines, given a stated basis and tested by an independent challenge."
 metadata:
-  version: "0.8.0"
+  version: "0.9.0"
 ---
 
 # Defect Review
@@ -16,8 +16,7 @@ on what basis, and has survived an independent attempt to show it is not a
 bug.
 
 A written promise is one basis among several, not a precondition. A document
-that describes harmful behavior does not make it right. A suspicion that
-cannot be traced is not a finding.
+that describes harmful behavior does not make it right.
 
 The review reads. It does not clone, copy, build or run the project, fix
 what it finds or post comments. Readability, design taste, security and test

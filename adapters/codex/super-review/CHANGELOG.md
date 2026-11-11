@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.20.0 — 2026-11-11
+
+Defect Review 0.9.0 and Test Review 0.8.0 get the writing changes of 3.19 that fit their own bar. Super Review's instructions are unchanged.
+
+- **Defect Review: names for bug classes.** Lens items now carry the names a model already knows: off-by-one and fence-post (results), swallowed error and fail-open (errors), check-then-act across a suspension point (TOCTOU), lost update and lost wakeup (shared-state), fire-and-forget task, cancellation safety and leak (lifecycle), an unpropagated deadline (time). They label existing items and add no new demand.
+- **Defect Review: one cause, one candidate.** The orchestrator merges candidates with the same cause even when they surface at several places or through several lenses, and reports one candidate with each effect's trace. A candidate the orchestrator finds itself while reading goes through the same challenge as any other.
+- **Defect Review: when a lens is finished.** A lens is finished when every operation in its files has been taken through the lens's Expect list.
+- **Test Review: mutation-testing words.** A finding is a surviving mutant; a test that fails kills it; the witness separates an unpinned behavior from an equivalent mutant. Oracles names tautological assertions and assertions on the mock; determinism names flaky tests. Report counts read killed and surviving.
+- **Test Review: one witness for several findings.** Where several proven findings touch one operation, the orchestrator checks whether one witness kills all their mutants and gives it once.
+- **Test Review: closing instructions.** The report ends with instructions for whoever adds the tests: run each witness on the original code, apply its mutant locally and see the witness fail, revert, and report a witness that does not behave that way instead of adjusting it.
+
+Shaped by reading. Not compared in model runs.
+
 ## 3.19.1 — 2026-11-11
 
 Republishes 3.19.0 with the same review instructions. The 3.19.0 GitHub release was created by hand before the tag's release job ran and was then deleted; releases are immutable, so that tag can carry no release. This version's release comes from the tag's own CI job. AGENTS.md now records how a release is published.

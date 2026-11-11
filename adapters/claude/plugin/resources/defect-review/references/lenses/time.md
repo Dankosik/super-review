@@ -26,7 +26,8 @@ what is left running. Add up what a caller waits in total.
 - A fresh duration passed down where a deadline was computed above.
 - A stage outside the budget that should cover it: the limit starts after
   the lookup, the file read or the wait for a permit.
-- Sequential steps or retries that each get the whole budget.
+- Sequential steps or retries that each get the whole budget, instead of
+  sharing one propagated deadline.
 - A check that waits on something first and only then starts its own limit.
 - The caller going away recorded as a timeout; the limit elapsing recorded
   as another error because the inner error arrives first.

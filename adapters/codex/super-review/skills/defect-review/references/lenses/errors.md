@@ -34,10 +34,10 @@ cause is renamed.
   rejected credentials, a caller leaving reported as a timeout.
 - A catch-all that folds a distinguishable cause into a general one when a
   name for it exists.
-- An error mapped to `None`, an empty result or a default with nothing
-  recording it, or where the caller then acts on the substitute as fact:
-  "could not check" taken for "not there", a failed lookup taken for the
-  permissive default.
+- A swallowed error: mapped to `None`, an empty result or a default with
+  nothing recording it, or where the caller then acts on the substitute as
+  fact: "could not check" taken for "not there", a failed lookup taken for
+  the permissive default (fail-open).
 - The returned error says one thing and the metric label or log event
   another; one channel skipped on an early return.
 - A failure counted twice, or not at all.

@@ -6,8 +6,8 @@ in the outcome.
 ## Outcome
 
 The proven findings, the gap that lets most through first, and the counts:
-mutants considered, caught and not caught; findings by kind; unproven;
-rejected. With nothing proven, say that every mutant considered is caught
+mutants considered, killed and surviving; findings by kind; unproven;
+rejected. With nothing proven, say that every mutant considered is killed
 and name what was not probed.
 
 What was reviewed: the PR or local root and revision, the questions used and
@@ -29,10 +29,19 @@ every location. Or the two orders of events.
 
 **Lets through.** Which promised behavior could change unnoticed.
 
-**Test to add.** The witness, as written and not run, with where it goes.
-For a quoted rule, what the rule asks for, in the rule's own words.
+**Test to add.** The witness, as written and not run, with where it goes,
+or the finding whose witness also covers this one. For a quoted rule, what
+the rule asks for, in the rule's own words.
 
 ## Unproven and rejected
 
 One line each: the claim, and the missing piece or the counter-evidence.
 These are not findings and carry no advice.
+
+## For whoever adds these tests
+
+Close with these instructions for the person or agent that adds the tests:
+run each witness on the original code and see it pass; apply its mutant
+locally, see the witness fail, and revert the mutant; when a witness does not
+behave that way, report it against the finding instead of adjusting the test
+until it passes.

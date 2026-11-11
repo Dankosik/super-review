@@ -62,7 +62,8 @@ A candidate whose trace has a gap is **unproven**: listed apart with the
 missing step and without advice. Do not lower the bar because a candidate is
 plausible, because several readers suspect it, or because the review would
 otherwise report nothing. Attach no severity labels and design no fix.
-Finding one bug does not finish a lens, and finding none is a valid result.
+A lens is finished when every operation in its files has been taken through
+the lens's Expect list; finding none is then a valid result.
 
 ## Basis
 

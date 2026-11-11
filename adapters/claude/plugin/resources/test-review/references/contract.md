@@ -74,15 +74,15 @@ A promised behavior can break without any test failing. Four parts:
    lines: unit tests, integration tests, doc tests, tests in other packages.
    Search by the symbol and its callers. For each, say from its own lines
    why it still passes: its input does not take the changed branch, or it
-   asserts nothing the mutant changes. A test whose assertion would fail
-   catches the mutant, and there is no finding. A test the project's own
+   asserts nothing the mutant changes. A finding is a surviving mutant; a
+   test whose assertion would fail kills it, and there is no finding. A test the project's own
    test command never runs protects on paper only; name it apart.
 4. **The witness**: an input and an assertion that hold for the original
    code and fail for the mutant, followed through both with the lines that
    decide it. It asserts the promise and nothing more. Write it as a short
    test in the project's own style when that is easy, marked as not run.
 
-The witness separates an unpinned behavior from an equivalent rewrite. If
+The witness separates an unpinned behavior from an equivalent mutant. If
 none can be stated, the candidate is unproven.
 
 ### Quoted

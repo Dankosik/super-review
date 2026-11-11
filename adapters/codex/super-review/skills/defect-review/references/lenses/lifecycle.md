@@ -21,17 +21,17 @@ subscriptions, temporary files, permits, locks held across a wait. For each,
 find who learns how it ended, what ends it, and whether it is released on
 every path.
 
-- A handle dropped or stored and never awaited, so an error or panic ends
-  the work silently while the rest reports healthy.
+- A fire-and-forget task: a handle dropped or stored and never awaited, so
+  an error or panic ends the work silently while the rest reports healthy.
 - A task that outlives its owner, or is aborted in the middle of work that
   had to finish.
 - A background loop that exits on the first error and is never restarted.
 - Cleanup written after the work instead of in a guard, so an early return,
-  a `?` or a dropped future skips it.
+  a `?` or a dropped future skips it: the code is not cancellation-safe.
 - Shutdown that signals and does not wait, or waits without a limit.
 - Readiness reported before the thing is usable, or never withdrawn.
-- A queue, map, cache or list of handles that only grows: an entry added
-  per request, per key or per reconnect and never removed.
+- A leak: a queue, map, cache or list of handles that only grows, with an
+  entry added per request, per key or per reconnect and never removed.
 - A second supervisor after a reconnect; a retry that starts a new attempt
   while the old one runs.
 
