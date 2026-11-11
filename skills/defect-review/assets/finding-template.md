@@ -18,8 +18,9 @@ With no candidates, say so.
   declaration and what it says) or `principle` (who relies on it here).
 - Location: path, symbol and lines. For a change review, how the change
   introduces or exposes it, or `pre-existing`.
-- Trigger: the input, state or order of events, and why real use produces
-  it.
+- Trigger: the input, state or order of events, concrete enough for a test
+  to set up, and why real use produces it. Reach: whether this repository's
+  own code produces it, or only the public interface admits it.
 - Harm: who observes what, and what it costs them.
 - Proof: `traced` (numbered steps from trigger to effect, each with path,
   lines and quoted code; where you looked for something that would stop

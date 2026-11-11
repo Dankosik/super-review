@@ -53,9 +53,27 @@ not read or transfer credentials.
 ## Collect
 
 Apply the shared [concurrency policy](../workflow.md#resolve-policy-and-coverage)
-to external processes. Start them through the active harness's background shell
-facility where it exists and collect each exit through native completion, not
-polling. The process's final output is the task result: keep the complete task
+to external processes.
+
+Keep your processes apart from everyone else's: other reviews may run on
+the same machine with the same command line. Give this review its own
+directory outside the reviewed tree and start each process with absolute
+paths, recording its PID and, when it ends, its exit code there:
+`(<command> >task.out 2>task.err </dev/null; echo $? >task.exit) & echo $! >task.pid`.
+Wait on, retry or stop only those PIDs. Never select processes by name or
+command line, as `pgrep -f` or `pkill -f` do, and never read other runs'
+files or the harness's shared logs. Count other reviews' processes only to
+keep the machine's total within that limit.
+
+Do not end your turn while your processes run: an orchestrator whose turn
+ends can be torn down with everything it started, as your adapter says.
+Wait through the active harness's completion notice where it reaches you,
+otherwise in a foreground shell call that blocks until your exit files
+appear or the call's time limit nears, and repeat. A process that dies with
+a transport error just as your turn ended was stopped by you, not by the
+provider.
+
+The process's final output is the task result: keep the complete task
 header and candidates. A non-zero exit, timeout, empty output or other format is
 an unfinished task; rerun it once in a fresh process only for a transient
 failure, otherwise report the gap.

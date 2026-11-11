@@ -1,17 +1,19 @@
 # Defect Review
 
-Write in the user's language. Omit a section that would be empty and say so
-in the outcome.
+Write in the user's language. Attach no severity labels and give no fix
+advice. Omit a section that would be empty and say so in the outcome.
 
 ## Outcome
 
-The bugs that stood, most harmful and most ordinary trigger first, and the
-counts: bugs, disputed, drift, rule violations, unproven, rejected. With nothing found, say
-that no bug was shown in what was read.
+The bugs that stood, most harmful and most ordinary trigger first, those
+this repository's own code reaches before those only its public interface
+admits, and the counts: bugs, disputed, drift, rule violations, unproven,
+rejected. With nothing found, say that no bug was shown in what was read.
 
 What was reviewed: the PR or local root and revision, the lenses used and
-left out, what could not be read. Nothing was built or run; findings rest on
-reading.
+left out, what could not be read, where siblings of each bug were looked
+for, and files that changed during the review. Nothing was built or run;
+findings rest on reading.
 
 ## Bugs
 
@@ -19,8 +21,10 @@ reading.
 
 **Expected.** What should have happened, and the basis.
 
-**Does instead.** File, symbol and lines; the behavior and its trigger. For
-a change review, the link to the change, or `pre-existing`.
+**Does instead.** File, symbol and lines; the behavior and its trigger, as
+inputs and order of events a test could set up. Reach: this repository's
+own code, or only the public interface. For a change review, the link to the
+change, or `pre-existing`.
 
 **Harm.** Who observes what, and what it costs them.
 
