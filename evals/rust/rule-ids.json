@@ -9,5 +9,6 @@
   "rust.api.express-the-call",
   "rust.change.localize-existing-variation",
   "rust.representation.express-concepts",
-  "rust.rationale.explain-constraints"
+  "rust.rationale.explain-constraints",
+  "rust.conventions.follow-established-approach"
 ]

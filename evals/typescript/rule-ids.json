@@ -9,5 +9,6 @@
   "ts.api.express-the-call",
   "ts.change.localize-existing-variation",
   "ts.representation.express-concepts",
-  "ts.rationale.explain-constraints"
+  "ts.rationale.explain-constraints",
+  "ts.conventions.follow-established-approach"
 ]

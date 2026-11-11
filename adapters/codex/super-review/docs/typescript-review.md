@@ -1,7 +1,7 @@
 # TypeScript review support
 
-TypeScript uses the existing skill workflow, eight base questions, two contextual
-lenses, and four owner profiles. It is not a new agent, compiler pass, bug checker,
+TypeScript uses the existing skill workflow, eight base questions, three contextual
+lenses, and seven owner profiles. It is not a new agent, compiler pass, bug checker,
 or frontend-only mode. The orchestrator resolves the language-specific resources
 before delegation; a TypeScript task never needs the Go implementations.
 
