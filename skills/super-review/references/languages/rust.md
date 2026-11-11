@@ -45,11 +45,13 @@ job: a function before a type, a concrete type before a generic with one use,
 the next change something you can name, report it, however small.
 
 **Idiom owners.** Idiom is evidence inside the assigned lens, not a separate
-pass. Patterns, `?` and branch forms belong to control-flow; bindings, moves and
-iteration to data-flow; a standard operation replacing handwritten mechanics to
-duplication; signatures and standard traits to api-clarity; types that carry
-facts to representation; conventional name forms to naming; helpers and layers
-to function-cohesion and abstractions. Report an idiom under the lens that owns
+pass. Patterns, `?` and branch forms belong to control-flow, and a check for a case
+the types or code already rule out to its defensive-checks profile; bindings,
+moves and iteration to data-flow; a standard operation replacing handwritten
+mechanics to duplication; signatures and standard traits to api-clarity; types
+that carry facts to representation; conventional name forms to naming; helpers
+and layers to function-cohesion and abstractions; the project's established way
+of handling a concern to conventions. Report an idiom under the lens that owns
 it and leave the others to their owners.
 
 **Judgment.** An idiom earns a recommendation by what it removes: a branch, a

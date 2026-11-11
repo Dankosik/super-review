@@ -12,6 +12,10 @@ changed area, the user selects it, or a narrow read is needed to decide.
 | --- | --- | --- | --- |
 | [representation](lenses/representation.md) | lens | representation | Changed data shapes, linked collections, intermediate results, or encodings of existing modes/state. |
 | [rationale](lenses/rationale.md) | lens | rationale | Changed non-obvious choices, formulas, compatibility adaptations, caller obligations (including zero/nil, partial results, or ownership), or nearby contract/reason comments. No comment diff is required. |
+| [conventions](lenses/conventions.md) | lens | conventions | Changed code handles a recurring concern, such as errors, absence, logging, configuration, dependency construction, mapping between layers, value classes, HTTP or storage access, validation, time, identifiers, encoding, async or background work, shared state, or a project mechanism, or the change adds a dependency for such a concern. A rename or a purely local edit alone is insufficient. |
+| [unused-surface](profiles/unused-surface.md) | profile | abstractions | Changed parameters, options, configuration fields, results, exports, interface or trait methods, overloads, type parameters, `throws` clauses, Cargo features, variants or modes, a compatibility path, or a change that removes a use of an item that may have been its last. |
+| [defensive-checks](profiles/defensive-checks.md) | profile | control-flow | A changed guard for absence, emptiness, type, range or failure of a value whose origin is in reviewed source; a catch that only rethrows or that catches what nothing in the `try` throws; a fallback or default branch; validation repeated after parsing, or the same check repeated across functions that receive one value. Ordinary propagation of an error the callee can return is insufficient. |
+| [diagnostics](profiles/diagnostics.md) | profile | rationale | Changed log calls, error or exception messages, panic or `expect` messages, error responses, wrapping context, or a failure that is logged and also returned or rethrown. |
 | [lifecycle-ownership](profiles/lifecycle-ownership.md) | profile | data-flow | Changed acquisition, transfer, startup, shutdown, or multi-step use of a resource or background operation. |
 | [dependency-boundaries](profiles/dependency-boundaries.md) | profile | abstractions | Changed package boundaries, construction dependencies, configuration sources, or types crossing a boundary. |
 | [effects-separation](profiles/effects-separation.md) | profile | function-cohesion | A changed operation interleaves a meaningful computation with reads or writes to its environment. |
@@ -31,7 +35,8 @@ coverage rules; neither is an alternative eight-question plan.
 Without user narrowing, retain the eight-base-lens applicability plan and select
 each contextual aspect whose subject is present. Attach selected profiles to
 their owner's task for that area; they do not replace the base question or
-require separate workers. Several relevant profiles can share that owner;
+require separate workers. A selected profile whose owner is a conditional lens,
+such as diagnostics under rationale, selects that owner for the area. Several relevant profiles can share that owner;
 never add unrelated questions to a task. Do not load the whole profile library
 into every specialist.
 

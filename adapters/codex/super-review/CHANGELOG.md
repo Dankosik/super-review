@@ -1,5 +1,38 @@
 # Changelog
 
+## 3.18.0 — 2026-11-11
+
+Four new questions for what reviewers rarely look at, and a written standard of well-written code for Go, TypeScript and Java.
+
+- **Craft for Go, TypeScript and Java.** Rust already had a description of how an experienced author would write the operation today, and a map of which lens owns which idiom. The other three languages only told reviewers to apply language knowledge inside the assigned lens. Each now has its own Craft and Idiom owners sections, which name the defaults of the community sources (Effective Go, Code Review Comments and the Google Go guide; the TypeScript Handbook, typescript-eslint and the Google TS guide; Effective Java) rather than restating them. An idiom earns a recommendation by what it removes. Committed linter configuration (`.golangci.yml`, ESLint/Biome and `tsconfig` strictness, Checkstyle/PMD/Error Prone/SpotBugs) is the project's adopted choice.
+- **New conditional lens: conventions** (`go`/`ts`/`rust`/`java.conventions.follow-established-approach`). Does the change handle a recurring concern differently from how the codebase already handles it? Examples: errors, logging, configuration, HTTP clients, validation, time. The lens searches the owning package, module or crate first, then the repository or workspace for precedent. A single precedent, a deprecated form, or a split between two forms without a direction establishes nothing. When the established mechanism also does something the new code does not, the remedy stays unresolved if the difference is a decision (retrying, mapping errors); otherwise the recommendation states the effect. Reimplementing a helper stays with duplication (in Go, also abstractions).
+- **New profile: unused-surface** (owner abstractions). The profile looks for:
+  - parameters every caller passes the same;
+  - options nobody sets;
+  - exports with no importer;
+  - variants nothing constructs;
+  - the last use of an item that the change removed.
+
+  A used item declared wider than its users is visibility, which stays with dependency-boundaries. Visibility bounds the search. Framework, reflection and signature-fixed uses count as uses. A branch for a value from outside the code is not dead merely because nothing in the snapshot constructs it. An item only tests use is unused surface unless it is a deliberate seam.
+- **New profile: defensive-checks** (owner control-flow). A guard for a case the code already rules out tells readers the case can happen. A candidate needs the guarantee traced through quoted lines; without the trace the guard stays. Guards at trust boundaries stay. TypeScript types count as evidence only where checked code produced the value. The opposite shape, the same check repeated downstream, moves to the entry point.
+- **New profile: diagnostics** (owner rationale). Can a reader of a log record or error message tell which operation failed, on which subject? The profile covers:
+  - missing identifiers;
+  - context repeated across wrapping layers;
+  - one failure appearing several times in the output (which layer reports it stays with error-expression);
+  - inconsistent structured field names.
+
+  Rewording error text checks its consumers first. A level change classifies an outcome, so its remedy stays unresolved. New events and metrics are out of scope.
+- A selected profile whose owner is a conditional lens now selects that owner for the area; the workflow notes this exception to "profiles add no workers".
+
+Every claim about language practice was checked against its community source and corrected where the source disagreed. The sources were:
+- Go: Effective Go, Go Code Review Comments, the Google Go Style Guide;
+- TypeScript: the TypeScript Handbook, typescript-eslint, the Google TypeScript Style Guide;
+- Java: Effective Java, the JDK Javadoc and JEPs, the SLF4J and Spring documentation;
+- Rust: the Rust API Guidelines, the Cargo SemVer chapter, std, thiserror and anyhow;
+- across languages: Fowler's Refactoring and "Parse, don't validate".
+
+Four rounds of independent checks found and fixed errors, overstatements and contradictions with neighboring lenses and the review contract. The last round cut detail a current model already knows from those sources and kept the decision rules, the traps reviewers get wrong, and recent changes such as Next.js 16; the four language versions of each profile now share one structure. Go and Rust compiler behavior was checked with go 1.27 and rustc 1.98, and JavaScript behavior with node 26. Java and TypeScript compiler rules were checked against the JLS and the TypeScript documentation, not with javac or tsc. Not yet compared in model runs, and no evaluation cases were added.
+
 ## 3.17.0 — 2026-11-11
 
 Next round of fixes from the same 22 runs. Most problems surfaced only when the report was implemented.

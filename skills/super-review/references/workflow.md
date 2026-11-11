@@ -62,7 +62,8 @@ Resolve the table's lens names to their language-specific resources using
 [language routing](languages.md); the links above are Go implementations, not
 mandatory resources for TypeScript, Rust or Java. Partition mixed-language or large changes by
 language and coherent areas. Use one lens per child task. Attach
-profiles only to their owner's area; they do not automatically add workers.
+profiles only to their owner's area; they do not automatically add workers,
+except that a profile whose owner is a conditional lens selects that owner.
 Use a concurrency limit of eight active child tasks by default throughout the
 review, including follow-ups. An explicit user concurrency limit overrides the
 default; actual adapter/harness capacity and rate limits remain hard bounds.

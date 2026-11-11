@@ -4,12 +4,15 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dir, "..");
 const read = (path: string) => readFileSync(resolve(root, path), "utf8");
-const lenses = ["naming", "control-flow", "function-cohesion", "data-flow", "abstractions", "duplication", "api-clarity", "change-locality", "representation", "rationale"];
+const lenses = ["naming", "control-flow", "function-cohesion", "data-flow", "abstractions", "duplication", "api-clarity", "change-locality", "representation", "rationale", "conventions"];
 const owners: Record<string, string> = {
   "lifecycle-ownership": "data-flow",
   "dependency-boundaries": "abstractions",
   "effects-separation": "function-cohesion",
   "error-expression": "control-flow",
+  "unused-surface": "abstractions",
+  "defensive-checks": "control-flow",
+  "diagnostics": "rationale",
 };
 
 test("Java routing, exclusions and owner identities stay in native instruction packages", () => {

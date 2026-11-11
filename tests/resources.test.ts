@@ -4,8 +4,8 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dir, "..");
 const read = (path: string) => readFileSync(resolve(root, path), "utf8");
-const lenses = ["naming", "control-flow", "function-cohesion", "data-flow", "abstractions", "duplication", "api-clarity", "change-locality", "representation", "rationale"];
-const profiles = ["lifecycle-ownership", "dependency-boundaries", "effects-separation", "error-expression"];
+const lenses = ["naming", "control-flow", "function-cohesion", "data-flow", "abstractions", "duplication", "api-clarity", "change-locality", "representation", "rationale", "conventions"];
+const profiles = ["lifecycle-ownership", "dependency-boundaries", "effects-separation", "error-expression", "unused-surface", "defensive-checks", "diagnostics"];
 
 // File delivery and evaluation integrity only; these do not measure model judgment.
 for (const [language, prefix, directory] of [["go", "go", ""], ["typescript", "ts", "typescript/"], ["rust", "rust", "rust/"], ["java", "java", "java/"]]) {

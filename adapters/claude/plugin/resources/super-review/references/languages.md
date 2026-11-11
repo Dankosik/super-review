@@ -52,6 +52,7 @@ Existing `go.*`, `ts.*` and `rust.*` IDs retain their meaning; Java uses separat
 | change-locality | [Go](lenses/change-locality.md) | [Java](lenses/java/change-locality.md) | [TS](lenses/typescript/change-locality.md) | [Rust](lenses/rust/change-locality.md) |
 | representation | [Go](lenses/representation.md) | [Java](lenses/java/representation.md) | [TS](lenses/typescript/representation.md) | [Rust](lenses/rust/representation.md) |
 | rationale | [Go](lenses/rationale.md) | [Java](lenses/java/rationale.md) | [TS](lenses/typescript/rationale.md) | [Rust](lenses/rust/rationale.md) |
+| conventions | [Go](lenses/conventions.md) | [Java](lenses/java/conventions.md) | [TS](lenses/typescript/conventions.md) | [Rust](lenses/rust/conventions.md) |
 
 ## Contextual profiles
 
@@ -71,6 +72,9 @@ inherit its effective language-specific rules, including disables and overrides.
 | dependency-boundaries | abstractions | [Go](profiles/dependency-boundaries.md) | [Java](profiles/java/dependency-boundaries.md) | [TS](profiles/typescript/dependency-boundaries.md) | [Rust](profiles/rust/dependency-boundaries.md) |
 | effects-separation | function-cohesion | [Go](profiles/effects-separation.md) | [Java](profiles/java/effects-separation.md) | [TS](profiles/typescript/effects-separation.md) | [Rust](profiles/rust/effects-separation.md) |
 | error-expression | control-flow | [Go](profiles/error-expression.md) | [Java](profiles/java/error-expression.md) | [TS](profiles/typescript/error-expression.md) | [Rust](profiles/rust/error-expression.md) |
+| unused-surface | abstractions | [Go](profiles/unused-surface.md) | [Java](profiles/java/unused-surface.md) | [TS](profiles/typescript/unused-surface.md) | [Rust](profiles/rust/unused-surface.md) |
+| defensive-checks | control-flow | [Go](profiles/defensive-checks.md) | [Java](profiles/java/defensive-checks.md) | [TS](profiles/typescript/defensive-checks.md) | [Rust](profiles/rust/defensive-checks.md) |
+| diagnostics | rationale | [Go](profiles/diagnostics.md) | [Java](profiles/java/diagnostics.md) | [TS](profiles/typescript/diagnostics.md) | [Rust](profiles/rust/diagnostics.md) |
 
 ## Frontend frameworks in TypeScript
 

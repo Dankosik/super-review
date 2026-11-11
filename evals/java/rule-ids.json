@@ -9,5 +9,6 @@
   "java.api.express-the-call",
   "java.change.localize-existing-variation",
   "java.representation.express-concepts",
-  "java.rationale.explain-constraints"
+  "java.rationale.explain-constraints",
+  "java.conventions.follow-established-approach"
 ]

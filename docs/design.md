@@ -12,7 +12,7 @@ receive complete neutral task packets and return full reports through native
 agent results. The orchestrator verifies and reconciles evidence.
 
 Quality criteria, language routing, eight base questions, contextual aspects and
-33 stable rule IDs remain. A missing native facility is disclosed as a coverage
+48 stable rule IDs remain. A missing native facility is disclosed as a coverage
 gap; there is no fabricated independent review or silent fallback to live bytes.
 
 The tradeoff is explicit: there is no fixed reader allowlist, plugin-enforced

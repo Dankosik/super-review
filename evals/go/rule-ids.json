@@ -9,5 +9,6 @@
   "go.api.express-the-call",
   "go.change.localize-existing-variation",
   "go.representation.express-concepts",
-  "go.rationale.explain-constraints"
+  "go.rationale.explain-constraints",
+  "go.conventions.follow-established-approach"
 ]
