@@ -24,7 +24,7 @@ name the concrete cost: the two mechanisms a reader must reconcile, or the
 places a change to the concern would now need to cover. A new dependency that
 duplicates one the package already uses for the same role is strong evidence of
 a second way; a bridge between two libraries is compatibility. Spelling, import
-style and formatting are not findings unless they impose a concrete burden; team
+style and formatting become findings only when they impose a concrete burden; team
 rules and the project's lint configuration decide those. When the established
 mechanism also does something the new code does not, adopting it changes
 behavior. Where that difference is a decision, such as retrying, attaching

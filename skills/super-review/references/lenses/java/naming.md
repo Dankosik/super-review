@@ -4,14 +4,16 @@
 
 **Vocabulary.** Read names at their declarations and actual uses. Can the reader
 distinguish domain concepts, units, lifecycle states, and side effects without
-opening the implementation? Prefer a rename that removes demonstrated ambiguity
-over longer names that merely repeat a type or package.
+opening the implementation? Look for Mysterious Names. When no honest name
+comes, the concept itself is murky; say so. Prefer a rename that removes
+demonstrated ambiguity over longer names that merely repeat a type or package.
 
 Use established Java and project vocabulary. A meaningful method verb or a
 unit-bearing parameter can clarify a call; a short loop variable in a small scope
 may already be unambiguous. Compare `var` with an explicit local type by the
 information visible at the initializer and uses, not a universal rule for or
-against inference. Do not rename familiar API vocabulary for personal taste.
+against inference. Keep familiar API vocabulary when personal taste is the only
+reason to rename it.
 
 Before changing a class, method, property, enum constant, or parameter name,
 inspect relevant overrides, method references, serialization/binding annotations,

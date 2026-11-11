@@ -8,8 +8,9 @@ simplest expression of the same decisions, not the fewest lines.
 
 A supported `?`, `if let`, `let else` or `match` can expose intent. Keep a match
 whose arms express recovery or distinct work. Keep an ordinary loop when a
-combinator chain hides state, effects or stopping conditions. Do not translate
-all code into iterator pipelines or infer a finding from nesting alone.
+combinator chain hides state, effects or stopping conditions. Choose a pipeline
+where it states the decisions, and base a finding on what nesting hides rather
+than on its depth.
 
 Rust can let the check produce the value. An `unwrap`, `expect` or index that
 follows an `is_some`, `is_ok`, `is_empty` or `contains_key` test makes the

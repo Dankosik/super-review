@@ -3,13 +3,14 @@
 ## rust.naming.intent
 
 **Vocabulary.** Can a reader distinguish concepts, units, states and ownership
-transitions at declarations and actual uses? Explain the ambiguity that forces
-an extra mental mapping. Prefer vocabulary already used by the surrounding API.
+transitions at declarations and actual uses? Explain the Mysterious Name that
+forces an extra mental mapping. When no honest name comes, the concept itself is
+murky; say so. Prefer vocabulary already used by the surrounding API.
 
 Conversion names such as `as_`, `to_` and `into_`, and iterator names such as
 `iter`, `iter_mut` and `into_iter`, can communicate different access contracts.
 Judge the implementation and receiver; a consuming conversion may still allocate.
-Improve a misleading name, not every spelling that differs from a preference.
+Improve a misleading name; a spelling that only differs from a preference stays.
 Short local bindings and conventional lifetime parameters can already be clear.
 
 Rust readers predict a contract from established name forms. `new` is the
@@ -31,8 +32,9 @@ or meaning lives only with its author, where a named constant says it; a
 single-letter type parameter or closure argument where several share the scope
 and play different roles; one word abbreviated three ways in one module.
 
-Use a representative call to show the removed ambiguity. Adding type suffixes,
-getter prefixes or verbose lifetime names is not a benefit by itself. Distinguish
+Use a representative call to show the removed ambiguity. The benefit is the
+removed ambiguity; type suffixes, getter prefixes or verbose lifetime names do
+not supply it by themselves. Distinguish
 ordinary identifiers from public paths, trait method contracts and external names;
 assess their compatibility under the shared contract. Keep the demonstrated naming
 benefit separate from any unresolved migration decision.

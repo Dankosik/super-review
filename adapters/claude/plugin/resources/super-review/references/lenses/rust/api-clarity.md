@@ -11,8 +11,8 @@ before/after call or compatible clarification.
 protocol. A boolean is clear when the actual call communicates its alternatives;
 otherwise a named operation or mode can remove a lookup even for two alternatives.
 Borrowed views such as `&str` or `&[T]` fit access-only work; owned inputs can
-express storing, consuming or transferring data. Do not generalize every argument
-to `AsRef` or `IntoIterator` without an actual gain.
+express storing, consuming or transferring data. Generalize an argument to
+`AsRef` or `IntoIterator` where a caller actually gains from it.
 
 Standard conversion traits can make a conversion recognizable: `From` requires
 infallible work, but also a meaning-preserving, semantically lossless and reasonably
@@ -77,7 +77,7 @@ value and a builder. A builder can explain several existing independent choices;
 a simple constructor or struct literal may already do so. Keep required inputs
 visible. Reusable configuration can justify borrowed setters/building, while
 `build(self)` can express transfer of owned resources without artificial clones.
-Do not introduce a typestate builder merely to encode ordinary optional settings.
+Ordinary optional settings fit a plain builder, without typestate.
 
 Lifetime relationships are part of the call: a search key used only during lookup
 need not share the result's lifetime from `&self`. Prefer elision when it already

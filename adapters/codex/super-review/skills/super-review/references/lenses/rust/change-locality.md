@@ -4,8 +4,9 @@
 
 **Coordinated change.** Does one existing responsibility require editing scattered
 modules, parallel tables or unrelated branches? Trace a concrete supported change
-and identify coordination a new boundary would remove. Do not design for
-hypothetical future plugins or products.
+and identify the Shotgun Surgery a new boundary would remove. Design for
+variation present today; a boundary for hypothetical future plugins or products
+is Speculative Generality.
 
 A module, impl block or domain type can place related knowledge together. Several
 small files are not automatically better than one cohesive module; a new workspace

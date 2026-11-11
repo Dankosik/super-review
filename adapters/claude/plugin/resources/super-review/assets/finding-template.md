@@ -33,11 +33,10 @@ coverage remains `unfinished`, never an empty clean result.
   grounding current impact in the change and available new-side context. For
   local changes use the declared old/new views; for whole-project scope, anchor
   directly in that snapshot. Distinguish supporting context and state any
-  location ambiguity instead of guessing. Do not relocate an old-side observation
-  to invented H lines.
+  location ambiguity instead of guessing.
 - Basis: effective rule IDs and contributing profiles; identify convention-only advice.
-- Observation: source evidence and concrete reading/maintenance cost. State what is
-  established; an unsupported suspicion does not qualify.
+- Observation: source evidence and the concrete reading/maintenance cost, named
+  with the contract's vocabulary where a term fits. State what is established.
 - Remedy: supported improvement, or `unresolved` with the exact missing evidence
   or decision. Distinguish unavailable facts from a remaining tradeoff between
   supported alternatives; do not invent a source gap or a remedy. For a proposal,
@@ -58,6 +57,4 @@ coverage remains `unfinished`, never an empty clean result.
 
 Prefer verified paths/symbols to guessed lines. A small before/after example can
 clarify a supported change; a full patch is unnecessary. Explain evidence and
-tradeoffs, not a reasoning transcript or checklist score. Only the orchestrator
-accepts implementation recommendations; unresolved observations remain visible
-without becoming instructions to implement.
+tradeoffs, not a reasoning transcript or checklist score.

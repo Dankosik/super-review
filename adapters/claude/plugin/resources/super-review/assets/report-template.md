@@ -27,10 +27,8 @@ HEAD and, when it is not the default branch or is behind its upstream, the targe
 files that differ; Super Review version; `complete` or `partial`; independent or
 explicitly limited sequential execution; specialist model/profile and reasoning
 effort when available. Include trusted instruction revision/digests when exposed,
-otherwise `content identity unverified`, as defined by the contract. Do not confuse
-instruction provenance with B/H/D. A missing digest alone is not incomplete source
-coverage. Explain actual identity/scope conflicts. Candidate disposition and source
-coverage are separate: an unresolved remedy is not a missing worker.
+otherwise `content identity unverified`, as defined by the contract, apart from
+B/H/D. Explain actual identity/scope conflicts.
 
 ## Applied rules
 
@@ -85,8 +83,7 @@ Repeat for **every** accepted recommendation, including merged contributions.
 State only real dependencies, independent accepted changes, or labeled alternatives.
 Use the reconciled resulting design: recommendations that were alternatives must
 not become consecutive mandatory steps. Name any remaining shared prerequisite.
-Unresolved observations are not implementation steps. Do not manufacture a project
-for a simple change.
+A simple change stays a single step.
 
 ## Limits and decisions
 

@@ -4,13 +4,15 @@
 
 **Explicit concepts.** Can readers understand implemented states and their data
 from the representation, or reconstruct a protocol across flags, sentinels or
-parallel collections? Explain the burden assuming the implementation works as
-intended. Bug prevention alone is outside scope.
+parallel collections? Primitive Obsession and Data Clumps are the usual shapes
+of this burden. Explain it assuming the implementation works as intended. Bug
+prevention alone is outside scope.
 
 An enum with associated data, an existing domain type or a small newtype can give
 an implicit concept one home. Keep tuples, options or primitives when the local
-operation already explains them. Do not introduce typestate machinery or wrap
-every value merely because Rust can encode it.
+operation already explains them. Typestate machinery or a wrapper earns its
+place by expressing a concept the code already maintains, not because Rust can
+encode it.
 
 Compare the current representation with its strongest simpler alternative through
 one complete read or transition. Name the relationships each leaves the maintainer
@@ -50,7 +52,7 @@ non-empty collection type. Where that is impractical, a newtype with a private
 field and a validating constructor lets each consumer state what it requires in
 its signature. Trace the other ways to build it, such as `Deserialize`,
 `Default`, a public field or a `From` impl, before calling the property
-carried, and do not introduce a type to remove a single unreachable branch.
+carried; a single unreachable branch is too little to carry a new type.
 
 Distinguish a useful semantic name from a stronger type guarantee. An explicit
 wildcard variant can remove the need to connect parsing with empty-iterator

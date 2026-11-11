@@ -9,9 +9,10 @@ module side effect, ownership transfer, or supported consumer limitation.
 
 Read surrounding source and available uses before declaring a comment missing.
 A reason already expressed by a discriminant, useful name, or self-contained type
-needs no restatement. Avoid comments that narrate syntax or require a ceremonial
-JSDoc block on every export. Do not assert business rationale the source does not
-establish; record that uncertainty rather than invent an explanation.
+needs no restatement. Comment the reason the syntax cannot show, and give an export
+a JSDoc block where it has something to explain. Do not assert business
+rationale the source does not establish; record that uncertainty rather than
+invent an explanation.
 
 A suppression or assertion may deserve a bounded explanation, not automatic removal.
 Keep comments with the decision they explain and preserve public documentation

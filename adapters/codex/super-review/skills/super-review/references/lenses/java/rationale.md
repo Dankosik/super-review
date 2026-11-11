@@ -11,8 +11,9 @@ need for commentary; retain a useful explanation rather than calling it noise.
 Javadoc can explain supported null/absence, ownership, live view versus snapshot,
 required sequencing, units, and exception meaning that a signature cannot convey.
 Comments can preserve evidence-backed reasons for framework constraints, deliberate
-copying, ordering, or compatibility workarounds. Do not restate each accessor,
-require Javadoc on every method, or invent a rationale from a plausible story.
+copying, ordering, or compatibility workarounds. Spend comments on what the code
+cannot say, which a restated accessor or Javadoc on every method does not add.
+Do not invent a rationale from a plausible story.
 Annotation-driven contracts may need a short explanation, not another layer.
 
 Remove or update an explanation only with evidence that it is redundant or stale
