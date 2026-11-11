@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/banner.webp" alt="Super Review: an octopus with a magnifying glass reviewing code on a laptop" width="820">
+  <img src=".github/banner.webp" alt="Super Review: an octopus with a magnifying glass reviewing code on a laptop" width="520">
 </p>
 
 <p align="center">
