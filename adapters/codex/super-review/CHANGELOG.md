@@ -1,5 +1,32 @@
 # Changelog
 
+## 3.17.0 — 2026-11-11
+
+Next round of fixes from the same 22 runs. Most problems surfaced only when the report was implemented.
+
+- **A remedy must not duplicate an existing owner.** One recommendation added a `CleanupDisposition` type that infra-webhooks already had; the repository's duplication gate caught it during implementation. A remedy that introduces a type, helper or constant now needs a search of the snapshot for an existing owner. The orchestrator either reuses the owner or says why a new one is needed.
+- **Remedy checks cover more project checks.** The viability check from 3.16 covered lints only. It now also reads the other checks the project's CI or build files run, without running them:
+  - duplication baselines;
+  - generated or template-region markers;
+  - documentation checks.
+
+  The reviewed repository has no `SUPER_REVIEW.md`, and runs met these only when implementing.
+- **Recent names and shapes stay put without a reason.** Re-reviews renamed names that had just been introduced (`timer` → `watcher`, `Admission`) and revived proposals rejected days before. When `git log` of the target files shows a name or shape is recent, changing it now needs a burden it causes, not a preference. Only the orchestrator uses this history; specialists still get none.
+- **The report closes with three instructions for whoever implements it.** In every run the user answered "внеси все рекомендации". The implementing agent then:
+  - settled unresolved items itself, including a JWKS `key_ops` relaxation;
+  - departed from recommendations without saying so;
+  - changed code beyond the report.
+
+  The three instructions are: implement only accepted recommendations, keep the stated observable effects, and name any departure and its reason.
+- **Defect Review 0.8.0 and Test Review 0.7.0 get the external-harness launch rules from 3.16:**
+  - OpenCode effort is passed as `provider/model#variant`, with no metadata probing or trial tasks;
+  - the user's own OpenCode configuration is never loaded;
+  - a model or effort that cannot be honored stops dispatch with a question, never a substitution disclosed afterwards.
+
+  Their source rules are unchanged: they read the branch with its uncommitted work by design.
+
+Checked by reading against the runs; not yet tried in a model run.
+
 ## 3.16.0 — 2026-11-11
 
 Fixes from 22 Super Review runs on `rust-service-template-rest` (skill 3.5–3.10; specialists on Sonnet, Opus and DeepSeek Flash in OpenCode). Across them, about 400 recommendations reached `main` in about 25 PRs, and none turned out to be wrong in substance. What failed was process.
