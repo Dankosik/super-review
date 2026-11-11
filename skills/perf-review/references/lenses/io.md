@@ -52,7 +52,5 @@ what sets that number.
 - A client the dependency documents or implements as cheap to create, or
   whose clones share one pool. Read its source at the locked version before
   claiming either way.
-- Fewer system calls where the device or the peer is the bottleneck,
-  offered as a latency gain: the wait stays, and the saving is CPU.
 - A file read per request whose content does not change between requests
   belongs to [repeated-work](repeated-work.md).

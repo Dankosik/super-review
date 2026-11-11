@@ -154,8 +154,9 @@ errors in a way callers rely on is not a candidate.
 
 Name what the saving buys: the latency of one request, CPU or throughput
 under load, allocations and the allocator's work, time callers wait on a
-lock, I/O operations or round trips. Then name the largest cost on the same
-path for the same resource. A network round trip per request dominates that
+lock, I/O operations or round trips. Then apply Amdahl's law: name the
+largest cost on the same path for the same resource, and the share of it the
+saving touches. A network round trip per request dominates that
 request's latency, not the CPU the service spends on it: removing an
 allocation there saves CPU, and the finding says so. A saving that the
 dominant cost hides from every caller and operator is rejected. Work moved

@@ -38,10 +38,10 @@ Take each claim through all four.
    or a buffer? Does it build within the project's `rust-version`, features
    and targets? A change the team could accept makes the claim a tradeoff;
    one callers rely on, or a form that does not build, makes it fall.
-4. **A larger cost swallows the saving.** Find the largest cost on the same
-   path for the same resource. Is the saving still visible to a caller or
-   operator beside it? A network wait swallows a CPU saving's effect on
-   latency, not its effect on CPU.
+4. **A larger cost swallows the saving (Amdahl).** Find the largest cost on
+   the same path for the same resource. Is the saving still visible to a
+   caller or operator beside it? A network wait swallows a CPU saving's
+   effect on latency, not its effect on CPU.
 
 ## Verdicts
 

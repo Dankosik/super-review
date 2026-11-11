@@ -53,7 +53,5 @@ then what each iteration does with other collections.
 - One collection over another of the same complexity for this use, or a
   hand-written loop over a standard operation already in the better class,
   such as `retain` or `sort`.
-- A faster pass over rows beside the query that fetched them, offered as a
-  latency gain: the query is the wait, and the pass saves CPU.
 - Sequential CPU work that could run in parallel: splitting it spends more
   CPU for less latency, a tradeoff at most.

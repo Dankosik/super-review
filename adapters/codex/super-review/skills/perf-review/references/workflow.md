@@ -111,7 +111,9 @@ challenger's tone or agreement between agents is not evidence.
 - **Check the cheaper form.** Walk it through the inputs the entry admits:
   empty, one, duplicates, a failure halfway, a dropped future. Check that it
   builds within the project's `rust-version`, features and targets. Name
-  everything it changes.
+  everything it changes. When you see a form that removes more of the work,
+  such as a borrow where the reader reserved capacity, use it instead; check
+  the new form the same way, yourself or through the challenger.
 - **Weigh the challenge as an argument, not a ruling.** A `falls` needs
   specific quoted counter-evidence; check it. "The compiler optimizes this"
   defeats nothing without a profile, a benchmark or a documented guarantee.

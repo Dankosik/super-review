@@ -1,6 +1,6 @@
 # Defect Review
 
-Defect Review hunts bugs by reading. It is one of three reviews in this
+Defect Review hunts bugs by reading. It is one of four reviews in this
 repository; the [family design](review-family.md) explains how they relate
 and why none of them runs the project.
 

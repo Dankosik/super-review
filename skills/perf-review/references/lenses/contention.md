@@ -43,9 +43,6 @@ writes.
 - A lock nobody takes concurrently: a single-threaded runtime, a value one
   task owns, a lock taken once per batch rather than per item. Contention
   needs callers that overlap, shown from the source or a profile.
-- A narrower critical section that callers hold briefly on a path that also
-  waits on the network: the queue it removes is small beside that wait, and
-  the finding has to say so.
 - A critical section that must include the work to keep an invariant, such
   as a check and an update that have to happen together. Narrowing it
   changes behavior.

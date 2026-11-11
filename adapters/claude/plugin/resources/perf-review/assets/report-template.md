@@ -5,10 +5,8 @@ timings. Omit a section that would be empty and say so in the outcome.
 
 ## Outcome
 
-The findings that stood, ranked by the work they remove per unit: a change
-of complexity class first, then a round trip, system call or blocking wait
-per element, then an allocation or copy per element, then constant work per
-request. Then the counts: findings, tradeoffs, questions for the user,
+The findings that stood, in the workflow's ranking by the work they remove
+per unit. Then the counts: findings, tradeoffs, questions for the user,
 unproven, rejected. With nothing found, say that no unneeded work was shown
 on the hot paths that were read.
 

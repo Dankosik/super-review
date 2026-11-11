@@ -52,6 +52,3 @@ only read, compared or lent and then dropped was not needed.
 - `collect` into a `Vec` from an iterator whose length is known, such as a
   `map` over a slice: it already allocates once. Check the chain, since an
   adapter such as `filter` loses the exact length.
-- One allocation per request on a path that also waits on a network round
-  trip per request, offered as a latency gain. It saves CPU under load; say
-  that, or leave it.

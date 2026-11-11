@@ -55,7 +55,7 @@ test("the challenge is independent and its verdicts are arguments the orchestrat
     expect(challenge).toContain(verdict);
     expect(template).toContain(verdict);
   }
-  for (const line of ["**The path is not hot.**", "**The work is not done.**", "**The cheaper form changes behavior.**", "**A larger cost swallows the saving.**"]) expect(challenge).toContain(line);
+  for (const line of ["**The path is not hot.**", "**The work is not done.**", "**The cheaper form changes behavior.**", "**A larger cost swallows the saving (Amdahl).**"]) expect(challenge).toContain(line);
   expect(challenge).toContain("It does not get the reader's reasoning");
   expect(challenge).toContain("Doubt is not a verdict.");
   const workflow = read("skills/perf-review/references/workflow.md");
@@ -70,7 +70,8 @@ test("the challenge is independent and its verdicts are arguments the orchestrat
 test("the report ranks by work removed, asks the user what only they know, and hands measurement to whoever applies it", () => {
   const report = flat("skills/perf-review/assets/report-template.md");
   for (const section of ["## Findings", "### Constant work per request", "## Tradeoffs", "## Needs your confirmation", "## Unproven and rejected", "## Before applying"]) expect(report).toContain(section);
-  expect(report).toContain("a change of complexity class first, then a round trip, system call or blocking wait per element, then an allocation or copy per element, then constant work per request");
+  expect(report).toContain("in the workflow's ranking by the work they remove");
+  expect(flat("skills/perf-review/references/workflow.md")).toContain("a change of complexity class first, then a round trip, system call or blocking wait per element, then an allocation or copy per element, then constant work per request");
   expect(report).toContain("Measure a release build on the same machine and workload, before and after, in the way the saved resource demands");
   expect(report).toContain("A single-threaded benchmark shows nothing here.");
   expect(report).toContain("Keep the existing tests passing");
