@@ -24,7 +24,16 @@ finding is proven by a trace through quoted lines.
 another at run time. Do not let one skill's criterion into another: a defect
 is not a readability finding, and a weak test is not a defect.
 
-For these two skills, settle the design before writing instructions, and do
+`skills/perf-review` is a third such skill. Performance Review finds work a
+Rust hot path does not need: a finding shows why the path runs often, traces
+the work for one unit through quoted lines, gives a cheaper form with the
+same behavior and names the resource it saves, and survives an independent
+challenge. It reads only, like the others; a profile or benchmark output the
+user supplies is evidence, and measuring a change is left to whoever applies
+it. Slow code is not a defect, and fast code that reads badly is not a
+performance finding.
+
+For these three skills, settle the design before writing instructions, and do
 not treat a model run as a step in writing them. Keep them short: state the
 bar and where bugs or gaps live, and leave out procedure for recording the
 reviewer's own work. A review of a real

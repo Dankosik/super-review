@@ -20,6 +20,7 @@
   <a href="#how-it-works">How it works</a> ·
   <a href="#defect-review-experimental-rust">Defect Review</a> ·
   <a href="#test-review-experimental-rust">Test Review</a> ·
+  <a href="#performance-review-experimental-rust">Performance Review</a> ·
   <a href="#faq">FAQ</a>
 </p>
 
@@ -33,17 +34,18 @@ verified recommendations.
 It only reads. It never edits, builds or runs your code, and it never posts
 comments on your PR.
 
-## Three reviews, one plugin
+## Four reviews, one plugin
 
 | Review | Question it answers | Languages |
 | --- | --- | --- |
 | **Super Review** | Is this code easy to read and safe to change? | Go, TypeScript, Rust, Java |
 | **[Defect Review](#defect-review-experimental-rust)** · experimental | Where is the bug, and can you trace it through the code? | Rust |
 | **[Test Review](#test-review-experimental-rust)** · experimental | Would the tests fail if a plausible bug appeared? | Rust |
+| **[Performance Review](#performance-review-experimental-rust)** · experimental | Where does a hot path do work it does not need? | Rust |
 
-The three share no policy. A readability review never reports bugs, and a bug
-hunt never comments on style. [The family design](docs/review-family.md)
-explains why.
+The four share no policy. A readability review never reports bugs, a bug
+hunt never comments on style, and slow code is not a bug.
+[The family design](docs/review-family.md) explains why.
 
 ## Quick start
 
@@ -282,13 +284,57 @@ It does not build or run your tests, so it is not a mutation-score tool. Rust
 only, in Claude Code, Codex and OpenCode. See [the design](docs/test-review.md)
 and [the contract](skills/test-review/references/contract.md).
 
+## Performance Review (experimental, Rust)
+
+A fourth skill finds work your Rust code does not need on paths that run
+often.
+
+```text
+/super-review:perf Review the request path of crates/api in the current project.
+$perf-review Find unneeded work on the hot paths this PR touches.
+/perf-review Find unneeded work on the hot paths this PR touches.   (OpenCode)
+```
+
+Independent readers each take one lens, or a related pair for a small change:
+complexity, allocation, async, I/O, contention and repeated work. A finding
+needs:
+
+- a **hot path**: where the code is called from and why it runs often for
+  the program's unit of work (a request, a message, one run of a
+  command-line tool), on the evidence of the source, a document, a profile
+  you supply, or your word;
+- a **cost trace**: the work done for one unit, each step as a quoted line,
+  counted against what multiplies it ("one allocation per row × rows in the
+  request"), never invented milliseconds;
+- a **cheaper form** with the same observable behavior, and the
+  **resource** it saves, set beside the path's largest cost;
+- survival of an **independent challenge** that tries to show the path is
+  cold, the work is not done, the cheaper form changes behavior or a larger
+  cost swallows the saving.
+
+A cheaper form that changes the public API, needs `unsafe`, makes the code
+notably harder to read or buys throughput with each item's latency is
+reported as a tradeoff, with both sides. Findings are ranked by the work
+they remove, not by severity labels. For a whole project the review starts
+from where work enters the program and lists those entries. Candidates that
+wait only on whether a path is hot come back to you as questions.
+
+It runs no benchmark or profiler, so it shows work removed, not time saved.
+The report ends by asking whoever applies a finding to measure before and
+after in the way the saved resource demands, a benchmark for CPU and load at
+production concurrency for contention, and to keep the change only if the
+gain shows. Rust only, in Claude
+Code, Codex and OpenCode. See
+[the design](docs/review-family.md#how-performance-review-shows-a-cost) and
+[the contract](skills/perf-review/references/contract.md).
+
 ## FAQ
 
 <details>
 <summary><b>Does Super Review change or run my code?</b></summary>
 
-No. All three reviews only read. They do not clone, copy, build or run your
-project, run its checks, or post comments on a PR.
+No. All four reviews only read. They do not clone, copy, build or run your
+project, run its checks or benchmarks, or post comments on a PR.
 
 </details>
 
@@ -298,7 +344,8 @@ project, run its checks, or post comments on a PR.
 Super Review does not: it assesses readability and maintainability only, not
 bugs, security, product requirements or test coverage. For bugs in Rust, use
 the experimental [Defect Review](#defect-review-experimental-rust); for gaps
-in Rust tests, [Test Review](#test-review-experimental-rust).
+in Rust tests, [Test Review](#test-review-experimental-rust); for unneeded
+work on Rust hot paths, [Performance Review](#performance-review-experimental-rust).
 
 </details>
 
@@ -314,8 +361,8 @@ is tested to be equivalent.
 <details>
 <summary><b>Which languages and file types are supported?</b></summary>
 
-Go, TypeScript/TSX, Rust and Java for Super Review; Rust for Defect Review
-and Test Review. Tests, generated and vendored code are excluded from
+Go, TypeScript/TSX, Rust and Java for Super Review; Rust for Defect Review,
+Test Review and Performance Review. Tests, generated and vendored code are excluded from
 Super Review. JavaScript/JSX, CSS and MDX are not standalone targets.
 
 </details>

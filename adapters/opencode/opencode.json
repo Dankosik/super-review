@@ -12,6 +12,12 @@
     },
     "test-reader": {
       "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
+    },
+    "perf-reader": {
+      "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
+    },
+    "perf-challenger": {
+      "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
     }
   }
 }

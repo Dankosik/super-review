@@ -45,6 +45,7 @@ const openCodeRoles: Record<string, string[]> = {
   "super-review": ["super-review-specialist"],
   "defect-review": ["defect-reader", "defect-challenger"],
   "test-review": ["test-reader"],
+  "perf-review": ["perf-reader", "perf-challenger"],
 };
 for (const [primary, children] of Object.entries(openCodeRoles)) {
   for (const role of [primary, ...children]) {
@@ -110,11 +111,12 @@ for (const directory of ["skills/super-review", "adapters/claude/plugin", "adapt
 for (const file of [".codex-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json", "adapters/cursor/plugin/.cursor-plugin/plugin.json"]) {
   if (JSON.parse(await readFile(join(root, file), "utf8")).mcpServers) errors.push("Legacy server declaration in " + file);
 }
-// Defect Review and Test Review: separate skills with their own contracts, versions and roles.
-// Both read only: no role may hold Write or Edit.
-for (const [name, command, title] of [
-  ["defect-review", "defects", "Defect Review"],
-  ["test-review", "tests", "Test Review"],
+// Defect Review, Test Review and Performance Review: separate skills with their own contracts, versions and roles.
+// All read only: no role may hold Write or Edit.
+for (const [name, command, title, reader, challenger] of [
+  ["defect-review", "defects", "Defect Review", "specialist", true],
+  ["test-review", "tests", "Test Review", "specialist", false],
+  ["perf-review", "perf", "Performance Review", "reader", true],
 ] as const) {
   const skillRoot = join(root, "skills", name);
   const files = await walk(skillRoot);
@@ -128,9 +130,9 @@ for (const [name, command, title] of [
   const role = name.split("-")[0];
   const route = frontmatter(await readFile(join(root, "adapters/claude/plugin/skills/" + command + "/SKILL.md"), "utf8"));
   if (route.context !== "fork" || route.background !== false || route.agent !== "super-review:" + role + "-orchestrator" || route["disable-model-invocation"] !== true || route.model !== "opus" || route.effort) errors.push("Claude " + command + " command routing differs from the explicit isolated review.");
-  const reader = ["Read", "Glob", "Grep", "Bash"];
-  const roles: Array<[string, readonly string[]]> = [["orchestrator", ["Agent", ...reader]], ["specialist", reader]];
-  if (name === "defect-review") roles.push(["challenger", reader]);
+  const tools = ["Read", "Glob", "Grep", "Bash"];
+  const roles: Array<[string, readonly string[]]> = [["orchestrator", ["Agent", ...tools]], [reader, tools]];
+  if (challenger) roles.push(["challenger", tools]);
   for (const [suffix, expectedTools] of roles) {
     const agent = frontmatter(await readFile(join(root, "adapters/claude/plugin/agents/" + role + "-" + suffix + ".md"), "utf8"));
     if (agent.model !== "opus" || agent.effort) errors.push("Claude " + role + "-" + suffix + " must select Opus and inherit session effort.");

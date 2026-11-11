@@ -41,7 +41,7 @@ test("OpenCode 2 launcher uses a private server, keeps global config and selects
   expect(out).toContain("CONFIG=" + join(xdg, "opencode/opencode.json"));
   const content = JSON.parse(out.match(/^CONTENT=(.*)$/m)![1]);
   const worker = { model: "prov/model-1" };
-  expect(content).toEqual({ default_agent: "super-review", agent: { "super-review-specialist": worker, "defect-reader": worker, "defect-challenger": worker, "test-reader": worker } });
+  expect(content).toEqual({ default_agent: "super-review", agent: { "super-review-specialist": worker, "defect-reader": worker, "defect-challenger": worker, "test-reader": worker, "perf-reader": worker, "perf-challenger": worker } });
 });
 
 test("the launcher finds its package when started through a symbolic link", () => {

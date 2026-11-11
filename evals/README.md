@@ -19,6 +19,7 @@ credential is required by this repository. Missing execution capability means
 | Native delegation, local snapshots and delivery | [native-host](native-host/README.md) and the current adapter configuration tests |
 | Defect Review proof, challenge or lens rules | [defect-review](defect-review/README.md): a review of a real repository, with the maintainer checking each trace; fixture checks do not apply |
 | Test Review proof or question rules | [test-review](test-review/README.md): a review of a real repository, with the maintainer checking each mutant and witness by reading |
+| Performance Review hot path, cost trace, challenge or lens rules | A review of a real repository, with the maintainer checking each hot path and cost trace by reading and measuring any finding before applying it; fixture checks do not apply. None has been run yet. |
 | Historical routing, model selection or waiting experiments | Their own revision-specific protocols; do not apply a 2.x runtime experiment to 3.x by text substitution. |
 
 Do not run every historical experiment for an unrelated edit. New input should
