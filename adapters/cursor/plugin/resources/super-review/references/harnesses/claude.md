@@ -35,6 +35,9 @@ questions remain unusually difficult. Set the session effort before starting a
 review; the native specialist role does not vary effort per lens. Record the
 effective model/effort where the host exposes them. User/managed restrictions and
 native model precedence still apply; a substituted or unavailable Opus is a
-disclosed capability gap, not a successful Opus run. Missing nested delegation or
+disclosed capability gap, not a successful Opus run. A specialist model the user
+names that native Agent cannot select is not such a gap: check whether an installed
+harness from [external specialists](external.md) offers it and ask whether to run
+specialists there, otherwise ask before substituting. Missing nested delegation or
 source access is likewise a gap. Preserve task headers and all candidates, then
 return the full report.

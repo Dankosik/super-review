@@ -25,7 +25,10 @@ guess flags from memory. Typical entry points, subject to that check:
   with `OPENCODE_CONFIG_DIR` set to the extracted Super Review OpenCode package
   and `OPENCODE_DISABLE_PROJECT_CONFIG=1`. Add `--standalone` when `--help` lists
   it: the shared background service ignores this environment. Without the
-  package, report the gap; OpenCode's default agents can edit files.
+  package, report the gap; OpenCode's default agents can edit files. Pass effort
+  as a model variant, `provider/model#variant`: cached model metadata may omit
+  variants that exist, and an unknown one fails the first launch, so do not probe
+  metadata or run trial tasks. Never load the user's own OpenCode configuration.
 - Codex: `codex exec` with a read-only sandbox, `-C <source root>` and `-m`.
 - Claude Code: `claude -p` with read/search tools only and `--model`.
 - Cursor: `cursor-agent -p` with `--model`.
@@ -78,8 +81,8 @@ header and candidates. A non-zero exit, timeout, empty output or other format is
 an unfinished task; rerun it once in a fresh process only for a transient
 failure, otherwise report the gap.
 
-If the CLI is missing, unauthenticated, rejects the requested model, or cannot
-run non-interactively, stop affected dispatch and tell the user the exact cause.
+If the CLI is missing, unauthenticated, rejects the requested model, cannot
+run non-interactively, or the request cannot be honored for any other reason, stop affected dispatch and tell the user the exact cause.
 Ask whether to fix it, choose another model or harness, or fall back to native
 specialists; do not fall back silently. Record harness, CLI version, model and
 effort per task where exposed, and disclose unverified values. The orchestrator

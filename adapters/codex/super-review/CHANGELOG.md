@@ -1,5 +1,39 @@
 # Changelog
 
+## 3.16.0 — 2026-11-11
+
+Fixes from 22 Super Review runs on `rust-service-template-rest` (skill 3.5–3.10; specialists on Sonnet, Opus and DeepSeek Flash in OpenCode). Across them, about 400 recommendations reached `main` in about 25 PRs, and none turned out to be wrong in substance. What failed was process.
+
+- **Observable changes are labelled.** A readability change may change what callers, operators or logs see, and that is allowed when the clarity is the gain. Each recommendation now states its observable effect (`none` or what changes). The summary may claim behavior is unchanged only when no recommendation has an effect. Three reports had said "ни одна рекомендация не меняет поведение" while they:
+  - added a public error variant;
+  - changed `Display` text;
+  - removed a runtime check.
+- **A change to a decision the code makes stays unresolved**: what it accepts, rejects, retries or permits, or how it classifies an outcome. Examples: `COMMIT` with `25P02` reclassified as `CommitUnknown`, and JWKS keys with `["sign","verify"]` admitted.
+- **A specialist's precondition travels into the recommendation**, or the remedy stays unresolved. One run dropped "needs owner confirmation" and recommended deleting a defensive line in authn.
+- **Workspace-internal APIs are the orchestrator's call.** Runs had left 13–22 unresolved "public API decisions" each, even where every consumer was inside the workspace. The orchestrator now decides when all inspected consumers are internal and nothing marks the item as published.
+- **A model or effort the user chose is not silently replaced.** Runs on 3.9.x replaced the requested OpenCode specialists with native ones, and one replaced "terra 6.1" with Opus; each disclosed the swap only in the report. The contract now says to ask before dispatch. The Claude adapter now says to look for a model that native Agent cannot select in an installed external harness, and to ask.
+- **OpenCode effort is passed as `provider/model#variant`.** Missing variants in cached metadata do not mean none exist. Runs had spent 3–10 calls probing, and one dropped the requested `#high`. Never load the user's own OpenCode configuration.
+- **Branch is recorded.** Source access records the branch, and the report names which target files differ when HEAD is not the default branch or is behind its upstream. One run reviewed a HEAD that a merged PR had already rewritten; others reviewed another session's unmerged branch.
+- **Specialists read the pinned copy, never the live checkout, even when it is clean.** Three runs pointed specialists at a checkout that other sessions were editing.
+- **Report hygiene:**
+  - stated counts match the R headings and the decision table, with no placeholder R-IDs;
+  - the report is in the language of the user's request even when packets are English;
+  - a finding's affected files include excluded tests and other uses the change must update. One recommendation broke compilation of an excluded test module.
+
+- **The orchestrator owns its decisions.**
+  - The runs checked facts well: they caught a "nonexistent parameter" that was a SQL column and a misread comment, and verified dependency claims in `~/.cargo/registry`.
+  - Decisions were the weak part. Two runs rejected nothing (34 of 34 and 55 of 55 accepted); some decision rows had no reason; risky changes were "accepted with disclosure".
+  - Remedies broke at implementation: clippy rejections, `dead_code`, an E0618 name clash, a broken test module.
+  - Choices between supported alternatives were handed to the user, who answered "возьми ответственность сам".
+- **What verification now requires:**
+  - The orchestrator answers for each accepted recommendation as if it wrote it, and a decision needs its own reason.
+  - It chooses between supported alternatives itself.
+  - `unresolved` is kept for a fact the source cannot supply, which must be named, or for a changed decision.
+  - Before accepting, it checks the resulting code by reading against lint policy, every use (including excluded tests), name collisions and dead code.
+  - A remedy's main point is never optional.
+
+Checked by reading against the runs; not yet tried in a model run.
+
 ## 3.15.0 — 2026-11-11
 
 - Fix external-harness waits under the Claude Code commands. `/super-review:review`, `/super-review:defects` and `/super-review:tests` run the orchestrator as a forked turn that ends at its first reply without a tool call, and background processes ended with it. In 6 of 17 Defect Review runs with OpenCode readers in `rust-service-template-rest` the orchestrator wrote "the readers are still running" and returned; every reader then died with ECONNRESET within seconds, which the main session reported as a provider failure. Each skill's `external.md` and Claude adapter now say to wait in foreground shell calls until the review's own exit files appear and never to end the turn while its processes run.

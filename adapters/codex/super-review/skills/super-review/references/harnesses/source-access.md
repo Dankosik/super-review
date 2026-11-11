@@ -23,7 +23,9 @@ comparison is not an empty result; continue only independently available scope.
 
 ## Local snapshots
 
-Record repository root, HEAD when it exists, selected view and both endpoints.
+Record repository root, HEAD when it exists, its branch, selected view and both
+endpoints. When HEAD is not the default branch, or already-fetched refs show it
+behind its upstream, record which target files differ, without fetching.
 Use the request/context to select the view; these are different comparisons:
 
 | Selected view | Old endpoint | New endpoint |
@@ -49,7 +51,8 @@ do not invent a commit or confuse this with failed access to an existing ref.
 For working files, copy selected source/context to a temporary directory outside
 the reviewed tree when permitted, recording entry types and file hashes. Check
 selected inventory and bytes around capture; recapture drifting scope or record
-a gap. Children read the fixed copy. Without a shared copy, verify each inspected
+a gap. Children read the fixed copy or pinned revision, never the live checkout,
+even when it is clean: other sessions may change it. Without a shared copy, verify each inspected
 version against the recorded identity before claiming shared coverage. Subsequent
 index/worktree drift does not retarget that report. Capture must not stage,
 restore, stash, reset, or otherwise alter the user's index or working files.
