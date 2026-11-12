@@ -122,7 +122,8 @@ lines it names, in order.
   implementation, a macro, a conversion, a dependency at the version
   `Cargo.lock` resolves. Work inside code you did not read is an assumption,
   and the candidate is unproven.
-- **Count the work the semantics require**: a pass over N elements, an
+- **Count the work the semantics require**: a pass over N elements, a hash
+  over the whole key, storage initialized to its full capacity, an
   allocation for a value that is kept or passed on, each reallocation of a
   buffer that grows, a copy of a buffer, a system call, a round trip, a
   lock taken, an atomic read-modify-write, a task spawned. State the scale
@@ -159,20 +160,34 @@ saving and the cost side by side; the choice is the team's.
 Name every change in behavior. A form that changes results, their order or
 errors in a way callers rely on is not a candidate.
 
+A cost often has parts. When removing all of it is a tradeoff, look for a
+form that removes part of it and keeps everything above: that part is a
+finding of its own, beside the tradeoff for the rest.
+
 ## Resource
 
 Name what the saving buys: the latency of one request, CPU or throughput
 under load, allocations and the allocator's work, time callers wait on a
 lock, I/O operations or round trips. Then apply Amdahl's law: name the
-largest cost on the same path for the same resource, and the share of it the
-saving touches. A network round trip per request dominates that
-request's latency, not the CPU the service spends on it: removing an
-allocation there saves CPU, and the finding says so. A saving that the
-dominant cost hides from every caller and operator is rejected. Work moved
-to startup, to another thread or behind a cache still costs something; say
-what moved where.
+largest cost on the same path for the same resource. A network round trip
+per request dominates that request's latency, not the CPU the service spends
+on it: removing an allocation there saves CPU, and the finding says so.
+
+A saving is hidden when the larger cost bounds the resource whatever the
+saving does: CPU saved in a branch that finishes before a longer wait it
+runs beside shortens no request, and a lock narrowed behind another lock
+every caller already queues on shortens no wait. A hidden saving is
+rejected. Work that adds up across units under load, such as CPU and
+allocations, stays visible however small: report the saving with the larger
+cost beside it, and the ranking places it. Work moved to startup, to another
+thread or behind a cache still costs something; say what moved where.
 
 Give the saving as counts per unit before and after, from the trace:
 `3 → 1 allocations per request`, `N → 1 queries per page`, `2 → 1 sequential
-round trips per call`. Whoever applies the change checks it by these counts,
-so a count the trace cannot give means a step is missing.
+round trips per call`. When the form keeps the count and makes each
+operation cheaper, such as a faster hasher over the same key, give the
+count, what one operation does on each side, and the basis for its cost:
+the source of both implementations, or a benchmark one of them publishes.
+Whoever applies the change checks it by these counts, or by timing that one
+operation, so a count or an operation's cost the trace cannot give means a
+step is missing.

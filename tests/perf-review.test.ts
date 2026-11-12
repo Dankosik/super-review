@@ -90,6 +90,25 @@ test("the orchestrator stops early, checks findings on one path together and onl
   expect(flat("skills/perf-review/references/contract.md")).toContain("a cost whose cheaper form changes only code outside them is named in one line");
 });
 
+test("hashing follows who fills the table, a small saving is not hidden, and a cheaper operation or a free part is a finding", () => {
+  const complexity = flat("skills/perf-review/references/lenses/complexity.md");
+  expect(complexity).toContain("where only the program decides which keys go in");
+  expect(complexity).toContain("A lookup with a key from a request cannot flood a table it cannot add to.");
+  expect(complexity).toContain("A faster hasher for a table whose keys requests, peers or files decide.");
+  const allocation = flat("skills/perf-review/references/lenses/allocation.md");
+  expect(allocation).toContain("**Does each unit allocate, copy or initialize more than it keeps or reads?**");
+  expect(allocation).toContain("Storage filled to its capacity and read to a length");
+  expect(flat("skills/perf-review/references/workflow.md")).toContain("Does each unit allocate, copy or initialize more than it keeps or reads?");
+  const contract = flat("skills/perf-review/references/contract.md");
+  expect(contract).toContain("a hash over the whole key, storage initialized to its full capacity");
+  expect(contract).toContain("When removing all of it is a tradeoff, look for a form that removes part of it and keeps everything above");
+  expect(contract).toContain("A saving is hidden when the larger cost bounds the resource whatever the saving does");
+  expect(contract).toContain("stays visible however small");
+  expect(contract).toContain("When the form keeps the count and makes each operation cheaper");
+  expect(flat("skills/perf-review/references/challenge.md")).toContain("makes a saving beside a larger cost small, not swallowed");
+  expect(flat("skills/perf-review/assets/report-template.md")).toContain("An operation made cheaper at the same count: that operation alone");
+});
+
 test("every review of the family reads in full and pins a named branch", () => {
   for (const skill of ["perf-review", "defect-review", "test-review"]) {
     expect(flat(`skills/${skill}/references/contract.md`)).toContain("Read what you review in full, at the revision you are given. A part you did not see, for whatever reason, is not read");
@@ -137,5 +156,5 @@ test("delivery copies are identical and only the adapters that support it carry 
   expect(existsSync(resolve(root, "adapters/cursor/plugin/resources/perf-review"))).toBe(false);
   for (const role of ["perf-review", "perf-reader", "perf-challenger"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
   expect(read("scripts/package.py")).toContain('"perf-review"');
-  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.3.0");
+  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.4.0");
 });

@@ -30,8 +30,10 @@ With no candidates, say so.
   what has happened on a failure halfway, drop timing, `Send` and `Sync`,
   public API; and that it builds within the project's `rust-version`,
   features and targets. Anything it changes, named.
-- Resource: what is saved, as counts per unit before and after; the largest
-  cost on the same path for that resource; and any work that only moved.
+- Resource: what is saved, as counts per unit before and after, or, for an
+  operation the form makes cheaper, the count with what one operation does
+  on each side and the basis for its cost; the largest cost on the same
+  path for that resource; and any work that only moved.
 
 ## Challenger result
 
@@ -39,7 +41,8 @@ With no candidates, say so.
 
 - Hot path: which callers reach it and how often, or what keeps it cold.
 - Cost: where your own walk from one unit ended, your counts before and
-  after, and the line that breaks the reader's trace if one does.
+  after, whether the basis for a cheaper operation's cost holds, and the
+  line that breaks the reader's trace if one does.
 - Behavior: what the cheaper form keeps and what it changes.
 - Dominant cost: the largest cost on the path for the same resource.
 - Decides it: the one piece of evidence behind the verdict.

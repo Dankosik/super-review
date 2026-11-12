@@ -33,7 +33,8 @@ times the multiplier. For a change review, the link to the change, or
 **Cheaper form.** The sketch and what it keeps. When another finding touches
 the same path, whether they apply together.
 
-**Saves.** The resource with its counts per unit before and after, and the
+**Saves.** The resource with its counts per unit before and after, or the
+count with the cost of one operation on each side and its basis, and the
 largest cost on the same path for it.
 
 **Challenge.** What the challenger tried and why the claim stood.
@@ -42,7 +43,8 @@ largest cost on the same path for it.
 
 Findings that remove constant work, after all the others, one row each: the
 location, the work with its quoted line, the cheaper form, the resource
-with its counts before and after, and that the challenge stood.
+with its counts or operation cost before and after, and that the challenge
+stood.
 
 ## Tradeoffs
 
@@ -81,6 +83,8 @@ release build on an otherwise idle machine and the same workload before and
 after; on a loaded machine timings vary more than most savings:
 
 - CPU: time per unit on the hot path at a realistic size.
+- An operation made cheaper at the same count: that operation alone, on
+  inputs of the size the trace names, then the unit it runs in.
 - Contention and async waits: throughput and p50 and p99 latency at the
   concurrency production runs. A single-threaded benchmark shows nothing
   here.

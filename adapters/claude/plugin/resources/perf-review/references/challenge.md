@@ -24,7 +24,8 @@ Take each claim through all four.
    defeats nothing when the interface is for per-item use.
 2. **The work is not done.** Walk the trace yourself from one unit and note
    what each line does. Is every quoted line there? Do your counts before
-   and after match the claim's? Does the callee or
+   and after match the claim's? For an operation the form makes cheaper,
+   does the basis for its cost say what the claim says? Does the callee or
    dependency, at the version the lockfile resolves, already avoid the
    work: capacity reserved, a borrow returned, a buffer or cache inside,
    a reference count where the claim saw a copy? A claim about what the
@@ -40,9 +41,11 @@ Take each claim through all four.
    and targets? A change the team could accept makes the claim a tradeoff;
    one callers rely on, or a form that does not build, makes it fall.
 4. **A larger cost swallows the saving (Amdahl).** Find the largest cost on
-   the same path for the same resource. Is the saving still visible to a
-   caller or operator beside it? A network wait swallows a CPU saving's
-   effect on latency, not its effect on CPU.
+   the same path for the same resource. Does it bound the resource whatever
+   the saving does, so no caller or operator sees a change? A network wait
+   swallows a CPU saving's effect on latency, not its effect on CPU. Work
+   that adds up across units under load, such as CPU and allocations, makes
+   a saving beside a larger cost small, not swallowed.
 
 ## Verdicts
 

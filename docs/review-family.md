@@ -73,13 +73,17 @@ The **cheaper form**: a sketch and what it keeps, results, order, errors,
 drop timing, `Send` and `Sync`, the public API, and that it builds for the
 project's Rust version, features and targets. The **resource**: what is
 saved, as counts per unit before and after (`3 → 1 allocations per
-request`), set beside the path's dominant cost for that resource.
+request`), or, when the same operations get cheaper, the count with what one
+operation costs on each side and the basis for it, set beside the path's
+dominant cost for that resource.
 
 Lenses divide unneeded work by where it lives: complexity, allocation,
 async, I/O, contention and repeated work. A cheaper form that changes
 something the team must weigh is a tradeoff, shown with both sides,
 including a batch or overlap that buys throughput with latency or changes
-what has happened when something fails. For a whole project the review
+what has happened when something fails. When removing a whole cost is a
+tradeoff, the part a behavior-keeping form removes is a finding of its own.
+For a whole project the review
 starts from where work enters the program and reports the entries it used;
 when none of them runs per unit of work, it says where that work runs and
 starts no readers. Findings on one path are checked applied together. A
@@ -152,7 +156,11 @@ The four share only the plugin they ship in.
 | Where a cheaper form must build | Within the project's `rust-version`, edition, enabled features and targets | Any current Rust | Advice that does not build for the project saves nothing |
 | Neighboring costs | Memory footprint, build profiles, the global allocator and compile time are out of scope; a database's plan and cache behavior need a plan or a profile | Left to each reader | Each run would otherwise draw the line differently |
 | Constant work per request | Reported compactly, one row each with its quoted line | A full section per finding | They are the most numerous and each saves the least; the reader should reach the larger findings first |
-| A saving beside a larger cost | Reported with the dominant cost for the same resource; rejected only when that cost hides it from everyone | Rejected whenever something else on the path is slower | A network wait dominates a request's latency, not the CPU spent per request |
+| A saving beside a larger cost | Reported with the dominant cost for the same resource; rejected only when that cost bounds the resource whatever the saving does | Rejected whenever something else on the path is slower or the saving is small | A network wait dominates a request's latency, not the CPU spent per request; CPU and allocations add up across requests, and real runs dropped a hash that took two thirds of a cache hit as too small beside the call |
+| Hashing on a hot path | A faster hasher where only the program decides which keys enter the table: keys it assigns, a table filled at startup, entries added after their key is verified; the default where outside input decides | The default wherever the looked-up key comes from a request | Flooding needs colliding keys in the table; real runs passed over SipHash of a whole service token on every call into a table that admits only verified tokens |
+| An operation made cheaper at the same count | The count, what one operation does on each side, and the basis for its cost: both implementations' source or a benchmark one publishes; whoever applies it times that operation first | Counts alone | A faster hasher keeps every count, so counts alone would call its saving a missing step |
+| Storage initialized beyond what is read | Counted as work: a table or buffer filled to its capacity per unit and read to a length | Only allocations and copies counted | A span with two fields initialized 192 table entries; filling only the used ones made creating it 405 → 335 ns in the template's measurement |
+| A cost whose full removal is a tradeoff | The part a behavior-keeping form removes is a finding of its own, beside the tradeoff for the rest | One tradeoff for the whole cost | A reader folded filling only the used entries into a per-thread buffer that holds memory on every thread, and the free part was reported only as a tradeoff |
 | Order of performance findings | By work removed per unit: complexity class, then I/O or a wait per element, then allocation per element, then constant work | Severity labels or estimated speedups | The order follows from the trace; a percentage would be invented |
 | Challenger in Performance Review | An independent challenger on four lines: not hot, no cost, changed behavior, dominated | None, as in Test Review | A performance claim fails in several independent ways, and each takes reading, not one search |
 | Who measures a performance finding | Whoever applies it: first the counts per unit the finding predicts, then time where the saving is time, on an otherwise idle machine; keeping it only if the gain shows | The review, by benchmarks; or one microbenchmark for every kind of finding | Reading proves work removed, not time saved; a count does not depend on machine load, timings on a busy machine varied twofold between runs, and a single-threaded benchmark shows nothing about contention or round trips |
