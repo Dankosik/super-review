@@ -1,6 +1,6 @@
 # Java review support and design rationale
 
-Java uses the same eight base questions, four source-selected lenses and eight
+Java uses the same eight base questions, five source-selected lenses and eight
 owner profiles as Go, but separate domain resources and `java.*` identifiers.
 See the [language router](../skills/super-review/references/languages.md).
 A mixed PR receives language-specific task packets; Go instructions and existing

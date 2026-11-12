@@ -55,9 +55,9 @@ duplication; signatures, overloads, option objects and return types to
 api-clarity; unions, literal and branded types and `unknown` boundaries to
 representation; name forms to naming; helpers, classes, generics and type-level
 utilities to function-cohesion and abstractions; the project's established way
-of handling a concern to conventions; where a declaration lives to placement.
-Report an idiom under the lens that owns it and leave the others to their
-owners.
+of handling a concern to conventions; where a declaration lives to placement;
+how many cases and passes a computation needs to logic. Report an idiom under
+the lens that owns it and leave the others to their owners.
 
 **Judgment.** An idiom earns a recommendation by what it removes: an assertion,
 a cast, a branch, a second check, another place to edit. Optimize the

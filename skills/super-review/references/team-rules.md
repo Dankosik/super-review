@@ -43,11 +43,12 @@ Each rule needs a unique ID, language, paths, lens, action, statement, and reaso
 The stable default rule IDs are headings in the lens resources. The conditional
 lenses use `Lens: representation` / `go.representation.express-concepts`,
 `Lens: rationale` / `go.rationale.explain-constraints`, `Lens: conventions` /
-`go.conventions.follow-established-approach` and `Lens: placement` /
-`go.placement.find-it-where-it-belongs`. No existing ID changes. TypeScript uses the matching `ts.*` headings from
+`go.conventions.follow-established-approach`, `Lens: placement` /
+`go.placement.find-it-where-it-belongs` and `Lens: logic` /
+`go.logic.fewer-moving-parts`. No existing ID changes. TypeScript uses the matching `ts.*` headings from
 [language routing](languages.md), including `ts.representation.express-concepts`,
-`ts.rationale.explain-constraints`, `ts.conventions.follow-established-approach`
-and `ts.placement.find-it-where-it-belongs`. Write `Language: TypeScript` for these
+`ts.rationale.explain-constraints`, `ts.conventions.follow-established-approach`,
+`ts.placement.find-it-where-it-belongs` and `ts.logic.fewer-moving-parts`. Write `Language: TypeScript` for these
 rules (`TS` is an alias). Resolve rule IDs within the declared language; a Go
 override cannot disable or replace a TS default, or vice versa. Rust rules use
 `Language: Rust` and their `rust.*` headings. Java rules use `Language: Java` and

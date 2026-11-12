@@ -1,6 +1,6 @@
 # Rust review support
 
-Rust uses the same eight base questions, four conditional lenses and eight owner
+Rust uses the same eight base questions, five conditional lenses and eight owner
 profiles as Go, with separate [Rust resources](../skills/super-review/references/languages/rust.md).
 Each specialist receives its language context, assigned lens and selected profiles,
 plus the shared contract and output format. Mixed Go/TypeScript/Rust/Java PRs retain every included language scope through the

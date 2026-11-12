@@ -80,6 +80,7 @@ about a thousand lines reviewed whole. Larger areas keep one lens per task.
 | 4 | data-flow with representation, when selected |
 | 5 | change-locality with placement, when selected |
 | 6 | rationale with conventions, whichever are selected |
+| 7 | logic, when selected |
 
 A lens whose partner is not selected runs alone. A paired task reports each
 lens's coverage separately, and the report marks the pair. Whether pairing
