@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.27.0 — 2026-11-12
+
+The existing-helpers profile looks beyond small functions. It now asks who already does any code a change writes by hand for a general job, in Go, TypeScript, Rust and Java.
+
+- **Hand-written mechanisms.** Besides a small function, the profile covers a whole mechanism or implementation written by hand for a general job, rather than the project's own domain, that the standard library, a dependency or code generation (a derive, a record, an annotation) already provides. Size does not matter; a maintained owner of the same knowledge does. A replacement must keep every behavior the users of such a mechanism rely on. The profile states this as a principle, without lists of examples.
+- **Chosen dependencies.** A dependency the build already declares, or one the project's documentation recommends for the job, is the team's choice: hand-written code doing that job is the clearest candidate, even when nothing uses the dependency yet. A recorded decision against a library for the job keeps the hand-written code, cited where it is recorded.
+- Verification and the routing row apply the same search to any hand-written code a change adds.
+
+Shaped by reading a library audit of a Rust service template. Not compared in model runs.
+
 ## 3.26.0 — 2026-11-12
 
 Performance Review 0.3.0 takes in fifteen real runs on a Rust service. Defect Review 0.11.0 and Test Review 0.10.0 share its rule for reading. The instructions of all four skills now say what an agent must achieve, not how to do what it can work out itself; outside Performance Review no review criterion changes.

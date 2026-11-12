@@ -3,11 +3,12 @@
 Owner: duplication
 Rule: ts.duplication.share-knowledge
 
-**Who already does this?** For each small function the change adds for a
-general operation, such as on strings, arrays, objects, numbers, dates,
-paths, retries, parsing or comparison, often unexported and at the bottom of
-a file, ask who already does it. Search in this order and take the first
-that fits:
+**Who already does this?** For code the change writes by hand to do a general
+job rather than this project's own domain, ask who already does it. It may be
+a small function, often unexported at the bottom of a file, or a whole
+mechanism or check that the language, the runtime or a package already
+provides. Size does not matter; a maintained owner of the same knowledge does.
+Search in this order and take the first that fits:
 
 1. The language and runtime at the project's `target` and `lib` settings and
    supported runtimes: `Array.prototype.at`, `flatMap`, `toSorted`,
@@ -21,6 +22,12 @@ that fits:
 4. A widely used package not yet in `package.json`, only when the helper
    carries logic with edge cases the package already handles. Adding it is
    the team's decision: name the dependency and its bundle cost.
+
+A dependency already in `package.json`, or one the project's documentation
+recommends for this job, is a choice the team has made: code beside it that
+does the job by hand is the clearest candidate, even when nothing uses the
+dependency yet. A recorded decision against a library for this job keeps the
+hand-written code; cite where it is recorded.
 
 Reinventing the wheel is the burden: every reader has to check that the copy
 does what the standard version does. Recommend the replacement with the
@@ -37,7 +44,8 @@ helper shared between server and client code must be safe in both.
 A replacement must behave the same on the edges callers reach: `undefined`
 versus `null`, empty arrays and strings, `NaN`, sparse arrays, Unicode code
 points versus UTF-16 units, mutation versus a new value, sort stability and
-comparison, time zones, and what is thrown. A built-in that differs on one
-of those is not a plain replacement; name the difference, or the effect
-callers would see. Keep a helper that carries domain meaning in its name,
-and a two-line helper whose replacement would add a dependency.
+comparison, time zones, and what is thrown; for a mechanism, every behavior
+its users rely on. A replacement that differs on one of those is not a plain
+replacement; name the difference, or the effect callers would see. Keep a
+helper that carries domain meaning in its name, and a two-line helper whose
+replacement would add a dependency.
