@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.29.0 — 2026-11-12
+
+Super Review now asks whether a computation needs every case and step it spells out.
+
+- **New conditional lens: logic** (`go`/`ts`/`rust`/`java.logic.fewer-moving-parts`). For each computation a change adds or reshapes: is there a form with fewer cases, passes or intermediate values that gives the same result for every input and that a reader can check at a glance? It looks for a special case the general path already covers (empty, single, zero, first or last, a boundary index), cases a formulation removes (input normalized where it enters, an identity element, a sentinel or half-open range, a lookup table), a case product that independent decisions or a table state with fewer paths, and a detour through extra passes, intermediate collections, sorts or round-trip conversions. A finding shows the simpler form and traces, through quoted lines, that every removed case takes a path yielding the same values, errors, effects and order, edges included; a form that changes the result for some input is not a simplification. Cases stay when the unified rule needs a trick the reader must prove, when a special case states a requirement, or when an early exit is the shortest explanation. Each language names the edges that break equivalence: Go's nil versus empty slices and silent overflow; Rust's empty iterators, slice patterns and debug-build overflow panics; TypeScript's `reduce` on an empty array and its nullish, falsy, `NaN` and `-0` distinctions; Java's null versus empty collections, immutable `List.of()` and `%` versus `Math.floorMod`. Guards for cases already ruled out stay with defensive-checks, the layout of remaining decisions with control-flow, and values kept in sync with data-flow.
+- Selected when changed code branches on special values or edges beside a general path, branches over combinations of conditions, or computes one result through several passes or conversions. 56 stable rule IDs.
+
+Shaped by reading. Not compared in model runs.
+
 ## 3.28.0 — 2026-11-12
 
 Performance Review 0.4.0 reports two kinds of saving a later pull request on the reviewed service found after the runs had passed over them: a faster hasher for tables only the service fills, and tables of log fields no longer filled in full. Readers had seen both places and set them aside, one by following the complexity lens, the other inside a larger change.

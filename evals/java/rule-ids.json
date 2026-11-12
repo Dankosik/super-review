@@ -11,5 +11,6 @@
   "java.representation.express-concepts",
   "java.rationale.explain-constraints",
   "java.conventions.follow-established-approach",
-  "java.placement.find-it-where-it-belongs"
+  "java.placement.find-it-where-it-belongs",
+  "java.logic.fewer-moving-parts"
 ]

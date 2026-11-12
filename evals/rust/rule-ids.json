@@ -11,5 +11,6 @@
   "rust.representation.express-concepts",
   "rust.rationale.explain-constraints",
   "rust.conventions.follow-established-approach",
-  "rust.placement.find-it-where-it-belongs"
+  "rust.placement.find-it-where-it-belongs",
+  "rust.logic.fewer-moving-parts"
 ]

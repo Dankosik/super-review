@@ -32,8 +32,9 @@ types, zero values and constant sets to representation; `MixedCaps`, initialisms
 receiver names and package-qualified names to naming; helpers, wrappers,
 embedding and interfaces to function-cohesion and abstractions; the project's
 established way of handling a concern to conventions; where a declaration
-lives to placement. Report an idiom under the lens that owns it and leave the
-others to their owners.
+lives to placement; how many cases and passes a computation needs to logic.
+Report an idiom under the lens that owns it and leave the others to their
+owners.
 
 **Judgment.** An idiom earns a recommendation by what it removes: a branch, a
 variable, a repeated qualifier, a second check, another place to edit. Optimize
