@@ -18,8 +18,7 @@ report that code outside the changed files could not be searched.
 
 When the user names a branch or commit that is not checked out, such as the
 main branch, resolve it once to a commit and give readers that commit, not
-the name: a branch can move during the review. Read it from the local object
-database, as for a PR.
+the name: a branch can move during the review.
 
 Other sessions may change a local tree while agents read it. Before the
 report, check HEAD and the status of the scope's files again. If either

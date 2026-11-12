@@ -2,9 +2,9 @@
 
 ## 3.26.0 — 2026-11-12
 
-Performance Review 0.3.0 takes in fifteen real runs on a Rust service. Defect Review 0.11.0 and Test Review 0.10.0 share its new rule for reading a commit.
+Performance Review 0.3.0 takes in fifteen real runs on a Rust service. Defect Review 0.11.0 and Test Review 0.10.0 share its rule for reading.
 
-- **Reading a commit.** A branch the user names, such as the main branch, is pinned to one commit, and every agent reads it through Git one file and about two hundred numbered lines per call. In the runs, about half the whole-file reads through the shell came back cut or set aside, and orchestrators sent readers again for the parts they missed; windows of two hundred lines arrived whole. Nothing is copied.
+- **Reading in full.** A branch the user names, such as the main branch, is pinned to one commit. Every agent reads what it reviews in full: a part it did not see, for whatever reason, is not read, and it finishes that part before it reports. In the runs, about half the whole-file reads through the shell came back cut, readers reported the rest as unread, and orchestrators started readers again for it, up to 21 agents on one crate. The instructions state the goal, not a read command.
 - **No readers where nothing runs per unit.** When every entry in the scope only starts, wires or stops a long-lived program, the report lists the entries, how often each runs and where the per-unit work runs, and no readers start. One run started twelve readers on such a crate and found nothing.
 - **Findings on one path are checked together.** Two findings each kept behavior, but applied together they let a stopped request start an introspection call; only an existing test caught it. The orchestrator now walks the forms that touch one function or path applied together, and says which to apply or how to combine them.
 - **Outside a narrowed scope, one line.** A cost whose cheaper form changes only code outside the packages or files the user chose, sibling or not, is named with its location and not traced or challenged. Parallel runs on neighboring crates traced the same code up to three times and then changed it in conflicting branches.

@@ -43,11 +43,8 @@ the source of what it calls. A profile, flamegraph or benchmark output the
 user supplies, or one committed to the repository, is evidence: quote the
 part you use and say what it measured.
 
-Source at a commit that is not checked out is read through git, one file and
-about two hundred numbered lines per call:
-`git show <commit>:<path> | cat -n | sed -n '1,200p'`, then `'201,400p'`.
-The tool that runs the shell may cut longer output or set it aside, and a
-part you did not see is unread.
+Read what you review in full, at the revision you are given. A part you did
+not see, for whatever reason, is not read: finish it before you report.
 
 ## What a finding is
 

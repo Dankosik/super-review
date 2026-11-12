@@ -36,9 +36,8 @@ identify source -> independent readers -> proof by trace
 
 - **Identify the source.** The review reads the working tree, or the commits
   of a PR through Git and GitHub. It does not clone, copy or check out
-  anything. A branch the user names is pinned to one commit, and a commit
-  is read through Git one file at a time, in numbered windows of about two
-  hundred lines.
+  anything. A branch the user names is pinned to one commit. Every agent
+  reads what it reviews in full; how it reads is its own choice.
 - **Independent readers.** Each reader gets one lens and reads the code
   itself. Readers overlap on purpose. An earlier design considered building
   one shared ledger of promises and checking each entry; it was rejected
@@ -130,7 +129,7 @@ The four share only the plugin they ship in.
 | Decision | Chosen | Instead of | Reason |
 | --- | --- | --- | --- |
 | How a finding is proven | A trace through quoted lines, by reading | Building the project and running a test or a mutant | The run machinery cost more than it found; reading found the defects that started this work |
-| Reading a commit that is not checked out | Through Git, one file and about two hundred numbered lines per call | A snapshot copied outside the tree; whole files, or several at once, per shell call | In real runs about half the whole-file reads were cut or set aside by the shell tool and readers had to be sent again; windows of two hundred lines arrived whole, without a copy |
+| Reading what is reviewed | In full, at the pinned revision; a part the agent did not see is not read until it finishes it; how to read is the agent's choice | A prescribed read command; a snapshot copied outside the tree | In real runs about half the whole-file reads were cut by the shell tool, and readers reported the rest as unread instead of reading it. The instruction states the goal; the agent knows its tools |
 | Unit of work for readers | One lens over the whole scope, independent readers | A ledger of promises checked entry by entry | Recall on what nobody wrote down matters more than exact coverage counts |
 | Small changes in Defect Review | Related lenses paired, four readers | Eight readers and up to eight challengers for fifty changed lines | Cost should follow the size of the change; whether pairing costs attention is unverified |
 | Waiting in real time in tests | A finding when a rule forbids it, when the bound is as tight as the work, or when the test can pass with nothing done | Reporting every sleep or timed poll; or none without a team rule | A generous bound around observable state fails no one; a tight one, or a sleep that proves nothing, does |

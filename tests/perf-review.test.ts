@@ -74,7 +74,7 @@ test("the report ranks by work removed, asks the user what only they know, and h
   expect(flat("skills/perf-review/references/workflow.md")).toContain("a change of complexity class first, then a round trip, system call or blocking wait per element, then an allocation or copy per element, then constant work per request");
   expect(flat("skills/perf-review/references/contract.md")).toContain("Give the saving as counts per unit before and after, from the trace");
   expect(report).toContain("Each finding predicts counts per unit before and after.");
-  expect(report).toContain("A count does not depend on how loaded the machine is.");
+  expect(report).toContain("a count does not depend on how loaded the machine is.");
   expect(report).toContain("A single-threaded benchmark shows nothing here.");
   expect(report).toContain("Keep the existing tests passing");
   expect(report).toContain("Apply a change only when the counts or the measurement show the gain.");
@@ -90,9 +90,9 @@ test("the orchestrator stops early, checks findings on one path together and onl
   expect(flat("skills/perf-review/references/contract.md")).toContain("a cost whose cheaper form changes only code outside them is named in one line");
 });
 
-test("every review of the family reads a commit in numbered windows and pins a named branch", () => {
+test("every review of the family reads in full and pins a named branch", () => {
   for (const skill of ["perf-review", "defect-review", "test-review"]) {
-    expect(read(`skills/${skill}/references/contract.md`)).toContain("`git show <commit>:<path> | cat -n | sed -n '1,200p'`");
+    expect(flat(`skills/${skill}/references/contract.md`)).toContain("Read what you review in full, at the revision you are given. A part you did not see, for whatever reason, is not read");
     expect(flat(`skills/${skill}/references/workflow.md`)).toContain("resolve it once to a commit");
   }
 });

@@ -26,11 +26,8 @@ files, or clone, copy or check out the repository. A mutant is a described
 change, never an applied one. Whether a test would fail is decided from what
 the test drives and what it asserts.
 
-Source at a commit that is not checked out is read through git, one file and
-about two hundred numbered lines per call:
-`git show <commit>:<path> | cat -n | sed -n '1,200p'`, then `'201,400p'`.
-The tool that runs the shell may cut longer output or set it aside, and a
-part you did not see is unread.
+Read what you review in full, at the revision you are given. A part you did
+not see, for whatever reason, is not read: finish it before you report.
 
 ## Promises
 

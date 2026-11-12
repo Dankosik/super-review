@@ -72,21 +72,18 @@ These carry no advice.
 ## Before applying
 
 For whoever applies these findings. Each finding predicts counts per unit
-before and after. Check them first, before and after the change:
-allocations with a counting allocator, queries and round trips from query
-logs, system calls from a trace. A count does not depend on how loaded the
-machine is. A count that differs from the prediction means the trace missed
-work: find it before going on.
+before and after. Check them first: a count does not depend on how loaded
+the machine is. A count that differs from the prediction means the trace
+missed work: find it before going on.
 
 Then measure time where the saving is time rather than a count, with a
 release build on an otherwise idle machine and the same workload before and
 after; on a loaded machine timings vary more than most savings:
 
-- CPU: the project's benchmarks where they cover the path, otherwise a short
-  `criterion` benchmark of the hot path at a realistic size.
-- Contention and async waits: load at the concurrency production runs,
-  comparing throughput and p50 and p99 latency. A single-threaded benchmark
-  shows nothing here.
+- CPU: time per unit on the hot path at a realistic size.
+- Contention and async waits: throughput and p50 and p99 latency at the
+  concurrency production runs. A single-threaded benchmark shows nothing
+  here.
 - I/O: latency under load.
 
 Keep the existing tests passing, and add one where the finding names
