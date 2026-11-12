@@ -4,7 +4,7 @@
 
 The existing-helpers profile looks beyond small functions. It now asks who already does any code a change writes by hand for a general job, in Go, TypeScript, Rust and Java.
 
-- **Hand-written mechanisms.** Besides a small function, the profile names a trait or class method a derive or annotation would generate, a table keyed by enum, a cache on a locked map, a retry loop, a stream polled by hand or a hand-built timeout, with examples per language such as `derive_more` and `derive-where` for Rust, `sync.OnceValue` and `errgroup` for Go, `AbortSignal.timeout` and schema validators for TypeScript, records, `EnumMap` and Caffeine for Java. Replacements must also keep the printed text, redacted fields, generic bounds, equality contracts, locking, eviction and cancellation.
+- **Hand-written mechanisms.** Besides a small function, the profile covers a whole mechanism or implementation written by hand for a general job, rather than the project's own domain, that the standard library, a dependency or code generation (a derive, a record, an annotation) already provides. Size does not matter; a maintained owner of the same knowledge does. A replacement must keep every behavior the users of such a mechanism rely on. The profile states this as a principle, without lists of examples.
 - **Chosen dependencies.** A dependency the build already declares, or one the project's documentation recommends for the job, is the team's choice: hand-written code doing that job is the clearest candidate, even when nothing uses the dependency yet. A recorded decision against a library for the job keeps the hand-written code, cited where it is recorded.
 - Verification and the routing row apply the same search to any hand-written code a change adds.
 

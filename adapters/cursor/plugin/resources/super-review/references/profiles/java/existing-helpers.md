@@ -3,14 +3,12 @@
 Owner: duplication
 Rule: java.duplication.share-knowledge
 
-**Who already does this?** For code the change writes by hand for a general
-job, ask who already does it. Most often it is a small method on strings,
-collections, numbers, dates, paths, retries, parsing or comparison, private
-or static at the bottom of a class. It can also be `equals`, `hashCode` and
-`toString` that a record or the project's Lombok annotations would generate,
-a lookup table keyed by enum where `EnumMap` fits, a `HashMap` cache where
-Caffeine or Guava's cache is in the build, or a retry loop where Spring Retry
-or Resilience4j is. Search in this order and take the first that fits:
+**Who already does this?** For code the change writes by hand to do a general
+job rather than this project's own domain, ask who already does it. It may be
+a small method, often private or static at the bottom of a class, or a whole
+mechanism or implementation that the JDK, a library, a record or an annotation
+already provides. Size does not matter; a maintained owner of the same
+knowledge does. Search in this order and take the first that fits:
 
 1. The JDK at the project's release level: `Objects`, `Optional`,
    `Collections`, `Collectors`, `List.of` and `Map.of`, `String.isBlank`,
@@ -47,9 +45,8 @@ A replacement must behave the same on the edges callers reach: `null` inputs
 and results, empty strings and collections, whitespace as `trim` (up to
 U+0020) or as `strip` (`Character.isWhitespace`) defines it, mutability of the
 returned collection (`List.of` rejects `null` and changes), rounding, ordering
-and stability, locale and time zone, the exception thrown, the equality, hash
-and `toString` contracts, and for a mechanism its locking, eviction and
-cancellation. A replacement that differs on one of those is not a plain
-replacement; name the difference, or the effect callers would see. Keep a
-helper that carries domain meaning in its name, and a two-line helper whose
-replacement would add a dependency.
+and stability, locale and time zone, and the exception thrown; for a mechanism
+or generated code, every behavior its users rely on. A replacement that
+differs on one of those is not a plain replacement; name the difference, or
+the effect callers would see. Keep a helper that carries domain meaning in its
+name, and a two-line helper whose replacement would add a dependency.

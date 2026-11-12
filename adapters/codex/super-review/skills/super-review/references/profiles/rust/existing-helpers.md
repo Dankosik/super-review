@@ -3,14 +3,12 @@
 Owner: duplication
 Rule: rust.duplication.share-knowledge
 
-**Who already does this?** For code the change writes by hand for a general
-job, ask who already does it. Most often it is a small function on strings,
-slices, collections, numbers, time, paths, retries, parsing or comparison,
-private and at the bottom of a module. It can also be a trait impl a derive
-would generate, from `std` or a declared crate such as `derive_more` or
-`derive-where`; a table of every enum variant with its count; a cache on a
-`Mutex<HashMap>`; or a `Stream` polled by hand. Search in this order and take
-the first that fits:
+**Who already does this?** For code the change writes by hand to do a general
+job rather than this project's own domain, ask who already does it. It may be
+a small function, often private at the bottom of a module, or a whole
+mechanism or trait implementation that the standard library, a crate or a
+derive already provides. Size does not matter; a maintained owner of the same
+knowledge does. Search in this order and take the first that fits:
 
 1. The standard library at the crate's `rust-version`: iterator adapters,
    `Option` and `Result` combinators, `str` and slice methods such as
@@ -48,9 +46,8 @@ placement's question.
 A replacement must behave the same on the edges callers reach: empty input,
 `char` versus byte indexing, overflow and its mode, rounding, ordering and
 stability, which element wins on ties, laziness, ownership and borrowing of
-the result, panics versus `None` or `Err`, the text a `Debug` or `Display`
-impl prints, including redacted fields, the generic bounds an impl requires,
-and for a mechanism its locking, eviction and cancellation. A replacement that
-differs on one of those is not a plain replacement; name the difference, or
-the effect callers would see. Keep a helper that carries domain meaning in its
-name, and a two-line helper whose replacement would add a dependency.
+the result, and panics versus `None` or `Err`; for a mechanism or a derived
+impl, every behavior its users rely on. A replacement that differs on one of
+those is not a plain replacement; name the difference, or the effect callers
+would see. Keep a helper that carries domain meaning in its name, and a
+two-line helper whose replacement would add a dependency.
