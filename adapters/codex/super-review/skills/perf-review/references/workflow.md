@@ -51,7 +51,7 @@ work.
 | Lens | Asks | Selected when the area has |
 | --- | --- | --- |
 | [complexity](lenses/complexity.md) | Does the work grow with the input faster than the result needs? | Loops, searches, sorts, collections or parallel iterators over input whose size callers set. |
-| [allocation](lenses/allocation.md) | Does each unit allocate or copy what it could borrow, reuse or size once? | Owned values built per element or per request. |
+| [allocation](lenses/allocation.md) | Does each unit allocate, copy or initialize more than it keeps or reads? | Owned values or fixed-capacity storage built per element or per request. |
 | [async](lenses/async.md) | Does async code keep the executor free and run independent waits together? | `async` code, spawned tasks, async locks. |
 | [io](lenses/io.md) | Does each unit cost more round trips, system calls or connections than it needs? | Database, network, file or inter-process calls. |
 | [contention](lenses/contention.md) | Do concurrent callers wait on each other more than the shared state requires? | Locks, atomics, channels or pools shared across requests or threads. |
@@ -111,8 +111,9 @@ challenger's tone or agreement between agents is not evidence.
 
 - **Walk each trace yourself.** Every quoted line is there, each step does
   the work it claims for one unit, nothing rests on unread code, the
-  multiplier really reaches this code, and the counts before and after
-  follow from the steps. A step about behavior that neither you nor the
+  multiplier really reaches this code, the counts before and after follow
+  from the steps, and the cost of an operation the form makes cheaper rests
+  on the basis the claim names. A step about behavior that neither you nor the
   challenger read in source or documentation, the standard
   library's and the runtime's included, rests on memory, and the candidate
   is unproven. Read missing code yourself when it is at hand; do not

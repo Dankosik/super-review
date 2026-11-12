@@ -322,7 +322,9 @@ wait only on whether a path is hot come back to you as questions.
 
 It runs no benchmark or profiler, so it shows work removed, not time saved.
 Each finding predicts counts per unit before and after, such as `3 → 1
-allocations per request`. The report ends by asking whoever applies a
+allocations per request`, or, for an operation made cheaper such as a
+faster hasher over the same key, the cost of one operation on each side and
+its basis. The report ends by asking whoever applies a
 finding to check those counts first, then to measure time where the saving
 is time, a benchmark for CPU and load at production concurrency for
 contention, and to keep the change only if the gain shows. Rust only, in Claude

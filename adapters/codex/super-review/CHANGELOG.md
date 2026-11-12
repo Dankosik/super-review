@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.28.0 — 2026-11-12
+
+Performance Review 0.4.0 reports two kinds of saving a later pull request on the reviewed service found after the runs had passed over them: a faster hasher for tables only the service fills, and tables of log fields no longer filled in full. Readers had seen both places and set them aside, one by following the complexity lens, the other inside a larger change.
+
+- **Hashing by who fills the table.** The complexity lens ruled out a faster hasher for any key that comes from a request. Flooding needs colliding keys in the table, so the line now follows who decides what goes in: keys the program assigns, a table filled at startup and entries added only after their key is verified take a faster hasher; a table that requests, peers or files fill keeps the default. The hash runs over the whole key, so a long key hashed per request costs the most. The runs passed over SipHash of a whole service token on every call; a faster hasher made that cache hit 105.5 → 43.6 ns in the service's own measurement.
+- **Small is not hidden.** Amdahl's rule rejected a saving the dominant cost "hides from every caller and operator", and a challenger read tens of nanoseconds beside the rest of a call as hidden. A saving is now hidden only when the larger cost bounds the resource whatever the saving does, such as CPU saved beside a longer wait it runs alongside. CPU and allocations add up across units: a small saving is reported with the larger cost beside it, and the ranking places it.
+- **A cheaper operation at the same count.** A faster hasher keeps every count. Such a finding gives the count, what one operation does on each side and the basis for its cost: the source of both implementations or a benchmark one of them publishes. The challenger and the orchestrator check that basis, and whoever applies the change times that operation alone. Under the counts rule of 3.26.0 alone, such a saving read as a missing step.
+- **Initialization is work.** The allocation lens asks whether a unit allocates, copies or initializes more than it keeps or reads, and names storage filled to its capacity and read to a length, such as `[EMPTY; N]` beside a count. The contract counts a hash over the whole key and storage initialized to its full capacity. A span with two fields initialized 192 table entries; filling only the used ones made creating it 405 → 335 ns.
+- **The free part of a tradeoff.** When removing a whole cost is a tradeoff, a form that removes part of it and keeps everything is a finding of its own. A reader folded filling only the used entries into a per-thread buffer that holds memory on every thread, and the free part was reported only as a tradeoff.
+
+Shaped by reading the runs on the crates that pull request changed. Not compared in model runs.
+
 ## 3.27.0 — 2026-11-12
 
 The existing-helpers profile looks beyond small functions. It now asks who already does any code a change writes by hand for a general job, in Go, TypeScript, Rust and Java.

@@ -1,6 +1,6 @@
 # Allocation
 
-**Does each unit allocate or copy what it could borrow, reuse or size once?**
+**Does each unit allocate, copy or initialize more than it keeps or reads?**
 
 ## Expect
 
@@ -9,6 +9,9 @@
 - A buffer filled on each pass is cleared and reused, not dropped and
   allocated again.
 - A collection whose final size is known before it is filled is sized once.
+- Each unit writes only the storage it reads: a table or buffer of fixed
+  capacity grows with what is written instead of starting with every slot
+  filled.
 - A comparison, lookup or log argument does not build an owned value only to
   compare or discard it.
 
@@ -17,7 +20,8 @@
 For each owned value the hot path creates, by `clone`, `to_string`,
 `to_owned`, `to_vec`, `collect`, `format!`, `String::from`, `Box::new` or
 pushes into a new `Vec` or `String`, find where it goes. A value that is
-only read, compared or lent and then dropped was not needed.
+only read, compared or lent and then dropped was not needed. For each table
+or buffer it initializes, find how much of it is read.
 
 - Needless clone: a `String`, `Vec`, map or large struct cloned to pass to
   something that takes a reference, cloned to satisfy the borrow checker
@@ -30,6 +34,10 @@ only read, compared or lent and then dropped was not needed.
   the loop body where one outside the loop, cleared each pass, would serve.
 - Growth without capacity: pushes into a `Vec`, `String` or map whose final
   length is known before the loop, paying repeated reallocation and copying.
+- Storage filled to its capacity and read to a length: `[EMPTY; N]` beside
+  a count, `Box::new([0; N])` or `vec![0; n]` of which only `..len` is
+  read. Every unit pays for all N slots, here and in each struct that
+  holds such storage and is built per unit.
 - A collected `Vec` used once: `collect` only to iterate, take a length or
   test emptiness.
 - A value built only to measure it: serialized or formatted into a buffer
