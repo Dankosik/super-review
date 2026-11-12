@@ -137,5 +137,5 @@ test("delivery copies are identical and only the adapters that support it carry 
   expect(existsSync(resolve(root, "adapters/cursor/plugin/resources/perf-review"))).toBe(false);
   for (const role of ["perf-review", "perf-reader", "perf-challenger"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
   expect(read("scripts/package.py")).toContain('"perf-review"');
-  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.3.1");
+  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.3.0");
 });
