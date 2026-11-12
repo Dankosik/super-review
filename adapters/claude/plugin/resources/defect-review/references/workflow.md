@@ -16,6 +16,11 @@ When the PR's commits are not there, fetch them: that adds objects and moves
 no branch or working file. If you cannot, read through GitHub and say in the
 report that code outside the changed files could not be searched.
 
+When the user names a branch or commit that is not checked out, such as the
+main branch, resolve it once to a commit and give readers that commit, not
+the name: a branch can move during the review. Read it from the local object
+database, as for a PR.
+
 Other sessions may change a local tree while agents read it. Before the
 report, check HEAD and the status of the scope's files again. If either
 changed, name the changed files in the report: findings in them may rest on

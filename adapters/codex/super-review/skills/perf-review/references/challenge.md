@@ -23,7 +23,8 @@ Take each claim through all four.
    bound, a fixed-size type? For a library, "no caller here loops over it"
    defeats nothing when the interface is for per-item use.
 2. **The work is not done.** Walk the trace yourself from one unit and note
-   what each line does. Is every quoted line there? Does the callee or
+   what each line does. Is every quoted line there? Do your counts before
+   and after match the claim's? Does the callee or
    dependency, at the version the lockfile resolves, already avoid the
    work: capacity reserved, a borrow returned, a buffer or cache inside,
    a reference count where the claim saw a copy? A claim about what the

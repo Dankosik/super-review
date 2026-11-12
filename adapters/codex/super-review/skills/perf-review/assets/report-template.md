@@ -8,7 +8,8 @@ timings. Omit a section that would be empty and say so in the outcome.
 The findings that stood, in the workflow's ranking by the work they remove
 per unit. Then the counts: findings, tradeoffs, questions for the user,
 unproven, rejected. With nothing found, say that no unneeded work was shown
-on the hot paths that were read.
+on the hot paths that were read. When the scope does no per-unit work, say
+so with its entries, how often each runs and where the per-unit work runs.
 
 What was reviewed: the PR or local root and revision, the program's unit of
 work, the hot paths considered and the basis for each, for a whole project
@@ -29,17 +30,19 @@ work, each with its file, lines and quoted code, ending at the work per unit
 times the multiplier. For a change review, the link to the change, or
 `pre-existing`.
 
-**Cheaper form.** The sketch and what it keeps.
+**Cheaper form.** The sketch and what it keeps. When another finding touches
+the same path, whether they apply together.
 
-**Saves.** The resource, and the largest cost on the same path for it.
+**Saves.** The resource with its counts per unit before and after, and the
+largest cost on the same path for it.
 
 **Challenge.** What the challenger tried and why the claim stood.
 
 ### Constant work per request
 
 Findings that remove constant work, after all the others, one row each: the
-location, the work with its quoted line, the cheaper form, the resource,
-and that the challenge stood.
+location, the work with its quoted line, the cheaper form, the resource
+with its counts before and after, and that the challenge stood.
 
 ## Tradeoffs
 
@@ -55,6 +58,12 @@ One line each: the work per unit, the path, and what would settle it: the
 user's word that it runs per request or per element, a load figure, or a
 profile. With that evidence, a new review can decide them.
 
+## Outside the scope
+
+Costs and siblings in code the user's narrowing left out, one line each: the
+location, the work, and the finding it repeats. They were not traced or
+challenged; a review of that code decides them.
+
 ## Unproven and rejected
 
 One line each: the claim, and the missing step or the counter-evidence.
@@ -62,21 +71,26 @@ These carry no advice.
 
 ## Before applying
 
-For whoever applies these findings. Measure a release build on the same
-machine and workload, before and after, in the way the saved resource
-demands:
+For whoever applies these findings. Each finding predicts counts per unit
+before and after. Check them first, before and after the change:
+allocations with a counting allocator, queries and round trips from query
+logs, system calls from a trace. A count does not depend on how loaded the
+machine is. A count that differs from the prediction means the trace missed
+work: find it before going on.
 
-- CPU and allocations: the project's benchmarks where they cover the path,
-  otherwise a short `criterion` benchmark of the hot path at a realistic
-  size. Count allocations where the finding is about them.
+Then measure time where the saving is time rather than a count, with a
+release build on an otherwise idle machine and the same workload before and
+after; on a loaded machine timings vary more than most savings:
+
+- CPU: the project's benchmarks where they cover the path, otherwise a short
+  `criterion` benchmark of the hot path at a realistic size.
 - Contention and async waits: load at the concurrency production runs,
   comparing throughput and p50 and p99 latency. A single-threaded benchmark
   shows nothing here.
-- I/O: the queries, round trips or system calls per unit, from query logs
-  or a trace, and latency under load.
+- I/O: latency under load.
 
 Keep the existing tests passing, and add one where the finding names
 behavior that is easy to break: order, errors, what has happened on a
-failure halfway. Apply a change only when the measurement shows the gain.
-When it does not, say so in that finding and leave the code as it was. Do
-not adjust the measurement until it shows one.
+failure halfway. Apply a change only when the counts or the measurement
+show the gain. When they do not, say so in that finding and leave the code
+as it was. Do not adjust the measurement until it shows one.

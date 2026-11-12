@@ -19,6 +19,11 @@ In a change review a finding must come from the change:
 
 Work found in untouched code on the way is reported once as pre-existing.
 
+When the user narrows the review to packages, modules or files, a cost whose
+cheaper form changes only code outside them is named in one line with its
+location and is not traced further or challenged: a review of that code
+decides it.
+
 Out of scope even when true: readability, bugs, security, test quality,
 missing features, and fast code that reads badly. So are costs no path in
 the source carries: memory footprint beyond the allocator's work on a hot
@@ -37,6 +42,12 @@ What the code costs is shown by following it through the source, including
 the source of what it calls. A profile, flamegraph or benchmark output the
 user supplies, or one committed to the repository, is evidence: quote the
 part you use and say what it measured.
+
+Source at a commit that is not checked out is read through git, one file and
+about two hundred numbered lines per call:
+`git show <commit>:<path> | cat -n | sed -n '1,200p'`, then `'201,400p'`.
+The tool that runs the shell may cut longer output or set it aside, and a
+part you did not see is unread.
 
 ## What a finding is
 
@@ -115,9 +126,10 @@ lines it names, in order.
   `Cargo.lock` resolves. Work inside code you did not read is an assumption,
   and the candidate is unproven.
 - **Count the work the semantics require**: a pass over N elements, an
-  allocation for a value that is kept or passed on, a copy of a buffer, a
-  system call, a round trip, a lock taken, an atomic read-modify-write, a
-  task spawned. State the scale as operations times the multiplier, such as
+  allocation for a value that is kept or passed on, each reallocation of a
+  buffer that grows, a copy of a buffer, a system call, a round trip, a
+  lock taken, an atomic read-modify-write, a task spawned. State the scale
+  as operations times the multiplier, such as
   "one `String` allocation per row × rows in the request" or "N lookups,
   each scanning up to N entries". Do not invent milliseconds or percentages.
 - **What the optimizer, the hardware or another system may do is not
@@ -162,3 +174,8 @@ allocation there saves CPU, and the finding says so. A saving that the
 dominant cost hides from every caller and operator is rejected. Work moved
 to startup, to another thread or behind a cache still costs something; say
 what moved where.
+
+Give the saving as counts per unit before and after, from the trace:
+`3 → 1 allocations per request`, `N → 1 queries per page`, `2 → 1 sequential
+round trips per call`. Whoever applies the change checks it by these counts,
+so a count the trace cannot give means a step is missing.

@@ -36,7 +36,9 @@ identify source -> independent readers -> proof by trace
 
 - **Identify the source.** The review reads the working tree, or the commits
   of a PR through Git and GitHub. It does not clone, copy or check out
-  anything.
+  anything. A branch the user names is pinned to one commit, and a commit
+  is read through Git one file at a time, in numbered windows of about two
+  hundred lines.
 - **Independent readers.** Each reader gets one lens and reads the code
   itself. Readers overlap on purpose. An earlier design considered building
   one shared ledger of promises and checking each entry; it was rejected
@@ -71,19 +73,24 @@ allocation per row × rows in the request"), never as invented milliseconds.
 The **cheaper form**: a sketch and what it keeps, results, order, errors,
 drop timing, `Send` and `Sync`, the public API, and that it builds for the
 project's Rust version, features and targets. The **resource**: what is
-saved, set beside the path's dominant cost for that resource.
+saved, as counts per unit before and after (`3 → 1 allocations per
+request`), set beside the path's dominant cost for that resource.
 
 Lenses divide unneeded work by where it lives: complexity, allocation,
 async, I/O, contention and repeated work. A cheaper form that changes
 something the team must weigh is a tradeoff, shown with both sides,
 including a batch or overlap that buys throughput with latency or changes
 what has happened when something fails. For a whole project the review
-starts from where work enters the program and reports the entries it used.
-A candidate that waits only on whether its path is hot becomes a question to
-the user. Because reading shows work removed, not time saved, the report
-ends with what to do before applying anything: measure before and after in
-the way the saved resource demands, and keep a change only if the gain
-shows.
+starts from where work enters the program and reports the entries it used;
+when none of them runs per unit of work, it says where that work runs and
+starts no readers. Findings on one path are checked applied together. A
+cost in code the user's narrowing left out is named in one line and not
+traced, so reviews of neighboring packages do not trace and change the same
+code. A candidate that waits only on whether its path is hot becomes a
+question to the user. Because reading shows work removed, not time saved,
+the report ends with what to do before applying anything: check the
+predicted counts first, then measure time where the saving is time, in the
+way the saved resource demands, and keep a change only if the gain shows.
 
 ## Why nothing is run
 
@@ -123,6 +130,7 @@ The four share only the plugin they ship in.
 | Decision | Chosen | Instead of | Reason |
 | --- | --- | --- | --- |
 | How a finding is proven | A trace through quoted lines, by reading | Building the project and running a test or a mutant | The run machinery cost more than it found; reading found the defects that started this work |
+| Reading a commit that is not checked out | Through Git, one file and about two hundred numbered lines per call | A snapshot copied outside the tree; whole files, or several at once, per shell call | In real runs about half the whole-file reads were cut or set aside by the shell tool and readers had to be sent again; windows of two hundred lines arrived whole, without a copy |
 | Unit of work for readers | One lens over the whole scope, independent readers | A ledger of promises checked entry by entry | Recall on what nobody wrote down matters more than exact coverage counts |
 | Small changes in Defect Review | Related lenses paired, four readers | Eight readers and up to eight challengers for fifty changed lines | Cost should follow the size of the change; whether pairing costs attention is unverified |
 | Waiting in real time in tests | A finding when a rule forbids it, when the bound is as tight as the work, or when the test can pass with nothing done | Reporting every sleep or timed poll; or none without a team rule | A generous bound around observable state fails no one; a tight one, or a sleep that proves nothing, does |
@@ -135,6 +143,7 @@ The four share only the plugin they ship in.
 | What makes a performance finding | A hot path with its basis, a cost trace, a cheaper form with the same behavior, the resource saved | Patterns known to be slow, reported wherever they appear | A clone that runs once costs nothing; advice without a hot path is churn |
 | What makes a path hot | Running per unit of the program's work: a request, a message, one run of a command-line tool with its startup; an error path when real input takes it routinely | A fixed list of cold places: startup, connections, error paths | A tool that scripts call thousands of times spends its life starting up; a parse that fails on half the tokens is the main path |
 | Whole-project scope in Performance Review | Start from where work enters the program and review what the entries reach; report the entries and what was not reached | Every reader reading every file and finding entries again | Hotness starts at an entry; the list in the report shows a missed entry, unlike a ledger nobody sees |
+| A scope with no per-unit work | No readers; the report lists the entries, how often each runs and where per-unit work runs | Readers on startup, wiring and shutdown | Such code is not hot for per-unit work; a real run started twelve readers there and found nothing |
 | A hot path nobody has established | A question to the user, in its own report section | Buried among unproven candidates | One sentence or a profile from the user settles it |
 | How a cost is shown | Work per unit times its multiplier, read from the source and from dependencies at their locked versions | Running benchmarks or profilers; estimated milliseconds | A count can be checked by opening the lines; an invented timing cannot be checked at all |
 | Profiles and benchmark output | Evidence when the user supplies them or the repository commits them | Ignored because the review runs nothing | They are the best evidence that a path is hot, and using them runs nothing |
@@ -147,7 +156,9 @@ The four share only the plugin they ship in.
 | A saving beside a larger cost | Reported with the dominant cost for the same resource; rejected only when that cost hides it from everyone | Rejected whenever something else on the path is slower | A network wait dominates a request's latency, not the CPU spent per request |
 | Order of performance findings | By work removed per unit: complexity class, then I/O or a wait per element, then allocation per element, then constant work | Severity labels or estimated speedups | The order follows from the trace; a percentage would be invented |
 | Challenger in Performance Review | An independent challenger on four lines: not hot, no cost, changed behavior, dominated | None, as in Test Review | A performance claim fails in several independent ways, and each takes reading, not one search |
-| Who measures a performance finding | Whoever applies it, before and after, in the way the saved resource demands, keeping it only if the gain shows | The review, by benchmarks; or one microbenchmark for every kind of finding | Reading proves work removed, not time saved; a single-threaded benchmark shows nothing about contention or round trips |
+| Who measures a performance finding | Whoever applies it: first the counts per unit the finding predicts, then time where the saving is time, on an otherwise idle machine; keeping it only if the gain shows | The review, by benchmarks; or one microbenchmark for every kind of finding | Reading proves work removed, not time saved; a count does not depend on machine load, timings on a busy machine varied twofold between runs, and a single-threaded benchmark shows nothing about contention or round trips |
+| Findings on one path | Checked applied together | Each checked alone | Two real findings each kept behavior, and together let a stopped request start work |
+| Costs outside a narrowed scope | One line with the location, not traced or challenged | A reader and a challenger for each, as for siblings in scope | Parallel reviews of neighboring packages traced the same code and then changed it in conflicting branches |
 | Small changes in Performance Review | Lenses paired, three readers: complexity with allocation, async with contention, I/O with repeated work | Six readers for a small change | As in Defect Review; whether pairing costs attention is unverified |
 | Small changes in Super Review | One lens per specialist by default; related pairs (six at most) only when the user asks for a compact review of a small change | Pairing by default, as in Defect and Performance Review | Super Review rests on one reader per question; pairing becomes the default only after a comparison shows no lens loses annotated improvements |
 | Large scopes in Super Review | Split a lens by area when its files are more than one specialist can read in full; announce the task count, and ask before a whole-project review starts more than forty | Coherent areas left to judgment, no bound on task count | A specialist that skims loses lines; a whole project could otherwise start an unbounded number of tasks |

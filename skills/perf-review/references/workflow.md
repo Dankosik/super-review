@@ -16,6 +16,11 @@ When the PR's commits are not there, fetch them: that adds objects and moves
 no branch or working file. If you cannot, read through GitHub and say in the
 report that code outside the changed files could not be searched.
 
+When the user names a branch or commit that is not checked out, such as the
+main branch, resolve it once to a commit and give readers that commit, not
+the name: a branch can move during the review. Read it from the local object
+database, as for a PR.
+
 Other sessions may change a local tree while agents read it. Before the
 report, check HEAD and the status of the scope's files again. If either
 changed, name the changed files in the report: findings in them may rest on
@@ -35,6 +40,12 @@ profile. Readers get the packages and modules those entries reach. List the
 entries in the report, and the code they do not reach as not reviewed, so a
 missing entry shows. An entry says where work starts, not which path is hot.
 For a PR or local changes, the scope stays the change.
+
+When no entry in the scope runs per unit of work, because the scope only
+starts, wires and stops a long-lived program, start no readers. Report the
+entries, how often each runs and where the per-unit work runs instead. Code
+the scope registers to run per unit, such as a handler or a job, is per-unit
+work.
 
 ## Lenses
 
@@ -100,9 +111,10 @@ You own the decision on every candidate. A reader's confidence, a
 challenger's tone or agreement between agents is not evidence.
 
 - **Walk each trace yourself.** Every quoted line is there, each step does
-  the work it claims for one unit, nothing rests on unread code, and the
-  multiplier really reaches this code. A step about behavior that neither
-  you nor the challenger read in source or documentation, the standard
+  the work it claims for one unit, nothing rests on unread code, the
+  multiplier really reaches this code, and the counts before and after
+  follow from the steps. A step about behavior that neither you nor the
+  challenger read in source or documentation, the standard
   library's and the runtime's included, rests on memory, and the candidate
   is unproven. Read missing code yourself when it is at hand; do not
   rewrite the trace into a different claim.
@@ -114,6 +126,11 @@ challenger's tone or agreement between agents is not evidence.
   everything it changes. When you see a form that removes more of the work,
   such as a borrow where the reader reserved capacity, use it instead; check
   the new form the same way, yourself or through the challenger.
+- **Check findings on one path together.** Cheaper forms that each keep
+  behavior can lose it together, when one relies on a check, an order or a
+  value another removes. Walk the forms that touch one function or path
+  applied together. When they conflict, say which to apply, or give a
+  combined form that keeps behavior.
 - **Weigh the challenge as an argument, not a ruling.** A `falls` needs
   specific quoted counter-evidence; check it. "The compiler optimizes this"
   defeats nothing without a profile, a benchmark or a documented guarantee.
@@ -142,11 +159,13 @@ path is hot becomes a question to the user in the report.
 Look for siblings of each finding that stood. Waste written once is often
 written again: the same compilation in another handler, the same query per
 item in another repository method, the same copy in a neighboring loop, the
-read and write paths of one cache. Search the repository for such places
-and give them to one fresh reader with that finding's lens, the finding as
-the pattern to test and the places as its files. This is the one task that
-gets a known finding. A sibling needs its own hot path, trace and
-challenge; one outside the scope is reported once as pre-existing. Decide
+read and write paths of one cache. Search the repository for such places.
+Give those in the scope to one fresh reader with that finding's lens, the
+finding as the pattern to test and the places as its files. This is the one
+task that gets a known finding. A sibling needs its own hot path, trace and
+challenge; one outside the change is reported once as pre-existing. A
+sibling in code the user's narrowing left out gets no reader or challenge:
+name it in one line with its location and the finding it repeats. Decide
 siblings as above.
 
 ## Report

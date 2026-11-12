@@ -32,6 +32,8 @@ only read, compared or lent and then dropped was not needed.
   length is known before the loop, paying repeated reallocation and copying.
 - A collected `Vec` used once: `collect` only to iterate, take a length or
   test emptiness.
+- A value built only to measure it: serialized or formatted into a buffer
+  to take its length, where the length follows from the parts.
 - A copy of a large buffer that is then only read: `to_vec` of a slice, a
   `String` made from bytes that could be parsed in place.
 - Deserializing through `serde_json::Value` and then into a type, or into

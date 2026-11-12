@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.26.0 — 2026-11-12
+
+Performance Review 0.3.0 takes in fifteen real runs on a Rust service. Defect Review 0.11.0 and Test Review 0.10.0 share its new rule for reading a commit.
+
+- **Reading a commit.** A branch the user names, such as the main branch, is pinned to one commit, and every agent reads it through Git one file and about two hundred numbered lines per call. In the runs, about half the whole-file reads through the shell came back cut or set aside, and orchestrators sent readers again for the parts they missed; windows of two hundred lines arrived whole. Nothing is copied.
+- **No readers where nothing runs per unit.** When every entry in the scope only starts, wires or stops a long-lived program, the report lists the entries, how often each runs and where the per-unit work runs, and no readers start. One run started twelve readers on such a crate and found nothing.
+- **Findings on one path are checked together.** Two findings each kept behavior, but applied together they let a stopped request start an introspection call; only an existing test caught it. The orchestrator now walks the forms that touch one function or path applied together, and says which to apply or how to combine them.
+- **Outside a narrowed scope, one line.** A cost whose cheaper form changes only code outside the packages or files the user chose, sibling or not, is named with its location and not traced or challenged. Parallel runs on neighboring crates traced the same code up to three times and then changed it in conflicting branches.
+- **Predicted counts.** Each finding states counts per unit before and after, such as `3 → 1 allocations per request`. The challenger and the orchestrator check them, and whoever applies the change checks them first: a count does not depend on machine load. Time is measured only where the saving is time, on an otherwise idle machine. In the runs, half the applied changes were merged without any measurement, and timings on a loaded machine varied twofold. Each reallocation of a growing buffer counts as work, and the allocation lens names values built only to take their length: one run predicted one to three saved allocations where the change saved seven.
+
+Shaped by reading the runs. Not compared in model runs.
+
 ## 3.25.0 — 2026-11-12
 
 Super Review now asks who already does what a new helper does.

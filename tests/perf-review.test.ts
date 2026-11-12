@@ -69,14 +69,32 @@ test("the challenge is independent and its verdicts are arguments the orchestrat
 
 test("the report ranks by work removed, asks the user what only they know, and hands measurement to whoever applies it", () => {
   const report = flat("skills/perf-review/assets/report-template.md");
-  for (const section of ["## Findings", "### Constant work per request", "## Tradeoffs", "## Needs your confirmation", "## Unproven and rejected", "## Before applying"]) expect(report).toContain(section);
+  for (const section of ["## Findings", "### Constant work per request", "## Tradeoffs", "## Needs your confirmation", "## Outside the scope", "## Unproven and rejected", "## Before applying"]) expect(report).toContain(section);
   expect(report).toContain("in the workflow's ranking by the work they remove");
   expect(flat("skills/perf-review/references/workflow.md")).toContain("a change of complexity class first, then a round trip, system call or blocking wait per element, then an allocation or copy per element, then constant work per request");
-  expect(report).toContain("Measure a release build on the same machine and workload, before and after, in the way the saved resource demands");
+  expect(flat("skills/perf-review/references/contract.md")).toContain("Give the saving as counts per unit before and after, from the trace");
+  expect(report).toContain("Each finding predicts counts per unit before and after.");
+  expect(report).toContain("A count does not depend on how loaded the machine is.");
   expect(report).toContain("A single-threaded benchmark shows nothing here.");
   expect(report).toContain("Keep the existing tests passing");
-  expect(report).toContain("Apply a change only when the measurement shows the gain.");
+  expect(report).toContain("Apply a change only when the counts or the measurement show the gain.");
   expect(report).toContain("Do not adjust the measurement");
+});
+
+test("the orchestrator stops early, checks findings on one path together and only names costs outside a narrowed scope", () => {
+  const workflow = flat("skills/perf-review/references/workflow.md");
+  expect(workflow).toContain("When no entry in the scope runs per unit of work");
+  expect(workflow).toContain("start no readers");
+  expect(workflow).toContain("**Check findings on one path together.**");
+  expect(workflow).toContain("A sibling in code the user's narrowing left out gets no reader or challenge");
+  expect(flat("skills/perf-review/references/contract.md")).toContain("a cost whose cheaper form changes only code outside them is named in one line");
+});
+
+test("every review of the family reads a commit in numbered windows and pins a named branch", () => {
+  for (const skill of ["perf-review", "defect-review", "test-review"]) {
+    expect(read(`skills/${skill}/references/contract.md`)).toContain("`git show <commit>:<path> | cat -n | sed -n '1,200p'`");
+    expect(flat(`skills/${skill}/references/workflow.md`)).toContain("resolve it once to a commit");
+  }
 });
 
 test("the review only reads: nothing is built or run and no role can write", () => {
@@ -119,5 +137,5 @@ test("delivery copies are identical and only the adapters that support it carry 
   expect(existsSync(resolve(root, "adapters/cursor/plugin/resources/perf-review"))).toBe(false);
   for (const role of ["perf-review", "perf-reader", "perf-challenger"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
   expect(read("scripts/package.py")).toContain('"perf-review"');
-  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.2.0");
+  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.3.0");
 });
