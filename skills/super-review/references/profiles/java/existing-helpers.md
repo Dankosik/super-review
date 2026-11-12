@@ -3,11 +3,14 @@
 Owner: duplication
 Rule: java.duplication.share-knowledge
 
-**Who already does this?** For each small method the change adds for a
-general operation, such as on strings, collections, numbers, dates, paths,
-retries, parsing or comparison, often private or static at the bottom of a
-class, ask who already does it. Search in this order and take the first
-that fits:
+**Who already does this?** For code the change writes by hand for a general
+job, ask who already does it. Most often it is a small method on strings,
+collections, numbers, dates, paths, retries, parsing or comparison, private
+or static at the bottom of a class. It can also be `equals`, `hashCode` and
+`toString` that a record or the project's Lombok annotations would generate,
+a lookup table keyed by enum where `EnumMap` fits, a `HashMap` cache where
+Caffeine or Guava's cache is in the build, or a retry loop where Spring Retry
+or Resilience4j is. Search in this order and take the first that fits:
 
 1. The JDK at the project's release level: `Objects`, `Optional`,
    `Collections`, `Collectors`, `List.of` and `Map.of`, `String.isBlank`,
@@ -22,6 +25,12 @@ that fits:
    logic with edge cases the library already handles. Adding it is the team's
    decision: name the dependency as the cost.
 
+A dependency already in the build, or one the project's documentation
+recommends for this job, is a choice the team has made: code beside it that
+does the job by hand is the clearest candidate, even when nothing uses the
+dependency yet. A recorded decision against a library for this job keeps the
+hand-written code; cite where it is recorded.
+
 Reinventing the wheel is the burden: every reader has to check that the copy
 does what the standard version does. Recommend the replacement with the
 call sites that change.
@@ -34,12 +43,13 @@ Generality. Put it where the project already keeps such helpers, or with the
 concept it serves, not in a new grab-bag `Utils` class; where it lives is
 placement's question.
 
-A replacement must behave the same on the edges callers reach: `null`
-inputs and results, empty strings and collections, whitespace as `trim`
-(up to U+0020) or as `strip` (`Character.isWhitespace`) defines it,
-mutability of the returned collection (`List.of` rejects `null` and changes), rounding,
-ordering and stability, locale and time zone, and the exception thrown. A
-JDK method that differs on one of those is not a plain replacement; name the
-difference, or the effect callers would see. Keep a helper that carries
-domain meaning in its name, and a two-line helper whose replacement would
-add a dependency.
+A replacement must behave the same on the edges callers reach: `null` inputs
+and results, empty strings and collections, whitespace as `trim` (up to
+U+0020) or as `strip` (`Character.isWhitespace`) defines it, mutability of the
+returned collection (`List.of` rejects `null` and changes), rounding, ordering
+and stability, locale and time zone, the exception thrown, the equality, hash
+and `toString` contracts, and for a mechanism its locking, eviction and
+cancellation. A replacement that differs on one of those is not a plain
+replacement; name the difference, or the effect callers would see. Keep a
+helper that carries domain meaning in its name, and a two-line helper whose
+replacement would add a dependency.

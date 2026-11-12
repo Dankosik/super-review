@@ -3,11 +3,14 @@
 Owner: duplication
 Rule: rust.duplication.share-knowledge
 
-**Who already does this?** For each small function the change adds for a
-general operation, such as on strings, slices, collections, numbers, time,
-paths, retries, parsing or comparison, often private and at the bottom of a
-module, ask who already does it. Search in this order and take the first
-that fits:
+**Who already does this?** For code the change writes by hand for a general
+job, ask who already does it. Most often it is a small function on strings,
+slices, collections, numbers, time, paths, retries, parsing or comparison,
+private and at the bottom of a module. It can also be a trait impl a derive
+would generate, from `std` or a declared crate such as `derive_more` or
+`derive-where`; a table of every enum variant with its count; a cache on a
+`Mutex<HashMap>`; or a `Stream` polled by hand. Search in this order and take
+the first that fits:
 
 1. The standard library at the crate's `rust-version`: iterator adapters,
    `Option` and `Result` combinators, `str` and slice methods such as
@@ -24,6 +27,12 @@ that fits:
    logic with edge cases the crate already handles. Adding it is the team's
    decision: name the dependency as the cost.
 
+A dependency already in `Cargo.toml`, or one the project's documentation
+recommends for this job, is a choice the team has made: code beside it that
+does the job by hand is the clearest candidate, even when nothing uses the
+dependency yet. A recorded decision against a library for this job keeps the
+hand-written code; cite where it is recorded.
+
 Reinventing the wheel is the burden: every reader has to check that the copy
 does what the standard version does. Recommend the replacement with the
 call sites that change.
@@ -39,7 +48,9 @@ placement's question.
 A replacement must behave the same on the edges callers reach: empty input,
 `char` versus byte indexing, overflow and its mode, rounding, ordering and
 stability, which element wins on ties, laziness, ownership and borrowing of
-the result, and panics versus `None` or `Err`. A standard method that
+the result, panics versus `None` or `Err`, the text a `Debug` or `Display`
+impl prints, including redacted fields, the generic bounds an impl requires,
+and for a mechanism its locking, eviction and cancellation. A replacement that
 differs on one of those is not a plain replacement; name the difference, or
-the effect callers would see. Keep a helper that carries domain meaning in
-its name, and a two-line helper whose replacement would add a dependency.
+the effect callers would see. Keep a helper that carries domain meaning in its
+name, and a two-line helper whose replacement would add a dependency.

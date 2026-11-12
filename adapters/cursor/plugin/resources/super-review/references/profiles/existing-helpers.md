@@ -3,10 +3,14 @@
 Owner: duplication
 Rule: go.duplication.share-knowledge
 
-**Who already does this?** For each small function the change adds for a
-general operation, such as on strings, slices, maps, numbers, time, paths,
-retries, parsing or comparison, often private and at the bottom of a file,
-ask who already does it. Search in this order and take the first that fits:
+**Who already does this?** For code the change writes by hand for a general
+job, ask who already does it. Most often it is a small function on strings,
+slices, maps, numbers, time, paths, retries, parsing or comparison, private
+and at the bottom of a file. It can also be a small mechanism: a
+mutex-guarded map used as a cache, a retry loop with backoff, a `sync.Once`
+beside its variable where `sync.OnceValue` fits, a goroutine group with an
+error channel where `errgroup` is available. Search in this order and take
+the first that fits:
 
 1. The standard library at the module's `go` directive: `slices`, `maps`,
    `strings`, `bytes`, `cmp`, `sort`, `errors.Join`, `time`, `path/filepath`,
@@ -18,6 +22,12 @@ ask who already does it. Search in this order and take the first that fits:
 4. A widely used module not yet in `go.mod`, only when the helper carries
    logic with edge cases the module already handles. Adding it is the team's
    decision: name the dependency as the cost.
+
+A dependency already in `go.mod`, or one the project's documentation
+recommends for this job, is a choice the team has made: code beside it that
+does the job by hand is the clearest candidate, even when nothing uses the
+dependency yet. A recorded decision against a library for this job keeps the
+hand-written code; cite where it is recorded.
 
 Reinventing the wheel is the burden: every reader has to check that the copy
 does what the standard version does. Recommend the replacement with the
@@ -31,9 +41,9 @@ the project already keeps such helpers, or with the concept it serves, not in
 a new grab-bag package; where it lives is placement's question.
 
 A replacement must behave the same on the edges callers reach: nil and empty
-slices and maps, an empty string, Unicode versus bytes, rounding, ordering
-and stability, which value wins on ties, and the errors returned. A standard
-function that differs on one of those is not a plain replacement; name the
-difference, or the effect callers would see. Keep a helper that carries
-domain meaning in its name, and a two-line helper whose replacement would
-add a dependency.
+slices and maps, an empty string, Unicode versus bytes, rounding, ordering and
+stability, which value wins on ties, the errors returned, and for a mechanism
+its locking, eviction and cancellation. A replacement that differs on one of
+those is not a plain replacement; name the difference, or the effect callers
+would see. Keep a helper that carries domain meaning in its name, and a
+two-line helper whose replacement would add a dependency.
