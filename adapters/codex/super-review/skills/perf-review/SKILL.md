@@ -2,7 +2,7 @@
 name: perf-review
 description: "Use for an explicitly requested Performance Review: independent readers find work that Rust source of a PR or local tree does not need on a path that runs often, each cost traced through quoted lines to a cheaper form with the same behavior and tested by an independent challenge."
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
 ---
 
 # Performance Review

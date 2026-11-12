@@ -15,8 +15,8 @@ in this review.
 
 ## Launch
 
-Check that the CLI exists and read its installed `--help` for the
-non-interactive mode, model, directory and permission flags.
+Use the non-interactive mode, model, directory and permission flags the
+installed CLI documents.
 
 - OpenCode: `opencode run --standalone --agent defect-reader --model
   provider/model`, with `OPENCODE_DISABLE_PROJECT_CONFIG=1` and
@@ -41,21 +41,17 @@ not change the harness's global configuration or login.
 
 Keep your processes apart from everyone else's: other reviews may run on
 the same machine with the same command line. Give this review its own
-directory outside the reviewed tree and start each process with absolute
-paths, recording its PID and, when it ends, its exit code there:
-`(<command> >task.out 2>task.err </dev/null; echo $? >task.exit) & echo $! >task.pid`.
-Wait on, retry or stop only those PIDs. Never select processes by name or
+directory outside the reviewed tree and record there each process's PID,
+output and exit code: a later shell call cannot learn them otherwise. Wait on,
+retry or stop only those PIDs. Never select processes by name or
 command line, as `pgrep -f` or `pkill -f` do, and never read other runs'
 files or the harness's shared logs. Count other reviews' processes only to
 keep the machine's total near the usual limit of agents at once.
 
 Do not end your turn while your processes run: an orchestrator whose turn
-ends can be torn down with everything it started, as your adapter says.
-Wait through the active harness's completion notice where it reaches you,
-otherwise in a foreground shell call that blocks until your exit files
-appear or the call's time limit nears, and repeat. A process that dies with
-a transport error just as your turn ended was stopped by you, not by the
-provider.
+ends can be torn down with everything it started, as your adapter says. A
+process that dies with a transport error just as your turn ended was
+stopped by you, not by the provider.
 
 The final output is the result. A non-zero exit, empty output or another format
 is unread coverage; retry once for a transient failure. If the CLI is

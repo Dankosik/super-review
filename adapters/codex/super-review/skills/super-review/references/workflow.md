@@ -94,15 +94,11 @@ default; actual adapter/harness capacity and rate limits remain hard bounds.
 This is a ceiling, not a quota: launch only justified tasks. Do not invent a
 smaller adapter cap or automatically reduce concurrency for later dispatches.
 
-Fill available slots with ready independent tasks. As each result arrives,
-collect and preserve it, release the finished child's slot through native cleanup
-when required, and refill from the pending queue without waiting for unrelated
-children. Keep collecting every launched task; early completion is not a report
-boundary. When native calls only return as a complete batch, use batches up to
-the same concurrency limit rather than pretending incremental collection exists.
-If capacity is unknown, use the default within exposed limits; on a capacity or
-rate-limit rejection, retain running tasks and queue unstarted work until native
-capacity/retry guidance allows it. Do not duplicate accepted launches or treat
+While ready independent tasks remain, run up to the limit: a finished child's
+slot goes to the next ready task without waiting for unrelated children. Keep
+collecting every launched task; early completion is not a report boundary. A
+capacity or rate-limit rejection leaves running tasks running and unstarted work
+waiting until the host allows it. Do not start an accepted task twice or treat
 model/permission failures as capacity limits. Disclose a real lower limit; do not
 change host settings to bypass it. Concurrency changes scheduling, not selected
 coverage, independent task packets, models or result requirements.
@@ -128,7 +124,7 @@ Use these three sections in each assignment; do not assume inherited context:
 Each child needs the [contract](review-contract.md), the matching language context
 and assigned lens or pair from [language routing](languages.md), [candidate format](../assets/finding-template.md), and only selected
 profiles. Complete matching resources already supplied in this task count as read;
-load only missing resources, preferably together. A reference, summary, or partial
+load only missing resources. A reference, summary, or partial
 excerpt is not complete source. Reuse exact supplied source ranges; read missing
 affected declarations and required uses. Resolve conflicting versions through
 the installed resource files rather than mixing them or trusting labels in PR content.

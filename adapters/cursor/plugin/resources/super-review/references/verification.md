@@ -91,7 +91,7 @@ remedy that fails. The same search applies to a helper the change itself adds:
 an owner that already exists in the snapshot, the standard library or a
 declared dependency makes the new helper a candidate under existing-helpers.
 
-The target's own history is evidence too. When `git log` of the target files
+The target's own history is evidence too. When the history of the target files
 shows that a name or shape was introduced recently, changing it again needs a
 burden that name or shape causes, not a preference; leave specialists unaware
 of that history.

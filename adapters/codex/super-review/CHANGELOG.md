@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.26.1 — 2026-11-12
+
+The instructions of all four skills say what an agent must achieve, not how to do what it can work out itself. Super Review 3.26.1, Defect Review 0.11.1, Test Review 0.10.1 and Performance Review 0.3.1 change no review criterion.
+
+- **Waiting.** The Claude Code harnesses keep the fact that the forked turn ends at the orchestrator's first reply without a tool call and that completion notices of the processes it started do not reach it, and say not to reply while they run. The recipe of foreground shell calls of up to ten minutes is gone, and so is the wait loop on exit files in each `external.md`.
+- **Processes of other reviews.** Each `external.md` still keeps a review's processes apart, records each one's PID, output and exit code in the review's own directory, and never selects processes by name or command line; the shell line that did the recording is gone. Flags come from what the installed CLI documents, not from memory, without a prescribed `--help` step.
+- **Super Review source access.** The `gh` commands, Git inventory steps, hashing, `--` and NUL-delimited listings are replaced by what they protect: PR identities resolved by reading only, staged source read as the captured index, one fixed version of working files for every specialist, paths that never become options or commands, and no repository-configured command (external diff, textconv, pager, fsmonitor) run during inspection. Verification reads the target files' history rather than running `git log`, and the other three workflows no longer say where in Git to read a PR; fetching its commits is still allowed.
+- **Super Review scheduling.** The workflow keeps the default of eight running children, the user's override, the host's limits and that a finished child's slot goes to the next ready task; the slot-release, batch and queue steps are gone. Codex keeps the fact that a finished child can hold its slot until it is closed. Tool names for reading and waiting are gone from the Codex, Cursor and OpenCode instructions and the specialist roles, and "using Read" from the Claude commands.
+
+Shaped by reading. Not compared in model runs.
+
 ## 3.26.0 — 2026-11-12
 
 Performance Review 0.3.0 takes in fifteen real runs on a Rust service. Defect Review 0.11.0 and Test Review 0.10.0 share its rule for reading.

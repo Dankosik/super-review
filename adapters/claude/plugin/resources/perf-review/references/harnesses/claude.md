@@ -20,4 +20,4 @@ follow. Bash may also start agents in another harness the user explicitly
 asked for, per [external agents](external.md). The command runs you as a
 forked turn that ends at your first reply without a tool call, and the
 processes you started end with it; their completion notices do not reach
-you. Wait for them in foreground Bash calls of up to ten minutes each.
+you, so do not reply while they run.

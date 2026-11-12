@@ -10,9 +10,9 @@ or a branch against its merge-base with the main branch. When the request
 does not say, take the branch together with its uncommitted work.
 
 For a PR, read files at the head commit and take the change from the
-merge-base, from the local object database, without checking anything out.
-When the PR's commits are not there, fetch them: that adds objects and moves
-no branch or working file. If you cannot, read through GitHub and say in the
+merge-base, without checking anything out. When the PR's commits are not in
+the local repository, fetch them: that adds objects and moves no branch or
+working file. If you cannot, read through GitHub and say in the
 report that tests outside the changed files could not be searched.
 
 When the user names a branch or commit that is not checked out, such as the

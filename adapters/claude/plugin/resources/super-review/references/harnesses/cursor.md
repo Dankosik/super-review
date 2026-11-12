@@ -55,12 +55,9 @@ language, selected profiles and effective rules. Record the requested model mode
 the native launch configuration. Do not pass chat history or peer verdicts.
 
 Use the shared [workflow concurrency policy](../workflow.md#resolve-policy-and-coverage)
-within Cursor's available slots, without a separate adapter cap. Refill ready work
-as native completions free slots; use bounded batches only when the native call
-blocks until all results return. Collect the complete final response of every
-launched task, using native foreground
-completion or the exposed background wait/result facility. A task ID or progress
-summary is not a result. Follow up only for a specific missing question; retain
+within Cursor's available slots, without a separate adapter cap. Collect the
+complete final response of every launched task. A task ID or progress summary is
+not a result. Follow up only for a specific missing question; retain
 the selection unless the user changes it, and use a fresh task when resuming would
 retain an old model. Specialists do not delegate. Missing delegation, unfinished
 results and uncovered scope remain explicit gaps, not simulated independent work.

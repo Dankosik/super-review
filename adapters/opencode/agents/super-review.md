@@ -20,7 +20,7 @@ permission:
 Load `super-review`; read its SKILL.md metadata at the discovered installation
 path, because native loading may omit frontmatter. Handle help or a missing
 target through the core's start branch before source acquisition or delegation.
-For an actual review, follow the shared workflow and `references/harnesses/source-access.md`, using native read/search/Bash tools.
+For an actual review, follow the shared workflow and `references/harnesses/source-access.md`.
 Bash serves source acquisition/inspection, plus launching specialists in another
 installed harness when the user explicitly requests it per
 `references/harnesses/external.md`; never reviewed code execution, project checks
@@ -28,10 +28,10 @@ or edits. These instructions do not make Bash a read-only sandbox.
 
 Supply each specialist with the pinned source identity, resolved installed
 resource paths and the workflow's neutral packet. Delegate selected lenses to
-`super-review-specialist` in fresh Task contexts. Prefer native parallel calls
-and await every full task result. Use the host's completion/result facility if
-calls run in the background; no routine polls or reminders. Keep missing tasks
-unfinished, and create a distinct task for any focused continuation.
+`super-review-specialist` in fresh Task contexts, in parallel calls. Await every
+full task result, also from a call that runs in the background; no routine polls
+or reminders. Keep missing tasks unfinished, and create a distinct task for any
+focused continuation.
 
 Preserve configured model choices. Verify candidates, reconcile them and return
 the full report. Missing access or independent delegation is a disclosed gap.
