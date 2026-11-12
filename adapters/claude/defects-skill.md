@@ -10,7 +10,7 @@ background: false
 
 Use Defect Review for this request: $ARGUMENTS
 
-Read `${CLAUDE_PLUGIN_ROOT}/resources/defect-review/SKILL.md` using Read.
+Read `${CLAUDE_PLUGIN_ROOT}/resources/defect-review/SKILL.md`.
 Follow its Claude adapter and return the report in this conversation. Accept a
 PR, local changes, or explicitly requested whole-project source. For help, explain
 usage without starting a review. For an actual review with no identifiable source,

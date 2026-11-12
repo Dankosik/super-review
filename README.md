@@ -321,10 +321,11 @@ from where work enters the program and lists those entries. Candidates that
 wait only on whether a path is hot come back to you as questions.
 
 It runs no benchmark or profiler, so it shows work removed, not time saved.
-The report ends by asking whoever applies a finding to measure before and
-after in the way the saved resource demands, a benchmark for CPU and load at
-production concurrency for contention, and to keep the change only if the
-gain shows. Rust only, in Claude
+Each finding predicts counts per unit before and after, such as `3 → 1
+allocations per request`. The report ends by asking whoever applies a
+finding to check those counts first, then to measure time where the saving
+is time, a benchmark for CPU and load at production concurrency for
+contention, and to keep the change only if the gain shows. Rust only, in Claude
 Code, Codex and OpenCode. See
 [the design](docs/review-family.md#how-performance-review-shows-a-cost) and
 [the contract](skills/perf-review/references/contract.md).

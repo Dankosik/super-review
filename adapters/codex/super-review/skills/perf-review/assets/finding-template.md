@@ -9,6 +9,8 @@ readability or bugs.
 - Lens and scope.
 - Read: files and symbols read in full, callers and dependency source
   consulted, evidence of load used. What in scope you could not read.
+- Outside the scope: one line for each cost whose cheaper form changes only
+  code the user's narrowing left out, with its location and the work.
 
 With no candidates, say so.
 
@@ -28,16 +30,16 @@ With no candidates, say so.
   what has happened on a failure halfway, drop timing, `Send` and `Sync`,
   public API; and that it builds within the project's `rust-version`,
   features and targets. Anything it changes, named.
-- Resource: what is saved, the largest cost on the same path for that
-  resource, and any work that only moved.
+- Resource: what is saved, as counts per unit before and after; the largest
+  cost on the same path for that resource; and any work that only moved.
 
 ## Challenger result
 
 ### <number>. `stands` | `falls` | `tradeoff` | no verdict
 
 - Hot path: which callers reach it and how often, or what keeps it cold.
-- Cost: where your own walk from one unit ended, and the line that breaks
-  the reader's trace if one does.
+- Cost: where your own walk from one unit ended, your counts before and
+  after, and the line that breaks the reader's trace if one does.
 - Behavior: what the cheaper form keeps and what it changes.
 - Dominant cost: the largest cost on the path for the same resource.
 - Decides it: the one piece of evidence behind the verdict.

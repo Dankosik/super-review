@@ -39,6 +39,11 @@ bar and where bugs or gaps live, and leave out procedure for recording the
 reviewer's own work. A review of a real
 repository is the maintainer's choice.
 
+In every skill, say what an agent must achieve, not how to do what it can
+work out itself, such as reading a long file in full or searching the code.
+Spell out a step only when the agent cannot know it: a harness limit, the
+user's choice, a fact about the reviewed project.
+
 Give a lens a concrete question and a decision that can favor changing or
 retaining code. Keep technical preservation constraints, the eight base
 questions, stable rule IDs, independent recipients and configured model profiles.

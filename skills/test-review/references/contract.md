@@ -26,6 +26,9 @@ files, or clone, copy or check out the repository. A mutant is a described
 change, never an applied one. Whether a test would fail is decided from what
 the test drives and what it asserts.
 
+Read what you review in full, at the revision you are given. A part you did
+not see, for whatever reason, is not read: finish it before you report.
+
 ## Promises
 
 Tests exist to fail when the code stops doing what was promised. A promise

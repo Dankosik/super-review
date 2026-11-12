@@ -6,7 +6,7 @@ identifiable target; help does not require reading a repository.
 
 Run orchestration in the current task, preserving the user's model and reasoning
 effort. Use [native source access](source-access.md) and the workflow's neutral
-task packet. Read the installed skill and resources through ordinary file tools.
+task packet.
 
 Use one lens, or a compact pair the workflow allows, per fresh native child
 context, without inherited conversation or
@@ -30,14 +30,11 @@ Use the shared [workflow concurrency policy](../workflow.md#resolve-policy-and-c
 within available host slots, without a separate adapter cap. Give each child the
 pinned source identity and accessible source/resource paths. Children
 return the complete task header and candidate blocks in their final response.
-Use native completion notifications or the host's blocking agent-wait tool to
-collect every result. After an early completion, preserve its full result and
-close the finished child through native cleanup when needed to free its slot;
-refill ready work before waiting again on the remaining children. Do not close
-running children or lose their pending results to make room.
+Collect every result. A finished child can hold its slot until it is closed:
+close it once you have its full result, never a running child to make room.
 Do not substitute a status summary for a full report. Recover missing output
-through native result reads where supported; failed or unavailable results remain
-unfinished. No custom result store, assignment receipt or waiting service is needed.
+where the host keeps it; failed or unavailable results remain unfinished. No
+custom result store, assignment receipt or waiting service is needed.
 
 Use native messages for a real clarification or cancellation, not routine status
 polls or reminders. A focused continuation gets a distinct task identity and the

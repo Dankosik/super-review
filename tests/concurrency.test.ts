@@ -15,8 +15,7 @@ test("concurrency has one shared default and no smaller Codex/Cursor cap", () =>
   const workflow = read("skills/super-review/references/workflow.md");
   expect(workflow).toContain("eight active child tasks by default");
   expect(workflow).toContain("An explicit user concurrency limit overrides");
-  expect(workflow).toContain("refill from the pending queue without waiting");
-  expect(workflow).toContain("When native calls only return as a complete batch");
+  expect(workflow).toContain("goes to the next ready task without waiting for unrelated children");
   for (const adapter of ["codex", "cursor"]) {
     const text = read(`skills/super-review/references/harnesses/${adapter}.md`);
     expect(text).toContain("../workflow.md#resolve-policy-and-coverage");

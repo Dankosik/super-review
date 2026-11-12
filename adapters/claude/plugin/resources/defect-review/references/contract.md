@@ -36,6 +36,9 @@ files, or clone, copy or check out the repository. What the code does at run
 time is shown by following it through the source, including the source of
 what it calls.
 
+Read what you review in full, at the revision you are given. A part you did
+not see, for whatever reason, is not read: finish it before you report.
+
 ## What a bug is
 
 A bug is behavior that is wrong for someone it affects: a caller, an

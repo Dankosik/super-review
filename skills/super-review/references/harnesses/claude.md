@@ -16,14 +16,12 @@ by the review instructions to acquisition and inspection, plus launching
 specialists in another harness the user explicitly requested, through
 [external specialists](external.md). The command runs you as a forked turn
 that ends at your first reply without a tool call, and external processes end
-with it; their completion notices do not reach you, so wait for them in
-foreground Bash calls of up to ten minutes each. Edit/Write tools are not exposed, but the shell is not a
-read-only sandbox.
+with it; their completion notices do not reach you, so do not reply while they
+run. Edit/Write tools are not exposed, but the shell is not a read-only sandbox.
 
-Prefer foreground calls (`run_in_background: false`) and native parallel calls
-for independent tasks. If the host runs a child in the background, use its native
-completion/result facility and wait for every full result before reconciliation.
-Do not poll or send routine reminders. Missing results remain unfinished; add only
+Run independent specialists in parallel. Have every full result before
+reconciliation, also from a child the host moved to the background. Do not poll
+or send routine reminders. Missing results remain unfinished; add only
 source-justified continuations, each with its own task identity.
 
 You run on the session's model and effort, which the user chose. Specialists
