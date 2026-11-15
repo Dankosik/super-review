@@ -1,7 +1,7 @@
 {
   "kind": "evaluator-only",
   "status": "NOT RUN",
-  "baseline_revision": "c9d41736dac89dcd1b017b3c4ba254af6a6dd994",
+  "baseline_revision": "d56f95c22ab7a17a27304dc218b8d7ad0ae06886",
   "contrast_pairs": [
     ["AP01", "AP02"],
     ["AP03", "AP04"],
@@ -280,7 +280,7 @@
       "polarity": "report",
       "decision": "pointer-frame React state fan-out, root CSS variable invalidation, layout reticle positioning and idle rAF buffer allocations reported",
       "checks": [
-        "Traces setCursor on pointermove reconciling all 300 StageCard children, document.documentElement --cursor-x invalidating document-wide styles, and left/top reticle writes triggering main-thread layout/paint",
+        "Traces setCursor on pointermove reconciling all 300 .stage-card children, document.documentElement --cursor-x invalidating document-wide styles, and left/top reticle writes triggering main-thread layout/paint",
         "Traces the requestAnimationFrame loop allocating a fresh Float32Array(128) per frame and continuing to tick while paused is true"
       ]
     },
@@ -298,16 +298,16 @@
       "polarity": "report",
       "decision": "unpartialized synchronous localStorage persistence, coarse per-row store fan-out, per-chunk completed markdown re-parses and per-row closed modals reported",
       "checks": [
-        "Traces Zustand persist without partialize running JSON.stringify and synchronous localStorage writes over up to 400 messages plus streamingReply on every streamed SSE chunk",
-        "Traces every TranscriptRow subscribing to whole selectedIds, re-running marked.parse across completed rows on stream ticks, and instantiating a closed AuditModal per row"
+        "Traces Zustand persist without partialize running JSON.stringify and synchronous localStorage writes over up to 400 entries plus streamingDraft on every streamed SSE chunk",
+        "Traces every MessageRow subscribing to whole selectedIds, re-running marked.parse across completed rows on stream ticks, and instantiating a closed RowAuditModal per row"
       ]
     },
     {
       "id": "AP32",
       "polarity": "retain",
-      "decision": "partialized persistence, rAF-coalesced streaming tail, memoized item-scoped row selectors and shared modal retained",
+      "decision": "isolated prefs persistence, rAF-coalesced markdown streaming tail, memoized item-scoped row selectors and shared modal retained",
       "checks": [
-        "Verifies persist partialize excludes streaming state, completed TranscriptRow items subscribe to item-scoped boolean selection and memoize parsed markdown, and one AuditModal is shared",
+        "Verifies persisted prefs exclude ephemeral stream and selection state, StreamingTail coalesces chunks via requestAnimationFrame and renders marked.parse output without re-rendering MessageRow siblings, completed MessageRow items subscribe to item-scoped boolean selection and memoize parsed markdown, and one RowAuditModal is shared",
         "Reports no hot-path repeated-work or synchronous storage finding"
       ]
     },
@@ -323,9 +323,9 @@
     {
       "id": "AP34",
       "polarity": "retain",
-      "decision": "slice-borrowed deserialization, zero-allocation ASCII comparator, lazy ok_or_else, regex is_match and borrowed HashMap hit lookup retained without false positives",
+      "decision": "Cow-borrowed slice deserialization, zero-allocation ASCII comparator, lazy ok_or_else, regex is_match and borrowed HashMap hit lookup retained without false positives",
       "checks": [
-        "Verifies serde_json::from_slice borrows &str fields, sort_by compares ASCII bytes without allocating, ok_or_else defers formatting, CODE_RE.is_match allocates nothing, and routes.get borrows &str on hits",
+        "Verifies serde_json::from_slice borrows Cow<'_, str> fields while preserving escaped-string decoding, sort_by compares ASCII bytes without allocating, ok_or_else defers formatting, CODE_RE.is_match allocates nothing, and routes.get borrows &str on hits",
         "Does not flag zero-capacity Vec::new() inside unwrap_or or disabled tracing::debug! macro arguments"
       ]
     },

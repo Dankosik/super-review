@@ -25,70 +25,83 @@ documentation, or the resolved dependency version rather than memory.
   lookup; `Array.prototype.shift()` moves every remaining element (`O(N)`).
   Deep-cloning an `N`-node editor, canvas, or reducer tree via
   `structuredClone` or `JSON.parse(JSON.stringify(state))` per keystroke or
-  drag step copies all `N` nodes -> copy only the `O(depth)` spine via
-  structural sharing (**finding** when untouched subtrees stay immutable).
+  drag step copies all `N` nodes -> copy only the changed ancestor spine via
+  structural sharing, leaving untouched subtrees shared by reference
+  (**finding** when untouched subtrees stay immutable).
 - **Off-React frame state, input coalescing, and idle `rAF` loops**: driving
-  continuous `pointermove`, `wheel`, `scroll`, `timeupdate`, or
-  `requestAnimationFrame` values through React `setState` (including piping
-  Framer Motion `MotionValue` updates via `useMotionValueEvent` back into
-  `setState`) reconciles the component and `M` children 60 to 120 times per
-  second -> write to a `ref`, scoped CSS custom property, or direct
-  `MotionValue` (`M -> 0` React renders per frame; **finding** when JSX
-  branching does not depend on the value). Running hit-testing, DOM queries, or
-  redraws directly inside `pointermove`/`mousemove`/`scroll` (240 to 1000 Hz)
-  executes multiple passes before one paint -> coalesce the latest event into
-  one `requestAnimationFrame` gate (`K -> 1` pass per frame; **finding** when
-  intermediate unpainted events carry no side effects, **tradeoff** when stroke
-  integration needs `getCoalescedEvents()`). Keeping a `requestAnimationFrame`
-  loop running after motion settles or while `document.hidden` / offscreen runs
-  60 to 120 idle callbacks per second -> stop the loop until the next trigger
-  (**finding**).
+  continuous `pointermove`, `touchmove`, `wheel`, `scroll`,
+  `requestVideoFrameCallback`, or `requestAnimationFrame` values through React
+  `setState` (including piping Framer Motion `MotionValue` updates via
+  `useMotionValueEvent` back into `setState`) reconciles the component and `M`
+  unmemoized children 60 to 120 times per second -> write to a `ref`, scoped CSS
+  custom property, or direct `MotionValue` (`M -> 0` React renders per frame;
+  **finding** when JSX branching does not depend on the value). Browser `scroll`
+  and modern `pointermove`/`mousemove`/`wheel`/`touchmove` already align to one
+  dispatch per frame, whereas running hit-testing, DOM queries, or redraws
+  directly inside `pointerrawupdate` (up to 240 to 1000 Hz), per point of
+  `e.getCoalescedEvents()`, or across multiple uncoordinated event/stream
+  sources within one frame executes multiple passes before one paint -> coalesce
+  into one `requestAnimationFrame` flush (`K -> 1` pass per frame; **finding**
+  when intermediate unpainted states carry no side effects, **tradeoff** when
+  dropping `pointerrawupdate` or `getCoalescedEvents()` loses sub-frame stroke
+  fidelity). Browsers pause `requestAnimationFrame` when `document.hidden` is
+  true, whereas keeping a `requestAnimationFrame` loop running after motion
+  settles or while the target element is offscreen or CSS-hidden in an active
+  tab runs 60 to 120 idle callbacks per second -> stop the loop until the next
+  trigger or viewport intersection (**finding**).
 - **Compositor animations, layout thrashing, and style invalidation**:
-  animating layout or paint geometry (`top`, `left`, `width`, `height`,
-  `margin`) per frame forces main-thread Layout and Paint every frame -> use
-  compositor `transform` (`translate3d`, `scale`) and `opacity` (**finding**
-  for out-of-flow elements that do not reflow siblings; **tradeoff** when
-  siblings reflow or `scale` distorts borders or text without FLIP
-  compensation). Interleaving DOM geometry reads (`getBoundingClientRect()`,
-  `offsetHeight`, `scrollTop`, `getComputedStyle()`) with style or DOM writes
-  in an `N`-element loop, or across `N` sibling `useLayoutEffect` hooks that
-  synchronously write then read during one commit, forces `N` synchronous
-  browser reflows -> batch reads before writes (`N -> 1` layout pass). Setting
-  dynamic CSS custom properties on `document.documentElement` or
-  `document.body` per pointer or scroll tick invalidates computed styles across
-  all `D` document nodes, and interpolating per-frame coordinates into runtime
-  CSS-in-JS injects stylesheet rules per tick -> scope the custom property to
-  the consuming container (`D -> k` nodes) or update inline `style.transform`
-  (**finding**). `wheel`/`touchstart`/`touchmove` listeners that never call
-  `preventDefault()` block compositor scrolling unless `{ passive: true }` is
-  set.
+  animating layout properties (`top`, `left`, `width`, `height`, `margin`) per
+  frame forces main-thread Layout and Paint every frame -> use compositor
+  `transform` (`translate3d`, `scale`) and `opacity` (**finding** for
+  out-of-flow elements when siblings and fixed-positioned descendants are
+  unaffected; **tradeoff** when siblings reflow, fixed descendants re-anchor, or
+  `scale` distorts borders, radii, or text without FLIP compensation).
+  Interleaving layout-dependent DOM reads (`getBoundingClientRect()`,
+  `offsetHeight`, `scrollTop`, layout-dependent `getComputedStyle(el)`
+  properties) with style or DOM writes in an `N`-element loop, or across `N`
+  sibling `useLayoutEffect` hooks that interleave DOM reads and writes during
+  one commit, forces up to `N` synchronous browser reflows -> batch reads before
+  writes (`N -> 1` layout pass). Setting dynamic CSS custom properties on
+  `document.documentElement` or `document.body` per pointer or scroll tick
+  invalidates computed styles across all `D` document nodes, and interpolating
+  per-frame coordinates into runtime CSS-in-JS injects stylesheet rules per tick
+  -> scope the custom property to the consuming container (`D -> k` nodes) or
+  update inline `style.transform` (**finding**). `wheel`/`touchstart`/`touchmove`
+  listeners that never call `preventDefault()` block compositor scrolling unless
+  `{ passive: true }` is set.
 - **Canvas/WebGL frame allocations and synchronous encoding**: allocating
   scratch vectors, matrices, gradients, typed arrays, or `.map()`/`.filter()`
   arrays inside `requestAnimationFrame` or Three.js/R3F `useFrame` over `N`
   items allocates `60 * N` heap objects per second, and reassigning unchanged
-  `canvas.width` or `canvas.height` clears and reallocates the backing store ->
-  reuse preallocated scratch storage and resize only when dimensions change
-  (**finding**). `canvas.toDataURL()` encodes synchronously on the main thread
-  and allocates a Base64 string -> `canvas.toBlob()` or
-  `OffscreenCanvas.convertToBlob()` encodes asynchronously into a `Blob`
-  (**finding** in async callers; **tradeoff** when callers require a
-  synchronous string return).
+  `canvas.width` or `canvas.height` resets context state and clears/reallocates
+  the backing store -> reuse preallocated scratch storage, resize only when
+  dimensions change, and clear frames with `clearRect` (**finding** when
+  context-state reset is not relied on or state is set explicitly).
+  `canvas.toDataURL()` encodes synchronously on the main thread and allocates a
+  Base64 string -> `canvas.toBlob()` or `OffscreenCanvas.convertToBlob()`
+  encodes asynchronously into a `Blob` (**finding** when async callers consume
+  binary `Blob` data or object URLs; **tradeoff** when callers or wire contracts
+  require a synchronous or Base64 data-URL string).
 - **Streaming UI tails and chunk coalescing**: re-parsing full Markdown ASTs
   (`remark`, `marked`) or syntax highlighting (`shiki`, `prism`) from character
   0 and re-rendering all `M` completed items on every SSE, WebSocket, or
-  `ReadableStream` chunk (`T` chunks) spends `O(T^2)` parse work and `O(T * M)`
-  renders -> coalesce chunks within one display frame via
-  `requestAnimationFrame`, memoize completed messages or closed blocks, and
-  re-render only the active streaming tail (`M -> 1` item render per frame;
-  **finding** when sub-frame intermediate renders are unobservable).
+  `ReadableStream` chunk (`T` chunks) spends `O(T^2)` parse work on the growing
+  tail and `O(T * M)` completed-item passes -> coalesce sub-frame chunks via
+  `requestAnimationFrame` and memoize the `M` completed messages so only the
+  active streaming tail re-renders (`M + 1 -> 1` item render per frame;
+  **finding** when sub-frame intermediate renders are unobservable), whereas
+  splitting an in-flight Markdown message into cached blocks is a **tradeoff**
+  when reference-style links or cross-block syntax can resolve later in the
+  stream.
 - **Store selector fan-out, render-tick multipliers, and derived Effects**:
   check whether React Compiler is active first. Even with React Compiler,
   subscribing `N` row components to a whole collection or `Context` value
   (`useStore(s => s.selectedIds)` or `s => s.entities`) re-renders all `N` rows
-  when 1 item changes, and Zustand/Redux selectors returning fresh
-  `.filter()`/`.map()` arrays without shallow equality re-run subscribers every
-  tick -> select item-scoped primitives or stable slices
-  (`s => s.selectedIds.has(id)` or `s.entities[id]`, `N -> 1` row render;
+  when 1 item changes, and Zustand/Redux selectors returning fresh object or
+  `.filter()`/`.map()` array references without shallow equality (`useShallow` /
+  `shallowEqual`) or memoized selectors fail `Object.is` checks on store updates
+  (or loop in `useSyncExternalStore`) -> select item-scoped primitives or stable
+  slices (`s => s.selectedIds.has(id)` or `s.entities[id]`, `N -> 1` row render;
   **finding**). Without React Compiler, inline `O(N)` sort/filter on
   per-keystroke or hover renders, fresh `<Context.Provider value={{ ... }}>`
   literals across `M` subscribers, or `JSON.stringify` inside render/dependency
@@ -99,14 +112,18 @@ documentation, or the resolved dependency version rather than memory.
   intermediate visual timing (**tradeoff**). Synchronizing synchronous derived
   state inside `useEffect` (`setDerived(fn(props))`) commits a stale pass
   before re-rendering (`2 -> 1` render/commit pass when computed during render;
-  **finding**).
+  **finding** when the intermediate stale frame is not an intentional transition
+  step).
 - **List scaling, per-row observers/portals, and virtualization**: creating
-  `new IntersectionObserver`, `new ResizeObserver`, `window.matchMedia`, closed
-  `<Dialog>`/`<Popover>`/`<DropdownMenu>` subtrees, or invariant
-  `twMerge`/`cn(...)` class merges inside each of `N` rendered rows or `N * M`
-  grid cells multiplies setup and parsing by `N` -> share one observer or hoist
-  closed portals and static merged classes outside the row loop (`N -> 1`;
-  **finding** when closed portals mount no visible DOM). Bypassing an existing
+  `new IntersectionObserver`, `new ResizeObserver`, `window.matchMedia`, or
+  closed `<Dialog>`/`<Drawer>` subtrees inside each of `N` rendered rows
+  multiplies observer/hook setup by `N`, and calling invariant `twMerge`/`cn(...)`
+  merges across `N * M` cells repeats `clsx`/cache-key string joins per cell (or
+  full Tailwind conflict parsing when dynamic per-row strings exceed
+  `tailwind-merge`'s 500-entry LRU cache) -> share one compatible observer or
+  `MediaQueryList`, hoist closed modals to one active-id instance, and hoist
+  static merged class strings outside the row loop (`N -> 1`; **finding** when
+  closed modals render `null`). Bypassing an existing
   virtualizer (iterating full `items` instead of `getVirtualItems()` or forcing
   synchronous measurement of all `N` rows) is a **finding**, whereas
   introducing list virtualization or `content-visibility: auto` from scratch
@@ -127,9 +144,10 @@ documentation, or the resolved dependency version rather than memory.
   result, and client mount-then-fetch chains (parent `useEffect` fetch gating
   child mount and child `useEffect` fetch) pay serial round trips -> overlap
   with `Promise.all`, bounded concurrency, deferred `await`, or route-level
-  loaders (**finding**). Unaborted superseded `fetch` calls on rapid input
-  parse and render obsolete payloads -> wire `AbortController` (**finding** for
-  idempotent reads). ORM/resolver queries inside loops issue `N+1` round trips;
+  loaders (**finding**). Unaborted superseded `fetch` reads on rapid input keep
+  downloading and parsing discarded responses -> cancel superseded requests with
+  `AbortController` and ignore `AbortError` (**finding** for idempotent reads).
+  ORM/resolver queries inside loops issue `N+1` round trips;
   fetching whole rows/relations for one column or count transfers unneeded
   payloads (`select`/`count`). Marking a layout or container `"use client"`
   solely for an interactive leaf pulls `K` static subtrees and server
@@ -142,23 +160,31 @@ documentation, or the resolved dependency version rather than memory.
   behavior (**finding**), whereas deferring an interactive modal or editor
   behind `React.lazy` or `next/dynamic` trades route-load work against
   first-open latency (**tradeoff**). Putting `priority` /
-  `fetchPriority="high"` / `loading="eager"` on all `N` list images contends
-  with the LCP fetch, while omitting `loading="lazy"` on `N` offscreen feed
-  images eagerly fetches unseen media.
+  `fetchPriority="high"` / `loading="eager"` on all `N` list images defeats
+  priority hints and contends with the LCP fetch (**finding** to restrict high
+  priority to above-the-fold media), whereas adding `loading="lazy"` to
+  offscreen list images defers network fetches until scroll (**tradeoff**, and
+  never apply `loading="lazy"` to above-the-fold LCP media).
 - **Synchronous web storage, IndexedDB batching, and Worker transfers**:
   calling `localStorage.setItem` / `sessionStorage.setItem` with
-  `JSON.stringify` on high-frequency state ticks (including Zustand `persist`
-  without `partialize` serializing ephemeral cursor, stream, or hover slices on
-  every `set()`) blocks the main thread on synchronous storage I/O -> exclude
-  non-persisted slices via `partialize` (**finding**), whereas debouncing
+  `JSON.stringify` on high-frequency state ticks blocks the main thread on
+  synchronous storage I/O; in Zustand `persist`, `storage.setItem` runs on every
+  `set()` even when `partialize` output is unchanged, so omitting `partialize`
+  serializes `O(N)` non-persisted slices per write while keeping 60 Hz cursor,
+  stream, or hover state inside a persisted store still writes on every tick ->
+  exclude non-persisted slices via `partialize` and keep high-frequency
+  ephemeral state outside persisted stores (**finding**), whereas debouncing
   writes of persisted drafts trades crash-window durability for frame budget
   (**tradeoff**). Opening a separate IndexedDB `readwrite` transaction per
   record in an `N`-item loop pays `N` transaction commits -> batch writes in
   one transaction (**finding** when per-item partial commit is not relied on,
-  otherwise **tradeoff**). Posting unretained `ArrayBuffer` / `TypedArray` /
-  `ImageData` buffers via `worker.postMessage(buf)` structured-clones `B` bytes
-  -> pass transferables `postMessage(buf, [buf.buffer])` for zero-copy transfer
-  (**finding** when the sender never reads `buf` afterward); moving synchronous
+  otherwise **tradeoff**). Posting unretained `ArrayBuffer` or `TypedArray`
+  payloads via `worker.postMessage` structured-clones `B` bytes -> pass
+  transferables `postMessage(ab, [ab])` or `postMessage(view, [view.buffer])` on
+  unshared whole buffers for zero-copy transfer (**finding** when the sender
+  never reads the detached buffer afterward; transferring `ImageData` pixels via
+  `{ buffer: img.data.buffer, width, height }` changes the message contract and
+  is a **finding** only on internal worker seams); moving synchronous
   main-thread compute into a `Worker` changes call asynchronicity (**tradeoff**
   unless the caller is already `async`).
 - **Runtime baseline**: check `target`/`lib` in `tsconfig.json` and

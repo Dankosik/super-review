@@ -156,7 +156,7 @@ test("delivery copies are identical and only the adapters that support it carry 
   expect(existsSync(resolve(root, "adapters/cursor/plugin/resources/perf-review"))).toBe(false);
   for (const role of ["perf-review", "perf-reader", "perf-challenger"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
   expect(read("scripts/package.py")).toContain('"perf-review"');
-  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.10.0");
+  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.10.1");
 });
 
 test("TypeScript frontend performance rules distinguish behavior-keeping findings from tradeoffs and stay prose-clean", () => {
@@ -169,14 +169,18 @@ test("TypeScript frontend performance rules distinguish behavior-keeping finding
     "**Store selector fan-out, render-tick multipliers, and derived Effects**:",
     "**List scaling, per-row observers/portals, and virtualization**:",
     "**Synchronous web storage, IndexedDB batching, and Worker transfers**:",
+    "pointerrawupdate",
     "content-visibility: auto",
     "useDeferredValue",
     "partialize",
-    "postMessage(buf, [buf.buffer])",
+    "postMessage(ab, [ab])",
+    "postMessage(view, [view.buffer])",
+    "tailwind-merge",
     "Adding `will-change` without a profile",
   ]) {
     expect(ts).toContain(anchor);
   }
+  expect(ts).not.toContain("timeupdate");
   for (const file of files(resolve(skill, "references")).filter(path => path.endsWith(".md"))) {
     expect({ file: relative(root, file), hasEmDash: read(relative(root, file)).includes("—") }).toEqual({
       file: relative(root, file),
@@ -198,10 +202,12 @@ test("Rust performance rules distinguish behavior-keeping findings from tradeoff
     "clone_from",
     "BufRead::read_line",
     "std::collections::HashMap::entry(key)",
+    "hashbrown::HashMap::entry_ref",
     "slice::sort_by_key(f)",
     "eq_ignore_ascii_case",
     "serde_json::from_reader",
-    "RawValue",
+    "\"raw_value\"",
+    "#[serde(transparent)]",
     "entry.file_type()",
     "prepare_cached",
     "rayon::par_iter()",

@@ -33,13 +33,14 @@ and the awaits that do not use each other's results.
   the next, where `join!`, `try_join!`, `JoinSet`, `FuturesUnordered`,
   `buffer_unordered`, bounded `Promise.all`, `errgroup` or structured
   concurrency would overlap them.
-- Uncoalesced high-frequency events, uncancelled superseded reads, or idle frame
-  loops: running per-frame work on every raw pointer or scroll event faster than
-  display refresh without frame coalescing, leaving superseded in-flight reads
-  running on rapid input, keeping a `requestAnimationFrame` or poll loop
-  active after motion settles or while hidden, or recreating timers
-  (`tokio::time::sleep`) and stateful secondary futures on every message of a
-  hot `select!` loop.
+- Uncoalesced sub-frame events, uncancelled superseded reads, or idle loops:
+  running per-frame work on raw sub-frame input (`pointerrawupdate`, per-point
+  coalesced events, or multiple uncoordinated event sources within one frame)
+  without frame coalescing, leaving superseded in-flight reads downloading and
+  parsing on rapid input, keeping a `requestAnimationFrame` loop active after
+  motion settles or while offscreen (or a timer/poll loop active while hidden),
+  or recreating timers (`tokio::time::sleep`) and stateful secondary futures on
+  every message of a hot `select!` loop.
 - Lock held across `.await` or async suspension: an async `Mutex`, `RwLock` or
   semaphore permit alive across a network call, so every caller queues behind
   one request's latency.
