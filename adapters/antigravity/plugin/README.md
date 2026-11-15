@@ -54,12 +54,37 @@ results, not lifecycle statuses. The shared workflow controls coverage and
 concurrency. Built-in `research`/`self`, `/boost` and `/swarm` are different roles
 and workflows and do not substitute for these reviewers.
 
-Antigravity documents `inherit`, `flash` and `pro` model tiers. A user override
-is honored only when the live native selector can represent it; an arbitrary
-model name is not assumed to map to a tier. An unavailable choice stops affected
-launches for clarification. A child prompt does not change its model. Report the
-requested selection separately from any effective identity exposed by the host;
-missing identity is unverified. The adapter pins no cheaper model by default.
+## Select the worker model
+
+The default for all specialists, readers and challengers is **Gemini 4 Hydrogen
+with High reasoning**, slug `gemini-4-hydrogen-high`. The current chat's model
+and effort remain the user's choice. An explicit user specialist model/effort
+overrides the default for the current review and its continuations.
+
+CLI 1.5.9 accepts model tiers in role frontmatter and rejects the Hydrogen slug,
+so roles retain `model: inherit`. On that host, select **Gemini 4 Hydrogen High**
+in the App model picker before reviewing, or launch a CLI chat with:
+
+```sh
+agy models
+agy --model gemini-4-hydrogen-high
+```
+
+The model must appear in your host's available list. A chat already using
+Hydrogen High can delegate through native inheritance. From another parent,
+the adapter requires a live native child selector that explicitly supports
+Hydrogen High; the current CLI's documented tier-only configuration does not
+provide that guarantee. A missing capability stops affected launches for a user
+choice. The adapter never switches the parent itself or silently uses Flash,
+Pro, an arbitrary inherited model or an Orchestrator composite. A child prompt
+cannot select a model.
+
+This choice is the Google counterpart to our Sonnet/medium and Terra/high worker
+profiles by intended role, without a claim of equal review quality. The research
+and native configuration probe are in
+[selection evidence](https://github.com/Dankosik/super-review/blob/main/docs/antigravity-model-selection.md).
+Report requested selection separately from exposed effective identity; missing
+runtime identity is unverified, and a reported mismatch stops further launches.
 
 These instructions target App/CLI custom subagents. Legacy IDE skill discovery
 alone does not establish custom-role execution: when independent agents are

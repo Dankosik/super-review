@@ -10,7 +10,7 @@ and effort when the host exposes them; a requested profile is not proof of use.
 | Claude Code | Session model and effort | Native `sonnet` / `medium` |
 | OpenCode | Current primary model and effort | One explicitly selected `provider/model-id`; provider's configured/default effort |
 | Cursor IDE | Current Agent chat's selected model/settings | `inherit`; an explicit user subagent choice takes precedence where native per-call selection supports it |
-| Google Antigravity App/CLI | Current chat's model and effort | Native `inherit`; overrides require a supported native selector and model-tier mapping |
+| Google Antigravity App/CLI | Current chat's model and effort | Gemini 4 Hydrogen / High (`gemini-4-hydrogen-high`), through supported native selection or inheritance from that profile |
 
 Super Review, Defect Review, Test Review and Performance Review share these
 defaults. None of them picks an Opus- or Fable-class model for a child; the
@@ -78,11 +78,22 @@ Native end-to-end Cursor model routing has not been measured by this project.
 
 ## Google Antigravity
 
-All six child roles use `model: inherit`; no model or effort is pinned for the
-current chat. The documented child model choices are tiers (`inherit`, `flash`,
-`pro`), not arbitrary provider model IDs. A user override must be representable
-by the live native selector; otherwise stop affected launches and ask for a
-supported choice. Prompts and role-file edits during a review do not implement
-model selection. Effective identity remains unverified when native metadata
-does not expose it. See [the Antigravity adapter](antigravity.md) for setup and
-evidence limits; native end-to-end routing has not been measured.
+All six child roles request **Gemini 4 Hydrogen / High**, slug
+`gemini-4-hydrogen-high`. This is our Google worker-profile counterpart to
+Sonnet/medium and Terra/high, based on Hydrogen's intended role as a fast
+agentic coding model. It is a profile choice, not measured equivalence in review
+quality. Carbon is Google's larger planning/reasoning option; this adapter does
+not switch the orchestrator to it. See [selection evidence](antigravity-model-selection.md).
+
+Role files retain `model: inherit` because CLI 1.5.9 rejects the Hydrogen slug in
+subagent frontmatter. Inherit only from a Hydrogen High parent, or apply that
+profile through a supported native child selector. `flash`, `pro` and composite
+Orchestrator modes do not prove a Hydrogen High selection. If the model or
+selection capability is missing, stop affected launches and ask for explicit
+selection; never silently inherit another model or change the parent.
+
+An explicit user specialist model/effort replaces the default for that review,
+including continuations. Effective identity remains unverified when native
+metadata does not expose it; a reported mismatch stops further affected
+dispatch. See [setup and limits](antigravity.md). Native routing and comparative
+review quality remain unmeasured.

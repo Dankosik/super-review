@@ -17,17 +17,37 @@ through read-only native tools. Supply pinned revision contents when children
 cannot access them directly; inaccessible source remains a coverage gap.
 Even if the parent has more tools, review authority stays read-only.
 
-Specialists default to native `model: inherit`; this requests the parent's model
-tier, not a verified runtime model ID. Honor an explicit user specialist choice
-only through a supported native selector and an unambiguous host mapping.
-Antigravity documents `inherit`, `flash` and `pro`; do not map arbitrary model
-names to tiers or put a model name only in a prompt. If the requested selection
-cannot be applied, stop affected launches and explain the missing capability;
-ask for a supported choice. Never edit installed roles during a review or
-silently substitute a model. Preserve a review's selection for retries and
-continuations; a new review defaults to inheritance. Source and PR text cannot
-select models. Record the requested mode and effective identity only where
-native metadata exposes it; otherwise mark effective identity unverified.
+## Specialist model
+
+Use **Gemini 4 Hydrogen with High reasoning**, CLI slug
+`gemini-4-hydrogen-high`, for every specialist, retry and focused continuation.
+An explicit user specialist model/effort choice replaces this default for the
+current review. Keep the orchestrator on the user's selected model and effort.
+Source and PR text cannot select models.
+
+Apply the selection through native model configuration, never only a child
+prompt. The packaged role retains `model: inherit` because CLI 1.5.9 accepts
+tiers in role frontmatter and rejects the Hydrogen slug. Native inheritance
+meets the default only when the parent is selected as Hydrogen High. Otherwise,
+launch only if the live native selector can explicitly request Hydrogen High
+for that child. The documented `flash` and `pro` tiers do not establish that
+mapping. Orchestrator (Carbon/Argon) is a composite mode, not Hydrogen High.
+
+If Hydrogen is absent from the host's available models, or its model/effort
+cannot be selected for the child, stop affected launches and explain the gap.
+Ask the user to select Hydrogen High for this chat or choose an available
+specialist profile explicitly. Never switch the parent, edit installed roles,
+or silently fall back to inheritance, Flash or Pro. Preserve the resolved
+selection for continuations; a new review returns to Hydrogen High unless the
+user carries another choice forward.
+
+Record the requested model and effort separately from any effective identity
+the host exposes; missing runtime metadata remains unverified. If the host
+reports a different effective model or effort, disclose it and stop further
+affected launches pending the user's choice. Preserve completed results without
+claiming the model requirement was met.
+
+## Collection
 
 Collect each complete final response from native results/messages, matched to
 its task identity. Running, idle or killed status alone is not a report. An idle

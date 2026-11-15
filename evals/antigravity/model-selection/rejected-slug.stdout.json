@@ -1,0 +1,21 @@
+{
+  "dir": "/tmp/antigravity-model-probe-6i64QL/plugin",
+  "manifest": "plugin.json",
+  "name": "super-review",
+  "agentPluginsSpec": false,
+  "components": {
+    "agents": 5,
+    "hooks": 0,
+    "mcpServers": 0,
+    "rules": 0,
+    "sidecars": 0,
+    "skills": 4
+  },
+  "findings": [
+    {
+      "severity": "error",
+      "file": "agents/super-review-specialist.md",
+      "message": "model output error: invalid tool call error (invalid_args) Invalid model tier gemini-4-hydrogen-high. The loader skips this agent"
+    }
+  ]
+}

@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.31.0 — 2026-11-15
+
+Antigravity review workers now request Gemini 4 Hydrogen with High reasoning.
+
+- **Worker profile.** All six specialist, reader and challenger roles request `gemini-4-hydrogen-high`, including retries and continuations. An explicit user model/effort choice overrides the default; the orchestrator keeps the user's selected profile. This is a worker-role counterpart to Sonnet/medium and Terra/high, not a measured quality equivalence.
+- **Native selection limits.** CLI 1.5.9 rejects a Hydrogen slug in subagent frontmatter, so the valid role configuration stays `model: inherit`. Inheritance meets the default only from a Hydrogen High parent; other parents need a native selector that explicitly supports that child profile. Missing availability or selection stops affected dispatch for a user choice, without silently substituting Flash/Pro, changing the parent or treating composite Orchestrator modes as Hydrogen High.
+- **Evidence and delivery.** Adds selection research, raw model-discovery and rejected-configuration probes, and contrasting evaluator inputs for supported/missing selection, overrides and model/effort mismatches. Defect Review is now 0.13.0, Test Review 0.12.0 and Performance Review 0.6.0 to version their changed harness instructions. Review criteria and coverage remain unchanged.
+
+Hydrogen was absent from the local available-model list. Native configuration and package validation pass; Hydrogen inference, end-to-end routing and comparative quality/cost/latency remain NOT RUN.
+
 ## 3.30.0 — 2026-11-15
 
 Native Google Antigravity App and CLI support for all four review skills.
