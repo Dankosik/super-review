@@ -3,7 +3,7 @@ name: perf-review
 description: "Explicit Performance Review of Go, TypeScript, Rust, or Java hot paths in PRs or local source by reading, or help using that review."
 disable-model-invocation: true
 metadata:
-  version: "0.10.1"
+  version: "0.10.2"
 ---
 
 # Performance Review

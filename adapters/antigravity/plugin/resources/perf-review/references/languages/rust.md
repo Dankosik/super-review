@@ -18,157 +18,120 @@ A candidate that rests on one of these must show it from the source, the
 documentation, or the resolved dependency version rather than memory.
 
 - **Ownership, clones, and buffer capacity reuse**: what `clone` costs depends
-  on the concrete type resolved through generics and aliases (`Arc`, `Rc`, and
-  `Bytes` increment a reference count without copying payload bytes; `String`,
-  `Vec`, maps, and `Box` allocate and copy). Reassigning `buf = incoming.clone()`,
-  iterating `std::mem::take(&mut vec)` inside a loop, or reading
-  `BufRead::lines()` drops and reallocates heap storage each pass -> reuse
-  capacity via `buf.clone_from(&incoming)`, `vec.drain(..)`, `write!` into a
-  cleared `String` (`format!` always allocates), or `BufRead::read_line(&mut line)`
-  with `line.clear()` and `\r?\n` stripped (`N -> 1` allocation; **finding**
-  within one unit, whereas retaining grown `thread_local!` buffers across
-  requests holds peak memory per thread and is a **tradeoff**). `collect` and
-  `extend` pre-size from `Iterator::size_hint`, which exact-size chains
-  (`slice.iter().map(...)`) preserve and `filter` or `flat_map` lose. Calling
-  `.to_vec()` or `Bytes::copy_from_slice` on data already in `Bytes` copies
-  bytes where `bytes.slice(a..b)` or `Bytes::from(vec)` shares or transfers the
-  backing allocation (`O(1)`; **finding** within one unit, **tradeoff** when
-  retaining a small slice pins a large backing buffer in a cache).
+  on the concrete type (`Arc`, `Rc`, and `Bytes` share backing bytes in `O(1)`;
+  `String`, `Vec`, maps, and `Box` allocate and copy). Dropping and reallocating
+  scratch storage inside a loop (`buf = incoming.clone()`, `mem::take`,
+  `BufRead::lines()`, or `format!` into a reusable string) allocates every pass
+  where reusing capacity (`clone_from`, `drain`, `write!`, `read_line`)
+  amortizes allocation (**finding** within one unit; retaining grown
+  `thread_local!` buffers across requests holds peak memory per thread and is a
+  **tradeoff**). `collect` and `extend` pre-size only while `Iterator::size_hint`
+  stays exact (`filter` and variable `flat_map` lose exact bounds on borrowed
+  chains, whereas `owned_vec.into_iter().filter(...)` compacts in place).
+  Copying `Bytes` via `to_vec` or `copy_from_slice` allocates where slicing or
+  `Bytes::from` shares/transfers backing memory (**finding**, or **tradeoff**
+  when a small slice pins a large buffer in a cache).
 - **Map lookups, `HashMap::entry`, and eager fallbacks**:
-  `std::collections::HashMap::entry(key)` takes `K` by value, so
-  `map.entry(key.to_owned()).or_insert_with(...)` on `HashMap<String, V>`
-  allocates and drops a `String` on every hit -> check `map.get(key)` through
-  `Borrow<str>` first and allocate only on misses (`1 -> 0` allocations per hit;
-  **finding**), or use `hashbrown::HashMap::entry_ref` (or
-  `indexmap::IndexMap::get`/`get_mut` via `Equivalent<K>`) when already in
-  `Cargo.toml` (`1` hash and `0` allocations per hit). Do not replace
-  `contains_key` + `insert` with `std` `entry(key.to_owned())` when `K` is owned
-  and hits are routine. By-value fallbacks `Option::unwrap_or`, `ok_or`, `or`,
-  `Result::or`, and `Entry::or_insert` evaluate their argument on every call, so
-  `format!`, `to_owned()`, or `Vec::with_capacity(n)` inside them allocates on
-  the `Some`/`Ok`/`Occupied` fast path -> defer with `unwrap_or_else`,
-  `ok_or_else`, `or_else`, or `or_insert_with` (**finding**); by contrast,
-  `Vec::new()`, `String::new()`, and `BTreeMap::new()` allocate nothing until
-  grown. `HashMap`'s default SipHash hasher resists hash flooding; switching a
-  hot internal-key or verified-key table to `rustc_hash`, `ahash`, or `foldhash`
-  is a **finding** when that crate is already in `Cargo.toml` and a **tradeoff**
-  when it adds a dependency (keep the default hasher wherever unverified
-  request, peer, or file input chooses inserted keys).
-- **Sorting, UTF-8 strings, and `regex` engines**: `slice::sort_by_key(f)` calls
-  `f` on every comparison (`~2 N log N` evaluations), multiplying any
-  `to_lowercase()`, `format!`, or parse inside `f` -> use a non-allocating
-  `sort_by` comparator (`0` allocations) or `sort_by_cached_key` (`N`
-  evaluations plus `1` cache `Vec`), and use `select_nth_unstable` (`O(N)`, plus
-  sorting the `k`-element slice when top-`k` order matters) instead of a full
-  sort for top-`k` or medians (**finding** when equal-element stability is
-  unused). `s.chars().collect::<Vec<char>>()` allocates `4 * chars`
-  bytes per call to index characters -> scan `s.as_bytes()` for ASCII syntax or
-  `s.char_indices()` for UTF-8 spans (`1 -> 0` allocations; **finding**).
-  `s.to_ascii_lowercase() == lit` allocates a `String` per check -> use
-  `s.eq_ignore_ascii_case(lit)` or in-place `make_ascii_lowercase()` (`1 -> 0`
-  allocations; **finding**; keep Unicode `to_lowercase()` / `to_uppercase()`
-  unless inputs are ASCII, because non-ASCII characters such as `'\u{212A}'`
-  (`to_lowercase() -> "k"`) and `'\u{017F}'` (`to_uppercase() -> "S"`) map into
-  ASCII). `str::replace` allocates and copies the whole
-  string even on zero matches, and `String::from_utf8_lossy(bytes).into_owned()`
-  copies valid UTF-8 -> borrow the `Cow::Borrowed(&str)` on valid input or pass
-  an owned `Vec<u8>` to `String::from_utf8` (**finding**). `Regex::new` compiles
-  the automaton on every call -> hoist once (`LazyLock` or `OnceLock`). On a
-  compiled `Regex`, `captures` allocates capture-group slots on every match and
-  runs slower engines where `is_match` or `find` allocates nothing, and testing
-  `M` regexes in a loop scans the haystack `M` times where `regex::RegexSet`
-  scans once (`M -> 1` pass; **finding**).
-- **`serde` buffering, console streams, and directory walks**: passing an
-  unbuffered `File` or `TcpStream` to `serde_json::from_reader` or `to_writer`
-  issues tiny per-byte or per-token `read`/`write` system calls, and
-  `from_reader` prevents borrowing input slices -> wrap streams in
-  `BufReader`/`BufWriter`, or parse an in-memory buffer with
-  `from_slice`/`from_str` using `#[serde(borrow)] Cow<'de, str>` (`serde` only
-  wires zero-copy `Cow` borrowing on direct `Cow` fields, so `Option<Cow<'de, str>>`
-  needs a `#[serde(transparent)]` `Cow` newtype or `deserialize_with`; use bare
-  `&'de str` only when field syntax forbids JSON escapes; **finding**). Calling
-  `serde_json::to_string` or `to_vec` only to write into an existing buffer or
-  stream allocates an intermediate buffer -> write directly with
-  `serde_json::to_writer(&mut buf, &val)` (**finding**). Deserializing transit
-  JSON through `serde_json::Value` builds a heap tree of maps, vectors, and
-  strings -> use `&serde_json::value::RawValue` or `Box<RawValue>` when
-  forwarding or inspecting an envelope (**finding** when `serde_json`'s
-  `"raw_value"` feature is already enabled and `Value` key-sorting or whitespace
-  normalization is unused; **tradeoff** when enabling a Cargo feature).
-  `#[serde(flatten)]`, `#[serde(tag = "...")]`, and `#[serde(untagged)]` buffer
-  fields into an internal heap `Content` tree, allocating intermediate
-  collections and breaking single-pass streaming and `RawValue` (changing
-  external wire format is not a candidate; reworking internal-only
-  representations or custom `Deserialize` with identical wire behavior is a
-  **finding**). `println!` locks stdout and flushes on every newline -> lock
-  `io::stdout().lock()` behind `BufWriter` in non-interactive batch loops
-  (**finding** when callers do not rely on per-line interactive flush, otherwise
-  **tradeoff**). Calling `entry.path().is_dir()` or `fs::metadata(entry.path())`
-  inside `fs::read_dir` or `walkdir` runs an extra `stat` system call per entry
-  (and allocates a `PathBuf` on `std::fs::DirEntry::path()`) -> inspect
-  `entry.file_type()` directly (`N -> 0` extra `stat` calls and `PathBuf`
-  allocations on filesystems that populate directory entry types; **finding**
-  when symlink-following semantics match).
-- **Pooled clients and SQL round trips (`reqwest`, `tonic`, `sqlx`, `rusqlite`)**:
-  `reqwest::Client`, `sqlx::Pool`, `tonic::transport::Channel`,
-  `redis::aio::ConnectionManager`, and `aws_sdk_*::Client` already wrap internal
-  `Arc` pools or multiplexed channels (`Clone` is `O(1)`; `reqwest`, `sqlx`, and
-  `aws_sdk_*` methods take `&self`, while `tonic` clients and
-  `redis::AsyncCommands` on `ConnectionManager` take `&mut self` on a cheap
-  per-task `.clone()`): calling `Client::new()` per request rebuilds connection
-  pools and TLS state, while wrapping them in `Mutex` or `RwLock` serializes
-  concurrent callers -> share and `.clone()` the handle directly (**finding**).
-  Executing `N` row-by-row `.execute(&pool).await` or ORM inserts in a loop pays
-  `N` pool borrows and `N` round trips -> batch via
-  `sqlx::QueryBuilder::push_values` (chunked within PostgreSQL's 65,535 bind
-  limit), ORM `insert_many`, or Postgres `UNNEST` / `ANY($1)` (`N -> 1` round
-  trip; **finding** inside a transaction or when per-row partial commit is
-  unused, otherwise **tradeoff**),
-  and avoid `format!` `IN (...)` lists of varying arity that miss
-  prepared-statement caches. In `rusqlite`, `conn.prepare(...)` inside a loop
-  recompiles SQLite bytecode each pass -> hoist `prepare` or call
-  `prepare_cached` (**finding**); running `N` writes outside an explicit
-  transaction pays `N` autocommit `fsync`s instead of `1` (`N -> 1` syncs;
-  **finding** when batch atomicity matches callers, otherwise **tradeoff**).
+  `std::collections::HashMap::entry` takes `K` by value, allocating and dropping
+  an owned key on every hit when callers convert a borrowed `&str` -> look up
+  through `Borrow` (`get`/`get_mut`) first and allocate only on misses, or use
+  borrowed-key entry/lookup APIs on map crates already in `Cargo.toml`
+  (**finding**). By-value fallbacks (`unwrap_or`, `ok_or`, `or`, `or_insert`)
+  evaluate arguments eagerly on the fast path -> defer allocations with
+  `*_else` / `or_insert_with` (**finding**); zero-capacity `Vec::new()`,
+  `String::new()`, and `BTreeMap::new()` allocate nothing until grown.
+  `HashMap`'s default SipHash resists hash flooding: switching an internal-key
+  or verified-key hot map to a faster hasher already in `Cargo.toml` is a
+  **finding** (**tradeoff** when adding a crate; keep default hashing wherever
+  unverified external input chooses inserted keys).
+- **Sorting, UTF-8 strings, and `regex` engines**: `slice::sort_by_key(f)`
+  evaluates `f` on every comparison (`O(N log N)`), multiplying allocations
+  inside `f` -> use a non-allocating `sort_by` comparator or
+  `sort_by_cached_key`, and partial selection (`select_nth_unstable` guarded by
+  `slice.len() > k`) for top-`k` or medians (**finding** when equal-element
+  stability is unused). Collecting `Vec<char>` to scan or index UTF-8 allocates
+  `4 * chars` bytes where byte or `char_indices` scans allocate nothing. ASCII
+  case helpers (`eq_ignore_ascii_case`, `make_ascii_lowercase`) avoid
+  `to_ascii_lowercase()` allocations (**finding** on ASCII inputs; keep Unicode
+  case conversion on general text because non-ASCII characters can fold into
+  ASCII). `str::replace` copies non-empty strings even on zero matches, and
+  `String::from_utf8_lossy(b).into_owned()` copies valid UTF-8 where borrowing
+  `Cow::Borrowed` or converting an owned `Vec<u8>` via `String::from_utf8` with a
+  lossy `Err` fallback (`from_utf8_lossy_owned` from Rust 1.87) avoids the
+  allocation (**finding**). Hoist `Regex::new`; prefer `is_match` or `find` over
+  `captures` (which allocates capture slots on hits and misses alike) when
+  capture groups go unread, and `RegexSet` over `M`-regex loops when byte spans
+  and captures go unread (**finding**).
+- **`serde` streams, borrowing, and directory walks**: passing unbuffered `File`
+  or `TcpStream` handles to `serde_json::from_reader`/`to_writer` issues tiny
+  syscalls and prevents slice borrowing -> wrap streams in
+  `BufReader`/`BufWriter` (with explicit `.flush()?`), stream bytes directly via
+  `to_writer` into `Vec<u8>` or `io::Write` (`String` implements `fmt::Write`,
+  not `io::Write`) instead of intermediate `to_string`/`to_vec`, and borrow
+  in-memory inputs with `#[serde(borrow)]` (`Cow<'de, str>`, or bare `&'de str`
+  only when escapes cannot occur; verify `serde` actually wires borrowing through
+  wrapper types such as `Option`). Forwarding or inspecting JSON envelopes
+  through `RawValue` (`&RawValue` on slice/str inputs, `Box<RawValue>` on
+  readers) avoids `serde_json::Value` heap trees (**finding** when `"raw_value"`
+  is already enabled and `Value` normalization/deduplication is unused;
+  **tradeoff** when enabling Cargo features); `#[serde(flatten)]` and
+  internal/untagged enum tags buffer into an intermediate heap tree and break
+  single-pass streaming and `RawValue` (reworking internal-only representations
+  is a **finding**; external wire formats stay fixed). Batch `stdout` loops flush
+  per newline unless written through a locked `BufWriter` with explicit `.flush()`
+  (**finding** when per-line interactive flush and broken-pipe panics are unused,
+  otherwise **tradeoff**). `DirEntry::file_type()` avoids extra `stat` syscalls
+  and `PathBuf` allocations from `entry.path().is_dir()`, falling back to `stat`
+  only on symlinks when following links (**finding**).
+- **Pooled clients and SQL round trips**: pooled or multiplexed client handles
+  (`reqwest`, `sqlx`, `tonic`, `redis` connection managers, `aws_sdk_*`) wrap
+  shared state with `O(1)` `Clone` (`&self` on `reqwest`/`sqlx`/`aws_sdk_*`,
+  `&mut self` on cheap per-task clones for `tonic` and `ConnectionManager`):
+  rebuilding per request or wrapping in an outer `Mutex`/`RwLock` discards
+  pooling and serializes callers (**finding**). Row-by-row SQL queries or inserts
+  in loops pay `N` round trips -> batch via array binds (`UNNEST` / `ANY`) or
+  non-empty multi-row builders within backend bind limits and prepared-statement
+  caches (**finding** when per-row commit boundaries are unused, otherwise
+  **tradeoff**); in `rusqlite`, hoist `prepare` (or `prepare_cached` when
+  `"cache"` is enabled) and wrap batch writes in one transaction to save `N -> 1`
+  autocommit commit/journal cycles (**finding** when per-row autocommit is
+  unused, otherwise **tradeoff**).
 - **Async executors, lock lifetimes, and fan-out (`tokio`, `rayon`)**:
-  `tokio::fs` dispatches each operation to the blocking pool, so many small
-  reads or writes pay repeated pool hand-offs -> buffer the stream; running
-  synchronous compression, crypto, large CPU parses, or `rayon::par_iter()`
-  directly on a Tokio worker thread blocks that worker and stalls queued tasks
-  -> offload heavy CPU batches via `spawn_blocking` or `rayon::spawn` plus
-  `oneshot` (**finding**). A `std::sync::Mutex` held briefly with no `.await`
-  inside is what Tokio recommends; `tokio::sync::Mutex` is for guards held
-  across `.await` and costs more per lock. An unnamed lock guard in a `match` or
-  `if let` scrutinee (`if let Some(v) = state.lock().unwrap().get(&k).cloned() { ... }`)
-  stays locked across the matched arm body in every Rust edition (and across
-  `else` before Edition 2024), and `*guard = next` or `guard.clear()` on a large
-  collection frees `O(N)` allocations under the lock -> bind `let v = ...;`
-  before branching so the guard drops at `;`, and `std::mem::take` or `replace`
-  inside the lock so the old value drops after `drop(guard)` (**finding**).
-  Recreating `tokio::time::sleep` or stateful secondary futures on every turn of
-  a hot `loop { tokio::select! { ... } }` registers and drops timer or future
-  state per message -> `tokio::pin!` and `Sleep::as_mut().reset(...)` or
-  `tokio::time::interval` outside the loop (**finding**). Cloning owned payloads
-  across `M` channel sends (`tx.send(msg.clone())`) copies heap data `M` times
-  -> send `Arc<T>` or `Bytes` (`M -> 1` allocation; **finding** when receivers
-  only read).
+  unbuffered `tokio::fs` pays per-call blocking-pool hand-offs, and synchronous
+  CPU/crypto/compression or `rayon::par_iter()` on a Tokio worker blocks queued
+  tasks -> buffer async file streams, offload standalone blocking CPU via
+  `spawn_blocking`, and bridge Rayon via `rayon::spawn` plus `oneshot` so no
+  Tokio blocking thread parks waiting on Rayon (**finding**). Brief critical
+  sections without `.await` prefer `std::sync::Mutex` over `tokio::sync::Mutex`.
+  Unnamed lock guards in `match` or `if let` scrutinees stay held across matched
+  arm bodies in every Rust edition (and across `else` before Edition 2024), and
+  dropping or clearing heap-owning elements inside a guard frees allocations
+  under the lock (clearing `Copy` buffers like `Vec<u8>` is `O(1)` with `0`
+  frees) -> bind so the guard drops before branching and `mem::replace`/swap so
+  old allocations drop after unlocking (**finding**). Recreating timers
+  (`tokio::time::sleep`) or stateful futures every turn of a hot `select!` loop
+  re-registers timer-wheel or future state where a pinned `Sleep` reset on
+  activity and expiration (for inactivity timeouts) or `interval` (for fixed
+  cadence ticks, firing first at `t = 0`) reuses it, and cloning owned payloads
+  across `M` channel sends copies heap data where `Arc` or `Bytes` shares
+  read-only payloads (**finding**).
 - **Observability, errors, build profiles, and `Cargo.toml` baseline**:
-  arguments inside `tracing::{debug,trace}!` and `log::{debug,trace}!` are gated
-  by callsite interest and level checks, so disabled levels do not evaluate
-  them; only work computed before the macro, or enabled hot-path spans and
-  events (`#[instrument]` formatting non-`skip` arguments through `Debug`,
-  enabled `info!`, dynamic `String` metric labels), runs per call.
-  `anyhow::Error` allocates on creation and captures a backtrace when
-  `RUST_BACKTRACE` is set (state whether production enables it or mark unknown)
-  -> use a typed enum on routine per-element failure paths (**finding** internal
-  to the crate). `debug_assert!` and `cfg(debug_assertions)` are absent from
-  default release builds; read `[profile.*]` before counting them. Cheaper forms
-  must build within `Cargo.toml`'s `edition`, `rust-version` (`OnceLock` 1.70,
-  `async fn` in traits 1.75 without `dyn`, `LazyLock` 1.80), enabled features
-  (`block_in_place` needs Tokio's `rt-multi-thread`), and declared
-  `[dependencies]`: adding a new crate (`smallvec`, `dashmap`, `arc-swap`,
-  `parking_lot`, `memchr`, `itoa`) is a **tradeoff**, whereas using one already
-  in `Cargo.toml` is a **finding**.
+  disabled `tracing::{debug,trace}!` callsites skip argument evaluation via
+  callsite `Interest`, and `log::{debug,trace}!` skips arguments when
+  compile-time `STATIC_MAX_LEVEL` or global `log::max_level()` disables that
+  level (eager calls inside `log::debug!` still run when another module raises
+  global `max_level()` unless guarded by `log::log_enabled!`); work evaluated
+  before either macro, or enabled spans/events such as unskipped `#[instrument]`
+  `Debug` formatting, runs per call. `anyhow::Error` allocates (and captures
+  backtraces when `RUST_LIB_BACKTRACE=1`, or non-zero `RUST_BACKTRACE` without
+  `RUST_LIB_BACKTRACE=0`; state whether production enables them or mark unknown)
+  on routine per-element failure paths (**finding** internal to the crate).
+  `debug_assert!` and `cfg(debug_assertions)` are absent from default release
+  builds; read `[profile.*]` before counting them. Respect `edition`,
+  `rust-version` (`OnceLock` 1.70, `async fn` / `impl Future + Send` in traits
+  1.75 where bare `async fn` omits `#[async_trait]`'s default `+ Send`,
+  `LazyLock` 1.80), enabled features, and `[dependencies]` in `Cargo.toml`
+  (adding a crate or feature is a **tradeoff**).
 
 ## Dependencies
 
@@ -182,12 +145,14 @@ question its source would answer.
 ## Not a finding in Rust
 
 A lint or style observation with no hot-path cost count. A move, which copies no
-heap data. Evaluating arguments inside disabled `tracing::{debug,trace}!` or
-`log::{debug,trace}!` macros, or passing zero-capacity `Vec::new()`,
-`String::new()`, or `BTreeMap::new()` to `unwrap_or` or `or_insert`. `#[inline]`,
-`#[cold]`, `Box<dyn Trait>` dispatch against generics (when no per-call heap
-allocation occurs), bounds checks, SIMD autovectorization, struct field
-reordering for cache lines without cross-core false sharing, or atomic memory
-orderings argued without a committed or user-supplied profile or benchmark:
-these are claims about code generation or hardware. A change that needs `unsafe`
-to save work is a **tradeoff**, not a plain finding.
+heap data. Evaluating arguments inside disabled `tracing::{debug,trace}!`
+callsites (or `log::{debug,trace}!` when compile-time or global max level
+disables that level, or arguments run no eager calls), or passing zero-capacity
+`Vec::new()`, `String::new()`, or `BTreeMap::new()` to `unwrap_or` or
+`or_insert`. `#[inline]`, `#[cold]`, `Box<dyn Trait>` dispatch against generics
+(when no per-call heap allocation occurs), bounds checks, SIMD
+autovectorization, struct field reordering for cache lines without cross-core
+false sharing, or atomic memory orderings argued without a committed or
+user-supplied profile or benchmark: these are claims about code generation or
+hardware. A change that needs `unsafe` to save work is a **tradeoff**, not a
+plain finding.

@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.36.2 — 2026-11-16
+
+Distill TypeScript and Rust contexts and cross-language lenses in Performance Review 0.10.2 alongside Super Review 3.36.2 from API syntax cookbooks and library caches to semantic search anchors, anti-folklore traps, and `finding` versus `tradeoff` boundaries, tighten `AP33`–`AP36` Rust contrast symmetry, and codify intent-over-syntax authoring rules in `AGENTS.md` while keeping all 56 stable rule IDs and per-skill boundaries unchanged.
+
+- **Intent over syntax in Performance Review (`perf-review 0.10.2`).** Compresses `references/languages/typescript.md` and `references/languages/rust.md` by ~40% and removes cross-language syntax duplication from `allocation.md`, `async.md`, and `io.md`: cuts inline API overload recipes, rewrite micro-templates, MSRV/limit lookup tables, and cached third-party library internals in favor of semantic cost models, on-disk dependency verification, false-positive guardrails (including `owned_vec.into_iter().filter(...)` in-place compaction, per-call `Regex::captures` slot allocation on misses, and `tracing` callsite `Interest` versus global `log::max_level()`), and explicit `finding` versus `tradeoff` boundaries.
+- **Rust contrast symmetry and authoring discipline (`AGENTS.md`, `AP33`–`AP36`).** Aligns `AP33`–`AP36` public signatures, atomic `UNNEST` batching, and non-blocking `rayon::spawn` + `oneshot` offload across `report`/`retain` pairs, anchors `tests/perf-review.test.ts` on stable headings and decision boundaries rather than syntax examples, and updates `AGENTS.md` so source-verified boundary equivalence pairs with intent-over-syntax pruning instead of inline code-guard recipes.
+
+Package, native configuration, and fixture checks pass; behavioral model comparison remains NOT RUN.
+
 ## 3.36.1 — 2026-11-16
 
 Tighten browser, Web API, and Rust crate factual precision in Performance Review 0.10.1 alongside Super Review 3.36.1 and align `AP29`–`AP34` evaluation contrasts while keeping all 56 stable rule IDs and per-skill boundaries unchanged.

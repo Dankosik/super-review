@@ -80,16 +80,32 @@ predictable process without wasting attention:
   no em-dashes in prose (rewrite with a colon, comma, period, parentheses, or
   conjunction). Reserve `Never` for hard read-only, safety, or isolation
   guardrails, paired immediately with what to do instead.
-- **Environment over cache, and ruthless no-op pruning:** never restate what one
-  lookup in the environment reveals (manifests, directory layout, tool schemas)
-  or how to do what a strong model already does (reading a long file in full,
-  searching callers, recording its own work). Spell out only what looking cannot
-  reveal: a harness limit, user choice, non-obvious tool gotcha, or project
-  boundary. Test every sentence against the model's default: if deleting it
-  changes no behavior, delete the whole sentence rather than trimming words;
-  never cut load-bearing constraints to chase length. When a real run exposes a
-  miss, generalize to the class of failure instead of accreting repo-specific
-  sediment.
+- **Environment over cache, intent over syntax, and no-op pruning:** state
+  what looking in the workspace cannot reveal: search anchors for non-obvious
+  problem classes, project taxonomy boundaries (`finding` vs `tradeoff`),
+  anti-folklore traps where pretraining defaults to false positives, and
+  harness or user constraints. Leave out what one lookup in the environment
+  reveals (manifests, directory layout, tool schemas, or dependency/stdlib
+  source on disk) and what a strong model already knows once pointed at the
+  problem: API call syntax and overload recipes, rewrite micro-templates,
+  version or protocol-limit tables, and third-party library internals (`LRU`
+  sizes, feature flags, middleware hooks). Concrete syntax recipes accrete
+  corner-case patches and go stale across versions; state semantic intent and
+  contract conditions instead. Test every sentence against the model's default:
+  if deleting it changes no behavior, delete the whole sentence rather than
+  trimming words, while keeping load-bearing constraints intact. When a real
+  run exposes a miss, generalize to the class of failure instead of accreting
+  incident-specific sediment.
+- **Source-verified semantics and boundary equivalence:** verify every
+  language, runtime, or library claim kept in instructions or evaluation
+  fixtures against primary source on disk, official specifications, or the
+  local compiler/typechecker rather than memory (what actually allocates,
+  locks, flushes, coalesces, or short-circuits on both hits and misses). Before
+  classifying `X -> Y` as behavior-preserving, check `Y` against `X` across
+  boundary inputs (empty or out-of-range slices, non-ASCII or escaped text,
+  symlinks, cancellation, error/flush paths, atomicity, and public contracts):
+  express conditional equivalence as a compact semantic condition or `tradeoff`
+  boundary rather than inline code-guard recipes.
 
 ## Development, evaluation, and release
 
@@ -103,9 +119,14 @@ select checks by changed inputs in [CONTRIBUTING.md](CONTRIBUTING.md). When
 changing an agent decision, follow [the evaluation protocol](evals/README.md):
 run a bounded improvement cycle, pair each changed decision with contrasting
 report/retain inputs isolated from grading expectations, and record actual
-model/effort and raw failures alongside successes. Mechanical tests prove
-package and fixture integrity, never model judgment; do not promote experimental
-routing or pairing defaults on token savings alone.
+model/effort and raw failures alongside successes. Compile or typecheck code
+fixtures with strict warnings against their declared language and dependency
+versions, keep `report` and `retain` pairs symmetric on public API and
+error/transaction contracts, and audit `retain` controls through every requested
+lens so no unintended finding leaks in. Mechanical tests prove package and
+fixture integrity rather than model judgment (anchor prose assertions on stable
+headings and decision boundaries, not syntax examples); do not promote
+experimental routing or pairing defaults on token savings alone.
 
 Publication, tags, marketplace pins, local tool installs, and PR comments each
 require explicit user scope. Published `v<version>` tags are immutable; follow
