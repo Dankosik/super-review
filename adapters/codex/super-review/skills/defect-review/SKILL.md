@@ -2,7 +2,7 @@
 name: defect-review
 description: "Use for an explicitly requested Defect Review: independent readers hunt bugs in Rust source of a PR or local tree by reading it, each bug traced through quoted lines, given a stated basis and tested by an independent challenge."
 metadata:
-  version: "0.11.0"
+  version: "0.12.0"
 ---
 
 # Defect Review
@@ -27,7 +27,7 @@ quality are other reviews' subjects.
 For help, explain usage and stop. If no target can be identified from the
 request, ask only for that. Otherwise orchestrate through the active
 adapter, [Claude Code](references/harnesses/claude.md),
-[Codex](references/harnesses/codex.md) or
+[Codex](references/harnesses/codex.md), [Antigravity](references/harnesses/antigravity.md) or
 [OpenCode](references/harnesses/opencode.md), following
 [the workflow](references/workflow.md). When the user explicitly asks to run
 agents in another installed harness, such as OpenCode, start them there

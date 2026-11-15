@@ -2,7 +2,7 @@
 name: perf-review
 description: "Use for an explicitly requested Performance Review: independent readers find work that Rust source of a PR or local tree does not need on a path that runs often, each cost traced through quoted lines to a cheaper form with the same behavior and tested by an independent challenge."
 metadata:
-  version: "0.4.0"
+  version: "0.5.0"
 ---
 
 # Performance Review
@@ -31,7 +31,7 @@ flamegraph or benchmark output the user supplies is evidence.
 For help, explain usage and stop. If no target can be identified from the
 request, ask only for that. Otherwise orchestrate through the active
 adapter, [Claude Code](references/harnesses/claude.md),
-[Codex](references/harnesses/codex.md) or
+[Codex](references/harnesses/codex.md), [Antigravity](references/harnesses/antigravity.md) or
 [OpenCode](references/harnesses/opencode.md), following
 [the workflow](references/workflow.md). When the user explicitly asks to run
 agents in another installed harness, such as OpenCode, start them there

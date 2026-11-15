@@ -12,7 +12,7 @@ function metadata(path: string) {
 }
 
 test("native packages contain no custom server, tool runtime, dependencies or evaluator packets", () => {
-  for (const packageRoot of ["adapters/claude/plugin", "adapters/codex/super-review", "adapters/opencode"]) {
+  for (const packageRoot of ["adapters/claude/plugin", "adapters/codex/super-review", "adapters/opencode", "adapters/antigravity/plugin"]) {
     const names = files(resolve(root, packageRoot)).map(file => relative(resolve(root, packageRoot), file));
     expect(names.filter(name => /(^|\/)(runtime|tools|node_modules|evals)\//.test(name))).toEqual([]);
     expect(names.filter(name => /(^|\/)(\.?mcp\.json|package\.json)$/.test(name))).toEqual([]);

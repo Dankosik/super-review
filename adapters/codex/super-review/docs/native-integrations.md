@@ -42,6 +42,20 @@ For removal:
 claude plugin uninstall super-review@dankosik-skills
 ```
 
+## Google Antigravity App and CLI
+
+Install the generated native package from this checkout:
+
+```sh
+agy plugin validate --strict ./adapters/antigravity/plugin
+agy plugin install ./adapters/antigravity/plugin
+```
+
+Start a new chat and use `/super-review`, `/defect-review`, `/test-review` or
+`/perf-review`. The existing chat orchestrates; fresh custom agents read and
+search source with native model inheritance. Child roles have no shell or write
+tools configured. See [installation, capabilities and evidence](antigravity.md).
+
 ## Migration from 2.x
 
 Upgrade the author catalog as well as the installed plugin: catalog entries pin

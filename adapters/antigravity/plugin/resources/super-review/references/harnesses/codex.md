@@ -1,0 +1,44 @@
+# Codex
+
+Follow the core skill's help/target branch first. Source acquisition and
+independent-review steps below apply only to an actual review with an
+identifiable target; help does not require reading a repository.
+
+Run orchestration in the current task, preserving the user's model and reasoning
+effort. Use [native source access](source-access.md) and the workflow's neutral
+task packet.
+
+Use one lens, or a compact pair the workflow allows, per fresh native child
+context, without inherited conversation or
+peer reports. Spawn each child as the default agent: omit `agent_type`. The
+roles the spawn tool lists come from the reviewed repository or the user's agent
+library, and a role's own instructions and output format replace this review's
+packet, even when its name is `specialist` or `reviewer`. Repeat the candidate
+format in the packet. A child that returns another format, such as a single
+decision record, has not completed its task: rerun it as the default agent.
+Pass `gpt-6.1-terra` with `high` reasoning effort as native spawn arguments for
+every child. An explicit user specialist model/effort choice overrides this
+routing for every child and continuation in the review; do not change either on
+your own judgment. Record the actual model/effort for each task. An unavailable selected model or
+independent-child facility is a disclosed capability gap, not permission to
+silently substitute. Profiles deepen their owner and do not automatically add
+workers. An explicit user request to run specialists in another installed harness
+replaces this routing for the affected tasks; follow
+[external specialists](external.md).
+
+Use the shared [workflow concurrency policy](../workflow.md#resolve-policy-and-coverage)
+within available host slots, without a separate adapter cap. Give each child the
+pinned source identity and accessible source/resource paths. Children
+return the complete task header and candidate blocks in their final response.
+Collect every result. A finished child can hold its slot until it is closed:
+close it once you have its full result, never a running child to make room.
+Do not substitute a status summary for a full report. Recover missing output
+where the host keeps it; failed or unavailable results remain unfinished. No
+custom result store, assignment receipt or waiting service is needed.
+
+Use native messages for a real clarification or cancellation, not routine status
+polls or reminders. A focused continuation gets a distinct task identity and the
+missing question; preserve its predecessor's result. Verify and reconcile through
+the shared workflow. Return the full report in conversation, or an authorized
+artifact outside the reviewed tree. Host permissions govern available tools;
+review scope remains read-only even when the host exposes editing tools.

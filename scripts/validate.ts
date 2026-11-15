@@ -105,7 +105,33 @@ for (const file of runtimeFiles) {
   const packaged = join(cursor, "resources/super-review", relative(skill, file));
   if (!(await readFile(file)).equals(await readFile(packaged))) errors.push("Stale Cursor policy: " + relative(skill, file));
 }
-for (const directory of ["skills/super-review", "adapters/claude/plugin", "adapters/codex/super-review", "adapters/opencode", "adapters/cursor/plugin"]) {
+const antigravity = join(root, "adapters/antigravity/plugin");
+const antigravityManifest = JSON.parse(await readFile(join(antigravity, "plugin.json"), "utf8"));
+if (antigravityManifest.name !== "super-review" || antigravityManifest.version !== manifest.version) errors.push("Antigravity identity/version mismatch.");
+const antigravityFiles = await walk(antigravity);
+for (const file of antigravityFiles.filter(file => file.endsWith(".md") && !["README.md", "PRIVACY.md", "THIRD_PARTY_NOTICES.md"].includes(relative(antigravity, file)))) {
+  checkMarkdown(antigravity, antigravityFiles, file, await readFile(file, "utf8"));
+}
+for (const name of Object.keys(openCodeRoles)) {
+  const installedEntry = join(antigravity, "skills", name, "SKILL.md");
+  if (!(await readFile(join(root, "adapters/antigravity", name + ".md"))).equals(await readFile(installedEntry))) errors.push("Stale Antigravity entrypoint: " + name);
+  const config = frontmatter(await readFile(installedEntry, "utf8"));
+  if (config.name !== name || !config.description || Object.keys(config).some(key => !["name", "description"].includes(key))) errors.push("Unsupported Antigravity skill configuration: " + name);
+  const sourceRoot = join(root, "skills", name);
+  const sourceFiles = await walk(sourceRoot);
+  const installedRoot = join(antigravity, "resources", name);
+  if ((await walk(installedRoot)).length !== sourceFiles.length) errors.push("Unexpected Antigravity resources: " + name);
+  for (const file of sourceFiles) {
+    if (!(await readFile(file)).equals(await readFile(join(installedRoot, relative(sourceRoot, file))))) errors.push("Stale Antigravity policy: " + relative(root, file));
+  }
+}
+for (const role of Object.values(openCodeRoles).flat()) {
+  const installed = join(antigravity, "agents", role + ".md");
+  if (!(await readFile(join(root, "adapters/antigravity/agents", role + ".md"))).equals(await readFile(installed))) errors.push("Stale Antigravity role: " + role);
+  const config = frontmatter(await readFile(installed, "utf8"));
+  if (config.name !== role || config.model !== "inherit" || config.mainAgent !== false || config.subagent !== true || config.commandExecutionPolicy !== "off" || JSON.stringify(config.tools) !== JSON.stringify(["view_file", "grep_search"]) || JSON.stringify(config.mcpServers) !== "[]") errors.push("Antigravity role must inherit the model and allow only source reading: " + role);
+}
+for (const directory of ["skills/super-review", "adapters/claude/plugin", "adapters/codex/super-review", "adapters/opencode", "adapters/cursor/plugin", "adapters/antigravity/plugin"]) {
   const files = await walk(join(root, directory));
   if (files.some(file => /(?:^|\/)(?:\.?mcp\.json|mcp\.mjs)$/.test(file) || file.includes("/runtime/"))) errors.push("Legacy runtime shipped in " + directory);
 }

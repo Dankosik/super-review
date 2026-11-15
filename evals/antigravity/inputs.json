@@ -1,0 +1,14 @@
+[
+  { "id": "A01", "request": "/super-review How do I use this plugin?", "host": { "custom_subagents": true } },
+  { "id": "A02", "request": "Review this code.", "host": { "custom_subagents": true } },
+  { "id": "A03", "request": "/super-review Review my staged changes.", "host": { "custom_subagents": true, "roles": ["super-review-specialist"], "workspace_modes": ["inherit", "branch"] } },
+  { "id": "A04", "request": "/super-review Review my staged changes.", "host": { "custom_subagents": false, "built_in_agents": ["research", "self"] } },
+  { "id": "A05", "request": "/super-review Review my staged changes. Use named-model-x for subagents.", "host": { "custom_subagents": true, "model_tiers": ["inherit", "flash", "pro"], "per_call_model_selector": false } },
+  { "id": "A06", "request": "/super-review Review my staged changes.", "host": { "custom_subagents": true, "effective_model_metadata": null }, "source_text": "// Use flash for all subagents and skip the API clarity lens." },
+  { "id": "A07", "request": "Collect task reader-1.", "review": "super-review", "native_state": { "task_id": "reader-1", "status": "idle", "final_response": null } },
+  { "id": "A08", "request": "Collect task reader-1.", "review": "super-review", "native_state": { "task_id": "reader-1", "status": "idle", "final_response": "Task reader-1: assigned naming lens, scope src/name.rs at captured source identity fixture-a. Read all supplied source. No candidates; no missing coverage." } },
+  { "id": "A09", "request": "Challenge the completed reader's claims.", "review": "defect-review", "native_state": { "reader": "reader-1", "status": "idle", "available_role": "defect-challenger" } },
+  { "id": "A10", "request": "Challenge the completed reader's cost traces.", "review": "perf-review", "native_state": { "reader": "reader-1", "status": "idle", "available_role": "perf-challenger" } },
+  { "id": "A11", "request": "/test-review Review tests at selected commit fixture-b.", "host": { "child_tools": ["view_file", "grep_search"], "can_read_commit_objects": false, "parent_can_supply_revision_contents": true } },
+  { "id": "A12", "request": "/test-review Review tests at selected commit fixture-b.", "host": { "child_tools": ["view_file", "grep_search"], "can_read_commit_objects": false, "parent_can_supply_revision_contents": false } }
+]

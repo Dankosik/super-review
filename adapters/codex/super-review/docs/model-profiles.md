@@ -10,6 +10,7 @@ and effort when the host exposes them; a requested profile is not proof of use.
 | Claude Code | Session model and effort | Native `sonnet` / `medium` |
 | OpenCode | Current primary model and effort | One explicitly selected `provider/model-id`; provider's configured/default effort |
 | Cursor IDE | Current Agent chat's selected model/settings | `inherit`; an explicit user subagent choice takes precedence where native per-call selection supports it |
+| Google Antigravity App/CLI | Current chat's model and effort | Native `inherit`; overrides require a supported native selector and model-tier mapping |
 
 Super Review, Defect Review, Test Review and Performance Review share these
 defaults. None of them picks an Opus- or Fable-class model for a child; the
@@ -74,3 +75,14 @@ in launch configuration, and reports unsupported selection or observed fallback
 instead of silently substituting. A prompt cannot itself change a model or
 bypass Cursor's plan/admin restrictions. See [Cursor setup and capability limits](cursor.md).
 Native end-to-end Cursor model routing has not been measured by this project.
+
+## Google Antigravity
+
+All six child roles use `model: inherit`; no model or effort is pinned for the
+current chat. The documented child model choices are tiers (`inherit`, `flash`,
+`pro`), not arbitrary provider model IDs. A user override must be representable
+by the live native selector; otherwise stop affected launches and ask for a
+supported choice. Prompts and role-file edits during a review do not implement
+model selection. Effective identity remains unverified when native metadata
+does not expose it. See [the Antigravity adapter](antigravity.md) for setup and
+evidence limits; native end-to-end routing has not been measured.

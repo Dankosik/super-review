@@ -54,4 +54,25 @@ await writeFile(join(cursor, ".cursor-plugin/plugin.json"), JSON.stringify({
   skills: "./skills/",
   agents: "./agents/",
 }, null, 2) + "\n");
+const antigravity = join(root, "adapters/antigravity/plugin");
+await rm(antigravity, { recursive: true, force: true });
+await mkdir(join(antigravity, "agents"), { recursive: true });
+for (const name of ["super-review", "defect-review", "test-review", "perf-review"]) {
+  await cp(join(root, "skills", name), join(antigravity, "resources", name), { recursive: true });
+  await mkdir(join(antigravity, "skills", name), { recursive: true });
+  await cp(join(root, "adapters/antigravity", `${name}.md`), join(antigravity, "skills", name, "SKILL.md"));
+}
+await cp(join(root, "adapters/antigravity/agents"), join(antigravity, "agents"), { recursive: true });
+await cp(join(root, "docs/antigravity.md"), join(antigravity, "README.md"));
+await mkdir(join(antigravity, "assets"), { recursive: true });
+await cp(join(root, "assets/logo.svg"), join(antigravity, "assets/logo.svg"));
+for (const file of ["LICENSE", "PRIVACY.md", "THIRD_PARTY_NOTICES.md"]) await cp(join(root, file), join(antigravity, file));
+await writeFile(join(antigravity, "plugin.json"), JSON.stringify({
+  $schema: "https://antigravity.google/schemas/v1/plugin.json",
+  ...identity,
+  displayName: "Super Review",
+  logo: "assets/logo.svg",
+  keywords: [...identity.keywords, "antigravity"],
+  suggestedPrompts: ["Use Super Review on my local changes.", "Use Defect Review on this Rust PR.", "Use Performance Review on this Rust module."],
+}, null, 2) + "\n");
 console.log(`Built Super Review ${version}: native instruction packages, no plugin runtime.`);

@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.30.0 — 2026-11-15
+
+Native Google Antigravity App and CLI support for all four review skills.
+
+- **Antigravity plugin.** Four slash skills and six custom reader/specialist and challenger roles. Orchestration stays in the current chat; children use fresh contexts, native model inheritance and only file reading/search tools. Defect and Performance Review keep separate independent challenges.
+- **Capability boundaries.** Unsupported model selections and missing custom subagents are reported explicitly. Complete native results are collected by task identity; an idle status alone is not a report. Review criteria, source policies and coverage defaults are unchanged.
+- **Delivery.** Generated self-contained plugin, installation guide, checksummed Antigravity ZIP and CI validation with pinned CLI 1.5.9. Defect Review is now 0.12.0, Test Review 0.11.0 and Performance Review 0.5.0 to version their added harness resources.
+
+Strict native plugin validation passes with four skills, six agents and no findings. Package checks do not establish model behavior: end-to-end discovery, tool enforcement, delegation, model routing and review quality have not been exercised in Antigravity model runs.
+
 ## 3.29.0 — 2026-11-12
 
 Super Review now asks whether a computation needs every case and step it spells out.
