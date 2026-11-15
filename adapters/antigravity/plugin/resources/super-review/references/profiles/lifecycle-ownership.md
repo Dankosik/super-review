@@ -8,10 +8,12 @@ resource or background operation. Can readers identify who owns each phase witho
 assembling a hidden protocol across unrelated callbacks or objects?
 
 Prefer a visible operation or bringing related ownership steps together. Keep
-simple acquisition with nearby `defer`; defer runs at the enclosing function's
-return, not at the end of a block or loop iteration. Extraction can change that
-lifetime. Check argument evaluation and closure captures only where the proposed
-transformation moves them; do not turn this into a scan for unsafe defers.
+simple acquisition with nearby `defer` or `context.AfterFunc` rather than a
+one-off wrapper type whose only job is running one cleanup callback; `defer`
+runs at the enclosing function's return, not at the end of a block or loop
+iteration, so extraction can change that lifetime. Check argument evaluation and
+closure captures only where the proposed transformation moves them; do not turn
+this into a scan for unsafe defers.
 
 For concurrent work, make the existing start, cancellation, completion, and channel
 ownership understandable. A synchronous operation can be simpler when concurrency

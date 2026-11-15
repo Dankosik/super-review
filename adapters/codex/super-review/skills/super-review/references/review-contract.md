@@ -69,13 +69,18 @@ code and the needs it already has, report as many as the code warrants, and
 present them as advice rather than merge gates.
 
 Assuming the implemented solution behaves as intended, what would make it easier
-to understand or change? Bug prevention alone is outside scope. Connect each
+to understand or change? Bug prevention alone is outside scope; an unexpressed
+relationship between values, fields or arguments that readers and callers must
+keep aligned by hand, or a rule the code maintains itself where an existing
+owner already holds it, is a present reading and change burden. Connect each
 observation to the assigned source. Compare the resulting code with the current
 code: what becomes explicit, what knowledge or coordinated editing disappears,
 and what concepts or obligations remain? Favor a demonstrated improvement; the
 current design has no presumption of superiority. Small clarity gains are valid.
-The benefit is what the reader gains; fewer lines, a pattern name or a metric
-threshold are not that gain by themselves.
+The benefit is what the reader no longer has to reconstruct or keep in sync;
+fewer lines, a pattern name or a metric threshold are not that gain by
+themselves, and a shorter form that hides ordering, ownership or failure cause
+is a loss.
 
 Judge lasting reading and maintenance cost, not the effort of writing the patch:
 a coding agent applies it, so a rename, helper, type or cross-file edit costs

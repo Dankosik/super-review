@@ -975,6 +975,98 @@
       "context": [
         "The crate's only consumer is this workspace's CLI binary. `report show` builds RenderOptions from its --tsv and --no-header flags and the terminal width; `report mail` passes Format::Text, a header and width 72."
       ]
+    },
+    {
+      "id": "RD69",
+      "request": "Review the supplied production source through duplication and its selected profile for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [
+        "existing-helpers"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-69\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.88\"\n\n[dependencies]\nreqwest = { version = \"0.12\", default-features = false, features = [\"rustls-tls\", \"form\"] }\nurl = \"2.5\"\n",
+        "src/lib.rs": "use reqwest::{Client, RequestBuilder, header};\nuse url::Url;\n\npub(crate) fn introspect(\n    client: &Client,\n    endpoint: &Url,\n    client_id: &str,\n    client_secret: &str,\n    token: &str,\n) -> RequestBuilder {\n    let host = match endpoint.port() {\n        Some(port) => format!(\"{}:{port}\", endpoint.host_str().unwrap_or_default()),\n        None => endpoint.host_str().unwrap_or_default().to_owned(),\n    };\n    let basic = format!(\"{}:{}\", oauth_form_part(client_id), oauth_form_part(client_secret));\n    let body = format!(\n        \"token={}&token_type_hint=access_token\",\n        url::form_urlencoded::byte_serialize(token.as_bytes()).collect::<String>()\n    );\n    client\n        .post(endpoint.clone())\n        .header(header::HOST, host)\n        .header(header::CONTENT_TYPE, \"application/x-www-form-urlencoded\")\n        .basic_auth(basic, Option::<&str>::None)\n        .body(body)\n}\n\n// RFC 6749 section 2.3.1 encodes client_id and client_secret with\n// application/x-www-form-urlencoded rules before joining them with `:` for Basic auth.\nfn oauth_form_part(raw: &str) -> String {\n    url::form_urlencoded::byte_serialize(raw.as_bytes()).collect()\n}\n"
+      },
+      "context": [
+        "endpoint is validated at startup to have an http or https scheme with a host and no userinfo. Callers send the returned RequestBuilder directly."
+      ]
+    },
+    {
+      "id": "RD70",
+      "request": "Review the supplied production source through duplication and its selected profile for readability and maintainability. Do not implement or execute it.",
+      "lens": "duplication",
+      "profiles": [
+        "existing-helpers"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-70\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.88\"\n\n[dependencies]\nopentelemetry-otlp = \"0.33.1\"\npercent-encoding = \"2.3\"\n",
+        "src/lib.rs": "// opentelemetry-otlp 0.33.1 parses OTLP header escapes via private u8::from_str_radix(..., 16)\n// rather than percent_encoding::percent_decode_str, rejecting `+` and non-hex `%` pairs.\n// Keep the same check at config load so invalid escape sequences fail before SDK startup.\npub(crate) fn validate_otlp_header_value(raw: &str) -> Result<(), &'static str> {\n    let bytes = raw.as_bytes();\n    let mut index = 0;\n    while index < bytes.len() {\n        if bytes[index] == b'%' {\n            let hex = raw\n                .get(index + 1..index + 3)\n                .ok_or(\"incomplete percent escape in OTLP header\")?;\n            u8::from_str_radix(hex, 16).map_err(|_| \"invalid percent escape in OTLP header\")?;\n            index += 3;\n        } else {\n            index += 1;\n        }\n    }\n    Ok(())\n}\n"
+      },
+      "context": [
+        "validate_otlp_header_value runs during service configuration loading before building the opentelemetry-otlp 0.33.1 exporter."
+      ]
+    },
+    {
+      "id": "RD71",
+      "request": "Review the supplied production source through representation for readability and maintainability. Do not implement or execute it.",
+      "lens": "representation",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-71\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.88\"\n",
+        "src/lib.rs": "use std::sync::atomic::{AtomicUsize, Ordering};\n\npub(crate) struct KindSpec {\n    pub name: &'static str,\n    pub weight: i32,\n    pub max_in_flight: AtomicUsize,\n}\n\npub(crate) struct Kinds {\n    specs: Vec<KindSpec>,\n}\n\nimpl Kinds {\n    pub fn specs(&self) -> &[KindSpec] {\n        &self.specs\n    }\n\n    pub fn limit_for(&self, name: &str) -> Option<usize> {\n        self.specs\n            .iter()\n            .find(|spec| spec.name == name)\n            .map(|spec| spec.max_in_flight.load(Ordering::Relaxed))\n    }\n}\n\npub(crate) struct PolicyBinds {\n    names: Vec<&'static str>,\n    weights: Vec<i32>,\n}\n\nimpl PolicyBinds {\n    pub fn from_kinds(kinds: &Kinds) -> Self {\n        Self {\n            names: kinds.specs().iter().map(|spec| spec.name).collect(),\n            weights: kinds.specs().iter().map(|spec| spec.weight).collect(),\n        }\n    }\n\n    pub fn eligible<'a>(&'a self, kinds: &Kinds, active: impl Fn(&str) -> usize) -> Vec<(&'static str, i32)> {\n        self.names\n            .iter()\n            .copied()\n            .zip(self.weights.iter().copied())\n            .filter(|(name, _)| kinds.limit_for(name).is_some_and(|limit| active(name) < limit))\n            .collect()\n    }\n}\n"
+      },
+      "context": [
+        "Every caller constructs PolicyBinds::from_kinds(&registry) for a worker loop's lifetime and calls binds.eligible(&registry, ...) on each tick with that same Kinds instance; specs Vec never grows or shrinks after startup, while max_in_flight is updated atomically at runtime."
+      ]
+    },
+    {
+      "id": "RD72",
+      "request": "Review the supplied production source through representation for readability and maintainability. Do not implement or execute it.",
+      "lens": "representation",
+      "profiles": [],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-72\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.88\"\n",
+        "src/lib.rs": "use std::collections::BTreeMap;\n\npub(crate) struct QuotaRegistry {\n    limits: BTreeMap<String, u64>,\n}\n\nimpl QuotaRegistry {\n    pub fn get(&self, tenant: &str) -> Option<u64> {\n        self.limits.get(tenant).copied()\n    }\n}\n\npub(crate) struct BatchQuotaSnapshot {\n    frozen: BTreeMap<String, u64>,\n}\n\nimpl BatchQuotaSnapshot {\n    pub fn capture(registry: &QuotaRegistry) -> Self {\n        Self { frozen: registry.limits.clone() }\n    }\n\n    pub fn drifted_tenants<'a>(&'a self, current: &'a QuotaRegistry) -> Vec<&'a str> {\n        self.frozen\n            .iter()\n            .filter(|(tenant, frozen)| current.get(tenant) != Some(**frozen))\n            .map(|(tenant, _)| tenant.as_str())\n            .collect()\n    }\n}\n"
+      },
+      "context": [
+        "BatchQuotaSnapshot::capture freezes quotas at batch start; before committing the batch, the caller reads the latest QuotaRegistry from a reloadable handle and calls snapshot.drifted_tenants(&latest) to detect tenants whose quota changed while the batch ran."
+      ]
+    },
+    {
+      "id": "RD73",
+      "request": "Review the supplied production source through data-flow and its selected profile for readability and maintainability. Do not implement or execute it.",
+      "lens": "data-flow",
+      "profiles": [
+        "lifecycle-ownership"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-73\"\nversion = \"0.0.0\"\nedition = \"2024\"\nrust-version = \"1.100\"\n\n[dependencies]\ntokio = { version = \"1.44\", features = [\"sync\", \"io-util\"] }\n",
+        "src/lib.rs": "use std::sync::atomic::{AtomicUsize, Ordering};\nuse tokio::io::{AsyncRead, AsyncReadExt};\nuse tokio::sync::{Notify, watch};\n\nstruct ActiveRead<'a>(&'a AtomicUsize);\n\nimpl Drop for ActiveRead<'_> {\n    fn drop(&mut self) {\n        self.0.fetch_sub(1, Ordering::Relaxed);\n    }\n}\n\npub(crate) async fn read_bounded<R: AsyncRead + Unpin>(\n    reader: &mut R,\n    active: &AtomicUsize,\n    limit: usize,\n) -> std::io::Result<Vec<u8>> {\n    active.fetch_add(1, Ordering::Relaxed);\n    let _guard = ActiveRead(active);\n    let mut buf = Vec::new();\n    reader.take(limit as u64).read_to_end(&mut buf).await?;\n    Ok(buf)\n}\n\npub(crate) struct Warmup {\n    ready: watch::Sender<bool>,\n    changed: Notify,\n}\n\nimpl Warmup {\n    pub fn new() -> Self {\n        let (ready, _) = watch::channel(false);\n        Self { ready, changed: Notify::new() }\n    }\n\n    pub fn mark_ready(&self) {\n        let _ = self.ready.send(true);\n        self.changed.notify_waiters();\n    }\n\n    pub async fn wait_ready(&self) {\n        let mut rx = self.ready.subscribe();\n        loop {\n            if *rx.borrow_and_update() {\n                return;\n            }\n            self.changed.notified().await;\n        }\n    }\n}\n"
+      },
+      "context": [
+        "ActiveRead is used only inside read_bounded. Warmup::wait_ready is awaited by request handlers while a background task calls mark_ready once warmup finishes."
+      ]
+    },
+    {
+      "id": "RD74",
+      "request": "Review the supplied production source through data-flow and its selected profile for readability and maintainability. Do not implement or execute it.",
+      "lens": "data-flow",
+      "profiles": [
+        "lifecycle-ownership"
+      ],
+      "scope": "All supplied production declarations and uses in a private, unreleased module; no external Rust API commitment or team override.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-74\"\nversion = \"0.0.0\"\nedition = \"2021\"\nrust-version = \"1.85\"\n\n[dependencies]\ntokio = { version = \"1.44\", features = [\"sync\"] }\n",
+        "src/lib.rs": "use std::collections::VecDeque;\nuse std::sync::Mutex;\nuse std::sync::atomic::{AtomicUsize, Ordering};\nuse tokio::sync::Notify;\n\npub(crate) struct LeaseGuard<'a> {\n    active: &'a AtomicUsize,\n    committed: bool,\n}\n\nimpl<'a> LeaseGuard<'a> {\n    pub fn acquire(active: &'a AtomicUsize) -> Self {\n        active.fetch_add(1, Ordering::Relaxed);\n        Self { active, committed: false }\n    }\n\n    pub fn commit(mut self) {\n        self.committed = true;\n    }\n}\n\nimpl Drop for LeaseGuard<'_> {\n    fn drop(&mut self) {\n        if !self.committed {\n            self.active.fetch_sub(1, Ordering::Relaxed);\n        }\n    }\n}\n\npub(crate) struct WorkQueue<T> {\n    items: Mutex<VecDeque<T>>,\n    available: Notify,\n}\n\nimpl<T> WorkQueue<T> {\n    pub fn push(&self, item: T) {\n        self.items.lock().unwrap().push_back(item);\n        self.available.notify_one();\n    }\n}\n"
+      },
+      "context": [
+        "Callers in sibling modules acquire a LeaseGuard, pass it across step functions, and call commit() when ownership of the slot transfers to a long-lived session; uncommitted exits roll the counter back. Multiple worker tasks pop items from WorkQueue so each push wakes one waiter."
+      ]
     }
   ]
 }

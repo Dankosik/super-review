@@ -5,8 +5,12 @@
 **Provenance and ownership.** Can readers see where a value originates, how it is
 transformed, and who can change it? Prefer named intermediate values or a small
 explicit transformation when dense spreads, reducers, casts, or distant mutation
-hide those facts. Keep a direct pipeline or local accumulator when it already
-expresses the work. Local mutation can be the most maintainable form.
+hide those facts; remove round-trip serialization/formatting used only to test
+an input property, re-parsing of already-parsed values, or intermediate arrays
+built only to feed an API that accepts iterables or entries directly. Keep a
+direct pipeline, staging that preserves error order or atomic updates, or a
+local accumulator when it already expresses the work. Local mutation can be the
+most maintainable form.
 
 When `any`, assertions, or non-null assertions force multiple consumers to repeat
 an unstated shape assumption, identify the owning boundary and the concrete contract

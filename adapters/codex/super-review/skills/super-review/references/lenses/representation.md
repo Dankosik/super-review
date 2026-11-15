@@ -17,10 +17,15 @@ replacing them with values can erase a distinction. Enumerated constants need no
 become an interface hierarchy, and externally supplied values may not be closed.
 
 Related values may belong together; genuinely exclusive modes may deserve one
-explicit representation. Preserve independent flags and dynamic data. Maps or
-parallel arrays can be deliberate. A state machine or a stronger type expresses
-invariants the code already maintains; the product's invariants themselves stay
-as they are.
+explicit representation. Watch for one fact split across separate fields,
+primitives or arguments whose connection callers must remember: a cached or
+derived projection detached from its source so callers must pass matching values
+together, a boolean flag or separate notification tracking state another field
+already holds, or two parsed forms of the same input kept side by side without
+distinct roles. Preserve independent flags, deliberate snapshots, and dynamic
+data. Maps or parallel arrays can be deliberate. A state machine or a stronger
+type expresses invariants the code already maintains; the product's invariants
+themselves stay as they are.
 
 Trace consumers before a type change. Preserve struct tags, marshaling methods,
 external formats, nil/empty distinctions, comparability, identity, ownership, and

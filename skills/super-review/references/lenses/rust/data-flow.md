@@ -43,26 +43,32 @@ already has `&mut` access, a plain field tells the truer story. Keep a copy of
 small immutable data where the borrow that avoids it would complicate the code
 more than the copy does.
 
-In iteration, look for an index used only to fetch `v[i]` and its neighbour,
-where items, `windows`, `zip`, `chunks` or `enumerate` name the unit; a
-`collect` whose only reader iterates once more or asks `len`; a `contains_key`
-followed by `insert`, where `entry` states one decision, or followed by `get`,
-where `if let Some(..) = map.get(..)` asks once; and a hand-rolled fold that is
-`sum`, `any`, `all`, `find`, `min_by_key` or `max_by_key`. `insert` replaces
-and `entry` need not, so compare what happens to an existing value. Prefer the
-loop again once the chain needs effects, early exits or more state than a
-reader can hold; a conversion pays only when the result reads naturally.
+In iteration, look for an index used only to fetch `v[i]` and its neighbour or
+to group adjacent runs by hand, where items, `windows`, `zip`, `chunks`,
+`chunk_by` (within MSRV) or `enumerate` name the unit; a `collect` whose only
+reader iterates once more, asks `len`, or feeds `fmt::Debug`/a builder that
+accepts entries directly via `fmt::from_fn`; a `contains_key` followed by
+`insert`, where `entry` states one decision, or followed by `get`, where `if
+let Some(..) = map.get(..)` asks once; and a hand-rolled fold that is `sum`,
+`any`, `all`, `find`, `min_by_key` or `max_by_key`. `insert` replaces and
+`entry` need not, so compare what happens to an existing value. Prefer the loop
+again once the chain needs effects, early exits or more state than a reader can
+hold; a conversion pays only when the result reads naturally.
 
 In conversions, `u64::from(x)` states a lossless widening and stops compiling
 if the types stop allowing it, and `try_from` states a checked one. `as`
 converts silently, so keep it where its exact truncating or wrapping semantics
 are meant. A string assembled by `+`, `push_str` and `to_string` across several
-statements usually reads as one `format!`.
+statements usually reads as one `format!`; an integer formatted into a `String`
+only to borrow `&str` locally can use `std::fmt::NumBuffer` when MSRV permits,
+and a subslice trimmed before deciding whether to allocate can stay borrowed
+(`Cow::Borrowed`) when unchanged.
 
-Trace conversions through the whole operation. Rebuilding and revalidating a
-property already preserved by the intermediate steps can add an unnecessary
-failure path or require the reader to re-establish the same fact. Compare a
-direct transformation using the existing text, bytes or checked value; keep a
+Trace conversions through the whole operation. Rebuilding, re-parsing from text,
+or round-trip formatting a value only to check a property or pass it to an API
+that already accepts the parsed type can add an unnecessary failure path or
+make the reader re-establish the same fact. Compare a direct check on the
+input's bytes/chars or a direct conversion from the parsed value; keep a
 conversion that changes meaning, validates a new boundary or supplies a required
 owned result. Byte-oriented processing can be appropriate for byte positions or
 an established cost constraint; Unicode iteration is not a universal replacement.

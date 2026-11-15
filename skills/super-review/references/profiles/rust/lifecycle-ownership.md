@@ -8,10 +8,14 @@ resource or background operation, can readers identify its owner and intended
 lifetime without following scattered handles? Attach this to the owner's pass;
 ordinary references alone do not require a lifecycle investigation.
 
-RAII and a local guard can already tell the story. A named scope or transfer may
-clarify ownership, but moving a guard to a helper can release it earlier. Owned
-data or shared handles moved into tasks may legitimately outlive the caller.
-Read the relevant task contract and actual uses before replacing them with borrows.
+RAII and a local guard can already tell the story, without a one-off struct and
+`impl Drop` when `std::mem::DropGuard` (within MSRV) or an existing handle guard
+such as `AbortOnDropHandle` expresses a single local cleanup action with the
+same drop scope; keep a named guard type when it carries an invariant, methods
+or cross-function ownership. A named scope or transfer may clarify ownership,
+but moving a guard to a helper can release it earlier. Owned data or shared
+handles moved into tasks may legitimately outlive the caller. Read the relevant
+task contract and actual uses before replacing them with borrows.
 
 Distinguish the lifetime of shared storage from the authority to publish or start
 work. A subscriber or a temporary upgraded Weak may retain storage without being

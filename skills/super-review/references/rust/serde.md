@@ -14,13 +14,21 @@ Compare both serialization and deserialization contracts, not just one JSON valu
 `transparent` describes Serde's representation, not Rust layout or FFI ABI.
 
 Keep a custom visitor or `with` adapter for a meaningful legacy format, input
-alternatives or diagnostics. `alias`, `default`, renaming and directional skipping
-have different contracts. An enum must not silently replace published fields.
-`untagged` tries variants in declaration order: reordering is not merely cosmetic.
-Internal/adjacent/untagged deserialization needs `alloc`; externally tagged enum
-deserialization can work without it. This does not make every field or format
-allocation-free. Check actual `no_std`/`alloc`, `derive` and `rc` capabilities.
-Serde's `rc` support does not preserve shared-pointer identity across the wire.
+alternatives or diagnostics, and share an existing crate-local `with` or
+`serde_with` adapter across modules when they encode the same wire rule. Avoid a
+two-pass dance that deserializes a field into an intermediate `String`,
+`Cow<str>` or `Value` only to run a second deserializer (`StrDeserializer`,
+`from_value`) when the target type or a field adapter can deserialize directly;
+conversely, when code already holds a parsed `serde_json::Value` and only removes
+or inspects one map entry, a direct `as_object_mut` / `get` operation avoids a
+single-use `#[derive(Deserialize)]` wrapper struct. `alias`, `default`, renaming
+and directional skipping have different contracts. An enum must not silently
+replace published fields. `untagged` tries variants in declaration order:
+reordering is not merely cosmetic. Internal/adjacent/untagged deserialization
+needs `alloc`; externally tagged enum deserialization can work without it. This
+does not make every field or format allocation-free. Check actual
+`no_std`/`alloc`, `derive` and `rc` capabilities. Serde's `rc` support does not
+preserve shared-pointer identity across the wire.
 
 ## api-clarity
 

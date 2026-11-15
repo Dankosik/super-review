@@ -81,6 +81,20 @@ unresolved over a use the source does not show: a possible second format, and
 an outside consumer of a `pub(crate)` function. No rule ID, lens, profile,
 worker or routing default is added.
 
+## Simplification-experience contrasts (RD69-RD74)
+
+Baseline: Super Review 3.31.0 at `40ce002`. Derived from production
+simplifications in `Dankosik/rust-service-template-rest` (`b58784ac`):
+delegating generic framing/URL operations to already-declared crates while
+keeping protocol-specific encoding (`RD69`) versus retaining custom escape
+validation whose recorded SDK boundary differs from `percent-encoding` (`RD70`);
+linking a cached bind projection to its source registry in the type (`RD71`)
+versus retaining an intentional point-in-time snapshot compared against a later
+registry (`RD72`); and replacing single-use `Drop` ceremony and split
+`watch`+`Notify` readiness state (`RD73`) versus retaining a cross-function
+`LeaseGuard` at MSRV 1.85 and single-waiter `Notify::notify_one` (`RD74`).
+Behavioral baseline/candidate comparison for `RD69-RD74`: **NOT RUN**.
+
 ## Replay and grading
 
 `inputs.json` contains independent neutral packets. Give a reviewer exactly one

@@ -3,7 +3,8 @@
 **Compatibility.** Establish the owning package and applicable compiler configuration
 at H before version-sensitive advice. Read its `package.json`, the relevant
 `tsconfig` and available inherited/project-reference settings; consult a committed
-text lockfile only when the resolved compiler or library version matters. The
+text lockfile and locally present type declarations or package source at that
+locked version when the resolved compiler or library behavior matters. The
 nearest file is a starting point, not proof that it governs this source. A newer
 workspace toolchain or locked compiler does not raise a library's supported
 consumer baseline. Missing configuration limits the remedy; do not run a compiler,
@@ -72,10 +73,13 @@ not silently adopted policy. Committed lint configuration (ESLint, Biome) and
 they deny, and leave listing their violations to the project's own checks. Do
 not reproduce formatter/linter chores.
 
-Prefer supported project or standard-library operations when they name the actual
-work more directly; identify the specific reading burden they remove. A clever
-pipeline or type-level utility can be less clear than a local loop or named shape.
-Do not invent APIs or claim performance improvements without evidence.
+Prefer supported project, runtime, or declared-package operations when they own
+the general mechanism or boundary plumbing written inline; delegate the generic
+part while keeping domain rules local, and identify the specific reading or
+maintenance rule removed. Check boundary semantics (accepted inputs, first error
+thrown, cancellation, time precision, wire output) before replacing custom code.
+A clever pipeline or type-level utility can be less clear than a local loop or
+named shape. Do not invent APIs or claim performance improvements without evidence.
 
 **Preservation.** A refactoring must retain the implicated runtime and type-level
 contracts: inference/contextual typing, accepted calls and return relationships,

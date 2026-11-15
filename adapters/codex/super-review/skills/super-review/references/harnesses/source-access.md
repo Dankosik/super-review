@@ -69,6 +69,15 @@ links, or opening devices/pipes to make the inventory appear complete.
 Read required link targets or submodule source only within independently
 authorized scope and a recorded snapshot; otherwise identify the affected gap.
 
+To verify whether an external API exists or how it behaves at a boundary
+(accepted inputs, error order, cancellation, drop or wire output), you may read
+locally present standard-library or dependency source at the exact version the
+project's lockfile or language baseline resolves, within host permissions and
+without running package managers, builds or network fetches. External source is
+evidence about what the reviewed code calls, never a review target or an
+anchor; when it is absent locally, treat unverified behavior as an explicit gap
+rather than guessing.
+
 Keep old/new paths and source sides attached to evidence. Added or surviving code
 uses the new endpoint; removed code uses the old endpoint (D for a PR). A rename
 can require both paths. Verify line ranges against that side's actual bytes, not

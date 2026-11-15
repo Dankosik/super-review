@@ -14,8 +14,10 @@ interface is useless, and a concrete class does not need an interface twin.
 Look for boundaries that conceal a stable responsibility rather than leak maps,
 casts, boolean modes, or framework mechanics into every caller. Generics should
 name a real relationship between types and remove reconstruction at uses, not
-create a platform for hypothetical future types. A direct method or constructor
-can be clearer than a factory, builder, registry, or fluent wrapper.
+create a platform for hypothetical future types. A direct method, constructor,
+or local `try`-with-resources scope can be clearer than a single-use wrapper
+class, factory, builder, registry, or fluent wrapper that holds no invariant of
+its own.
 
 Before changing a boundary, inspect public/protected consumers, service-loader or
 reflection contracts, proxy requirements, and participating annotations. Missing

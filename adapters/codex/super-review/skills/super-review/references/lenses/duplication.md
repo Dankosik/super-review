@@ -38,14 +38,23 @@ Name the searched decisions and their keys in the coverage you already report,
 so a clean result shows what was looked for.
 
 Centralize demonstrated shared knowledge in the smallest meaningful operation.
-Conversely, separate a shared helper when flags, callbacks, or divergent caller
-contracts show that unrelated decisions have been forced together. Account for
-the coupling created or removed, not the number of repeated statements.
+Also check whether handwritten rules, constants, conversions or call-site glue
+duplicate an operation already owned by the Go standard library (at the module's
+`go` directive) or an already-imported module — such as re-parsing a parsed
+value, matching raw status or error strings a package classifies, or assembling
+URLs, headers, forms, queries or units by hand. Delegate the generic mechanism
+to that owner while keeping domain or protocol rules local; do not propose a new
+external module for a trivial formula. Conversely, separate a shared helper when
+flags, callbacks, or divergent caller contracts show that unrelated decisions
+have been forced together. Account for the coupling created or removed, not the
+number of repeated statements.
 
 Keep coincidentally similar customer and supplier predicates separate when their
 policies have independent owners. Keep ordinary local repetition when sharing
-would require callers to understand more machinery than it hides. Do not decide
-whether the underlying business rules are correct.
+would require callers to understand more machinery than it hides, and keep
+custom mechanics whose boundary behavior (accepted inputs, first error returned,
+cancellation, time precision, wire bytes) intentionally differs from the library
+operation. Do not decide whether the underlying business rules are correct.
 
 Identify every inspected participating use and the evidence for shared or
 independent reasons to change. Return your duplication rationale even when the

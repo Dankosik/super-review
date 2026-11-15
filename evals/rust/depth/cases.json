@@ -750,6 +750,72 @@
       "contrasts": [
         "RD67"
       ]
+    },
+    {
+      "id": "RD69",
+      "rule": "rust.duplication.share-knowledge",
+      "expect": [
+        "Observe that introspect hand-builds an application/x-www-form-urlencoded body plus Content-Type and reconstructs Host from host_str and port even though reqwest (with the form feature enabled) and url::Url already own those operations; recommend RequestBuilder::form and endpoint.authority().",
+        "Retain oauth_form_part for the RFC 6749 Basic credential encoding rule rather than replacing the whole function or erasing its protocol-specific adaptation."
+      ],
+      "contrasts": [
+        "RD70"
+      ]
+    },
+    {
+      "id": "RD70",
+      "rule": "rust.duplication.share-knowledge",
+      "expect": [
+        "Retain validate_otlp_header_value and its recorded SDK-boundary rationale: percent_encoding::percent_decode_str does not match opentelemetry-otlp 0.33.1's stricter hex-escape validation.",
+        "Do not recommend replacing the loop with percent-encoding or deleting the boundary comment."
+      ],
+      "contrasts": [
+        "RD69"
+      ]
+    },
+    {
+      "id": "RD71",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Observe that PolicyBinds stores flattened slices derived from Kinds while eligible requires callers to pass the matching &Kinds separately on every call; recommend linking PolicyBinds<'a> to &'a Kinds (or deriving from the held reference) so the type carries the relationship.",
+        "Preserve reading live max_in_flight atomics from Kinds; do not snapshot live limits at construction or report a concurrency defect."
+      ],
+      "contrasts": [
+        "RD72"
+      ]
+    },
+    {
+      "id": "RD72",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Retain BatchQuotaSnapshot separate from the later &QuotaRegistry argument: the snapshot freezes start-of-batch quotas while drifted_tenants compares them against a reloaded registry.",
+        "Do not borrow the initial QuotaRegistry inside BatchQuotaSnapshot or merge the two states."
+      ],
+      "contrasts": [
+        "RD71"
+      ]
+    },
+    {
+      "id": "RD73",
+      "rule": "rust.data.make-transformations-visible",
+      "expect": [
+        "Observe that ActiveRead is a single-use struct written only to run one decrement on scope exit where rust-version 1.100 provides std::mem::DropGuard, and that Warmup pairs a watch::Sender<bool> with a separate Notify and manual loop where watch alone (with Receiver::wait_for) stores the state and wakes waiters.",
+        "Preserve decrementing active on both early error and normal return, and preserve immediate completion of wait_ready for subscribers arriving after mark_ready."
+      ],
+      "contrasts": [
+        "RD74"
+      ]
+    },
+    {
+      "id": "RD74",
+      "rule": "rust.data.make-transformations-visible",
+      "expect": [
+        "Retain LeaseGuard, which crosses functions, carries commit state, and targets MSRV 1.85 (before std::mem::DropGuard), and retain WorkQueue's Notify::notify_one single-waiter wakeup.",
+        "Do not recommend std::mem::DropGuard at rust-version 1.85 or replacing single-consumer queue wakeups with a watch channel."
+      ],
+      "contrasts": [
+        "RD73"
+      ]
     }
   ]
 }
