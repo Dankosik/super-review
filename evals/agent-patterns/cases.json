@@ -1,7 +1,7 @@
 {
   "kind": "evaluator-only",
   "status": "NOT RUN",
-  "baseline_revision": "1f03b66e6cb00cc8d200372ee52c728fb68edab6",
+  "baseline_revision": "c9d41736dac89dcd1b017b3c4ba254af6a6dd994",
   "contrast_pairs": [
     ["AP01", "AP02"],
     ["AP03", "AP04"],
@@ -16,7 +16,11 @@
     ["AP21", "AP22"],
     ["AP23", "AP24"],
     ["AP25", "AP26"],
-    ["AP27", "AP28"]
+    ["AP27", "AP28"],
+    ["AP29", "AP30"],
+    ["AP31", "AP32"],
+    ["AP33", "AP34"],
+    ["AP35", "AP36"]
   ],
   "cases": [
     {
@@ -269,6 +273,78 @@
       "checks": [
         "Verifies awaiting 'Transfer scheduled' visibility settles the request before asserting alert is hidden",
         "Reports no unstable or false-green assertion"
+      ]
+    },
+    {
+      "id": "AP29",
+      "polarity": "report",
+      "decision": "pointer-frame React state fan-out, root CSS variable invalidation, layout reticle positioning and idle rAF buffer allocations reported",
+      "checks": [
+        "Traces setCursor on pointermove reconciling all 300 StageCard children, document.documentElement --cursor-x invalidating document-wide styles, and left/top reticle writes triggering main-thread layout/paint",
+        "Traces the requestAnimationFrame loop allocating a fresh Float32Array(128) per frame and continuing to tick while paused is true"
+      ]
+    },
+    {
+      "id": "AP30",
+      "polarity": "retain",
+      "decision": "rAF-coalesced ref reticle transform, container-scoped CSS variable, preallocated scratch buffer and paused loop stop retained",
+      "checks": [
+        "Verifies pointer coordinates coalesce into one requestAnimationFrame pass updating translate3d and a stage-scoped CSS custom property without React state renders",
+        "Verifies the Float32Array(128) scratch buffer is reused and requestAnimationFrame stops while paused is true, reporting no finding"
+      ]
+    },
+    {
+      "id": "AP31",
+      "polarity": "report",
+      "decision": "unpartialized synchronous localStorage persistence, coarse per-row store fan-out, per-chunk completed markdown re-parses and per-row closed modals reported",
+      "checks": [
+        "Traces Zustand persist without partialize running JSON.stringify and synchronous localStorage writes over up to 400 messages plus streamingReply on every streamed SSE chunk",
+        "Traces every TranscriptRow subscribing to whole selectedIds, re-running marked.parse across completed rows on stream ticks, and instantiating a closed AuditModal per row"
+      ]
+    },
+    {
+      "id": "AP32",
+      "polarity": "retain",
+      "decision": "partialized persistence, rAF-coalesced streaming tail, memoized item-scoped row selectors and shared modal retained",
+      "checks": [
+        "Verifies persist partialize excludes streaming state, completed TranscriptRow items subscribe to item-scoped boolean selection and memoize parsed markdown, and one AuditModal is shared",
+        "Reports no hot-path repeated-work or synchronous storage finding"
+      ]
+    },
+    {
+      "id": "AP33",
+      "polarity": "report",
+      "decision": "unbuffered serde_json reader, per-comparison sort_by_key allocations, eager ok_or formatting, regex captures slot allocation and owned-key HashMap entry hits reported",
+      "checks": [
+        "Traces unbuffered File passed to serde_json::from_reader, sort_by_key running to_ascii_lowercase across O(N log N) comparisons, and ok_or eagerly formatting on present tags",
+        "Traces CODE_RE.captures allocating capture slots where is_match suffices and routes.entry(rec.tenant.clone()) allocating a String on every cache hit while leaving unwrap_or(Vec::new()) and disabled tracing::debug! unflagged"
+      ]
+    },
+    {
+      "id": "AP34",
+      "polarity": "retain",
+      "decision": "slice-borrowed deserialization, zero-allocation ASCII comparator, lazy ok_or_else, regex is_match and borrowed HashMap hit lookup retained without false positives",
+      "checks": [
+        "Verifies serde_json::from_slice borrows &str fields, sort_by compares ASCII bytes without allocating, ok_or_else defers formatting, CODE_RE.is_match allocates nothing, and routes.get borrows &str on hits",
+        "Does not flag zero-capacity Vec::new() inside unwrap_or or disabled tracing::debug! macro arguments"
+      ]
+    },
+    {
+      "id": "AP35",
+      "polarity": "report",
+      "decision": "Mutex-serialized reqwest Client, if-let scrutinee MutexGuard held across executor-blocking Rayon par_iter, large map drop under lock and row-by-row sqlx inserts reported",
+      "checks": [
+        "Traces tokio::sync::Mutex around pooled reqwest::Client serializing health probes, replace_rules dropping the old HashMap inside the lock, and the unnamed rules MutexGuard in the if-let scrutinee staying locked across par_iter while par_iter blocks the Tokio worker thread",
+        "Traces per-element sqlx INSERT queries inside the scored loop issuing up to 400 pool acquisitions and round trips instead of one batched insert"
+      ]
+    },
+    {
+      "id": "AP36",
+      "polarity": "retain",
+      "decision": "lock-free pooled reqwest Client, semicolon-dropped sync MutexGuard, outside-lock map drop, spawn_blocking Rayon offload and QueryBuilder batch insert retained",
+      "checks": [
+        "Verifies reqwest::Client is used directly via &self, replace_rules drops the replaced map after unlocking, org_rules drops the std::sync::MutexGuard at the let semicolon before spawn_blocking runs par_iter, and QueryBuilder::push_values batches all inserts into one round trip",
+        "Reports no contention, executor-blocking or N-round-trip finding"
       ]
     }
   ]
