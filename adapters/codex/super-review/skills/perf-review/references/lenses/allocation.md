@@ -64,13 +64,13 @@ or buffer it initializes, find how much of it is read.
   buffer structured-cloned across a worker boundary after its sender drops it.
 - Deserializing through `serde_json::Value` and then into a type or forwarding
   envelope bytes that `RawValue` would slice, serializing into an intermediate
-  `String` or `Vec<u8>` before writing to a buffer or stream (`to_writer`),
-  allocating regex `captures` where `is_match` or `find` suffices, or parsing
-  into owned `String` fields where a typed parse or borrowed `&str` or `Cow`
-  fields would do.
+  `String` or `Vec<u8>` only to write bytes into a `Vec<u8>` or `io::Write`
+  stream (`to_writer`), allocating regex `captures` where `is_match` or `find`
+  suffices, or parsing into owned `String` fields where a typed parse or
+  borrowed `&str` or `Cow` fields would do.
 - A boxed future per call: `#[async_trait]` methods or `Box::pin` on a hot
-  path, where a native `async fn` in a trait or a generic would do and the
-  trait is not used through `dyn`.
+  path, where an unboxed `async` or `impl Future` method (preserving any
+  required `Send` bound) or a generic on an internal non-`dyn` trait would do.
 - A routine failure built as a heavyweight error: an `anyhow::Error` per
   element on a path where failure is normal.
 
@@ -80,6 +80,7 @@ or buffer it initializes, find how much of it is read.
   it. Many threads cloning one `Arc` belong to [contention](contention.md).
 - An owned value the receiver keeps: moved into a map, a channel, a struct
   or a spawned task.
-- `collect` into a `Vec` from an iterator whose length is known, such as a
-  `map` over a slice: it already allocates once. Check the chain, since an
-  adapter such as `filter` loses the exact length.
+- `collect` into a `Vec` from an iterator whose length is known, such as `map`
+  or fixed-array `flat_map` over a slice (or `owned_vec.into_iter().filter(...)`
+  compacting in place): it allocates at most once. Check borrowed chains, since
+  `filter` and variable-length `flat_map` lose the exact length.

@@ -32,8 +32,9 @@ then what each iteration does with other collections.
   allocating or expensive key closure `O(N log N)` times instead of once per
   item), `collect`, slice copy or `clone` of a collection to answer one
   question: sorting to take the first or the k-th element, materializing a list
-  only to count or test emptiness, or testing `M` compiled patterns in a loop
-  where one multi-pattern automaton (`RegexSet`) scans the input once.
+  only to count or test emptiness, or testing `M` compiled patterns for match
+  presence or matching pattern indices in a loop where one multi-pattern
+  automaton (`RegexSet`) scans the input once.
 - A string indexed by character in a loop, `chars().nth(i)` or
   `chars().count()` per iteration, each walking it from the start.
 - Quadratic accumulation or re-parsing per step: `format!("{acc}{x}")`, Go

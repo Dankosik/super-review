@@ -156,26 +156,24 @@ test("delivery copies are identical and only the adapters that support it carry 
   expect(existsSync(resolve(root, "adapters/cursor/plugin/resources/perf-review"))).toBe(false);
   for (const role of ["perf-review", "perf-reader", "perf-challenger"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
   expect(read("scripts/package.py")).toContain('"perf-review"');
-  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.10.1");
+  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.10.2");
 });
 
 test("TypeScript frontend performance rules distinguish behavior-keeping findings from tradeoffs and stay prose-clean", () => {
   const ts = flat("skills/perf-review/references/languages/typescript.md");
   for (const anchor of [
-    "**Off-React frame state, input coalescing, and idle `rAF` loops**:",
+    "**Off-React frame state, sub-frame input, and idle `rAF` loops**:",
     "**Compositor animations, layout thrashing, and style invalidation**:",
-    "**Canvas/WebGL frame allocations and synchronous encoding**:",
-    "**Streaming UI tails and chunk coalescing**:",
-    "**Store selector fan-out, render-tick multipliers, and derived Effects**:",
-    "**List scaling, per-row observers/portals, and virtualization**:",
-    "**Synchronous web storage, IndexedDB batching, and Worker transfers**:",
+    "**Canvas/WebGL frame allocations and encoding**:",
+    "**Streaming UI tails**:",
+    "**React Compiler, store selector fan-out, and derived Effects**:",
+    "**Per-row setup, portals, and virtualization**:",
+    "**Web storage, IndexedDB batching, and Worker transfers**:",
     "pointerrawupdate",
+    "document.hidden",
     "content-visibility: auto",
     "useDeferredValue",
-    "partialize",
-    "postMessage(ab, [ab])",
-    "postMessage(view, [view.buffer])",
-    "tailwind-merge",
+    "Transferable",
     "Adding `will-change` without a profile",
   ]) {
     expect(ts).toContain(anchor);
@@ -195,24 +193,29 @@ test("Rust performance rules distinguish behavior-keeping findings from tradeoff
     "**Ownership, clones, and buffer capacity reuse**:",
     "**Map lookups, `HashMap::entry`, and eager fallbacks**:",
     "**Sorting, UTF-8 strings, and `regex` engines**:",
-    "**`serde` buffering, console streams, and directory walks**:",
-    "**Pooled clients and SQL round trips (`reqwest`, `tonic`, `sqlx`, `rusqlite`)**:",
+    "**`serde` streams, borrowing, and directory walks**:",
+    "**Pooled clients and SQL round trips**:",
     "**Async executors, lock lifetimes, and fan-out (`tokio`, `rayon`)**:",
     "**Observability, errors, build profiles, and `Cargo.toml` baseline**:",
     "clone_from",
-    "BufRead::read_line",
-    "std::collections::HashMap::entry(key)",
-    "hashbrown::HashMap::entry_ref",
+    "std::collections::HashMap::entry",
     "slice::sort_by_key(f)",
+    "select_nth_unstable",
     "eq_ignore_ascii_case",
+    "from_utf8_lossy_owned",
+    "hits and misses alike",
     "serde_json::from_reader",
-    "\"raw_value\"",
-    "#[serde(transparent)]",
-    "entry.file_type()",
-    "prepare_cached",
+    "fmt::Write",
+    "RawValue",
+    "DirEntry::file_type()",
+    "UNNEST",
     "rayon::par_iter()",
+    "rayon::spawn",
+    "re-registers timer-wheel",
     "Vec::new()",
     "tracing::{debug,trace}!",
+    "log::max_level()",
+    "RUST_LIB_BACKTRACE",
   ]) {
     expect(rust).toContain(anchor);
   }

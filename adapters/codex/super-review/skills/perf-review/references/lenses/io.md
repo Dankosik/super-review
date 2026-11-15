@@ -33,7 +33,8 @@ what sets that number.
   `OutputStream`, `TcpStream` or child pipe without `BufWriter`/`BufReader`,
   `bufio` or `BufferedOutputStream`; per-item console or stdout flushes in a
   loop; or per-entry `stat` / `metadata` calls during a directory walk where
-  the directory entry already carries `file_type`.
+  the directory entry already carries `file_type` (falling back to `stat` only
+  on symlinks when following links).
 - No batching: a flush or `fsync` per record where the durability promise is
   per batch, or synchronous full-store `localStorage`/`sessionStorage`
   serialization on high-frequency state ticks where ephemeral slices need no

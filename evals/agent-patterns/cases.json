@@ -1,7 +1,7 @@
 {
   "kind": "evaluator-only",
   "status": "NOT RUN",
-  "baseline_revision": "d56f95c22ab7a17a27304dc218b8d7ad0ae06886",
+  "baseline_revision": "0fb601394c6035072aed5391f4f55c2563614b17",
   "contrast_pairs": [
     ["AP01", "AP02"],
     ["AP03", "AP04"],
@@ -314,10 +314,10 @@
     {
       "id": "AP33",
       "polarity": "report",
-      "decision": "unbuffered serde_json reader, per-comparison sort_by_key allocations, eager ok_or formatting, regex captures slot allocation and owned-key HashMap entry hits reported",
+      "decision": "unbuffered serde_json reader, per-comparison sort_by_key allocations, eager ok_or formatting, per-call regex captures slot allocation and owned-key HashMap entry hits reported",
       "checks": [
         "Traces unbuffered File passed to serde_json::from_reader, sort_by_key running to_ascii_lowercase across O(N log N) comparisons, and ok_or eagerly formatting on present tags",
-        "Traces CODE_RE.captures allocating capture slots where is_match suffices and routes.entry(rec.tenant.clone()) allocating a String on every cache hit while leaving unwrap_or(Vec::new()) and disabled tracing::debug! unflagged"
+        "Traces CODE_RE.captures allocating capture slots on every call where is_match suffices and routes.entry(rec.tenant.clone()) allocating a String on every cache hit while leaving kept buckets.unwrap_or(Vec::new()) and disabled tracing::debug! unflagged"
       ]
     },
     {
@@ -325,25 +325,25 @@
       "polarity": "retain",
       "decision": "Cow-borrowed slice deserialization, zero-allocation ASCII comparator, lazy ok_or_else, regex is_match and borrowed HashMap hit lookup retained without false positives",
       "checks": [
-        "Verifies serde_json::from_slice borrows Cow<'_, str> fields while preserving escaped-string decoding, sort_by compares ASCII bytes without allocating, ok_or_else defers formatting, CODE_RE.is_match allocates nothing, and routes.get borrows &str on hits",
-        "Does not flag zero-capacity Vec::new() inside unwrap_or or disabled tracing::debug! macro arguments"
+        "Verifies serde_json::from_slice borrows private Cow<'_, str> fields while preserving escaped-string decoding, sort_by compares ASCII bytes without allocating, ok_or_else defers formatting, CODE_RE.is_match allocates nothing, and routes.get borrows &str on hits",
+        "Does not flag kept buckets.unwrap_or(Vec::new()), worker-cached LazyLock<Regex>, or disabled tracing::debug! macro arguments"
       ]
     },
     {
       "id": "AP35",
       "polarity": "report",
-      "decision": "Mutex-serialized reqwest Client, if-let scrutinee MutexGuard held across executor-blocking Rayon par_iter, large map drop under lock and row-by-row sqlx inserts reported",
+      "decision": "Mutex-serialized reqwest Client, exclusive Mutex cache with if-let scrutinee guard held across executor-blocking Rayon par_iter, large map drop under lock and per-row transactional sqlx inserts reported",
       "checks": [
-        "Traces tokio::sync::Mutex around pooled reqwest::Client serializing health probes, replace_rules dropping the old HashMap inside the lock, and the unnamed rules MutexGuard in the if-let scrutinee staying locked across par_iter while par_iter blocks the Tokio worker thread",
-        "Traces per-element sqlx INSERT queries inside the scored loop issuing up to 400 pool acquisitions and round trips instead of one batched insert"
+        "Traces tokio::sync::Mutex around pooled reqwest::Client serializing scale fetches, exclusive std::sync::Mutex around the read-mostly rules map with replace_rules dropping the old HashMap inside the lock, and the unnamed rules MutexGuard in the if-let scrutinee staying locked across par_iter while par_iter blocks the Tokio worker thread",
+        "Traces per-element sqlx INSERT queries inside the transaction issuing N + 2 database round trips instead of one atomic UNNEST batch insert"
       ]
     },
     {
       "id": "AP36",
       "polarity": "retain",
-      "decision": "lock-free pooled reqwest Client, semicolon-dropped sync MutexGuard, outside-lock map drop, spawn_blocking Rayon offload and QueryBuilder batch insert retained",
+      "decision": "lock-free pooled reqwest Client, RwLock read guard dropped at semicolon, outside-lock map drop, rayon::spawn + oneshot offload and single-statement UNNEST batch insert retained",
       "checks": [
-        "Verifies reqwest::Client is used directly via &self, replace_rules drops the replaced map after unlocking, org_rules drops the std::sync::MutexGuard at the let semicolon before spawn_blocking runs par_iter, and QueryBuilder::push_values batches all inserts into one round trip",
+        "Verifies reqwest::Client is used directly via &self and drains the scale body before CPU work, rules uses RwLock with org_rules dropping the read guard at the let semicolon and replace_rules dropping the old map after unlocking, rayon::spawn + oneshot offloads par_iter without blocking Tokio worker or blocking-pool threads, and UNNEST batches all inserts atomically in one constant prepared statement",
         "Reports no contention, executor-blocking or N-round-trip finding"
       ]
     }
