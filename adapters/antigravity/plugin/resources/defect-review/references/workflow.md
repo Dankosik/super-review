@@ -27,7 +27,13 @@ two versions.
 
 Locate the documents and team rule sources for the reviewed area once. Every
 reader gets the same list. It says where statements about the code live; it
-is not a list of suspected bugs.
+is not a list of suspected bugs. Partition mixed-language scopes by language
+([Go](languages/go.md), [TypeScript](languages/typescript.md),
+[Rust](languages/rust.md), [Java](languages/java.md)). You and any role with
+read-only code-navigation tools (LSP references/implementations, `ast-grep`, or
+an existing symbol graph) may use them to locate interface/trait implementations
+and callers that text search misses, then read and quote the resolved source
+lines at the pinned revision.
 
 ## Lenses
 
@@ -53,6 +59,9 @@ team-rules. A paired reader runs each lens's full pass and reports each lens's
 coverage separately; finishing one never closes its partner. Split a large
 scope by package, and split a lens by area when its files are more than one
 reader can read in full: a reader that skims loses the lines it skipped.
+Prefer grouping along vertical call spines (entry handler -> domain -> store)
+over horizontal layer slices so callers and callees stay in one reader's sight,
+and follow calls that cross a partition boundary into the neighbor's body.
 Readers overlap on purpose, and merging is yours.
 
 ## Readers
@@ -60,9 +69,12 @@ Readers overlap on purpose, and merging is yours.
 Start each reader in a fresh context with nothing from this conversation or
 from other readers. Give it the target and revision, its lens or pair, the
 exact files, for a change review the change itself with its removed lines,
-the located documents, and the paths of the contract, its lens, the
-[language context](languages/rust.md) and the
-[result format](../assets/finding-template.md). Never give it an expected
+the located documents, and the paths of the contract, its lens, the matching
+language context ([Go](languages/go.md), [TypeScript](languages/typescript.md),
+[Rust](languages/rust.md), [Java](languages/java.md)) and the
+[result format](../assets/finding-template.md). On hosts where readers lack
+shell/Git access, include the `D..H` diff with removed `D` lines directly in
+each reader's packet. Never give it an expected
 bug, a suspected line or another reader's result, nor what was settled
 before this review: earlier findings or fixes, decisions to respect,
 severity. A reader that inherits conclusions repeats them.
@@ -79,8 +91,10 @@ First merge candidates with the same cause, from any readers, keeping each
 trace. One cause often shows up at several places or through several lenses,
 such as one wrong error conversion that both misreports a failure and
 retires a shared connection: report it as one candidate with each effect's
-trace. A candidate you find yourself while reading, with a trace, joins the
-others here and goes to the challenger of the lens it belongs to. Every candidate with a trace goes to a fresh
+trace. Inspect cross-file seams, symmetric twin paths (`encode`/`decode`,
+`cache_key`, batch/reload) and `D -> H` state boundaries yourself for bugs the
+readers missed; a candidate you find yourself while reading, with a trace,
+joins the others here and goes to the challenger of the lens it belongs to. Every candidate with a trace goes to a fresh
 challenger, one per reader task; a merged candidate goes to only one of them.
 Give it the same materials, lens included, plus
 [the challenge](challenge.md), and for

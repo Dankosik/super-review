@@ -1,6 +1,6 @@
 ---
 name: defect-review
-description: "Use only for an explicitly requested Defect Review of Rust source to find bugs by reading, or help using that review."
+description: "Use only for an explicitly requested Defect Review of Go, TypeScript, Rust or Java source to find bugs by reading, or help using that review."
 ---
 
 For help, explain usage without acquiring source or launching agents. Run an

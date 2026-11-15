@@ -19,18 +19,22 @@ together?**
 On each async hot path, list the calls that can take long without yielding
 and the awaits that do not use each other's results.
 
-- Blocking call on the async executor: `std::fs`, `std::net`, a synchronous
-  database or HTTP client, `std::thread::sleep`, `block_on` inside async
-  code, a blocking channel receive; hashing, compression, serialization or
-  parsing of large inputs inline.
+- Blocking call on an async executor, event loop or non-blocking scheduler:
+  `std::fs`, `std::net`, Node `*Sync` I/O or synchronous crypto/compression,
+  blocking JDBC/HTTP on a reactive thread, virtual-thread carrier pinning on
+  older runtimes, `std::thread::sleep`, `block_on` inside async code, or
+  parsing/serializing large payloads inline on a shared event loop.
 - Sequential awaits for independent operations: two lookups awaited one
   after the other, a loop that awaits each item's request before sending the
-  next, where `join!`, `try_join!`, `JoinSet`, `FuturesUnordered` or
-  `buffer_unordered` would overlap them.
-- Lock held across `.await`: an async `Mutex` or `RwLock` guard alive across
-  a network call, so every caller queues behind one request's latency.
-- `spawn` per small item: a task per element for work smaller than the
-  spawn, or a task spawned and awaited at once.
+  next, where `join!`, `try_join!`, `JoinSet`, `FuturesUnordered`,
+  `buffer_unordered`, bounded `Promise.all`, `errgroup` or structured
+  concurrency would overlap them.
+- Lock held across `.await` or async suspension: an async `Mutex`, `RwLock` or
+  semaphore permit alive across a network call, so every caller queues behind
+  one request's latency.
+- Task or goroutine per tiny item: a spawned task, goroutine or virtual thread
+  per element for work smaller than scheduling it, or spawned and joined at
+  once.
 - `spawn_blocking` per element in a tight loop, where one blocking task for
   the batch would do.
 

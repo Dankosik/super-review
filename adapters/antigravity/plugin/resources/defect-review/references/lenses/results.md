@@ -28,9 +28,14 @@ what it returns.
 - A miss reported as an empty value or the reverse; a default returned where
   "none" was the answer.
 - A silent fallback (`unwrap_or_default`, `unwrap_or`, `let Some(..) = .. else
-  { return Ok(()); }`, or a wildcard `_` arm over an internal enum) turning a
-  missing entry, unexpected state or newly added variant into apparent success
-  or a zero/empty value while the intended effect never happened.
+  { return Ok(()); }`, `|| fallback`, `Optional.orElse`, or a wildcard arm over
+  an internal enum/union) turning a missing entry, unexpected state or newly
+  added variant into apparent success or a zero/empty value while the intended
+  effect never happened.
+- Asymmetric propagation across sibling paths: a new field, tenant/scope filter
+  or variant handled in `create` or single-item lookup while omitted from
+  `cache_key`, `clone`/`merge`, equality/hash, `reset`/`clear`, or the
+  batch/stream/reload path.
 - A helper whose name promises more than its body establishes (`validate`,
   `normalize`, `ensure`, `reset`), leaving callers relying on an unchecked
   field, unnormalized input or unperformed step.

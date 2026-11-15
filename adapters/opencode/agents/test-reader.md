@@ -1,5 +1,5 @@
 ---
-description: One assigned Test Review question on Rust source, by reading - a mistake no test would catch with the check that would, or a quoted rule.
+description: One assigned Test Review question on Go, TypeScript, Rust or Java source, by reading - a mistake no test would catch with the check that would, or a quoted rule.
 mode: subagent
 hidden: true
 permission:

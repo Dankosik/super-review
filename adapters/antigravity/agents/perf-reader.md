@@ -1,6 +1,6 @@
 ---
 name: perf-reader
-description: One assigned Performance Review lens or related pair on Rust hot paths during an explicit Performance Review.
+description: One assigned Performance Review lens or related pair on Go, TypeScript, Rust or Java hot paths during an explicit Performance Review.
 tools: [view_file, grep_search]
 mainAgent: false
 subagent: true

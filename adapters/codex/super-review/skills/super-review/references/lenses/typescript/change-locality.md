@@ -18,5 +18,7 @@ When moving declarations or exports, inspect import cycles, runtime module evalu
 package exports, and type-only consumers implicated by the move. A barrel can be a
 useful public boundary or an extra indirection; it is not automatically wrong.
 Explain the specific future edit already implied by existing code that becomes
-more local. The evidence is existing code, and the claim is locality rather than
+more local — including symmetric `encode`/`decode`, cache-key, reset, single vs
+batch, or rolling **D**-to-**H** schema twins where a new property or union
+member otherwise relies on manual search across unlinked sites. The evidence is existing code, and the claim is locality rather than
 performance.

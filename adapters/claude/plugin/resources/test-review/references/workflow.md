@@ -23,7 +23,10 @@ List the target packages, their tests (unit test modules, integration
 targets, doc tests, helpers) and the production code those tests protect.
 Note which tests the project's own test command does not run. Locate the
 documents that describe the behavior and the team's rule documents for
-tests. Every specialist gets the same list.
+tests. Every specialist gets the same list. Read-only semantic navigation
+(LSP references and implementations, `ast-grep`, or existing symbol indexes)
+may locate callers, trait/interface implementations and reaching tests; read
+the located declarations and test bodies in full before citing them.
 
 ## Questions
 
@@ -36,23 +39,34 @@ tests. Every specialist gets the same list.
 | [team-rules](questions/team-rules.md) | Do the tests follow the checkable rules the team wrote for them? | Located rules for test code. |
 
 Select every question whose signal is present, and say which were left out
-and why. One question per specialist; split a large scope by package. A
-package with no tests at all is reported as such and needs no mutants.
+and why. One question per specialist; partition mixed-language scopes by
+language, and split a large scope along vertical call spines (entry, domain and
+store together with the tests that drive them) rather than horizontal directory
+layers, following calls across partition boundaries when checking reachability.
+A package with no tests at all is reported as such and needs no mutants.
 
 ## Specialists
 
 Start each specialist in a fresh context with nothing from this conversation
 or from other specialists. Give it the target and revision, one question,
-the exact packages and files, the located sources, and the paths of the
-contract, its question, the [language context](languages/rust.md) and the
+the exact packages and files, for a change review the diff with its removed
+merge-base lines when specialists lack Git or shell access, the located sources,
+and the paths of the contract, its question, the matching language context
+([Go](languages/go.md), [TypeScript](languages/typescript.md),
+[Rust](languages/rust.md) or [Java](languages/java.md)) and the
 [result format](../assets/finding-template.md). Never give it an expected
 gap or a suggested mutant.
 
-Run up to eight agents at once unless the user sets another limit.
+Run up to eight agents at once unless the user sets another limit, honoring any
+explicit user specialist model or effort override through supported native
+configuration.
 
 ## Decide
 
-You own the decision on every candidate.
+You own the decision on every candidate, and you also probe cross-seam promises
+(symmetric counterpart operations and `D -> H` persisted or wire compatibility
+across shards) that no single specialist saw end to end, applying the same
+four-part bar to any gap you find yourself.
 
 - **The promise** is verbatim, is a promise under the contract, and is read
   plainly.

@@ -1,121 +1,111 @@
 # Verify recommendations
 
-The orchestrator owns final acceptance; specialists supply evidence-backed
-observations. A candidate is a claim to test, not a draft to forward. Answer for
-each accepted recommendation as if you wrote it: you understand from source why it
-holds and would make that edit yourself, and every decision row carries its own
-reason. Agreement between agents, self-reported confidence, routing signals and
-pattern names are leads to check, never evidence. Apply the [contract's judgment bar](review-contract.md#judgment-and-acceptance)
-to every candidate, including your own, across base lenses, conditional lenses,
-and profiles. A profile cannot revive a disabled or conflicting owner rule.
+**Own every acceptance.** The orchestrator owns final acceptance while
+specialists supply evidence-backed observations: treat every candidate
+(including your own, across base lenses, conditional lenses, and profiles) as a
+claim to test under the [contract's judgment bar](review-contract.md#judgment-and-acceptance),
+answering for each accepted change as if you wrote it yourself and giving every
+decision row its own source-backed reason. Agent agreement, self-reported
+confidence, routing signals, and pattern names are leads to check, never
+evidence, and a profile never revives a disabled or conflicting owner rule.
+Resolve snapshot, scope, policy, and instruction identity from the task header
+first (resolving conflicting material through installed resources rather than
+assuming matching version labels mean matching text), reuse complete matching
+source already in context, fetch missing changed declarations, **D**-side
+comparisons, and cited uses instead of rereading everything, and verify the link
+to assigned scope, effective rule, and concrete burden (explicit team
+consistency is a valid, separately stated basis; disguised bug reports and
+imagined future requirements are outside scope). When specialists return a large
+batch of candidates, group and verify them by owning module or vertical call
+spine rather than scanning a flat list end to end: holding one spine's full
+declarations in view prevents late-list rubber-stamping and surfaces shared root
+causes immediately.
 
-Use the task header to resolve snapshot, scope, policy and instruction identity
-under the contract before judging a block. Resolve conflicting material rather
-than assuming matching version labels mean matching text. Read its changed declaration, comparison at D when needed, and cited uses. Reuse
-complete matching source already in your context; fetch missing evidence instead
-of rereading everything. Verify the link to the assigned scope, the effective rule, and the
-concrete burden, not merely that the code exists. A disguised bug report or an
-imagined future requirement is outside scope; explicit team consistency is a
-valid, separately stated basis.
+**Verify the anchor against pinned bytes.** Validate location independently of
+quality under [source-access rules](harnesses/source-access.md#file-boundaries-and-source-anchors):
+match path, old/new side (**H**/new paths for surviving code, **D**/old paths
+for deleted comparison evidence, preserved path mappings for renames, and the
+selected index/worktree view rather than `HEAD` alone for local changes),
+containing symbol, enclosing context for repeated snippets, and exact source
+line range — never diff hunk offsets, a moving branch, or treating a removed
+declaration as code still present at **H**. Repair a wrong line or stale path
+from already-supplied matching bytes (without another full scan) when the same
+observation holds at a verified location; cite verified path, symbol, and
+distinguishing source span without guessing when line numbers are unavailable;
+and retain an unverified expression or association as an explicit gap outside
+implementation advice, without turning a positioning failure into either
+acceptance of an unsupported claim or rejection of a separately supported
+burden.
 
-Check location independently of quality. Validate each anchor against its declared
-endpoint under [source-access rules](harnesses/source-access.md#file-boundaries-and-source-anchors):
-path, old/new side, symbol and any supplied line range must match that snapshot.
-Match the cited expression to the pinned file and containing symbol before using
-its line range. Diff positions and hunk offsets are not source line numbers.
-Repeated snippets need enclosing context, not the first textual match. Use H/new
-paths for surviving code and D/old paths for deleted comparison evidence; never
-relocate a claim to a moving branch. For deletions inspect old-side evidence; for
-renames preserve the path mapping. Local evidence must match the selected
-index/worktree view, not just HEAD. A removed declaration may explain a change,
-but is not code still present at H.
+**Trace the factual premise.** Trace the relevant construction, branch, and
+source-supported countercase in the explanation — whether named fields can
+coexist, whether the operation adds or removes data, whether a guarantee is
+enforced by the type or only by current control flow, and what effective state
+callers observe versus raw stored values (bounded evidence for the
+recommendation, not a program-wide correctness audit). Narrow an overstated
+explanation when the concrete maintenance burden survives; an accurate remedy
+never makes an inaccurate premise acceptable.
 
-Repair a wrong line or stale path when the same observation is supported at a
-verified location. If only line numbering is unavailable, a verified path, symbol
-and distinguishing source span are sufficient; omit the line rather than guess.
-If the cited expression or its association remains unverified, retain that exact
-gap outside implementation advice. Do not turn a positioning failure into either
-acceptance of an unsupported claim or rejection of a separately supported burden.
-This uses already supplied matching bytes, not another full scan.
+**Separate observation from remedy.** Decide two independent questions: *is the
+observation supported?* and *is the remedy ready for implementation?* Repair an
+inaccurate proposed name or overbuilt remedy rather than discarding its
+supported observation, and choose decisively between supported alternatives with
+a stated engineering reason (accepting with a stated risk is not a decision, and
+the observation's main point is never an optional part of its remedy). Leave a
+supported observation `unresolved` (with its specific gap and no implementation
+instruction) only when settling the remedy requires a fact source cannot supply
+— external consumer, product intent, or unrecorded team preference, naming that
+fact — or would change a behavioral decision under the contract; reject an
+unsupported observation or leave it `unresolved` pending identified source.
+Judge caller and implementation together at the candidate's actual scope: reject
+for insufficient benefit only with a source-specific tradeoff (never merely
+because a name, type, helper, or signature changes), and fix shared underlying
+causes under [Aim for the best version](#aim-for-the-best-version) rather than
+justifying a redesign by piling up unrelated tweaks.
 
-Check the factual relationship in the explanation, not just its source location.
-Trace the relevant construction or branch and a source-supported countercase:
-can the named fields coexist, does this operation add or remove data, and is a
-guarantee enforced by the type or only by the current control flow? Distinguish
-raw stored values from the effective state callers can observe. Correct an
-overstated explanation when the narrower maintenance burden survives; an accurate
-remedy does not make an inaccurate premise acceptable. This is bounded evidence
-for the recommendation, not a new correctness audit of the program.
+**Check preservation, project checks, and existing owners.** Inspect the
+preservation constraints implicated by the transformation under
+[language routing](languages.md) — exact supported operation/signature, accepted
+inputs, error identity and which error surfaces first, effects, API/type
+contracts, ownership/mutation, cancellation and drop timing, time precision,
+wire or stored bytes, and absence — keeping each language's rules scoped to its
+own context: Go, TypeScript (including type inference and emitted module
+behavior), Rust (trait/auto-trait contracts, ownership, eager/lazy evaluation,
+and guard/drop lifetimes), and Java (null/absence, overload/override and generic
+signatures, mutability, evaluation timing, exception causes, and resource or
+framework/proxy ownership). Never infer equivalence from a happy-path example or
+empty literal search, and claim no tested equivalence; narrow or keep
+`unresolved` any advice needing a newer API or unsettled compatibility fact.
+Before accepting a candidate (or rewriting/adding one of your own), check from
+read-only source:
 
-Separate two decisions: is the observation supported, and is the remedy ready
-for implementation? A sound observation with an unsupported remedy survives as
-`unresolved`, with its specific gap, unless a revised supported remedy resolves
-it. An inaccurate proposed name or overbuilt remedy is a reason to repair that
-proposal, not discard its supported observation. Choosing between supported
-alternatives is your engineering decision: choose and say why. Leave a remedy
-unresolved only for a fact the source cannot supply, such as an external consumer,
-product intent or a team preference no rule records, and name that fact, or for a
-changed decision under the contract. Accepting with a stated risk is not a
-decision, and the observation's main point is never an optional part of its
-remedy. An unsupported observation is rejected or left unresolved pending
-identified source.
-
-Apply the contract's quality and compatibility criteria to caller and
-implementation together. Make the decision at the candidate's actual scope:
-collecting local improvements does not by itself justify a redesign; a cause they
-jointly show is fixed under [Aim for the best version](#aim-for-the-best-version).
-A rejection for insufficient benefit needs a source-specific tradeoff, not just
-the presence of a new name, type, helper, or changed signature. Accept a sufficient
-improvement, revise the remedy, or retain the exact missing fact.
-
-Inspect only the preservation constraints implicated by that transformation,
-using the matching context from [language routing](languages.md): exact supported
-operation/signature, accepted inputs, error identity and which error surfaces
-first, effects, API/type contracts, ownership/mutation, cancellation and drop
-timing, time precision, wire or stored bytes, and absence. Keep Go, TypeScript, Rust, and Java preservation rules scoped
-to their own language; account for TypeScript inference and emitted module behavior.
-For Rust, inspect implicated trait/auto-trait contracts, ownership, eager/lazy
-evaluation and guard/drop lifetimes under the selected language context.
-For Java, inspect implicated null/absence, overload/override and generic
-signatures, mutability, evaluation timing, exception causes and resource or
-framework/proxy ownership under the selected language context.
-Do not infer equivalence from a happy-path example or empty literal search;
-read locally available standard-library or lockfile-resolved dependency source
-under [source-access rules](harnesses/source-access.md#file-boundaries-and-source-anchors)
-when a boundary detail depends on what an external callee actually does.
-Before accepting, read whether the resulting code would pass the project's lint
-policy (such as `clippy.toml`, `[lints]` or crate-level `deny`) and the other
-checks its CI or build files run, such as a duplication baseline, generated or
-template-region markers and documentation checks; read them, never run them.
-Also read every use of a changed type or name including excluded tests, name
-collisions, and code left dead once optional regions are removed. A remedy that
-introduces a type, helper or constant needs a search of the snapshot for an
-existing owner: reuse it or say why a new one is needed. Repair or reject a
-remedy that fails. The same search applies to code the change itself writes by
-hand — standalone helpers, single-purpose wrapper or guard types, manual trait
-or interface impls, and boundary glue or re-derivations around standard or
-imported types: an owner that already exists in the snapshot, the standard
-library or a declared dependency makes it a candidate under existing-helpers,
-including handing over the generic part of a mechanism while keeping the
-application's own domain or protocol rule. When a plausible library replacement
-differs on a boundary that callers rely on so the custom code stays, check
-whether rationale records that constraint.
-
-The target's own history is evidence too. When the history of the target files
-shows that a name or shape was introduced recently, changing it again needs a
-burden that name or shape causes, not a preference; leave specialists unaware
-of that history.
-
-Narrow advice that needs a newer API or a compatibility fact local source
-cannot settle, or keep it unresolved; verification reads source and claims no
-tested equivalence.
-
-A clarity change may change what callers, operators or logs observe: error text,
-a public variant, a runtime check a type now makes redundant. Accept it when that
-clarity is the benefit, and state the effect in the recommendation. Merging copies
-that diverged selects one behavior; name the choice. A changed decision stays
-unresolved under the contract. A precondition the specialist set for its remedy
-travels into the recommendation, or the remedy stays unresolved.
+- **External boundary behavior:** read locally available standard-library or
+  lockfile-resolved dependency source under
+  [source-access rules](harnesses/source-access.md#file-boundaries-and-source-anchors)
+  whenever a boundary detail depends on what an external callee actually does.
+- **Committed project checks:** read whether the resulting code passes the
+  project's lint policy (`clippy.toml`, `[lints]`, crate-level `deny`),
+  duplication baselines, generated or template-region markers, and doc/CI/build
+  checks — read them, never run them.
+- **Every affected use:** read every use of a changed type or name (including
+  excluded tests), name collisions, and code left dead once optional regions
+  are removed; repair or reject a remedy that breaks them.
+- **Existing owners:** search the snapshot, standard library, and declared
+  dependencies whenever a remedy introduces a type, helper, or constant — or
+  whenever the target code itself hand-writes standalone helpers, single-purpose
+  wrapper/guard types, manual trait/interface impls, or boundary glue around
+  standard/imported types — reusing an existing owner (or handing over generic
+  mechanics under `existing-helpers` while keeping application domain/protocol
+  rules), explaining why a new owner is needed, or checking `rationale` when a
+  boundary difference requires keeping custom code.
+- **Target history and observable effects:** when target file history shows a
+  name or shape was introduced recently, require a burden that name or shape
+  causes rather than preference (keeping specialists unaware of that history).
+  Accept clarity changes that alter what callers, operators, or logs observe
+  (error text, a public variant, a runtime check a type makes redundant, or the
+  chosen behavior when merging diverged copies) when that clarity is the
+  benefit, stating the effect and any specialist precondition in the
+  recommendation, or keep the remedy `unresolved`.
 
 | Disposition | Record |
 | --- | --- |
@@ -139,7 +129,9 @@ better one. Where several touch the same code, design it once. When they share a
 cause, fix the cause. Watch especially for clean over-decomposition that passed
 specialist smell checks piecemeal: tidy pass-through helpers, hypothetical
 single-adapter seams, intermediate DTOs and defensive ceremony that vanish when
-the operation is written directly. Then picture the code with every accepted
+the operation is written directly, as well as cross-seam scattering across
+partition boundaries (symmetric `encode`/`decode`, cache-key, reset or batch
+twins and **D**-to-**H** format shims that no single shard saw together). Then picture the code with every accepted
 recommendation applied and ask whether you would be proud to have written it. If
 not, finish the job: what is still missing becomes your own candidate under the
 same bar. A remedy you rewrite or add passes the same preservation, lint and

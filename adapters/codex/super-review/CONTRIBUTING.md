@@ -57,12 +57,20 @@ Codex, Claude, Cursor and Antigravity install trees are generated. Edit canonica
 adapter templates, then rebuild; do not edit delivery copies. Version 3 ships no
 custom source-reader runtime. Use native host tools in review instructions.
 
-An instruction-maintenance PR is not permission to publish a release or change
-another repository. For an explicitly authorized release, verify the exact commit,
-publish its tag and packages, and
-update Super Review's version/SHA in the author marketplace's catalog.json.
-Run that repository's catalog generator and remote identity checks, then publish
-its updated pin. A GitHub release alone does not update marketplace consumers.
+## Release
+
+An instruction-maintenance PR is not permission to publish a release, push tags,
+or change another repository.
+
+For an explicitly authorized release, push the `v<version>` tag on the exact
+merged `main` commit: the `release` job in `.github/workflows/validate.yml`
+packages that tag and creates the GitHub release itself, and fails if one
+already exists. Releases are immutable: a tag whose release was published once
+can never carry another, even after that release is deleted, so a broken
+release needs a new version. Wait for that job to succeed, then update Super
+Review's tag and commit SHA in the author marketplace's `catalog.json`, run
+that repository's catalog generator and remote identity checks, and publish the
+updated pin. A GitHub release alone does not update marketplace consumers.
 
 Do not publish credentials or private source in evaluation logs. Review code
 only when authorized, and do not post reviews to other people's PRs.

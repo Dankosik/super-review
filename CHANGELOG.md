@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.34.0 — 2026-11-15
+
+Expand Defect Review 0.15.0, Test Review 0.14.0, and Performance Review 0.8.0 to Go, TypeScript, Rust, and Java alongside Super Review 3.34.0, close cross-seam and rolling-deploy blind spots across all four skills, and tighten entrypoint activation and orchestration structure while keeping all 56 stable rule IDs unchanged.
+
+- **Four-language review family (`Go`, `TypeScript`, `Rust`, `Java`).** `defect-review`, `test-review`, and `perf-review` add dedicated Go, TypeScript, and Java language contexts alongside Rust, update contracts, lenses, workflows, `openai.yaml` prompts, and native Claude Code, Codex, OpenCode, and Antigravity role descriptions, and preserve strict per-skill contract isolation.
+- **Cross-seam, twin-propagation, and `D -> H` compatibility coverage.** Workflows shard large scopes along vertical call spines (`entry -> domain -> store`), add an active orchestrator cross-seam pass before challenge/decision, group large candidate batches by spine during Super Review verification, supply `D..H` removed merge-base lines and out-of-workspace lockfile dependency excerpts to shell-less subagents (`Antigravity`, `Cursor`), and allow read-only semantic navigation (`LSP`, `ast-grep`, symbol indexes). Contracts and lenses check asymmetric updates across unlinked twins (`encode`/`decode`, `cache_key`, `clone`/`reset`, single vs batch) and rolling `D -> H` state-in-flight payloads (plus `H -> H` round-trip tests that omit literal `D` fixtures). Adds the twelve-case evaluator-isolated `evals/agent-patterns` corpus (`AP01`–`AP12`).
+- **Explicit activation and co-located orchestration.** Canonical `SKILL.md` entrypoints declare `disable-model-invocation: true` with single-sentence trigger descriptions aligned with `openai.yaml` and native adapter routes, placing `help` and missing-target stops ahead of adapter selection. Super Review orchestration and verification front-load leading terms, anchor `B`/`H`/`D` to standard Git endpoints, co-locate `task coverage` versus `candidate disposition`, move `#compact-pairs` behind a pointer, and codify the read-only pre-acceptance source checklist; `AGENTS.md` and `CONTRIBUTING.md` document authoring and immutable tag-release rules.
+
+Package, native configuration, and fixture checks pass; behavioral model comparison remains NOT RUN.
+
 ## 3.33.0 — 2026-11-15
 
 Tighten instruction clarity, trust boundaries, and structural judgment across Super Review 3.33.0, Defect Review 0.14.0, Test Review 0.13.0, and Performance Review 0.7.0 so reviewers verify internal claims and test designs against their direct idiomatic forms rather than trusting clean-looking surfaces.

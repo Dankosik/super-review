@@ -1,9 +1,9 @@
 # Google Antigravity
 
 The native plugin provides `/super-review`, `/defect-review`, `/test-review` and
-`/perf-review` in the Antigravity App and CLI. Super Review covers Go, TypeScript,
-Rust and Java readability; the other three skills cover Rust bugs, tests and
-performance respectively. Each keeps its own contract and report format.
+`/perf-review` in the Antigravity App and CLI. All four skills cover Go,
+TypeScript, Rust and Java: readability, bugs, tests and performance
+respectively. Each keeps its own contract and report format.
 
 ## Install
 

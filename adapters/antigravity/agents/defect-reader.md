@@ -1,6 +1,6 @@
 ---
 name: defect-reader
-description: One assigned Defect Review lens or related pair on Rust source during an explicit Defect Review.
+description: One assigned Defect Review lens or related pair on Go, TypeScript, Rust or Java source during an explicit Defect Review.
 tools: [view_file, grep_search]
 mainAgent: false
 subagent: true

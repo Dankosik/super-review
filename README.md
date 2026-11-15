@@ -39,9 +39,9 @@ comments on your PR.
 | Review | Question it answers | Languages |
 | --- | --- | --- |
 | **Super Review** | Is this code easy to read and safe to change? | Go, TypeScript, Rust, Java |
-| **[Defect Review](#defect-review-experimental-rust)** · experimental | Where is the bug, and can you trace it through the code? | Rust |
-| **[Test Review](#test-review-experimental-rust)** · experimental | Would the tests fail if a plausible bug appeared? | Rust |
-| **[Performance Review](#performance-review-experimental-rust)** · experimental | Where does a hot path do work it does not need? | Rust |
+| **[Defect Review](#defect-review-experimental)** · experimental | Where is the bug, and can you trace it through the code? | Go, TypeScript, Rust, Java |
+| **[Test Review](#test-review-experimental)** · experimental | Would the tests fail if a plausible bug appeared? | Go, TypeScript, Rust, Java |
+| **[Performance Review](#performance-review-experimental)** · experimental | Where does a hot path do work it does not need? | Go, TypeScript, Rust, Java |
 
 The four share no policy. A readability review never reports bugs, a bug
 hunt never comments on style, and slow code is not a bug.
@@ -234,9 +234,9 @@ rule IDs are stable across version 3.
 See [the team-rules contract](skills/super-review/references/team-rules.md)
 and [an example](examples/team-rules/SUPER_REVIEW.md).
 
-## Defect Review (experimental, Rust)
+## Defect Review (experimental)
 
-A separate skill in the same plugin hunts bugs in Rust.
+A separate skill in the same plugin hunts bugs in Go, TypeScript, Rust and Java.
 
 ```text
 /super-review:defects Review crates/infra-cache in the current project.
@@ -262,12 +262,14 @@ source itself and tries to show it is not a bug. When the behavior is a
 deliberate choice whose stated reason holds, the finding is reported as
 disputed, with the cost and the decision side by side.
 
-Rust only, in Claude Code, Codex, OpenCode and Antigravity. See [the design](docs/defect-review.md)
+Available in Claude Code, Codex, OpenCode and Antigravity for Go, TypeScript,
+Rust and Java. See [the design](docs/defect-review.md)
 and [the contract](skills/defect-review/references/contract.md).
 
-## Test Review (experimental, Rust)
+## Test Review (experimental)
 
-A third skill asks whether your tests would fail if a plausible bug appeared.
+A third skill asks whether your Go, TypeScript, Rust or Java tests would fail if
+a plausible bug appeared.
 
 ```text
 /super-review:tests Review the tests of crates/infra-cache in the current project.
@@ -287,14 +289,15 @@ A test that breaks a written team rule for tests, such as a fixed sleep where
 the rule asks for synchronization, is shown by quoting both. Mutants your tests
 catch are counted, not reported, and the review says what it did not probe.
 
-It does not build or run your tests, so it is not a mutation-score tool. Rust
-only, in Claude Code, Codex, OpenCode and Antigravity. See [the design](docs/test-review.md)
+It does not build or run your tests, so it is not a mutation-score tool.
+Available in Claude Code, Codex, OpenCode and Antigravity for Go, TypeScript,
+Rust and Java. See [the design](docs/test-review.md)
 and [the contract](skills/test-review/references/contract.md).
 
-## Performance Review (experimental, Rust)
+## Performance Review (experimental)
 
-A fourth skill finds work your Rust code does not need on paths that run
-often.
+A fourth skill finds work your Go, TypeScript, Rust or Java code does not need
+on paths that run often.
 
 ```text
 /super-review:perf Review the request path of crates/api in the current project.
@@ -333,8 +336,8 @@ faster hasher over the same key, the cost of one operation on each side and
 its basis. The report ends by asking whoever applies a
 finding to check those counts first, then to measure time where the saving
 is time, a benchmark for CPU and load at production concurrency for
-contention, and to keep the change only if the gain shows. Rust only, in Claude
-Code, Codex, OpenCode and Antigravity. See
+contention, and to keep the change only if the gain shows. Available in Claude
+Code, Codex, OpenCode and Antigravity for Go, TypeScript, Rust and Java. See
 [the design](docs/review-family.md#how-performance-review-shows-a-cost) and
 [the contract](skills/perf-review/references/contract.md).
 
@@ -352,10 +355,10 @@ project, run its checks or benchmarks, or post comments on a PR.
 <summary><b>Does it find bugs or security issues?</b></summary>
 
 Super Review does not: it assesses readability and maintainability only, not
-bugs, security, product requirements or test coverage. For bugs in Rust, use
-the experimental [Defect Review](#defect-review-experimental-rust); for gaps
-in Rust tests, [Test Review](#test-review-experimental-rust); for unneeded
-work on Rust hot paths, [Performance Review](#performance-review-experimental-rust).
+bugs, security, product requirements or test coverage. For bugs, use the
+experimental [Defect Review](#defect-review-experimental); for gaps in tests,
+[Test Review](#test-review-experimental); for unneeded work on hot paths,
+[Performance Review](#performance-review-experimental).
 
 </details>
 
@@ -371,8 +374,9 @@ is tested to be equivalent.
 <details>
 <summary><b>Which languages and file types are supported?</b></summary>
 
-Go, TypeScript/TSX, Rust and Java for Super Review; Rust for Defect Review,
-Test Review and Performance Review. Tests, generated and vendored code are excluded from
+Go, TypeScript/TSX, Rust and Java across all four reviews (Cursor ships
+Super Review only; Claude Code, Codex, OpenCode and Antigravity ship all four).
+Tests, generated and vendored code are excluded from
 Super Review. JavaScript/JSX, CSS and MDX are not standalone targets.
 
 </details>

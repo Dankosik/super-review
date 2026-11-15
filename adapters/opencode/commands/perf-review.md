@@ -1,5 +1,5 @@
 ---
-description: Find work that Rust source of a PR or local tree does not need on its hot paths, by reading it, with Performance Review.
+description: Find work that Go, TypeScript, Rust or Java source of a PR or local tree does not need on its hot paths, by reading it, with Performance Review.
 agent: perf-review
 subtask: false
 ---

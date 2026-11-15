@@ -34,7 +34,13 @@ what should be accepted with what the code accepts, in both directions.
 - A narrowing cast or saturating arithmetic where refusal was the answer.
 - An unknown field or variant accepted where it must be refused, or refused
   where forward compatibility needs it.
-- Written with one encoding, key format or escaping and read with another.
+- Written with one encoding, key format or escaping and read with another, or
+  changed on `encode`/`Serialize`/writer without updating `decode`/`Deserialize`/reader.
+- Breaking state in flight across a change (`D -> H`): a persisted row, cached
+  value, queued job, cursor token or wire message written by the base commit `D`
+  that fails or changes meaning when read by `H` (renamed variant/field without
+  alias, optional field made required without default, changed cache-key inputs
+  sharing the old key prefix, reordered positional fields).
 - The body read before its size is compared; the list built before its
   length is checked.
 - A second, unvalidated entry to the same code.

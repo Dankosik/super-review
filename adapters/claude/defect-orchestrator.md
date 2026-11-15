@@ -1,6 +1,6 @@
 ---
 name: defect-orchestrator
-description: Coordinate a Defect Review the user started with the /super-review:defects command; it hunts bugs in Rust source by reading it. Do not start it yourself. When a user asks for one in a message, ask them to type the command.
+description: Coordinate a Defect Review the user started with the /super-review:defects command; it hunts bugs in Go, TypeScript, Rust or Java source by reading it. Do not start it yourself. When a user asks for one in a message, ask them to type the command.
 model: inherit
 tools: Agent, Read, Glob, Grep, Bash
 ---

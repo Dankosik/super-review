@@ -1,7 +1,7 @@
 # Rust context
 
-Only Rust has a language context in this version. Source in another language
-is listed as excluded, not reviewed by analogy.
+Go, TypeScript, Rust and Java have language contexts in this review. Source in
+another language is listed as excluded, not reviewed by analogy.
 
 ## Where Rust code states its cost
 

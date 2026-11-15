@@ -33,7 +33,10 @@ variant or field. Keep the wildcard for a foreign or `#[non_exhaustive]` type
 and for a remainder that is uniform by intent, and the default fill where new
 fields should stay invisible to that caller. Likewise, a set of strings or
 integers the crate defines and compares in several modules becomes one visible
-set as an enum.
+set as an enum, and symmetric twin operations (`encode`/`decode`, `cache_key`,
+`reset`, single and batch builders, or **D**-to-**H** wire/storage readers)
+benefit from one shared field list or destructuring witness so a new field
+cannot miss its counterpart silently.
 
 Conditional platform or feature implementations may deliberately have parallel
 shapes without coexisting. Preserve that distinction and public paths/re-exports.

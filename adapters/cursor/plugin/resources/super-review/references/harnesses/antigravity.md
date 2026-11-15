@@ -13,9 +13,11 @@ history nor peer reports. Use the shared concurrency policy within host slots.
 
 The role permits only `view_file` and `grep_search`, with no shell, writing,
 delegation or MCP servers configured. The parent handles source acquisition
-through read-only native tools. Supply pinned revision contents when children
-cannot access them directly; inaccessible source remains a coverage gap.
-Even if the parent has more tools, review authority stays read-only.
+through read-only native tools. Supply pinned revision contents, the **D**-to-**H**
+diff with removed **D**-side lines, and any needed out-of-workspace lockfile
+dependency excerpts when children cannot access them directly; inaccessible
+source remains a coverage gap. Even if the parent has more tools, review
+authority stays read-only.
 
 ## Specialist model
 

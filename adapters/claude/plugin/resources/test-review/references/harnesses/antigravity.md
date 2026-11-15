@@ -9,8 +9,10 @@ Run within the workflow's concurrency limit and available host slots.
 The role allows only `view_file` and `grep_search`: no shell, writing or
 delegation tools or MCP servers are configured. The parent acquires source
 read-only as the workflow allows, without cloning, copying or checking out the
-project. Give children revision-specific contents where their tools cannot read
-the selected commit; unavailable source is unread coverage. Mutants remain text.
+project. Give children revision-specific contents, the change diff with removed
+merge-base lines, and any needed out-of-workspace lockfile dependency excerpts
+where their tools cannot read them directly; unavailable source is unread
+coverage. Mutants remain text.
 
 Use **Gemini 4 Hydrogen with High reasoning** (`gemini-4-hydrogen-high`) for
 every specialist, including retries and continuations, unless the user explicitly

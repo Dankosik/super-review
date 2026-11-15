@@ -28,8 +28,11 @@ Mutants that show most:
 - One promised outcome returned where another belongs: a hit for a stored
   empty value turned into a miss.
 - A validation or normalization moved after the effect it guards, or dropped
-  on a sibling entry point (`reload` beside `load`, `try_from` beside
-  `from_str`, batch beside single).
+  on a symmetric sibling entry point (`decode` beside `encode`, `reload` beside
+  `load`, `try_from` beside `from_str`, batch beside single).
+- A persisted, cached, queued or rolling-deploy format reader rejecting or
+  misreading prior-revision (`D`) payloads because every test only round-trips
+  freshly written `H -> H` data instead of feeding a literal `D` payload.
 - The return value kept and the side effect dropped, doubled or relabelled.
 
 Put the mutant where the code makes the decision the promise is about, not

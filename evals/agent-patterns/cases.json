@@ -1,0 +1,123 @@
+{
+  "kind": "evaluator-only",
+  "status": "NOT RUN",
+  "baseline_revision": "1f03b66e6cb00cc8d200372ee52c728fb68edab6",
+  "contrast_pairs": [
+    ["AP01", "AP02"],
+    ["AP03", "AP04"],
+    ["AP05", "AP06"],
+    ["AP07", "AP08"],
+    ["AP09", "AP10"],
+    ["AP11", "AP12"]
+  ],
+  "cases": [
+    {
+      "id": "AP01",
+      "polarity": "report",
+      "decision": "single-implementation interface and pass-through DTO ceremony collapsed",
+      "checks": [
+        "Reports unnecessary single-implementation SubtotalCalculator/DefaultSubtotalCalculator and pass-through SubtotalDto ceremony inside src/pricing/total.ts",
+        "Recommends computing the subtotal directly inside orderTotalCents while preserving exact integer rounding"
+      ]
+    },
+    {
+      "id": "AP02",
+      "polarity": "retain",
+      "decision": "multi-implementation gateway boundary retained",
+      "checks": [
+        "Retains PaymentGateway because both StripeGateway and CreditLedgerGateway implement it with distinct external client contracts",
+        "Does not recommend collapsing PaymentGateway into collectInvoice"
+      ]
+    },
+    {
+      "id": "AP03",
+      "polarity": "report",
+      "decision": "unlinked symmetric field projections localized",
+      "checks": [
+        "Identifies coordinated manual field projection across Session::encode and cache::session_key (and Session::reset)",
+        "Recommends a single canonical projection or exhaustive destructuring witness so adding a field cannot miss its twin silently"
+      ]
+    },
+    {
+      "id": "AP04",
+      "polarity": "retain",
+      "decision": "exhaustive destructuring witness already links symmetric twins",
+      "checks": [
+        "Recognizes that Session::canonical_parts uses exhaustive struct destructuring shared by encode and session_key",
+        "Retains the layout without inventing further abstraction"
+      ]
+    },
+    {
+      "id": "AP05",
+      "polarity": "report",
+      "decision": "rolling D -> H session decode breaks live persisted sessions",
+      "checks": [
+        "Traces a pre-change D Redis JSON payload {\"user_id\":\"u1\"} (no region key) into H Decode",
+        "Shows s.Region == \"\" triggers \"invalid session\" and logs out active users contrary to docs/deploy.md"
+      ]
+    },
+    {
+      "id": "AP06",
+      "polarity": "retain",
+      "decision": "rolling D -> H session decode defaults legacy region cleanly",
+      "checks": [
+        "Verifies that legacy D payloads missing region receive \"us-east-1\" per docs/deploy.md while empty user_id still fails",
+        "Reports no rolling-compatibility bug"
+      ]
+    },
+    {
+      "id": "AP07",
+      "polarity": "report",
+      "decision": "IOException collapsed to Optional.empty().orElse(0) misclassifies outage as quota exhaustion",
+      "checks": [
+        "Traces BillingRpc IOException -> QuotaClient.remainingUnits Optional.empty() -> QuotaGate.check .orElse(0) -> Decision.QUOTA_EXHAUSTED",
+        "Names the harm: backend RPC outage denies allowed accounts as quota-exhausted instead of Decision.SERVICE_UNAVAILABLE"
+      ]
+    },
+    {
+      "id": "AP08",
+      "polarity": "retain",
+      "decision": "documented best-effort decorative fallback with metric is not a bug",
+      "checks": [
+        "Verifies docs/ui.md specifies empty banner + failureCounter increment on PromoRpc IOException",
+        "Reports no bug"
+      ]
+    },
+    {
+      "id": "AP09",
+      "polarity": "report",
+      "decision": "H -> H round-trip test leaves legacy v1 D -> H fallback unpinned",
+      "checks": [
+        "Quotes the JSDoc promise that legacy v1 payloads without currency default to \"USD\", plus removed v1 test line in diff",
+        "Supplies a mutant breaking data.currency ?? \"USD\" that survives codec.test.ts because serializeCart always writes \"EUR\", plus a literal v1 JSON witness"
+      ]
+    },
+    {
+      "id": "AP10",
+      "polarity": "retain",
+      "decision": "literal v1 fixture test pins legacy currency fallback",
+      "checks": [
+        "Finds \"defaults missing legacy v1 currency to USD\" kills a mutant on data.currency ?? \"USD\"",
+        "Reports no unpinned fallback finding"
+      ]
+    },
+    {
+      "id": "AP11",
+      "polarity": "report",
+      "decision": "per-request O(N*M + N^2) slices.Contains scans replaced by set lookups",
+      "checks": [
+        "Establishes ServeFeed as a per-request hot path from cmd/api/main.go http.HandleFunc",
+        "Traces slices.Contains(req.Blocked, ev) and slices.Contains(out, ev) inside the req.Events loop and sketches map[string]struct{} sets preserving output order"
+      ]
+    },
+    {
+      "id": "AP12",
+      "polarity": "retain",
+      "decision": "one-shot startup deduplication over 4 constant routes is cold and bounded",
+      "checks": [
+        "Identifies DefaultRoutes as called once in main() before ListenAndServe over a 4-element builtin slice",
+        "Reports no hot-path complexity finding"
+      ]
+    }
+  ]
+}

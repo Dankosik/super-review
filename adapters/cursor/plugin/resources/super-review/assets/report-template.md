@@ -21,14 +21,15 @@ every R-ID is a recommendation.
 
 ## Context and status
 
-PR URL and B/H/D, or local root, review extent, selected view and both endpoint
-identities (commits, index blobs or working-file hashes); the branch of a local
-HEAD and, when it is not the default branch or is behind its upstream, the target
-files that differ; Super Review version; `complete` or `partial`; independent or
-explicitly limited sequential execution; specialist model/profile and reasoning
-effort when available. Include trusted instruction revision/digests when exposed,
-otherwise `content identity unverified`, as defined by the contract, apart from
-B/H/D. Explain actual identity/scope conflicts.
+PR URL and target/head/merge-base SHAs (**B**/**H**/**D**), or local root,
+review extent, selected view, and both endpoint identities (commits, index
+blobs, or working-file hashes); the branch of a local `HEAD` and, when it is not
+the default branch or is behind upstream, the target files that differ; Super
+Review version; `complete` or `partial`; independent or explicitly limited
+sequential execution; specialist model/profile and reasoning effort when
+available. Include trusted instruction revision/digests when exposed, otherwise
+`content identity unverified` under the contract (separate from **B**/**H**/**D**),
+and explain any actual identity or scope conflicts.
 
 ## Applied rules
 
@@ -47,11 +48,12 @@ and focused continuations without implying repeated full passes.
 | Area/files | Lens, profiles, task | Selection and actual execution | Reason or evidence |
 | --- | --- | --- | --- |
 
-A compact pair shows both lenses under one task, each with its own status.
-A profile-only task covers that question, not its whole owner. A failed selected
-profile makes that area partial even when the base pass finished. Content profiles
-are not model profiles. List excluded tests, generated/vendor/binary files and
-unsupported languages; never imply they were reviewed.
+A compact pair shows both lenses under one task, each with its own status. A
+profile-only task covers that profile question rather than its whole owner, and
+a failed selected profile makes that area partial even when the base pass
+finished. Keep aspect profiles (content questions) distinct from model profiles.
+List excluded tests, generated/vendor/binary files, and unsupported languages
+without implying they were reviewed.
 
 ## File map
 

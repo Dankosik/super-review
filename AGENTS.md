@@ -13,42 +13,36 @@ coordination in `references/workflow.md`, and result fields in `assets/`.
 Adapters own native tools, model selection and result collection, not a second
 review policy. Version 3 has no custom source-reader or result-store runtime.
 
-`skills/defect-review` and `skills/test-review` are separate skills, each
-with its own contract, lenses or questions, roles and version.
-Defect Review hunts bugs with independent readers and an independent
-challenge; Test Review asks whether the tests would fail if a plausible bug
-appeared. Like Super Review, both only read: no role clones, copies, builds
-or runs the reviewed project or holds a tool for writing files, and a
-finding is proven by a trace through quoted lines.
-[The family design](docs/review-family.md) records why. No skill depends on
-another at run time. Do not let one skill's criterion into another: a defect
-is not a readability finding, and a weak test is not a defect.
+`skills/defect-review`, `skills/test-review`, and `skills/perf-review` are
+separate read-only skills, each with its own contract, lenses or questions,
+roles, and version, and zero runtime cross-dependency. Read
+[the family design](docs/review-family.md) before changing boundaries, proof
+bars, or roles across the four skills. Keep each skill's criterion strictly
+isolated: a defect is not a readability finding, a weak test is not a defect,
+slow code is not a defect, and fast code that reads badly is not a performance
+finding.
 
-`skills/perf-review` is a third such skill. Performance Review finds work a
-Rust hot path does not need: a finding shows why the path runs often, traces
-the work for one unit through quoted lines, gives a cheaper form with the
-same behavior and names the resource it saves, and survives an independent
-challenge. It reads only, like the others; a profile or benchmark output the
-user supplies is evidence, and measuring a change is left to whoever applies
-it. Slow code is not a defect, and fast code that reads badly is not a
-performance finding.
+Settle the design before writing instructions, and do not treat a model run as
+a step in writing them; a review of a real repository is the maintainer's
+choice. Keep instructions short: state the bar and where burdens, bugs, waste,
+or test gaps live, and leave out procedure for recording the reviewer's own
+work.
 
-For these three skills, settle the design before writing instructions, and do
-not treat a model run as a step in writing them. Keep them short: state the
-bar and where bugs or gaps live, and leave out procedure for recording the
-reviewer's own work. A review of a real
-repository is the maintainer's choice.
-
-In every skill, say what an agent must achieve, not how to do what it can
-work out itself, such as reading a long file in full or searching the code.
-Spell out a step only when the agent cannot know it: a harness limit, the
-user's choice, a fact about the reviewed project.
+In every skill, state what an agent must achieve, not how to do what it can
+work out itself (reading a long file in full, searching the code). Spell out a
+step only when the agent cannot learn it by looking: a harness limit, the
+user's choice, a non-obvious tool gotcha, or a fact about the reviewed project.
+Front-load positive targets and pretrained leading words; reserve prohibitions
+for hard guardrails paired with what to do instead. Co-locate each concept in
+one authoritative place per recipient path, and disclose branch-only reference
+behind a context pointer so primary steps stay unburied.
 
 Give a lens a concrete question and a decision that can favor changing or
 retaining code. Keep technical preservation constraints, the eight base
-questions, stable rule IDs, independent recipients and configured model profiles.
-Repeat guidance only for an independent recipient or a distinct local implication.
-Generated install copies are delivery artifacts, not additional live context.
+questions, stable rule IDs, independent recipients, and configured model
+profiles. Repeat guidance only for an independent recipient or a distinct local
+implication. Generated install copies are delivery artifacts, not additional
+live context.
 
 Use the files relevant to the requested change; do not load the entire reference
 library or historical studies for every edit. Tool/role descriptions are
@@ -72,13 +66,7 @@ Add contrasting evaluation inputs for a changed decision, separate from grading
 expectations. Mechanical checks establish fixture/package integrity, not model
 quality. Record actual model/effort and raw failures as well as successes before
 claiming gains. Do not promote an experimental coverage/routing default without
-its behavioral comparison; context savings alone are insufficient. Publication,
-tags, marketplace updates and review comments need their own accepted scope.
-
-An accepted release ends at pushing the `v<version>` tag on the merged main
-commit: the `release` job in `.github/workflows/validate.yml` packages that tag
-and creates the GitHub release itself, and fails if one already exists. Releases
-are immutable: a tag whose release was published once can never carry another,
-even after that release is deleted, so a broken release needs a new version. Wait for
-that job, then pin the tag and its commit in the marketplace's `catalog.json`
-as [CONTRIBUTING.md](CONTRIBUTING.md) describes.
+its behavioral comparison; context savings alone are insufficient. Publication, tags, marketplace updates, and review comments need their own
+accepted scope. Published `v<version>` tags are immutable; read
+[the release rules](CONTRIBUTING.md#release) before tagging, releasing, or
+updating marketplace pins.

@@ -32,18 +32,21 @@ or buffer it initializes, find how much of it is read.
   `Borrow` implementation accepts a `&str`.
 - Allocation per iteration: a scratch `Vec`, `String` or map created inside
   the loop body where one outside the loop, cleared each pass, would serve.
-- Growth without capacity: pushes into a `Vec`, `String` or map whose final
-  length is known before the loop, paying repeated reallocation and copying.
+- Growth without capacity: pushes or appends into a `Vec`, `String`, Go
+  slice/map, `StringBuilder` or `ArrayList` whose final length is known before
+  the loop, paying repeated reallocation and copying.
 - Storage filled to its capacity and read to a length: `[EMPTY; N]` beside
   a count, `Box::new([0; N])` or `vec![0; n]` of which only `..len` is
   read. Every unit pays for all N slots, here and in each struct that
   holds such storage and is built per unit.
-- A collected `Vec` used once: `collect` only to iterate, take a length or
-  test emptiness.
-- Cross-seam repackaging: an intermediate `Vec`, map or owned wrapper struct
-  materialized only to cross an internal layer or module seam within one unit
-  and consumed once on the other side, where borrowing or passing the iterator
-  keeps the external contract.
+- A collected sequence used once: `collect`, `.toList()`, `Array.from` or
+  chained `.map().filter()` arrays materialized only to iterate, take a length
+  or test emptiness; Java primitive boxing (`Integer`, `Long`) or Go
+  `string([]byte)` conversions per element on a hot loop.
+- Cross-seam repackaging: an intermediate `Vec`, slice, array, `List`, map or
+  wrapper DTO materialized only to cross an internal layer or module seam
+  within one unit and consumed once on the other side, where borrowing, a view
+  or streaming keeps the external contract.
 - A value built only to measure it: serialized or formatted into a buffer
   to take its length, where the length follows from the parts.
 - A copy of a large buffer that is then only read: `to_vec` of a slice, a

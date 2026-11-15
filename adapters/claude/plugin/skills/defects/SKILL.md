@@ -1,6 +1,6 @@
 ---
 name: defects
-description: Hunt bugs in Rust source of a PR or local tree by reading it, with Defect Review.
+description: Hunt bugs in Go, TypeScript, Rust or Java source of a PR or local tree by reading it, with Defect Review.
 argument-hint: "<PR URL or local scope> [files, lenses]"
 disable-model-invocation: true
 context: fork

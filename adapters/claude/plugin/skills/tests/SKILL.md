@@ -1,6 +1,6 @@
 ---
 name: tests
-description: Check whether the tests of Rust source in a PR or local tree would fail if a plausible bug appeared, with Test Review.
+description: Check whether the tests of Go, TypeScript, Rust or Java source in a PR or local tree would fail if a plausible bug appeared, with Test Review.
 argument-hint: "<PR URL or local scope> [files, questions]"
 disable-model-invocation: true
 context: fork
