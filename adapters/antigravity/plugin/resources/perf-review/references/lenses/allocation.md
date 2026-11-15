@@ -25,13 +25,21 @@ or buffer it initializes, find how much of it is read.
 
 - Needless clone: a `String`, `Vec`, map or large struct cloned to pass to
   something that takes a reference, cloned to satisfy the borrow checker
-  where a narrower borrow or `std::mem::take` would do, or cloned inside a
-  `map` that borrowing would serve.
-- An owned value built to compare or look up: `to_string()` or `format!`
-  before `==`, a `String` key built for a map lookup where the map's
-  `Borrow` implementation accepts a `&str`.
-- Allocation per iteration: a scratch `Vec`, `String` or map created inside
-  the loop body where one outside the loop, cleared each pass, would serve.
+  where a narrower borrow or `std::mem::take` would do, cloned inside a
+  `map` that borrowing would serve, or cloned across `M` channel sends where
+  a shared `Arc` or `Bytes` payload is only read.
+- An owned value built to compare, look up or discard on a fast path:
+  `to_string()`, `to_ascii_lowercase()` or `format!` before `==`, a `String`
+  key built for a map lookup where the map's `Borrow` implementation accepts a
+  `&str` or passed by value to `HashMap::entry` on routine hits, an eager
+  fallback allocated inside `unwrap_or`, `ok_or` or `or_insert`, or
+  `chars().collect::<Vec<char>>()` built only to scan or index text.
+- Allocation per iteration or frame: a scratch `Vec`, `String`, map, line
+  buffer (`BufRead::lines()`), vector, matrix or typed array created or
+  dropped-and-reallocated (`buf = other.clone()`) inside the loop or
+  animation-frame body where preallocated storage cleared, drained,
+  `clone_from`-updated or overwritten each pass would serve, or backing storage
+  reallocated when dimensions have not changed.
 - Growth without capacity: pushes or appends into a `Vec`, `String`, Go
   slice/map, `StringBuilder` or `ArrayList` whose final length is known before
   the loop, paying repeated reallocation and copying.
@@ -50,10 +58,15 @@ or buffer it initializes, find how much of it is read.
   values allocated per state tick that force `M` subscribers to re-run.
 - A value built only to measure it: serialized or formatted into a buffer
   to take its length, where the length follows from the parts.
-- A copy of a large buffer that is then only read: `to_vec` of a slice, a
-  `String` made from bytes that could be parsed in place.
-- Deserializing through `serde_json::Value` and then into a type, or into
-  owned `String` fields, where a typed parse or borrowed `&str` or `Cow`
+- A copy of a large buffer or subtree that is then only read or dropped: `to_vec`
+  of a slice, a `String` made from bytes that could be parsed in place, a
+  full-tree deep clone where only one spine changes, or a transferable byte
+  buffer structured-cloned across a worker boundary after its sender drops it.
+- Deserializing through `serde_json::Value` and then into a type or forwarding
+  envelope bytes that `RawValue` would slice, serializing into an intermediate
+  `String` or `Vec<u8>` before writing to a buffer or stream (`to_writer`),
+  allocating regex `captures` where `is_match` or `find` suffices, or parsing
+  into owned `String` fields where a typed parse or borrowed `&str` or `Cow`
   fields would do.
 - A boxed future per call: `#[async_trait]` methods or `Box::pin` on a hot
   path, where a native `async fn` in a trait or a generic would do and the

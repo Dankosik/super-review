@@ -20,16 +20,26 @@ On each async hot path, list the calls that can take long without yielding
 and the awaits that do not use each other's results.
 
 - Blocking call on an async executor, event loop or non-blocking scheduler:
-  `std::fs`, `std::net`, Node `*Sync` I/O or synchronous crypto/compression,
-  blocking JDBC/HTTP on a reactive thread, virtual-thread carrier pinning on
-  older runtimes, `std::thread::sleep`, `block_on` inside async code, or
+  `std::fs`, `std::net`, Node `*Sync` I/O, synchronous crypto/compression or
+  data-parallel pools (`par_iter`) blocking an async worker thread, blocking
+  JDBC/HTTP on a reactive thread, virtual-thread carrier pinning on older
+  runtimes, `std::thread::sleep`, `block_on` inside async code, synchronous
+  canvas/image encoding or storage writes on a UI thread, or
   parsing/serializing large payloads inline on a shared event loop.
 - Sequential awaits for independent operations: two lookups awaited one after
   the other, an `await` placed before a branch or streaming boundary that does
-  not read its result, or a loop that awaits each item's request before sending
+  not read its result, client mount-then-fetch chains where parent Effects gate
+  child fetches, or a loop that awaits each item's request before sending
   the next, where `join!`, `try_join!`, `JoinSet`, `FuturesUnordered`,
   `buffer_unordered`, bounded `Promise.all`, `errgroup` or structured
   concurrency would overlap them.
+- Uncoalesced high-frequency events, uncancelled superseded reads, or idle frame
+  loops: running per-frame work on every raw pointer or scroll event faster than
+  display refresh without frame coalescing, leaving superseded in-flight reads
+  running on rapid input, keeping a `requestAnimationFrame` or poll loop
+  active after motion settles or while hidden, or recreating timers
+  (`tokio::time::sleep`) and stateful secondary futures on every message of a
+  hot `select!` loop.
 - Lock held across `.await` or async suspension: an async `Mutex`, `RwLock` or
   semaphore permit alive across a network call, so every caller queues behind
   one request's latency.
@@ -55,3 +65,7 @@ and the awaits that do not use each other's results.
   sequentially, the second never starts when the first fails; overlapped
   with `try_join!` or a `JoinSet`, it has started and may have taken
   effect. That is a tradeoff.
+- Delaying user-visible updates via `debounce`, `throttle`, `startTransition`
+  or `useDeferredValue`, or turning a synchronous call into an async `Worker`
+  message, offered as a plain gain: each changes observable timing or the call
+  contract, so it is a tradeoff.

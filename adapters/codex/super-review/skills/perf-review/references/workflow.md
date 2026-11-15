@@ -35,13 +35,14 @@ indexes) may locate callers and dynamic dispatch targets; read every step of a
 trace in the source files in full before citing it.
 
 For whole-project source, also locate where work enters the program: request
-handlers, route/page renders and interactive UI event paths, message consumers,
-the main loop or command dispatch of a command-line tool, scheduled jobs, the
-public interface of a library, the functions the repository's benchmarks call
-and the frames of a supplied profile. Readers get the packages and modules those
-entries reach. List the entries in the report, and the code they do not reach as
-not reviewed, so a missing entry shows. An entry says where work starts, not
-which path is hot. For a PR or local changes, the scope stays the change.
+handlers, route/page renders, interactive UI event or animation-frame paths,
+message or stream consumers, the main loop or command dispatch of a
+command-line tool, scheduled jobs, the public interface of a library, the
+functions the repository's benchmarks call and the frames of a supplied
+profile. Readers get the packages and modules those entries reach. List the
+entries in the report, and the code they do not reach as not reviewed, so a
+missing entry shows. An entry says where work starts, not which path is hot.
+For a PR or local changes, the scope stays the change.
 
 When no entry in the scope runs per unit of work, because the scope only
 starts, wires and stops a long-lived program, start no readers. Report the
@@ -53,12 +54,12 @@ work.
 
 | Lens | Asks | Selected when the area has |
 | --- | --- | --- |
-| [complexity](lenses/complexity.md) | Does the work grow with the input faster than the result needs? | Loops, searches, sorts, collections, per-row renders or parallel iterators over input whose size callers set. |
-| [allocation](lenses/allocation.md) | Does each unit allocate, copy or initialize more than it keeps or reads? | Owned values, fresh subscriber collections or fixed-capacity storage built per element, tick or request. |
-| [async](lenses/async.md) | Does async code keep the executor free and run independent waits together? | `async` code, route loaders/Server Components, spawned tasks, async locks. |
-| [io](lenses/io.md) | Does each unit cost more round trips, system calls or connections than it needs? | Database, network, file, inter-process, server-to-client serialization or DOM layout calls. |
-| [contention](lenses/contention.md) | Do concurrent callers wait on each other more than the shared state requires? | Locks, atomics, channels or pools shared across requests, tabs or threads. |
-| [repeated-work](lenses/repeated-work.md) | Is work that gives the same answer every time done again on each pass? | Compilation, parsing, configuration reads, barrel initialization or invariant derivations on a hot path. |
+| [complexity](lenses/complexity.md) | Does the work grow with the input faster than the result needs? | Loops, searches, sorts, collections, per-row renders, growing-stream parses or parallel iterators over input whose size callers set. |
+| [allocation](lenses/allocation.md) | Does each unit allocate, copy or initialize more than it keeps or reads? | Owned values, deep clones, per-frame scratch objects, copied worker buffers, fresh subscriber collections or fixed-capacity storage built per element, tick or request. |
+| [async](lenses/async.md) | Does async code keep the executor free and run independent waits together? | `async` code, route loaders/Server Components, client fetch chains, frame/timer loops, spawned tasks, async locks. |
+| [io](lenses/io.md) | Does each unit cost more round trips, system calls or connections than it needs? | Database, network, file, inter-process, browser storage, server-to-client serialization or DOM layout/style calls. |
+| [contention](lenses/contention.md) | Do concurrent callers wait on each other more than the shared state requires? | Locks, atomics, channels, cross-tab locks or pools shared across requests, tabs, workers or threads. |
+| [repeated-work](lenses/repeated-work.md) | Is work that gives the same answer every time done again on each pass? | Compilation, parsing, configuration reads, barrel initialization, coarse UI subscriptions, per-row observers/portals or invariant derivations on a hot path. |
 
 Select every lens whose signal is present, and say which were left out and
 why. A small change is not a reason to drop one.

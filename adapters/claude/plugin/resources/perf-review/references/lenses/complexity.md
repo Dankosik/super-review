@@ -28,15 +28,20 @@ then what each iteration does with other collections.
   key on every call where a map or a sorted index built once would answer.
 - A `Vec`, slice, `Array.shift()` or `ArrayList.remove(0)` used as a queue; a
   sorted sequence sorted again after each insertion.
-- A full sort, `collect`, slice copy or `clone` of a collection to answer one
+- A full sort, per-comparison key recomputation (`sort_by_key` running an
+  allocating or expensive key closure `O(N log N)` times instead of once per
+  item), `collect`, slice copy or `clone` of a collection to answer one
   question: sorting to take the first or the k-th element, materializing a list
-  only to count or test emptiness.
+  only to count or test emptiness, or testing `M` compiled patterns in a loop
+  where one multi-pattern automaton (`RegexSet`) scans the input once.
 - A string indexed by character in a loop, `chars().nth(i)` or
   `chars().count()` per iteration, each walking it from the start.
-- Quadratic accumulation per iteration: `format!("{acc}{x}")`, Go `s += piece`
-  or `String` `+` in a loop without `strings.Builder`/`StringBuilder`, or
-  TypeScript `[...acc, x]` / `{ ...acc, [k]: v }` inside `.reduce()`, copying
-  what was already built on every step.
+- Quadratic accumulation or re-parsing per step: `format!("{acc}{x}")`, Go
+  `s += piece` or `String` `+` in a loop without `strings.Builder`/`StringBuilder`,
+  TypeScript `[...acc, x]` / `{ ...acc, [k]: v }` inside `.reduce()`, re-parsing
+  an entire growing buffer or transcript from byte 0 on every streamed chunk, or
+  deep-cloning an entire `N`-node state tree per edit where structural sharing
+  copies only the `O(depth)` spine.
 - The default `HashMap` or `HashSet` hasher on a hot path where only the
   program decides which keys go in: integers or identifiers it assigns, a
   table filled at startup and only looked up afterwards, entries added only

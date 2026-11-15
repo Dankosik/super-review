@@ -19,15 +19,17 @@ requires?**
 ## Look for
 
 Find what every concurrent request touches: a `Mutex`, an `RwLock`, an
-atomic, a channel, a shared `Arc`, a pool. For each, note what is done while
-it is held, how often callers reach it, and whether they need each other's
-writes.
+atomic, a channel, a shared `Arc`, a cross-tab Web Lock or a pool. For each,
+note what is done while it is held, how often callers reach it, and whether
+they need each other's writes.
 
 - Wide critical section: a guard alive across a computation, an allocation,
-  a log call, a channel send or I/O; a guard bound with `let` that lives to
-  the end of a long function.
-- A global lock on the hot path: a `Mutex<HashMap>` cache read by every
-  request; a `Mutex` around a value that is only read after startup.
+  dropping a large collection, a log call, a channel send or I/O; a guard
+  bound with `let` that lives to the end of a long function, or an unnamed
+  guard in a `match` or `if let` scrutinee held across the arm body.
+- A global or redundant lock on the hot path: a `Mutex<HashMap>` cache read by
+  every request; a `Mutex` around a value that is only read after startup, or
+  around a client or pool handle that already synchronizes internally.
 - A write lock taken for reads; an `RwLock` whose writers come so often that
   readers gain nothing from it.
 - Atomics under load: one counter every request increments on every core,
@@ -36,7 +38,8 @@ writes.
 - One `Arc` cloned and dropped per item from many threads, all updating the
   same count.
 - One channel consumer, one connection or a pool of one that every request
-  passes through.
+  passes through, or `N` eager low-priority fetches saturating a bounded
+  connection or worker pool ahead of critical work.
 
 ## Not a finding
 

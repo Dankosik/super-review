@@ -156,5 +156,58 @@ test("delivery copies are identical and only the adapters that support it carry 
   expect(existsSync(resolve(root, "adapters/cursor/plugin/resources/perf-review"))).toBe(false);
   for (const role of ["perf-review", "perf-reader", "perf-challenger"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
   expect(read("scripts/package.py")).toContain('"perf-review"');
-  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.9.0");
+  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.10.0");
+});
+
+test("TypeScript frontend performance rules distinguish behavior-keeping findings from tradeoffs and stay prose-clean", () => {
+  const ts = flat("skills/perf-review/references/languages/typescript.md");
+  for (const anchor of [
+    "**Off-React frame state, input coalescing, and idle `rAF` loops**:",
+    "**Compositor animations, layout thrashing, and style invalidation**:",
+    "**Canvas/WebGL frame allocations and synchronous encoding**:",
+    "**Streaming UI tails and chunk coalescing**:",
+    "**Store selector fan-out, render-tick multipliers, and derived Effects**:",
+    "**List scaling, per-row observers/portals, and virtualization**:",
+    "**Synchronous web storage, IndexedDB batching, and Worker transfers**:",
+    "content-visibility: auto",
+    "useDeferredValue",
+    "partialize",
+    "postMessage(buf, [buf.buffer])",
+    "Adding `will-change` without a profile",
+  ]) {
+    expect(ts).toContain(anchor);
+  }
+  for (const file of files(resolve(skill, "references")).filter(path => path.endsWith(".md"))) {
+    expect({ file: relative(root, file), hasEmDash: read(relative(root, file)).includes("—") }).toEqual({
+      file: relative(root, file),
+      hasEmDash: false,
+    });
+  }
+});
+
+test("Rust performance rules distinguish behavior-keeping findings from tradeoffs and guard false positives", () => {
+  const rust = flat("skills/perf-review/references/languages/rust.md");
+  for (const anchor of [
+    "**Ownership, clones, and buffer capacity reuse**:",
+    "**Map lookups, `HashMap::entry`, and eager fallbacks**:",
+    "**Sorting, UTF-8 strings, and `regex` engines**:",
+    "**`serde` buffering, console streams, and directory walks**:",
+    "**Pooled clients and SQL round trips (`reqwest`, `tonic`, `sqlx`, `rusqlite`)**:",
+    "**Async executors, lock lifetimes, and fan-out (`tokio`, `rayon`)**:",
+    "**Observability, errors, build profiles, and `Cargo.toml` baseline**:",
+    "clone_from",
+    "BufRead::read_line",
+    "std::collections::HashMap::entry(key)",
+    "slice::sort_by_key(f)",
+    "eq_ignore_ascii_case",
+    "serde_json::from_reader",
+    "RawValue",
+    "entry.file_type()",
+    "prepare_cached",
+    "rayon::par_iter()",
+    "Vec::new()",
+    "tracing::{debug,trace}!",
+  ]) {
+    expect(rust).toContain(anchor);
+  }
 });
