@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.36.1 — 2026-11-16
+
+Tighten browser, Web API, and Rust crate factual precision in Performance Review 0.10.1 alongside Super Review 3.36.1 and align `AP29`–`AP34` evaluation contrasts while keeping all 56 stable rule IDs and per-skill boundaries unchanged.
+
+- **Browser event, `requestAnimationFrame`, and Web API precision (`perf-review 0.10.1`).** Replaces ~4 Hz `timeupdate` with frame-rate `touchmove` and `requestVideoFrameCallback`, distinguishes browser-coalesced `scroll`/`pointermove` from uncoalesced sub-frame `pointerrawupdate` (240 to 1000 Hz), per-point `getCoalescedEvents()` loops, and multi-source bursts, notes that browsers pause `requestAnimationFrame` when `document.hidden` while offscreen or settled loops in active tabs keep running, requires `clearRect` when eliding redundant `canvas.width` resets, separates completed-message streaming memoization (`finding`) from CommonMark in-flight block splitting (`tradeoff`) and offscreen `loading="lazy"` fetch deferral (`tradeoff`), documents `tailwind-merge`'s 500-entry LRU cache, notes that Zustand `persist` invokes `storage.setItem` on every `set()` even when `partialize` output is unchanged, and distinguishes `postMessage(ab, [ab])`, `postMessage(view, [view.buffer])`, and internal-seam `{ buffer: img.data.buffer, width, height }` transfers.
+- **Rust `std`, `serde`, and pooled-client accuracy.** Clarifies `'\u{212A}'` (`to_lowercase() -> "k"`) versus `'\u{017F}'` (`to_uppercase() -> "S"`), scopes `entry_ref` to `hashbrown::HashMap` alongside `indexmap::IndexMap` `Equivalent<K>` lookups, notes `select_nth_unstable` top-`k` slice sorting, distinguishes `&self` pooled handles (`reqwest`, `sqlx`, `aws_sdk_*`) from `&mut self` per-task `.clone()` handles (`tonic` clients, `redis::AsyncCommands` on `ConnectionManager`), notes PostgreSQL's 65,535 bind limit on `QueryBuilder::push_values`, gates `serde_json::value::RawValue` findings on enabled `"raw_value"` features, documents `Option<Cow<'de, str>>` `#[serde(transparent)]` borrowing and `Content` heap buffering on `#[serde(flatten)]` / `tag` / `untagged`, and aligns `AP29`–`AP34` check names, Markdown tail rendering, and escaped-JSON `Cow` borrowing.
+
+Package, native configuration, and fixture checks pass; behavioral model comparison remains NOT RUN.
+
 ## 3.36.0 — 2026-11-16
 
 Expand frontend TypeScript and Rust hot-path coverage in Performance Review 0.10.0 alongside Super Review 3.36.0 across animations, streaming UIs, store subscriptions, large lists, browser storage, worker transfers, Rust collection/buffer reuse, `serde` streaming, pooled SQL/RPC clients, and Tokio/Rayon lock lifetimes while keeping all 56 stable rule IDs and per-skill boundaries unchanged.

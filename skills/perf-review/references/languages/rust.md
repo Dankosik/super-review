@@ -39,7 +39,8 @@ documentation, or the resolved dependency version rather than memory.
   `map.entry(key.to_owned()).or_insert_with(...)` on `HashMap<String, V>`
   allocates and drops a `String` on every hit -> check `map.get(key)` through
   `Borrow<str>` first and allocate only on misses (`1 -> 0` allocations per hit;
-  **finding**), or use `hashbrown` or `indexmap` `entry_ref` when already in
+  **finding**), or use `hashbrown::HashMap::entry_ref` (or
+  `indexmap::IndexMap::get`/`get_mut` via `Equivalent<K>`) when already in
   `Cargo.toml` (`1` hash and `0` allocations per hit). Do not replace
   `contains_key` + `insert` with `std` `entry(key.to_owned())` when `K` is owned
   and hits are routine. By-value fallbacks `Option::unwrap_or`, `ok_or`, `or`,
@@ -57,16 +58,18 @@ documentation, or the resolved dependency version rather than memory.
   `f` on every comparison (`~2 N log N` evaluations), multiplying any
   `to_lowercase()`, `format!`, or parse inside `f` -> use a non-allocating
   `sort_by` comparator (`0` allocations) or `sort_by_cached_key` (`N`
-  evaluations plus `1` cache `Vec`), and use `select_nth_unstable` (`O(N)`)
-  instead of a full sort for top-`k` or medians (**finding** when equal-element
-  order is unused). `s.chars().collect::<Vec<char>>()` allocates `4 * chars`
+  evaluations plus `1` cache `Vec`), and use `select_nth_unstable` (`O(N)`, plus
+  sorting the `k`-element slice when top-`k` order matters) instead of a full
+  sort for top-`k` or medians (**finding** when equal-element stability is
+  unused). `s.chars().collect::<Vec<char>>()` allocates `4 * chars`
   bytes per call to index characters -> scan `s.as_bytes()` for ASCII syntax or
   `s.char_indices()` for UTF-8 spans (`1 -> 0` allocations; **finding**).
   `s.to_ascii_lowercase() == lit` allocates a `String` per check -> use
   `s.eq_ignore_ascii_case(lit)` or in-place `make_ascii_lowercase()` (`1 -> 0`
-  allocations; **finding**; keep Unicode `to_lowercase()` unless inputs are
-  ASCII, because non-ASCII characters such as `'\u{212A}'` and `'\u{017F}'` case-fold
-  to ASCII `'k'` and `'s'`). `str::replace` allocates and copies the whole
+  allocations; **finding**; keep Unicode `to_lowercase()` / `to_uppercase()`
+  unless inputs are ASCII, because non-ASCII characters such as `'\u{212A}'`
+  (`to_lowercase() -> "k"`) and `'\u{017F}'` (`to_uppercase() -> "S"`) map into
+  ASCII). `str::replace` allocates and copies the whole
   string even on zero matches, and `String::from_utf8_lossy(bytes).into_owned()`
   copies valid UTF-8 -> borrow the `Cow::Borrowed(&str)` on valid input or pass
   an owned `Vec<u8>` to `String::from_utf8` (**finding**). `Regex::new` compiles
@@ -78,39 +81,49 @@ documentation, or the resolved dependency version rather than memory.
 - **`serde` buffering, console streams, and directory walks**: passing an
   unbuffered `File` or `TcpStream` to `serde_json::from_reader` or `to_writer`
   issues tiny per-byte or per-token `read`/`write` system calls, and
-  `from_reader` prevents borrowing `&'de str` -> wrap streams in
+  `from_reader` prevents borrowing input slices -> wrap streams in
   `BufReader`/`BufWriter`, or parse an in-memory buffer with
-  `from_slice`/`from_str` when borrowing `&str` or `Cow<'de, str>` fields
-  (**finding**). Calling `serde_json::to_string` or `to_vec` only to write into
-  an existing buffer or stream allocates an intermediate buffer -> write
-  directly with `serde_json::to_writer(&mut buf, &val)` (**finding**).
-  Deserializing transit JSON through `serde_json::Value` builds a heap tree of
-  maps, vectors, and strings -> use `&serde_json::value::RawValue` or
-  `Box<RawValue>` when forwarding or inspecting an envelope (**finding** when
-  `Value` key-sorting or whitespace normalization is unused).
+  `from_slice`/`from_str` using `#[serde(borrow)] Cow<'de, str>` (`serde` only
+  wires zero-copy `Cow` borrowing on direct `Cow` fields, so `Option<Cow<'de, str>>`
+  needs a `#[serde(transparent)]` `Cow` newtype or `deserialize_with`; use bare
+  `&'de str` only when field syntax forbids JSON escapes; **finding**). Calling
+  `serde_json::to_string` or `to_vec` only to write into an existing buffer or
+  stream allocates an intermediate buffer -> write directly with
+  `serde_json::to_writer(&mut buf, &val)` (**finding**). Deserializing transit
+  JSON through `serde_json::Value` builds a heap tree of maps, vectors, and
+  strings -> use `&serde_json::value::RawValue` or `Box<RawValue>` when
+  forwarding or inspecting an envelope (**finding** when `serde_json`'s
+  `"raw_value"` feature is already enabled and `Value` key-sorting or whitespace
+  normalization is unused; **tradeoff** when enabling a Cargo feature).
   `#[serde(flatten)]`, `#[serde(tag = "...")]`, and `#[serde(untagged)]` buffer
-  fields into an internal heap `Content` value and disable `&'de str` borrowing
-  (changing external wire format is not a candidate; reworking internal-only
+  fields into an internal heap `Content` tree, allocating intermediate
+  collections and breaking single-pass streaming and `RawValue` (changing
+  external wire format is not a candidate; reworking internal-only
   representations or custom `Deserialize` with identical wire behavior is a
   **finding**). `println!` locks stdout and flushes on every newline -> lock
   `io::stdout().lock()` behind `BufWriter` in non-interactive batch loops
   (**finding** when callers do not rely on per-line interactive flush, otherwise
   **tradeoff**). Calling `entry.path().is_dir()` or `fs::metadata(entry.path())`
-  inside `fs::read_dir` or `walkdir` allocates a `PathBuf` and runs an extra
-  `stat` system call per entry -> inspect `entry.file_type()` directly (`N -> 0`
-  `PathBuf` allocations and `stat` calls on filesystems that populate directory
-  entry types; **finding** when symlink-following semantics match).
+  inside `fs::read_dir` or `walkdir` runs an extra `stat` system call per entry
+  (and allocates a `PathBuf` on `std::fs::DirEntry::path()`) -> inspect
+  `entry.file_type()` directly (`N -> 0` extra `stat` calls and `PathBuf`
+  allocations on filesystems that populate directory entry types; **finding**
+  when symlink-following semantics match).
 - **Pooled clients and SQL round trips (`reqwest`, `tonic`, `sqlx`, `rusqlite`)**:
   `reqwest::Client`, `sqlx::Pool`, `tonic::transport::Channel`,
   `redis::aio::ConnectionManager`, and `aws_sdk_*::Client` already wrap internal
-  `Arc` pools or multiplexed channels (`Clone` is `O(1)` and methods take
-  `&self`): calling `Client::new()` per request rebuilds connection pools and
-  TLS state, while wrapping them in `Mutex` or `RwLock` serializes concurrent
-  callers -> clone and share the handle directly (**finding**). Executing `N`
-  row-by-row `.execute(&pool).await` or ORM inserts in a loop pays `N` pool
-  borrows and `N` round trips -> batch via `sqlx::QueryBuilder::push_values`,
-  `insert_many`, or Postgres `UNNEST` / `ANY($1)` (`N -> 1` round trip;
-  **finding** when per-row partial commit is unused, otherwise **tradeoff**),
+  `Arc` pools or multiplexed channels (`Clone` is `O(1)`; `reqwest`, `sqlx`, and
+  `aws_sdk_*` methods take `&self`, while `tonic` clients and
+  `redis::AsyncCommands` on `ConnectionManager` take `&mut self` on a cheap
+  per-task `.clone()`): calling `Client::new()` per request rebuilds connection
+  pools and TLS state, while wrapping them in `Mutex` or `RwLock` serializes
+  concurrent callers -> share and `.clone()` the handle directly (**finding**).
+  Executing `N` row-by-row `.execute(&pool).await` or ORM inserts in a loop pays
+  `N` pool borrows and `N` round trips -> batch via
+  `sqlx::QueryBuilder::push_values` (chunked within PostgreSQL's 65,535 bind
+  limit), ORM `insert_many`, or Postgres `UNNEST` / `ANY($1)` (`N -> 1` round
+  trip; **finding** inside a transaction or when per-row partial commit is
+  unused, otherwise **tradeoff**),
   and avoid `format!` `IN (...)` lists of varying arity that miss
   prepared-statement caches. In `rusqlite`, `conn.prepare(...)` inside a loop
   recompiles SQLite bytecode each pass -> hoist `prepare` or call
