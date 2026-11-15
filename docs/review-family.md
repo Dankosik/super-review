@@ -70,8 +70,9 @@ for one unit as quoted lines, into callees and dependencies at their locked
 versions, and what multiplies it, written as a count ("one `String`
 allocation per row × rows in the request"), never as invented milliseconds.
 The **cheaper form**: a sketch and what it keeps, results, order, errors,
-drop timing, `Send` and `Sync`, the public API, and that it builds for the
-project's Rust version, features and targets. The **resource**: what is
+drop/cleanup timing, concurrency and `Send`/`Sync` bounds, the public API, and
+that it builds for the project's language, runtime and dependency baseline
+(`Cargo.toml`, `go.mod`, `tsconfig.json`/`package.json`, or `pom.xml`/Gradle). The **resource**: what is
 saved, as counts per unit before and after (`3 → 1 allocations per
 request`), or, when the same operations get cheaper, the count with what one
 operation costs on each side and the basis for it, set beside the path's
@@ -153,7 +154,7 @@ The four share only the plugin they ship in.
 | Claims about code generation | Count work the semantics require; an optimizer claim either way needs a profile, a benchmark or a documented guarantee | Readers and challengers arguing about what the compiler does | Neither side reads the compiler's output, so such a claim decides nothing alone |
 | A cheaper form that changes something | A `tradeoff` with both sides: public API, `unsafe`, a new dependency, staleness, notably harder reading | Dropped; or recommended as a plain speedup | The saving is real and its cost is the team's to weigh, as with disputed bugs |
 | Throughput against latency | A batch, buffer, overlap or parallel split that buys one with the other, or starts work an earlier failure would have stopped, is a tradeoff | Batching, concurrency and parallelism as plain gains | They change what a caller waits for and what has happened when something fails |
-| Where a cheaper form must build | Within the project's `rust-version`, edition, enabled features and targets | Any current Rust | Advice that does not build for the project saves nothing |
+| Where a cheaper form must build | Within the project's language, runtime, dependency and feature baseline (`Cargo.toml`, `go.mod`, `tsconfig.json`/`package.json`, `pom.xml`/Gradle) | Any current compiler or runtime | Advice that does not build for the project saves nothing |
 | Neighboring costs | Memory footprint, build profiles, the global allocator and compile time are out of scope; a database's plan and cache behavior need a plan or a profile | Left to each reader | Each run would otherwise draw the line differently |
 | Constant work per request | Reported compactly, one row each with its quoted line | A full section per finding | They are the most numerous and each saves the least; the reader should reach the larger findings first |
 | A saving beside a larger cost | Reported with the dominant cost for the same resource; rejected only when that cost bounds the resource whatever the saving does | Rejected whenever something else on the path is slower or the saving is small | A network wait dominates a request's latency, not the CPU spent per request; CPU and allocations add up across requests, and real runs dropped a hash that took two thirds of a cache hit as too small beside the call |

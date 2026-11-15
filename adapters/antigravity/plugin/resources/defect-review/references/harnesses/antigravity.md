@@ -11,8 +11,11 @@ Run within the workflow's concurrency limit and available host slots.
 Both roles allow only `view_file` and `grep_search`: no shell, writing or
 delegation tools or MCP servers are configured. The parent acquires source
 read-only as the workflow allows, without cloning, copying or checking out the
-project. Give children revision-specific contents where their tools cannot read
-the selected commit; unavailable source is unread coverage.
+project. Supply the `D..H` diff with removed merge-base (`D`) lines, any
+non-checked-out revision contents, and needed lockfile-resolved dependency
+excerpts outside the workspace directly in child packets (and resolve missing
+dependency steps yourself before challenge); unavailable source is unread
+coverage.
 
 Use **Gemini 4 Hydrogen with High reasoning** (`gemini-4-hydrogen-high`) for
 every reader and challenger, including retries and continuations, unless the

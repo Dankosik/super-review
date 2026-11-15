@@ -1,6 +1,6 @@
 ---
 name: test-review
-description: "Use only for an explicitly requested Test Review of Rust tests by reading, or help using that review."
+description: "Use only for an explicitly requested Test Review of Go, TypeScript, Rust or Java tests by reading, or help using that review."
 ---
 
 For help, explain usage without acquiring source or launching agents. Run an

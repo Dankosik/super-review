@@ -1,7 +1,7 @@
 # Rust context
 
-Only Rust has a language context in this version. Tests in another language
-are listed as excluded.
+Go, TypeScript, Rust and Java have language contexts in this review. Tests in
+another language are listed as excluded.
 
 ## Where tests live
 

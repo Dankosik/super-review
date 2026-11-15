@@ -15,7 +15,11 @@ source already in context, fetch missing changed declarations, **D**-side
 comparisons, and cited uses instead of rereading everything, and verify the link
 to assigned scope, effective rule, and concrete burden (explicit team
 consistency is a valid, separately stated basis; disguised bug reports and
-imagined future requirements are outside scope).
+imagined future requirements are outside scope). When specialists return a large
+batch of candidates, group and verify them by owning module or vertical call
+spine rather than scanning a flat list end to end: holding one spine's full
+declarations in view prevents late-list rubber-stamping and surfaces shared root
+causes immediately.
 
 **Verify the anchor against pinned bytes.** Validate location independently of
 quality under [source-access rules](harnesses/source-access.md#file-boundaries-and-source-anchors):
@@ -125,7 +129,9 @@ better one. Where several touch the same code, design it once. When they share a
 cause, fix the cause. Watch especially for clean over-decomposition that passed
 specialist smell checks piecemeal: tidy pass-through helpers, hypothetical
 single-adapter seams, intermediate DTOs and defensive ceremony that vanish when
-the operation is written directly. Then picture the code with every accepted
+the operation is written directly, as well as cross-seam scattering across
+partition boundaries (symmetric `encode`/`decode`, cache-key, reset or batch
+twins and **D**-to-**H** format shims that no single shard saw together). Then picture the code with every accepted
 recommendation applied and ask whether you would be proud to have written it. If
 not, finish the job: what is still missing becomes your own candidate under the
 same bar. A remedy you rewrite or add passes the same preservation, lint and

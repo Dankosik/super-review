@@ -20,21 +20,23 @@
 For each loop or iterator chain on a hot path, find what bounds its length,
 then what each iteration does with other collections.
 
-- Nested passes: `contains`, `iter().position`, `iter().find` or
-  `iter().any` on a `Vec` or slice inside a loop over another input;
-  deduplication by scanning what was kept; `Vec::remove` or `insert` at an
-  index inside a loop.
-- Linear search per lookup: the same `Vec` searched by key on every call
-  where a map or a sorted index built once would answer.
-- A `Vec` used as a queue through `remove(0)`; a sorted `Vec` sorted again
-  after each insertion.
-- A full sort, `collect` or `clone` of a collection to answer one question:
-  sorting to take the first or the k-th element, collecting to count or to
-  test emptiness.
+- Nested passes: `contains`, `iter().position`, `iter().find`, `iter().any`,
+  `Array.includes`, `slices.Contains` or `List.contains` on a linear sequence
+  inside a loop over another input; deduplication by scanning what was kept;
+  indexed `remove` or `insert` / `splice` inside a loop.
+- Linear search per lookup: the same `Vec`, slice, array or `List` searched by
+  key on every call where a map or a sorted index built once would answer.
+- A `Vec`, slice, `Array.shift()` or `ArrayList.remove(0)` used as a queue; a
+  sorted sequence sorted again after each insertion.
+- A full sort, `collect`, slice copy or `clone` of a collection to answer one
+  question: sorting to take the first or the k-th element, materializing a list
+  only to count or test emptiness.
 - A string indexed by character in a loop, `chars().nth(i)` or
   `chars().count()` per iteration, each walking it from the start.
-- A string accumulated by `format!("{acc}{x}")` per iteration, copying what
-  was already built.
+- Quadratic accumulation per iteration: `format!("{acc}{x}")`, Go `s += piece`
+  or `String` `+` in a loop without `strings.Builder`/`StringBuilder`, or
+  TypeScript `[...acc, x]` / `{ ...acc, [k]: v }` inside `.reduce()`, copying
+  what was already built on every step.
 - The default `HashMap` or `HashSet` hasher on a hot path where only the
   program decides which keys go in: integers or identifiers it assigns, a
   table filled at startup and only looked up afterwards, entries added only

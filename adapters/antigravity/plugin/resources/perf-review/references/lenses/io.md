@@ -20,13 +20,15 @@ For each call that leaves the process (database, HTTP, RPC, cache, file,
 socket, any system call), find how many times one unit of work makes it and
 what sets that number.
 
-- N+1: a query per item of a list an earlier query loaded; a cache or RPC
-  lookup per element where the other side offers a multi-get.
+- N+1: a query per item of a list an earlier query loaded (including ORM or
+  JPA lazy relation fetches triggered inside loops or JSON serializers); a
+  cache or RPC lookup per element where the other side offers a multi-get.
 - Round trip per element: an insert, update, publish or `set` per row in a
   loop; a remote call per item of a stream.
 - Unbuffered I/O: small `write`, `write_all`, `write!` or `read` calls on a
-  `File`, `TcpStream` or child pipe without `BufWriter` or `BufReader`;
-  `println!` per item in a loop.
+  `File`, `os.File`, `OutputStream`, `TcpStream` or child pipe without
+  `BufWriter`/`BufReader`, `bufio` or `BufferedOutputStream`; per-item console
+  or stdout flushes in a loop.
 - No batching: a flush or `fsync` per record where the durability promise is
   per batch.
 - Reconnection: a client, connection pool, TLS session or prepared statement

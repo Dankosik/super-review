@@ -1,6 +1,6 @@
 ---
 name: test-orchestrator
-description: Coordinate a Test Review the user started with the /super-review:tests command; it reads the tests of Rust source against its written promises. Do not start it yourself. When a user asks for one in a message, ask them to type the command.
+description: Coordinate a Test Review the user started with the /super-review:tests command; it reads the tests of Go, TypeScript, Rust or Java source against its written promises. Do not start it yourself. When a user asks for one in a message, ask them to type the command.
 model: inherit
 tools: Agent, Read, Glob, Grep, Bash
 ---

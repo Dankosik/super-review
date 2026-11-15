@@ -29,7 +29,10 @@ Locate once where evidence of load lives for the reviewed area: benchmarks
 in the repository, documents that state load, latency or throughput
 targets, and any profile, flamegraph or benchmark output the user supplied.
 Every reader gets the same list. It says where evidence of what runs often
-lives; it is not a list of hot paths or suspected waste.
+lives; it is not a list of hot paths or suspected waste. Read-only semantic
+navigation (LSP references and implementations, `ast-grep`, or existing symbol
+indexes) may locate callers and dynamic dispatch targets; read every step of a
+trace in the source files in full before citing it.
 
 For whole-project source, also locate where work enters the program: request
 handlers, message consumers, the main loop or command dispatch of a
@@ -65,25 +68,31 @@ or fewer in one package, or a package of about a thousand lines reviewed
 whole, give one reader a related pair instead: complexity with allocation,
 async with contention, io with repeated-work. A paired reader runs each lens's
 full pass and reports each lens's coverage separately; finishing one never
-closes its partner. Split a large scope by
-package, and split a lens by area when its files are more than one reader
-can read in full: a reader that skims loses the lines it skipped. Readers
+closes its partner. Partition mixed-language scopes by language, and split a
+large scope or lens along vertical call spines (`entry -> domain -> store`)
+rather than horizontal directory slices when its files are more than one reader
+can read in full: a reader that skims loses the lines it skipped, and a reader
+follows calls across partition boundaries when tracing a hot path. Readers
 overlap on purpose, and merging is yours.
 
 ## Readers
 
 Start each reader in a fresh context with nothing from this conversation or
 from other readers. Give it the target and revision, its lens or pair, the
-exact files, for a change review the change itself with its removed lines,
+exact files, for a change review the change itself with its removed lines
+(supplied directly in the packet when readers lack Git or shell access),
 the located evidence of load, for a whole project the entries, and the
-paths of the contract, its lens, the
-[language context](languages/rust.md) and the
+paths of the contract, its lens, the matching language context
+([Go](languages/go.md), [TypeScript](languages/typescript.md),
+[Rust](languages/rust.md) or [Java](languages/java.md)) and the
 [result format](../assets/finding-template.md). Never give it an expected
 inefficiency, a suspected line or another reader's result, nor what was
 settled before this review: earlier findings or fixes, decisions to respect,
 severity. A reader that inherits conclusions repeats them.
 
-Run up to eight agents at once unless the user sets another limit.
+Run up to eight agents at once unless the user sets another limit, honoring any
+explicit user reader/challenger model or effort override through supported
+native configuration.
 
 Read each reader's list of what in its scope it could not read. Give that
 part, once, to a fresh reader with the same lens and only those files. What
@@ -95,8 +104,12 @@ First merge candidates with the same cause, from any readers, keeping each
 trace. One cause often shows up through several lenses, such as a clone of a
 large map inside a lock that both allocates per request and keeps every
 other caller waiting for the copy: report it as one candidate with each
-cost's trace. A candidate you find yourself while reading, with a trace,
-joins the others here and goes to the challenger of the lens it belongs to.
+cost's trace. Before launching challengers, run your own cross-seam pass across
+the boundaries between shards — cross-module repackaging, N+1 calls hidden
+behind repository interfaces, and caches, batches or indexes removed in `D..H`
+whose callers lived in another partition. Any candidate you find yourself while
+reading, with a trace, joins the others here and goes to the challenger of the
+lens it belongs to.
 Every candidate with a trace goes to a fresh challenger, one per reader
 task; a merged candidate goes to only one of them. Give it the same
 materials, lens included, plus [the challenge](challenge.md), and for each
@@ -123,9 +136,10 @@ challenger's tone or agreement between agents is not evidence.
 - **Check the hot path.** Its basis is a caller, a loop, a document, a
   measurement or the user's words. Code that looks central is not a basis.
 - **Check the cheaper form.** Walk it through the inputs the entry admits:
-  empty, one, duplicates, a failure halfway, a dropped future. Check that it
-  builds within the project's `rust-version`, features and targets. Name
-  everything it changes. When you see a form that removes more of the work,
+  empty, one, duplicates, a failure halfway, a dropped future or cancelled
+  context. Check that it builds within the project's `rust-version`, features
+  and targets (or its Go, TypeScript or Java language and dependency baseline).
+  Name everything it changes. When you see a form that removes more of the work,
   such as a borrow where the reader reserved capacity, use it instead; check
   the new form the same way, yourself or through the challenger.
 - **Check findings on one path together.** Cheaper forms that each keep

@@ -1,6 +1,6 @@
 ---
 name: perf
-description: Find work that Rust source of a PR or local tree does not need on its hot paths, by reading it, with Performance Review.
+description: Find work that Go, TypeScript, Rust or Java source of a PR or local tree does not need on its hot paths, by reading it, with Performance Review.
 argument-hint: "<PR URL or local scope> [files, lenses, hot paths, profile]"
 disable-model-invocation: true
 context: fork

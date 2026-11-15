@@ -5,8 +5,9 @@ Every agent in this review works under these rules.
 ## Scope
 
 The user chooses a PR, local changes or whole-project source, and may narrow
-it. Review the selected Rust production source and read whatever is needed
-to understand it: callers, dependency source, documents, benchmarks.
+it. Review the selected Go, TypeScript, Rust or Java production source and read
+whatever is needed to understand it: callers, dependency source, documents,
+benchmarks.
 
 In a change review a finding must come from the change:
 
@@ -121,10 +122,12 @@ lines it names, in order.
   the length of a list a caller controls. A bound that keeps it small
   belongs in the trace.
 - **Quote the line at every step**: path, lines, the code, and the work it
-  does for that unit. Follow calls into what they call: a trait
-  implementation, a macro, a conversion, a dependency at the version
-  `Cargo.lock` resolves. Work inside code you did not read is an assumption,
-  and the candidate is unproven.
+  does for that unit. Follow calls into what they call: a trait or interface
+  implementation, a macro, a conversion, a dependency at the version the
+  project's lockfile resolves (`Cargo.lock`, `go.sum`, `package-lock.json` /
+  `pnpm-lock.yaml` / `yarn.lock` / `bun.lock`, or Maven/Gradle lockfiles).
+  Work inside code you did not read is an assumption, and the candidate is
+  unproven.
 - **Count the work the semantics require**: a pass over N elements, a hash
   over the whole key, storage initialized to its full capacity, an
   allocation for a value that is kept or passed on, each reallocation of a
@@ -146,11 +149,13 @@ lines it names, in order.
 
 Give the smallest change that removes the work, as a sketch, and what it
 keeps: results and their order, errors and when they surface, what has
-happened when something fails halfway, when values are dropped and what
-their destructors do, `Send` and `Sync`, the public API, and what other
-callers and tasks observe of locking and timing. It builds where the project
-builds: within the `rust-version`, edition, dependencies and enabled
-features in `Cargo.toml`, for every target the project ships. A form that
+happened when something fails halfway, when values are dropped or closed and
+what their destructors or cleanup blocks do, concurrency and `Send`/`Sync`
+bounds, the public API, and what other callers and tasks observe of locking
+and timing. It builds where the project builds: within the `rust-version`, edition, dependencies and enabled
+features in `Cargo.toml` (or the corresponding Go `go.mod`, TypeScript
+`tsconfig.json`/`package.json` or Java `pom.xml`/Gradle language, runtime and
+dependency baseline), for every target the project ships. A form that
 keeps all of that is a **finding**.
 
 A form that changes something a team could choose to accept is a

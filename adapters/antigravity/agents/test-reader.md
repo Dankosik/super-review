@@ -1,6 +1,6 @@
 ---
 name: test-reader
-description: One assigned Test Review question on Rust tests during an explicit Test Review.
+description: One assigned Test Review question on Go, TypeScript, Rust or Java tests during an explicit Test Review.
 tools: [view_file, grep_search]
 mainAgent: false
 subagent: true

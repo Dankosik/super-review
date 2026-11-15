@@ -5,9 +5,11 @@ Every agent in this review works under these rules.
 ## Scope
 
 The user chooses a PR, local changes or whole-project source, and may narrow
-it. The targets are the tests of the selected Rust source, judged against the
-production code they protect. In a change review a finding must come from
-the change: behavior it adds or alters that no test pins, or a test it
+it. The targets are the tests of the selected Go, TypeScript, Rust or Java
+source, judged against the production code they protect. In a change review a
+finding must come from the change: behavior it adds or alters (including
+backward compatibility with persisted, queued or wire data from before the
+change, and symmetric counterpart paths) that no test pins, or a test it
 weakened. An unpinned behavior found in untouched code on the way is reported
 once as pre-existing.
 

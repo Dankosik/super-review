@@ -64,9 +64,12 @@ finish.
 
 Resolve each lens name to its language-specific file via
 [language routing](languages.md) (the links above point to Go resources) and
-partition mixed-language scopes by language. Split a lens by area when its files
-exceed what one specialist can read in full, because a specialist that skims
-loses the lines it skipped. Attach selected profiles to their owner's task for
+partition mixed-language scopes by language. Split a lens along vertical call
+spines (`entry -> domain -> store`) rather than horizontal directory layers when
+its files exceed what one specialist can read in full, because a specialist that
+skims loses the lines it skipped and horizontal slices sever cross-layer data
+flow; specialists follow cross-partition calls into neighbor declarations within
+the snapshot. Attach selected profiles to their owner's task for
 that area (a profile whose owner is a conditional lens selects that owner rather
 than spawning an extra worker). Use one lens per child task by default; apply
 [compact pairs](#compact-pairs) only when the user explicitly requests a compact

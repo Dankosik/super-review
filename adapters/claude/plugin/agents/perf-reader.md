@@ -1,6 +1,6 @@
 ---
 name: perf-reader
-description: One assigned Performance Review lens, or a related pair, on Rust source - find unneeded work on hot paths by reading and trace each cost through quoted lines.
+description: One assigned Performance Review lens, or a related pair, on Go, TypeScript, Rust or Java source - find unneeded work on hot paths by reading and trace each cost through quoted lines.
 model: sonnet
 effort: medium
 tools: Read, Glob, Grep, Bash

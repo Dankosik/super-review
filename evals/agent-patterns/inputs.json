@@ -1,0 +1,171 @@
+{
+  "description": "Neutral single-case packets for agent-pattern decisions across the four review skills. Supply at most one input object per fresh run.",
+  "inputs": [
+    {
+      "id": "AP01",
+      "skill": "super-review",
+      "language": "typescript",
+      "lens": "abstractions",
+      "request": "Review the assigned area through abstractions for readability and maintainability. Do not execute or edit code.",
+      "scope": "Whole-module review of src/pricing/total.ts in a private unreleased service; no external consumers.",
+      "files": {
+        "package.json": "{\n  \"name\": \"billing-svc\",\n  \"private\": true,\n  \"type\": \"module\"\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\" }\n}\n",
+        "src/pricing/total.ts": "export interface LineItem {\n  readonly cents: number;\n  readonly quantity: number;\n}\n\ninterface SubtotalCalculator {\n  compute(items: readonly LineItem[]): number;\n}\n\ninterface SubtotalDto {\n  readonly rawCents: number;\n}\n\nclass DefaultSubtotalCalculator implements SubtotalCalculator {\n  compute(items: readonly LineItem[]): number {\n    let sum = 0;\n    for (const item of items) sum += item.cents * item.quantity;\n    return sum;\n  }\n}\n\nfunction toSubtotalDto(rawCents: number): SubtotalDto {\n  return { rawCents };\n}\n\nexport function orderTotalCents(items: readonly LineItem[], taxBps: number): number {\n  const calculator: SubtotalCalculator = new DefaultSubtotalCalculator();\n  const dto = toSubtotalDto(calculator.compute(items));\n  return dto.rawCents + Math.round((dto.rawCents * taxBps) / 10_000);\n}\n"
+      }
+    },
+    {
+      "id": "AP02",
+      "skill": "super-review",
+      "language": "typescript",
+      "lens": "abstractions",
+      "request": "Review the assigned area through abstractions for readability and maintainability. Do not execute or edit code.",
+      "scope": "Whole-module review of src/payments/charge.ts with its two gateway adapters in the same private service.",
+      "files": {
+        "package.json": "{\n  \"name\": \"billing-svc\",\n  \"private\": true,\n  \"type\": \"module\"\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\" }\n}\n",
+        "src/payments/charge.ts": "export interface ChargeReceipt {\n  readonly reference: string;\n  readonly settledCents: number;\n}\n\nexport interface PaymentGateway {\n  charge(accountId: string, cents: number): Promise<ChargeReceipt>;\n}\n\nexport async function collectInvoice(gateway: PaymentGateway, accountId: string, cents: number): Promise<ChargeReceipt> {\n  if (cents <= 0) throw new RangeError(\"cents must be positive\");\n  return gateway.charge(accountId, cents);\n}\n",
+        "src/payments/stripe-gateway.ts": "import type { ChargeReceipt, PaymentGateway } from \"./charge.js\";\n\nexport class StripeGateway implements PaymentGateway {\n  constructor(private readonly client: { createIntent(acct: string, amount: number): Promise<{ id: string; amount_received: number }> }) {}\n  async charge(accountId: string, cents: number): Promise<ChargeReceipt> {\n    const intent = await this.client.createIntent(accountId, cents);\n    return { reference: intent.id, settledCents: intent.amount_received };\n  }\n}\n",
+        "src/payments/credit-ledger-gateway.ts": "import type { ChargeReceipt, PaymentGateway } from \"./charge.js\";\n\nexport class CreditLedgerGateway implements PaymentGateway {\n  constructor(private readonly ledger: { debit(acct: string, cents: number): Promise<string> }) {}\n  async charge(accountId: string, cents: number): Promise<ChargeReceipt> {\n    const entryId = await this.ledger.debit(accountId, cents);\n    return { reference: entryId, settledCents: cents };\n  }\n}\n"
+      }
+    },
+    {
+      "id": "AP03",
+      "skill": "super-review",
+      "language": "rust",
+      "lens": "change-locality",
+      "request": "Review the D..H change through change-locality for readability and maintainability. Do not execute or edit code.",
+      "scope": "Changed crate src/session.rs and sibling src/cache.rs in a private workspace.",
+      "diff": "--- a/src/session.rs\n+++ b/src/session.rs\n@@ -1,14 +1,16 @@\n pub struct Session {\n     pub user_id: u64,\n+    pub tenant_id: u64,\n     pub role: String,\n     pub scopes: Vec<String>,\n }\n \n impl Session {\n     pub fn encode(&self) -> String {\n-        format!(\"{}:{}:{}\", self.user_id, self.role, self.scopes.join(\",\"))\n+        format!(\"{}:{}:{}:{}\", self.user_id, self.tenant_id, self.role, self.scopes.join(\",\"))\n     }\n \n     pub fn reset(&mut self, user_id: u64, tenant_id: u64) {\n         self.user_id = user_id;\n         self.tenant_id = tenant_id;\n         self.role.clear();\n         self.scopes.clear();\n     }\n }\n--- a/src/cache.rs\n+++ b/src/cache.rs\n@@ -1,5 +1,5 @@\n use crate::session::Session;\n \n pub fn session_key(s: &Session) -> String {\n-    format!(\"sess:{}:{}:{}\", s.user_id, s.role, s.scopes.join(\",\"))\n+    format!(\"sess:{}:{}:{}:{}\", s.user_id, s.tenant_id, s.role, s.scopes.join(\",\"))\n }\n",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"auth-svc\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.85\"\n",
+        "src/session.rs": "pub struct Session {\n    pub user_id: u64,\n    pub tenant_id: u64,\n    pub role: String,\n    pub scopes: Vec<String>,\n}\n\nimpl Session {\n    pub fn encode(&self) -> String {\n        format!(\"{}:{}:{}:{}\", self.user_id, self.tenant_id, self.role, self.scopes.join(\",\"))\n    }\n\n    pub fn reset(&mut self, user_id: u64, tenant_id: u64) {\n        self.user_id = user_id;\n        self.tenant_id = tenant_id;\n        self.role.clear();\n        self.scopes.clear();\n    }\n}\n",
+        "src/cache.rs": "use crate::session::Session;\n\npub fn session_key(s: &Session) -> String {\n    format!(\"sess:{}:{}:{}:{}\", s.user_id, s.tenant_id, s.role, s.scopes.join(\",\"))\n}\n"
+      }
+    },
+    {
+      "id": "AP04",
+      "skill": "super-review",
+      "language": "rust",
+      "lens": "change-locality",
+      "request": "Review the D..H change through change-locality for readability and maintainability. Do not execute or edit code.",
+      "scope": "Changed crate src/session.rs and sibling src/cache.rs in a private workspace.",
+      "diff": "--- a/src/session.rs\n+++ b/src/session.rs\n@@ -1,13 +1,15 @@\n pub struct Session {\n     pub user_id: u64,\n+    pub tenant_id: u64,\n     pub role: String,\n     pub scopes: Vec<String>,\n }\n \n impl Session {\n     pub fn canonical_parts(&self) -> (u64, u64, &str, &[String]) {\n-        let Self { user_id, role, scopes } = self;\n-        (*user_id, role.as_str(), scopes.as_slice())\n+        let Self { user_id, tenant_id, role, scopes } = self;\n+        (*user_id, *tenant_id, role.as_str(), scopes.as_slice())\n     }\n \n     pub fn encode(&self) -> String {\n         let (u, t, r, s) = self.canonical_parts();\n         format!(\"{u}:{t}:{r}:{}\", s.join(\",\"))\n     }\n }\n",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"auth-svc\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.85\"\n",
+        "src/session.rs": "pub struct Session {\n    pub user_id: u64,\n    pub tenant_id: u64,\n    pub role: String,\n    pub scopes: Vec<String>,\n}\n\nimpl Session {\n    pub fn canonical_parts(&self) -> (u64, u64, &str, &[String]) {\n        let Self { user_id, tenant_id, role, scopes } = self;\n        (*user_id, *tenant_id, role.as_str(), scopes.as_slice())\n    }\n\n    pub fn encode(&self) -> String {\n        let (u, t, r, s) = self.canonical_parts();\n        format!(\"{u}:{t}:{r}:{}\", s.join(\",\"))\n    }\n}\n",
+        "src/cache.rs": "use crate::session::Session;\n\npub fn session_key(s: &Session) -> String {\n    format!(\"sess:{}\", s.encode())\n}\n"
+      }
+    },
+    {
+      "id": "AP05",
+      "skill": "defect-review",
+      "language": "go",
+      "lens": "boundaries",
+      "request": "Run Defect Review through boundaries on the D..H change. Do not build or execute code.",
+      "scope": "Changed package internal/session in a rolling-deployed HTTP service backed by shared Redis.",
+      "diff": "--- a/internal/session/codec.go\n+++ b/internal/session/codec.go\n@@ -6,14 +6,19 @@ import (\n \n type StoredSession struct {\n \tUserID string `json:\"user_id\"`\n+\tRegion string `json:\"region\"`\n }\n \n func Encode(s StoredSession) ([]byte, error) {\n \treturn json.Marshal(s)\n }\n \n func Decode(raw []byte) (StoredSession, error) {\n \tvar s StoredSession\n \tif err := json.Unmarshal(raw, &s); err != nil {\n \t\treturn StoredSession{}, err\n \t}\n-\tif s.UserID == \"\" {\n+\tif s.UserID == \"\" || s.Region == \"\" {\n \t\treturn StoredSession{}, errors.New(\"invalid session\")\n \t}\n \treturn s, nil\n }\n",
+      "files": {
+        "go.mod": "module example.com/gateway\n\ngo 1.23\n",
+        "docs/deploy.md": "# Deployment\n\nGateway instances roll one pod at a time against the shared Redis session store (`ttl = 24h`). Active user sessions must survive rolling deploys without forced logout.\n",
+        "internal/session/codec.go": "package session\n\nimport (\n\t\"encoding/json\"\n\t\"errors\"\n)\n\ntype StoredSession struct {\n\tUserID string `json:\"user_id\"`\n\tRegion string `json:\"region\"`\n}\n\nfunc Encode(s StoredSession) ([]byte, error) {\n\treturn json.Marshal(s)\n}\n\nfunc Decode(raw []byte) (StoredSession, error) {\n\tvar s StoredSession\n\tif err := json.Unmarshal(raw, &s); err != nil {\n\t\treturn StoredSession{}, err\n\t}\n\tif s.UserID == \"\" || s.Region == \"\" {\n\t\treturn StoredSession{}, errors.New(\"invalid session\")\n\t}\n\treturn s, nil\n}\n"
+      }
+    },
+    {
+      "id": "AP06",
+      "skill": "defect-review",
+      "language": "go",
+      "lens": "boundaries",
+      "request": "Run Defect Review through boundaries on the D..H change. Do not build or execute code.",
+      "scope": "Changed package internal/session in a rolling-deployed HTTP service backed by shared Redis.",
+      "diff": "--- a/internal/session/codec.go\n+++ b/internal/session/codec.go\n@@ -6,14 +6,22 @@ import (\n \n type StoredSession struct {\n \tUserID string `json:\"user_id\"`\n+\tRegion string `json:\"region,omitempty\"`\n }\n \n func Encode(s StoredSession) ([]byte, error) {\n \treturn json.Marshal(s)\n }\n \n func Decode(raw []byte) (StoredSession, error) {\n \tvar s StoredSession\n \tif err := json.Unmarshal(raw, &s); err != nil {\n \t\treturn StoredSession{}, err\n \t}\n \tif s.UserID == \"\" {\n \t\treturn StoredSession{}, errors.New(\"invalid session\")\n \t}\n+\tif s.Region == \"\" {\n+\t\ts.Region = \"us-east-1\"\n+\t}\n \treturn s, nil\n }\n",
+      "files": {
+        "go.mod": "module example.com/gateway\n\ngo 1.23\n",
+        "docs/deploy.md": "# Deployment\n\nGateway instances roll one pod at a time against the shared Redis session store (`ttl = 24h`). Legacy sessions predating multi-region belong to `us-east-1`.\n",
+        "internal/session/codec.go": "package session\n\nimport (\n\t\"encoding/json\"\n\t\"errors\"\n)\n\ntype StoredSession struct {\n\tUserID string `json:\"user_id\"`\n\tRegion string `json:\"region,omitempty\"`\n}\n\nfunc Encode(s StoredSession) ([]byte, error) {\n\treturn json.Marshal(s)\n}\n\nfunc Decode(raw []byte) (StoredSession, error) {\n\tvar s StoredSession\n\tif err := json.Unmarshal(raw, &s); err != nil {\n\t\treturn StoredSession{}, err\n\t}\n\tif s.UserID == \"\" {\n\t\treturn StoredSession{}, errors.New(\"invalid session\")\n\t}\n\tif s.Region == \"\" {\n\t\ts.Region = \"us-east-1\"\n\t}\n\treturn s, nil\n}\n"
+      }
+    },
+    {
+      "id": "AP07",
+      "skill": "defect-review",
+      "language": "java",
+      "lens": "errors",
+      "request": "Run Defect Review through errors on the selected package. Do not build or execute code.",
+      "scope": "Whole-package review of com.example.quota.",
+      "files": {
+        "pom.xml": "<project><modelVersion>4.0.0</modelVersion><groupId>com.example</groupId><artifactId>quota</artifactId><version>0.1.0</version><properties><maven.compiler.release>21</maven.compiler.release></properties></project>\n",
+        "src/main/java/com/example/quota/QuotaClient.java": "package com.example.quota;\n\nimport java.io.IOException;\nimport java.util.Optional;\n\npublic final class QuotaClient {\n  private final BillingRpc rpc;\n\n  public QuotaClient(BillingRpc rpc) {\n    this.rpc = rpc;\n  }\n\n  public Optional<Integer> remainingUnits(String accountId) {\n    try {\n      return Optional.of(rpc.fetchRemaining(accountId));\n    } catch (IOException e) {\n      return Optional.empty();\n    }\n  }\n}\n",
+        "src/main/java/com/example/quota/BillingRpc.java": "package com.example.quota;\n\nimport java.io.IOException;\n\npublic interface BillingRpc {\n  int fetchRemaining(String accountId) throws IOException;\n}\n",
+        "src/main/java/com/example/quota/QuotaGate.java": "package com.example.quota;\n\npublic final class QuotaGate {\n  public enum Decision { ALLOW, QUOTA_EXHAUSTED, SERVICE_UNAVAILABLE }\n\n  private final QuotaClient client;\n\n  public QuotaGate(QuotaClient client) {\n    this.client = client;\n  }\n\n  public Decision check(String accountId) {\n    int left = client.remainingUnits(accountId).orElse(0);\n    return left > 0 ? Decision.ALLOW : Decision.QUOTA_EXHAUSTED;\n  }\n}\n"
+      }
+    },
+    {
+      "id": "AP08",
+      "skill": "defect-review",
+      "language": "java",
+      "lens": "errors",
+      "request": "Run Defect Review through errors on the selected package. Do not build or execute code.",
+      "scope": "Whole-package review of com.example.banner.",
+      "files": {
+        "pom.xml": "<project><modelVersion>4.0.0</modelVersion><groupId>com.example</groupId><artifactId>banner</artifactId><version>0.1.0</version><properties><maven.compiler.release>21</maven.compiler.release></properties></project>\n",
+        "docs/ui.md": "# Promotional banner\n\nPromo banners are optional decoration. When the promo RPC times out or fails, render the page with no banner and increment `promo_fetch_failures_total`.\n",
+        "src/main/java/com/example/banner/BannerService.java": "package com.example.banner;\n\nimport java.io.IOException;\nimport java.util.Optional;\n\npublic final class BannerService {\n  private final PromoRpc rpc;\n  private final Runnable failureCounter;\n\n  public BannerService(PromoRpc rpc, Runnable failureCounter) {\n    this.rpc = rpc;\n    this.failureCounter = failureCounter;\n  }\n\n  public Optional<String> currentBanner() {\n    try {\n      return rpc.activeBannerText();\n    } catch (IOException e) {\n      failureCounter.run();\n      return Optional.empty();\n    }\n  }\n}\n",
+        "src/main/java/com/example/banner/PromoRpc.java": "package com.example.banner;\n\nimport java.io.IOException;\nimport java.util.Optional;\n\npublic interface PromoRpc {\n  Optional<String> activeBannerText() throws IOException;\n}\n"
+      }
+    },
+    {
+      "id": "AP09",
+      "skill": "test-review",
+      "language": "typescript",
+      "question": "behavior",
+      "request": "Run Test Review through behavior on the D..H change. Do not build or execute tests.",
+      "scope": "Changed module src/cart/codec.ts and its test file src/cart/codec.test.ts.",
+      "diff": "--- a/src/cart/codec.ts\n+++ b/src/cart/codec.ts\n@@ -1,10 +1,16 @@\n export interface Cart {\n   readonly items: readonly string[];\n+  readonly currency: string;\n }\n \n+/**\n+ * Parses stored cart JSON. Legacy v1 payloads without `currency` default to `\"USD\"`.\n+ */\n export function parseStoredCart(raw: string): Cart {\n   const data = JSON.parse(raw) as { items: string[]; currency?: string };\n-  return { items: data.items };\n+  return { items: data.items, currency: data.currency ?? \"USD\" };\n }\n+\n+export function serializeCart(cart: Cart): string {\n+  return JSON.stringify(cart);\n+}\n--- a/src/cart/codec.test.ts\n+++ b/src/cart/codec.test.ts\n@@ -1,7 +1,8 @@\n import { expect, test } from \"vitest\";\n-import { parseStoredCart } from \"./codec.js\";\n+import { parseStoredCart, serializeCart } from \"./codec.js\";\n \n test(\"round-trips cart\", () => {\n-  expect(parseStoredCart('{\"items\":[\"sku-1\"]}')).toEqual({ items: [\"sku-1\"] });\n+  const raw = serializeCart({ items: [\"sku-1\"], currency: \"EUR\" });\n+  expect(parseStoredCart(raw)).toEqual({ items: [\"sku-1\"], currency: \"EUR\" });\n });\n",
+      "files": {
+        "package.json": "{\n  \"name\": \"shop\",\n  \"type\": \"module\",\n  \"scripts\": { \"test\": \"vitest run\" }\n}\n",
+        "src/cart/codec.ts": "export interface Cart {\n  readonly items: readonly string[];\n  readonly currency: string;\n}\n\n/**\n * Parses stored cart JSON. Legacy v1 payloads without `currency` default to `\"USD\"`.\n */\nexport function parseStoredCart(raw: string): Cart {\n  const data = JSON.parse(raw) as { items: string[]; currency?: string };\n  return { items: data.items, currency: data.currency ?? \"USD\" };\n}\n\nexport function serializeCart(cart: Cart): string {\n  return JSON.stringify(cart);\n}\n",
+        "src/cart/codec.test.ts": "import { expect, test } from \"vitest\";\nimport { parseStoredCart, serializeCart } from \"./codec.js\";\n\ntest(\"round-trips cart\", () => {\n  const raw = serializeCart({ items: [\"sku-1\"], currency: \"EUR\" });\n  expect(parseStoredCart(raw)).toEqual({ items: [\"sku-1\"], currency: \"EUR\" });\n});\n"
+      }
+    },
+    {
+      "id": "AP10",
+      "skill": "test-review",
+      "language": "typescript",
+      "question": "behavior",
+      "request": "Run Test Review through behavior on the D..H change. Do not build or execute tests.",
+      "scope": "Changed module src/cart/codec.ts and its test file src/cart/codec.test.ts.",
+      "diff": "--- a/src/cart/codec.ts\n+++ b/src/cart/codec.ts\n@@ -1,10 +1,16 @@\n export interface Cart {\n   readonly items: readonly string[];\n+  readonly currency: string;\n }\n \n+/**\n+ * Parses stored cart JSON. Legacy v1 payloads without `currency` default to `\"USD\"`.\n+ */\n export function parseStoredCart(raw: string): Cart {\n   const data = JSON.parse(raw) as { items: string[]; currency?: string };\n-  return { items: data.items };\n+  return { items: data.items, currency: data.currency ?? \"USD\" };\n }\n+\n+export function serializeCart(cart: Cart): string {\n+  return JSON.stringify(cart);\n+}\n--- a/src/cart/codec.test.ts\n+++ b/src/cart/codec.test.ts\n@@ -1,7 +1,12 @@\n import { expect, test } from \"vitest\";\n-import { parseStoredCart } from \"./codec.js\";\n+import { parseStoredCart, serializeCart } from \"./codec.js\";\n \n-test(\"round-trips cart\", () => {\n-  expect(parseStoredCart('{\"items\":[\"sku-1\"]}')).toEqual({ items: [\"sku-1\"] });\n+test(\"defaults missing legacy v1 currency to USD\", () => {\n+  expect(parseStoredCart('{\"items\":[\"sku-1\"]}')).toEqual({ items: [\"sku-1\"], currency: \"USD\" });\n+});\n+\n+test(\"preserves explicit v2 currency\", () => {\n+  const raw = serializeCart({ items: [\"sku-1\"], currency: \"EUR\" });\n+  expect(parseStoredCart(raw)).toEqual({ items: [\"sku-1\"], currency: \"EUR\" });\n });\n",
+      "files": {
+        "package.json": "{\n  \"name\": \"shop\",\n  \"type\": \"module\",\n  \"scripts\": { \"test\": \"vitest run\" }\n}\n",
+        "src/cart/codec.ts": "export interface Cart {\n  readonly items: readonly string[];\n  readonly currency: string;\n}\n\n/**\n * Parses stored cart JSON. Legacy v1 payloads without `currency` default to `\"USD\"`.\n */\nexport function parseStoredCart(raw: string): Cart {\n  const data = JSON.parse(raw) as { items: string[]; currency?: string };\n  return { items: data.items, currency: data.currency ?? \"USD\" };\n}\n\nexport function serializeCart(cart: Cart): string {\n  return JSON.stringify(cart);\n}\n",
+        "src/cart/codec.test.ts": "import { expect, test } from \"vitest\";\nimport { parseStoredCart, serializeCart } from \"./codec.js\";\n\ntest(\"defaults missing legacy v1 currency to USD\", () => {\n  expect(parseStoredCart('{\"items\":[\"sku-1\"]}')).toEqual({ items: [\"sku-1\"], currency: \"USD\" });\n});\n\ntest(\"preserves explicit v2 currency\", () => {\n  const raw = serializeCart({ items: [\"sku-1\"], currency: \"EUR\" });\n  expect(parseStoredCart(raw)).toEqual({ items: [\"sku-1\"], currency: \"EUR\" });\n});\n"
+      }
+    },
+    {
+      "id": "AP11",
+      "skill": "perf-review",
+      "language": "go",
+      "lens": "complexity",
+      "request": "Run Performance Review through complexity on internal/feed. Do not build or execute benchmarks.",
+      "scope": "Whole-package review of internal/feed with HTTP entry registration in cmd/api/main.go.",
+      "files": {
+        "go.mod": "module example.com/feed\n\ngo 1.23\n",
+        "cmd/api/main.go": "package main\n\nimport (\n\t\"net/http\"\n\t\"example.com/feed/internal/feed\"\n)\n\nfunc main() {\n\thttp.HandleFunc(\"/v1/feed\", feed.ServeFeed)\n\t_ = http.ListenAndServe(\":8080\", nil)\n}\n",
+        "internal/feed/handler.go": "package feed\n\nimport (\n\t\"encoding/json\"\n\t\"net/http\"\n\t\"slices\"\n)\n\ntype Request struct {\n\tEvents  []string `json:\"events\"`\n\tBlocked []string `json:\"blocked\"`\n}\n\nfunc ServeFeed(w http.ResponseWriter, r *http.Request) {\n\tvar req Request\n\tif err := json.NewDecoder(r.Body).Decode(&req); err != nil {\n\t\thttp.Error(w, \"bad request\", http.StatusBadRequest)\n\t\treturn\n\t}\n\tout := make([]string, 0, len(req.Events))\n\tfor _, ev := range req.Events {\n\t\tif !slices.Contains(req.Blocked, ev) && !slices.Contains(out, ev) {\n\t\t\tout = append(out, ev)\n\t\t}\n\t}\n\t_ = json.NewEncoder(w).Encode(out)\n}\n"
+      }
+    },
+    {
+      "id": "AP12",
+      "skill": "perf-review",
+      "language": "go",
+      "lens": "complexity",
+      "request": "Run Performance Review through complexity on internal/boot. Do not build or execute benchmarks.",
+      "scope": "Whole-package review of internal/boot wired once at service startup in cmd/api/main.go.",
+      "files": {
+        "go.mod": "module example.com/feed\n\ngo 1.23\n",
+        "cmd/api/main.go": "package main\n\nimport (\n\t\"net/http\"\n\t\"example.com/feed/internal/boot\"\n)\n\nfunc main() {\n\troutes := boot.DefaultRoutes()\n\tfor _, route := range routes {\n\t\thttp.HandleFunc(route, func(w http.ResponseWriter, _ *http.Request) { _, _ = w.Write([]byte(\"ok\")) })\n\t}\n\t_ = http.ListenAndServe(\":8080\", nil)\n}\n",
+        "internal/boot/routes.go": "package boot\n\nimport \"slices\"\n\nvar builtin = []string{\"/healthz\", \"/readyz\", \"/metrics\", \"/healthz\"}\n\nfunc DefaultRoutes() []string {\n\tout := make([]string, 0, len(builtin))\n\tfor _, r := range builtin {\n\t\tif !slices.Contains(out, r) {\n\t\t\tout = append(out, r)\n\t\t}\n\t}\n\treturn out\n}\n"
+      }
+    }
+  ]
+}

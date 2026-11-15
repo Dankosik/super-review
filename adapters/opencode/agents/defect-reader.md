@@ -1,5 +1,5 @@
 ---
-description: One assigned Defect Review lens, or a related pair, on Rust source - find bugs by reading and trace each through quoted lines.
+description: One assigned Defect Review lens, or a related pair, on Go, TypeScript, Rust or Java source - find bugs by reading and trace each through quoted lines.
 mode: subagent
 hidden: true
 permission:

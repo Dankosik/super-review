@@ -5,8 +5,9 @@ Every agent in this review works under these rules.
 ## Scope
 
 The user chooses a PR, local changes or whole-project source, and may narrow
-it. Review the selected Rust production source and read whatever is needed
-to understand it: callers, dependency source, documents, tests.
+it. Review the selected Go, TypeScript, Rust or Java production source and read
+whatever is needed to understand it: callers, dependency source, documents,
+tests.
 
 In a change review a finding must come from the change:
 
@@ -14,8 +15,13 @@ In a change review a finding must come from the change:
 - the change removed or weakened something that was needed: a check, a cleanup,
   a recording, a documented guarantee. Read the removed lines, because nothing
   in the new code shows them;
-- the change breaks what a caller relies on. Read the callers of everything
-  whose behavior changed;
+- the change omitted a symmetric counterpart that shares the invariant: a new
+  field, filter, key or variant updated in one path (`create`, `encode`, single
+  item) while omitted from its twin (`cache_key`, `decode`, `clone`, equality,
+  `reset`, batch or reload);
+- the change breaks what a caller, persisted record, queued message, cache entry
+  or rolling-deploy peer from the base commit relies on. Read the callers and
+  data boundaries of everything whose behavior or format changed;
 - the change makes an existing bug reachable.
 
 A bug found in untouched code on the way is reported once as pre-existing.

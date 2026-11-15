@@ -22,5 +22,7 @@ and available consumers. Relocating code can change framework behavior even
 without changing a method body.
 
 Identify the coordinated edits that disappear and the new places a maintainer
-must understand. Retain the layout when consolidation only saves files or crosses
+must understand, including symmetric `encode`/`decode`, cache-key/`equals`,
+`reset`/copy, single-vs-batch, or rolling **D**-to-**H** wire/persistence twins
+that currently drift unless searched by hand. Retain the layout when consolidation only saves files or crosses
 independent contracts.

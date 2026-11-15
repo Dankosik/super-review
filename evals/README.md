@@ -16,6 +16,7 @@ credential is required by this repository. Missing execution capability means
 | Expression/structure judgment | `quality-judgment/`, plus applicable `go/`, `typescript/`, `rust/`, `java/` and `spring/` cases |
 | Duplication across areas and compile-connected copies | [change-together](change-together/README.md) |
 | Factual premises, remaining-scope attention, structural sketches, recommendation compatibility and application | [review-quality](review-quality/README.md) |
+| Agent-pattern blind spots (over-decomposition, unlinked twins, `D -> H` state-in-flight, silent fallbacks, `H -> H` test gaps, hot-path vs cold scans) | [agent-patterns](agent-patterns/README.md), paired with real-repository runs for affected skills |
 | Native delegation, local snapshots and delivery | [native-host](native-host/README.md) and the current adapter configuration tests |
 | Defect Review proof, challenge or lens rules | [defect-review](defect-review/README.md): a review of a real repository, with the maintainer checking each trace; fixture checks do not apply |
 | Test Review proof or question rules | [test-review](test-review/README.md): a review of a real repository, with the maintainer checking each mutant and witness by reading |

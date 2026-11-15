@@ -1,6 +1,6 @@
 ---
 name: perf-review
-description: "Use only for an explicitly requested Performance Review of Rust hot paths by reading, or help using that review."
+description: "Use only for an explicitly requested Performance Review of Go, TypeScript, Rust or Java hot paths by reading, or help using that review."
 ---
 
 For help, explain usage without acquiring source or launching agents. Run an
