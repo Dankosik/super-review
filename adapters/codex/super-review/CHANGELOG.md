@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.34.0 — 2026-11-15
+
+Tighten entrypoint activation and orchestrator instruction structure across Super Review 3.34.0, Defect Review 0.15.0, Test Review 0.14.0, and Performance Review 0.8.0 without changing review criteria or rule IDs.
+
+- **Explicit activation and entrypoints.** Canonical `SKILL.md` entrypoints across all four review skills declare `disable-model-invocation: true` with single-sentence trigger descriptions aligned with `openai.yaml` and native adapter routes. `super-review/SKILL.md` places `help` and missing-target stops ahead of adapter selection so usage requests never start source acquisition.
+- **Co-located Super Review orchestration and verification.** `review-contract`, `workflow`, `harnesses/source-access`, `verification`, and `report-template` organize dense rules under front-loaded leading terms, anchor `B`/`H`/`D` to standard Git endpoints (`target commit`, `PR head commit`, `comparison merge-base`), co-locate `task coverage` versus `candidate disposition` in `review-contract`, move conditional compact-review pairing behind a `#compact-pairs` pointer, and turn pre-acceptance preservation, lint/CI, affected-use, existing-owner, and history checks into an explicit read-only checklist. All 56 stable rule IDs and review criteria remain unchanged.
+- **Maintainer instructions and release policy.** `AGENTS.md` trims repeated family and release prose behind context pointers and codifies positive-target, leading-word, co-location, and branch-disclosure authoring rules; `CONTRIBUTING.md` documents the immutable tag-driven release pipeline.
+
+Package, native configuration, and fixture checks pass; behavioral model comparison remains NOT RUN.
+
 ## 3.33.0 — 2026-11-15
 
 Tighten instruction clarity, trust boundaries, and structural judgment across Super Review 3.33.0, Defect Review 0.14.0, Test Review 0.13.0, and Performance Review 0.7.0 so reviewers verify internal claims and test designs against their direct idiomatic forms rather than trusting clean-looking surfaces.

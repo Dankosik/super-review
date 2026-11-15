@@ -1,8 +1,9 @@
 ---
 name: defect-review
-description: "Use for an explicitly requested Defect Review: independent readers hunt bugs in Rust source of a PR or local tree by reading it, each bug traced through quoted lines, given a stated basis and tested by an independent challenge."
+description: "Explicit Defect Review of Rust PRs or local source to find bugs by reading, or help using that review."
+disable-model-invocation: true
 metadata:
-  version: "0.14.0"
+  version: "0.15.0"
 ---
 
 # Defect Review

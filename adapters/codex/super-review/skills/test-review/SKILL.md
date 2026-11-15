@@ -1,8 +1,9 @@
 ---
 name: test-review
-description: "Use for an explicitly requested Test Review: would the tests of Rust source in a PR or local tree fail if a plausible bug appeared, decided by reading, with each finding shown by a mistake no test would catch and the check that would catch it, or by a quoted team rule."
+description: "Explicit Test Review of Rust tests in PRs or local source by reading, or help using that review."
+disable-model-invocation: true
 metadata:
-  version: "0.13.0"
+  version: "0.14.0"
 ---
 
 # Test Review

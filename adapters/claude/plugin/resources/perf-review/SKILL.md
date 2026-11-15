@@ -1,8 +1,9 @@
 ---
 name: perf-review
-description: "Use for an explicitly requested Performance Review: independent readers find work that Rust source of a PR or local tree does not need on a path that runs often, each cost traced through quoted lines to a cheaper form with the same behavior and tested by an independent challenge."
+description: "Explicit Performance Review of Rust hot paths in PRs or local source by reading, or help using that review."
+disable-model-invocation: true
 metadata:
-  version: "0.7.0"
+  version: "0.8.0"
 ---
 
 # Performance Review
