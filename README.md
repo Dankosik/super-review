@@ -209,7 +209,7 @@ flowchart LR
 | Codex | your model and effort | GPT-6.1 Terra/high |
 | Claude Code | your session model and effort | Sonnet/medium |
 | Cursor | your chat model | `inherit` by default; request an override in the prompt |
-| Google Antigravity | your chat model and effort | `inherit`; overrides require native selector support |
+| Google Antigravity | your chat model and effort | Gemini 4 Hydrogen / High; requires native selection or a Hydrogen High parent |
 | OpenCode | your provider/model | your provider/model |
 
 In Cursor, ask for a specialist model in the prompt, for example
