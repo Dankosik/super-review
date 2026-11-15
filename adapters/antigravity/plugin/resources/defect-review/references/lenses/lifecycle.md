@@ -17,24 +17,27 @@
 ## Look for
 
 List what the code starts: tasks, threads, timers, connections,
-subscriptions, temporary files, permits, locks held across a wait. For each,
-find who learns how it ended, what ends it, and whether it is released on
-every path.
+subscriptions, observers, media handles, view locks, temporary files, permits,
+and locks held across a wait. For each, find who learns how it ended, what ends
+it, and whether it is released on every path.
 
 - A fire-and-forget task: a handle dropped or stored and never awaited, so
   an error or panic ends the work silently while the rest reports healthy.
-- A task that outlives its owner, or is aborted in the middle of work that
-  had to finish.
+- A task or callback that outlives its owner or unmounted view, or is aborted
+  in the middle of work that had to finish.
 - A background loop that exits on the first error and is never restarted.
-- Cleanup written after the work instead of in a guard, so an early return,
-  a `?` or a dropped future skips it (not cancellation-safe), or a guard whose
-  `Drop` silently detaches or discards fallible cleanup.
+- Cleanup written after the work instead of in a guard or `finally`, so an early
+  return, a `?` or a dropped future skips it (not cancellation-safe), or a guard
+  whose `Drop` silently detaches or discards fallible cleanup.
 - Shutdown that signals and does not wait, or waits without a limit.
 - Readiness reported before the thing is usable, or never withdrawn.
-- A leak: a queue, map, cache or list of handles that only grows, with an
-  entry added per request, per key or per reconnect and never removed.
-- A reload, reconnect or retry that starts a new supervisor, subscription or
-  attempt without ending or draining the previous one.
+- A leak: a queue, map, cache, listener/observer set, media handle, or list of
+  handles that only grows across requests, keys, reactive re-runs, or
+  reconnects and is never released.
+- A reload, reconnect, retry, or reactive re-run that starts a new supervisor,
+  subscription, observer, or attempt without ending the previous one, or a
+  stateful child definition recreated on every parent update so its state and
+  focus reset.
 
 ## Not a bug
 

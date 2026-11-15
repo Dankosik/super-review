@@ -13,43 +13,61 @@ another language are listed as excluded.
 
 ## Choosing a mutant
 
-Under `tsc` / typechecked test runs, a mutant that breaks parameter types or
-leaves unused locals under `noUnusedLocals` is caught by the compiler, not the
-tests. Note however that Vitest/esbuild/SWC often transpile tests without
-running `tsc`, so runtime validation boundaries (`Zod`, `JSON.parse`, route
-inputs) still rely on tests even when TypeScript types look strict.
+Under `tsc` or typechecked test runs, a mutant that breaks parameter types or
+leaves unused locals under `noUnusedLocals` fails compilation before tests run.
+Vitest, esbuild, and SWC often transpile tests without `tsc`, so runtime seams
+(`Zod`, `JSON.parse`, route/action inputs) still rely on tests even when types
+look strict.
 
 Forms a plausible TypeScript mistake takes:
 
-- `<` for `<=`, `||` for `??` (clobbering `0`, `""` or `false`), strict vs loose
-  missing-key handling.
-- Dropping `await` on an async effect, replacing `Promise.all` error handling
-  with a silent `.catch(() => undefined)`, or dropping `{ signal }` propagation.
-- Mutating an input array via `.sort()`/`.splice()` instead of copying, or
-  omitting comparator `(a, b) => a - b` on numeric sort.
-- Returning early on a fallback (`if (!item) return;`) instead of throwing or
-  surfacing the promised error status/code.
-- Omitting a filter/tenant/locale parameter from a query key, cache key or
-  `useEffect` dependency list, or skipping schema parsing on a Server Action /
-  route input.
+- **Nullish and input coercion**: `<` for `<=`, `||` for `??` (clobbering `0`,
+  `""`, or `false`), `Number("")` or `z.coerce.number()` turning cleared HTML
+  input `""` into `0`, or loose missing-key handling.
+- **Dropped async failure or race**: dropping `await`, treating HTTP 4xx/5xx
+  `fetch()` as success by omitting `res.ok`, skipping `finally` cleanup of
+  `isSubmitting`, swallowing rejections with `.catch(() => undefined)`, or
+  dropping `{ signal }` / stale-response guards across rapid query switches.
+- **In-place mutation and lexicographic sort**: mutating inputs or cached
+  arrays via `.sort()`/`.splice()` instead of copying, or omitting
+  `(a, b) => a - b` on numeric sort.
+- **Silent fallback or implicit form submit**: returning early (`if (!item) return`)
+  instead of surfacing the promised error status/code, or omitting
+  `type="button"` on a non-submit `<button>` inside `<form>`.
+- **Missing key, stale cache, or broken persisted schema**: omitting a
+  filter/tenant/locale from `queryKey` or `useEffect` dependencies, omitting
+  entity `key` across record switches, breaking prior-revision (`D`)
+  `localStorage`/URL/Zustand `persist` payloads, or skipping schema parsing at
+  a Server Action or route seam.
 
 ## Writing a witness
 
-Write the witness in the suite's own runner (`vitest`, `jest`, `node:test`,
- Testing Library, Playwright) using its existing fixtures and HTTP/boundary
-doubles (such as MSW or local handlers) rather than spying on internal module
-functions. Use fake timers (`vi.useFakeTimers()`) for scheduled work, `await`
-every async assertion (`await expect(p).rejects.toThrow(...)` — an unawaited
-`expect(p).rejects` passes before `p` settles!), and assert rendered/returned
-outcomes rather than mock call choreography.
+Test at real **seams** in the suite's own runner (`vitest`, `jest`,
+`node:test`, Testing Library, Playwright) using existing fixtures and boundary
+doubles (MSW, fake storage, local handlers). Replace **hollow mocks**
+(`vi.mock('./ChildDialog')`, `vi.mock('@tanstack/react-query')`) that sever
+prop, `queryKey`, form-serialization, and error contracts. Drive scheduled work
+with `vi.useFakeTimers()`, `await` every async interaction and rejection
+(`await user.click(...)`, `await expect(p).rejects.toThrow(...)`, since an
+unawaited `rejects` passes before `p` settles), and assert accessible behavioral
+state (`toBeDisabled()`, payload sent, alert role) rather than mock call counts
+or **cosmetic tokens** (`opacity-50`).
 
 ## Reading a test for stability
 
-Unawaited promises (`expect(...).rejects` without `await`, `forEach(async ...)`),
-real `setTimeout` sleeps, shared module-level state or unreset mocks/MSW
-handlers between tests, `Date.now()` / local timezone formatting without a
-fixed clock/locale, `Math.random()`, and fixed TCP ports cause flaky or
-false-green runs.
+- **Unawaited async work**: `expect(...).rejects` without `await`,
+  `forEach(async ...)`, or unawaited `@testing-library/user-event` calls
+  (`user.click`, `user.type`).
+- **Synchronous race against async UI**: `screen.getBy*` immediately after an
+  async transition instead of `await screen.findBy*`, or **premature negative
+  checks** (`expect(await page.locator(...).isVisible()).toBe(false)`,
+  immediate `expect(screen.queryByRole('alert')).toBeNull()`) evaluated before
+  the pending request settles.
+- **Wall-clock and shared-environment leaks**: real `setTimeout` or
+  `waitForTimeout` sleeps, shared module state, uncleaned
+  `localStorage`/`window.location`/DOM portals or MSW handlers across tests,
+  unpinned `Date.now()`/timezone/locale, unseeded `Math.random()`, and fixed
+  TCP ports.
 
 ## Dependencies
 

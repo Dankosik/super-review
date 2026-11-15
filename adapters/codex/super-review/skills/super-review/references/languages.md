@@ -81,12 +81,13 @@ inherit its effective language-specific rules, including disables and overrides.
 
 ## Frontend frameworks in TypeScript
 
-For established React, Next.js, Tailwind CSS or shadcn/ui source, apply
-[frontend routing](frontend.md) to select owner profiles and the additional
-[frontend context](frontend/context.md). The TypeScript lens and `ts.*` rules
-remain authoritative for the assigned quality question. Resolve the stack per
-owning package and area, not from `.tsx` alone or workspace-wide dependencies.
-Framework resources do not extend supported languages or replace base coverage.
+For established React (including `.ts` hooks, query caches, client stores, form
+schemas, and routers), Next.js, Tailwind CSS, or shadcn/ui source, follow
+[frontend routing](frontend.md) and load [frontend context](frontend/context.md).
+Resolve the stack per owning package and area from imports and consumers rather
+than `.tsx` suffixes or workspace-wide manifests. Base TypeScript lenses and
+`ts.*` rules stay authoritative, and framework resources stay inside supported
+TypeScript source.
 
 ## Spring mechanisms in Java
 

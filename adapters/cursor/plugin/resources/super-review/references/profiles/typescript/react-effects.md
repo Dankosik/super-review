@@ -3,47 +3,35 @@
 Owner: function-cohesion
 Rule: ts.functions.coherent-purpose
 
-**A coherent interaction.** Can a reader distinguish render-time calculation,
-a user-triggered operation and synchronization with an external system? Locate
-the meaningful computation or interaction currently obscured by unrelated work.
-An ordinary event handler may be the clearest complete task. Extract a named
-calculation or a custom Hook when it expresses an independently understandable
-responsibility, not to meet a component line limit or move JSX into another file.
+**Separated render, event, and external sync.** Each unit should do one job:
+compute during render, handle a user action in an event/Action handler, or
+synchronize with an external system in an Effect.
 
-Custom Hooks should expose domain meaning through their inputs/results, not
-hide a collection of unrelated mount/update callbacks. Reuse of stateful logic
-does not imply shared state. Keep a straightforward Effect that synchronizes a
-widget, subscription or browser API; do not turn a legitimate external lifecycle
-into a render calculation. Keep related setup and cleanup understandable together.
-The data-flow owner handles duplicated state ownership; this owner handles the
-mixing of responsibilities, without suppressing independently useful evidence.
+- **Flag-driven Effect chains**: setting command state (`shouldSave`,
+  `submittedPayload`) only so a `useEffect` runs user-initiated work and chains
+  further setters -> run the operation directly in the originating event or
+  Action handler unless post-commit DOM state is required.
+- **Render-nested components**: declaring a child component function inside
+  another component's body, hiding closure captures and recreating its type per
+  render -> hoist to module scope with explicit props.
+- **Tangled workflows**: one component or custom Hook mixing unrelated UI flows
+  (filters, table selection, edit drawer, delete dialog) or unrelated mount
+  callbacks -> extract a subcomponent, pure calculation, or domain-named Hook
+  whose inputs and return value state one responsibility.
+- **Latest-value ref plumbing** (React 19.2+ verified): a ref plus sync Effect
+  written solely so another Effect reads fresh committed values without
+  re-subscribing -> replace with `useEffectEvent` inside that Effect, keeping
+  genuinely reactive inputs in dependencies.
+- **Client-only mount gates** (React/React DOM 19.3+ verified): a mounted-flag
+  Effect whose sole job is skipping SSR -> consider `use(browser())` only after
+  verifying the nearest `<Suspense>` fallback and first-commit timing match.
 
-Extraction must preserve Hook placement/order, dependency meaning, closure
-captures, event arguments, setup/cleanup and async ordering. Moving work from an
-Effect to an event changes when it occurs; establish the intended interaction
-from source before accepting that remedy. React 19 Actions may express a coherent
-submission but are not a mandatory rewrite of existing handlers or form adapters.
-Do not use newer minor-version APIs to silence dependencies, prescribe `useMount`
-wrappers, run lint, or turn the pass into Rules-of-Hooks bug hunting.
-
-**Remove an actual adapter obligation.** On a supported React 19.2+ baseline,
-consider `useEffectEvent` when a latest-value ref and its synchronization Effect
-exist solely to deliver current committed values to an event within another
-Effect. Separate the cause of subscription/timer lifetime from that event's work.
-Keep genuinely reactive inputs as dependencies. Compare old ref-update timing,
-callback capture and cleanup before calling the replacement equivalent; Effect
-Events are local to Effects, not general stable callbacks or props for children.
-A ref with independent mutable storage or non-Effect callers must not be replaced
-on sight. A clear ordinary Effect or domain Hook needs no new API.
-
-For a genuinely browser-only component on a supported React/React DOM 19.3+
-renderer, `use(browser())` may replace a mount-flag/Effect gate whose only purpose
-is opting out of server rendering. It suspends on the server to the nearest
-Suspense fallback. Inspect that boundary and the prior first-render/commit timing;
-matching eventual content is insufficient. Retain meaningful server output,
-post-commit prerequisites and lifecycle guards. Without a supported, behavior-
-preserving remedy, record the gate observation separately rather than recommend
-an SSR/fallback change. Neither mechanism is an upgrade or memoization campaign.
+**Keep when:** an Effect synchronizes a real widget, observer, timer, or
+browser subscription with colocated cleanup; moving work to an event would drop
+an intended mount run or post-commit DOM read; a ref has non-Effect readers or
+independent mutable storage; or server output before hydration carries meaning.
+Preserve Hook order, closure captures, cleanup symmetry, and existing form or
+handler conventions; leave duplicated state ownership to `data-flow`.
 
 Background: [custom Hooks](https://react.dev/learn/reusing-logic-with-custom-hooks),
 [Effect lifecycle](https://react.dev/learn/lifecycle-of-reactive-effects),

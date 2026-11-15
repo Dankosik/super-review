@@ -22,13 +22,15 @@ them changes between passes.
 - Parsing or reading per use: a configuration value, an environment
   variable, a URL, a date format or a header parsed or looked up on each
   call; a file read per request whose content changes only on deploy.
-- Loop-invariant work: a lookup, a conversion, an allocation or a formatting
-  of values that do not change inside the loop, which hoisting would move
-  out.
-- The same value computed twice on one path: a key serialized, hashed or
-  validated in two layers because an inner layer treats already-validated
-  internal data as untrusted; `contains_key` followed by `get` or `insert` on
-  the same key, where the entry API looks it up once.
+- Loop-invariant or render-invariant work: a lookup, a conversion, an
+  allocation, formatter/schema setup, or an `O(N)` / `O(N log N)` pass over
+  unchanged items re-run on every loop iteration or unrelated state tick, or
+  eager barrel re-exports initializing `M` unused sibling modules on entry.
+- The same value computed or fetched twice on one path: a key serialized,
+  hashed or validated in two layers because an inner layer treats
+  already-validated internal data as untrusted; duplicate reads in one request
+  tree without request-scoped deduplication; `contains_key` followed by `get`
+  or `insert` on the same key, where the entry API looks it up once.
 - A table, map or set rebuilt from constant data on every call.
 - A value formatted for a log line before the logging macro, so the work is
   done even when that level is disabled.

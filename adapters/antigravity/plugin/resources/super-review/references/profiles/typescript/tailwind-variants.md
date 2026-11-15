@@ -3,29 +3,27 @@
 Owner: duplication
 Rule: ts.duplication.share-knowledge
 
-**One design decision.** Do repeated utilities or variant branches encode the
-same maintained UI concept, or only look alike? Trace the component variants,
-token definitions and actual consumers. Share a named variant map or a coherent
-component when it removes coordinated edits to one existing decision. Keep
-incidental repetition, a readable long class string, and genuinely independent
-styles. Class count/order and dislike of utility-first CSS are not findings.
+**Shared design decisions.** Trace component variants, entry CSS tokens, and
+consumers to separate one shared UI concept from incidental class overlap.
 
-Use an existing semantic token when source establishes the same role, not merely
-the same current color. An intentional one-off arbitrary value or runtime CSS
-variable can be clearer than a new global token. Prefer the project's existing
-composition helper or plain mappings; CVA, `cn` and `tailwind-merge` are not required
-dependencies. Inspect the actual helper and custom configuration before assuming
-how overrides merge. Broad `@apply` extraction or global CSS is not the default
-cure for duplicated JSX.
+- **Dynamic utility fragments**: interpolated strings such as `` `bg-${tone}-500` ``
+  or `` `grid-cols-${n}` `` that static source scanning cannot see -> replace
+  with complete literal class maps, and keep full literal utility names in every
+  proposed refactor.
+- **Semantic token bypass**: hardcoded palette or hex utilities (`bg-white`,
+  `text-gray-900`, `bg-[#...]`) used where entry CSS and sibling components
+  establish a semantic light/dark token (`bg-background`,
+  `text-muted-foreground`) -> use the established semantic token.
+- **Duplicated variant maps**: the same multi-state utility set copied across
+  sites encoding one maintained decision -> extract a plain map, local helper,
+  or component using the project's existing composition tool (`cn`, CVA, or
+  plain objects) rather than broad `@apply` rules.
 
-Preserve complete, statically detectable utility names when extracting mappings;
-do not manufacture class fragments such as `bg-${tone}-500`. Preserve variant
-conditions/order, custom tokens, dark/responsive/container/state selectors,
-`group`/`peer` scope, arbitrary selectors, specificity, consumer `className`
-precedence and motion/focus styles. Read relevant theme/source registration as
-context, without claiming a standalone CSS review. Tailwind v4 CSS-first `@theme`
-and source rules do not justify migrating a v3 configuration. Do not audit missing
-classes, visual alignment, CSS performance or formatter output.
+**Keep when:** long literal class strings are independent, equal colors serve
+distinct roles (brand, chart, one-off arbitrary values, runtime CSS variables),
+or the project uses Tailwind v3 configuration rather than v4 `@theme`. Preserve
+variant order, dark/responsive/container/state selectors, `group`/`peer` scope,
+specificity, consumer `className` override precedence, and focus/motion styles.
 
 Background: [utility composition](https://tailwindcss.com/docs/styling-with-utility-classes),
 [theme variables](https://tailwindcss.com/docs/theme),

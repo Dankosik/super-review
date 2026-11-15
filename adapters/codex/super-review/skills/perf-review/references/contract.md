@@ -86,12 +86,14 @@ size callers control. Follow callers outward until something makes the path
 frequent.
 
 Hot is relative to the program's unit of work: a request for a service, a
-message for a consumer, one run for a command-line tool that scripts call
-repeatedly, where startup is part of every run. Code that runs once for many
-units, such as the startup of a long-lived service or the setup of a
-long-lived connection, is not hot for per-unit work, however slow it is. An
-error path is hot when real input takes it routinely: a parse that fails on
-half the tokens, a cache miss returned as `Err`.
+message for a consumer, a route load or UI interaction pass (high-frequency
+input events, animation frames, per-keystroke updates, or caller-sized list
+renders), or one run for a command-line tool that scripts call repeatedly,
+where startup is part of every run. Code that runs once for many units, such as
+the startup of a long-lived service or the setup of a long-lived connection, is
+not hot for per-unit work, however slow it is. An error path is hot when real
+input takes it routinely: a parse that fails on half the tokens, a cache miss
+returned as `Err`.
 
 The basis is one of:
 

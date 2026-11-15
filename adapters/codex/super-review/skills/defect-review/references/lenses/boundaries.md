@@ -27,20 +27,24 @@ what should be accepted with what the code accepts, in both directions.
   another: file, environment, `Default`, serde default, `From`, reload.
 - A validation or normalization helper whose body checks fewer invariants than
   downstream callers rely on after calling it.
-- Two defaults for one key, or a missing/invalid value silently defaulted to
-  `0`, `false` or `""` where refusal was required (fail-open).
+- Two defaults for one key, or a missing, invalid, or cleared value silently
+  coerced to `0`, `false`, `""`, or `NaN` where absence or refusal was required
+  (fail-open).
 - Seconds read as milliseconds, bytes as characters, a duration truncated to
-  whole seconds.
-- A narrowing cast or saturating arithmetic where refusal was the answer.
+  whole seconds, or a date-only value shifted across time zones.
+- A narrowing cast, saturating arithmetic, unvalidated external/client input,
+  or server-versus-client initial render mismatch where refusal or parity was
+  required.
 - An unknown field or variant accepted where it must be refused, or refused
   where forward compatibility needs it.
 - Written with one encoding, key format or escaping and read with another, or
   changed on `encode`/`Serialize`/writer without updating `decode`/`Deserialize`/reader.
-- Breaking state in flight across a change (`D -> H`): a persisted row, cached
-  value, queued job, cursor token or wire message written by the base commit `D`
-  that fails or changes meaning when read by `H` (renamed variant/field without
-  alias, optional field made required without default, changed cache-key inputs
-  sharing the old key prefix, reordered positional fields).
+- Breaking state in flight across a change (`D -> H`): a persisted row, client
+  storage entry, URL parameter, cached value, queued job, cursor token, or wire
+  message written by `D` that fails or changes meaning when read by `H` (renamed
+  variant/field without alias or migration, optional field made required without
+  default, changed cache-key inputs sharing the old prefix, reordered positional
+  fields).
 - The body read before its size is compared; the list built before its
   length is checked.
 - A second, unvalidated entry to the same code.

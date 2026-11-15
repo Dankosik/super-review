@@ -34,11 +34,14 @@ cause is renamed.
   rejected credentials, a caller leaving reported as a timeout.
 - A catch-all that folds a distinguishable cause into a general one when a
   name for it exists.
-- A swallowed error: mapped to `None`, an empty result or a default
-  (`ok()`, `unwrap_or_default`, `filter_map(Result::ok)` dropping failed items
-  from a batch that still reports `Ok`) with nothing recording it, or where the
-  caller then acts on the substitute as fact: "could not check" taken for "not
-  there", a failed lookup taken for the permissive default (fail-open).
+- A swallowed error: mapped to `None`, an empty result, or a default (`ok()`,
+  `unwrap_or_default`, `filter_map(Result::ok)` dropping failed batch items, an
+  error status inside a resolved response left unchecked, or an empty `catch`)
+  with nothing recording it, or where the caller acts on the substitute as fact:
+  "could not check" taken for "not there", a failed write shown as succeeded, or
+  a failed lookup taken for the permissive default (fail-open).
+- An early return or failure skipping `finally` or guard cleanup, leaving an
+  in-flight flag or lock permanently stuck.
 - The returned error says one thing and the metric label or log event
   another; one channel skipped on an early return.
 - A failure counted twice, or not at all.

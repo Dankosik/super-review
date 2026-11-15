@@ -40,11 +40,11 @@ lines at the pinned revision.
 | Lens | Asks | Selected when the area has |
 | --- | --- | --- |
 | [results](lenses/results.md) | Does each operation return and do what it stands for, at the edges too? | Any operation with callers. |
-| [boundaries](lenses/boundaries.md) | Does data crossing a boundary keep its shape, limits and defaults? | Configuration, parsing, serialization, wire or storage formats, validation. |
-| [errors](lenses/errors.md) | Is each failure reported as what it is? | Fallible operations, error types, status mapping, failure metrics or logs. |
-| [time](lenses/time.md) | Does every wait end when it should, and for the reported reason? | Timeouts, deadlines, retries, intervals, cancellation. |
-| [lifecycle](lenses/lifecycle.md) | Is everything that is started also observed and ended? | Spawned tasks, background loops, connections, startup or shutdown paths, guards. |
-| [shared-state](lenses/shared-state.md) | Does one caller's failure or timing stay its own? | State or resources shared across callers or tasks. |
+| [boundaries](lenses/boundaries.md) | Does data crossing a boundary keep its shape, limits and defaults? | Configuration, parsing, serialization, wire or storage formats, validation, DOM inputs, hydration or server/client seams. |
+| [errors](lenses/errors.md) | Is each failure reported as what it is? | Fallible operations, error types, status mapping, UI pending/error states, failure metrics or logs. |
+| [time](lenses/time.md) | Does every wait end when it should, and for the reported reason? | Timeouts, deadlines, retries, intervals, debounce timers, calendar/time-zone dates, cancellation. |
+| [lifecycle](lenses/lifecycle.md) | Is everything that is started also observed and ended? | Spawned tasks, background loops, connections, startup or shutdown paths, guards, component Effects, browser subscriptions or locks. |
+| [shared-state](lenses/shared-state.md) | Does one caller's failure or timing stay its own? | State or resources shared across callers, requests or tasks, concurrent UI actions, caches or stateful item keys. |
 | [stated-facts](lenses/stated-facts.md) | Do the written numbers, names and descriptions match the code? | Documents, decision records, described metrics, configuration references. |
 | [team-rules](lenses/team-rules.md) | Does the code follow the checkable rules the team wrote for it? | Located team rules that apply to the area. |
 

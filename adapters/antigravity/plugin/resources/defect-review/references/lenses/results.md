@@ -32,16 +32,20 @@ what it returns.
   an internal enum/union) turning a missing entry, unexpected state or newly
   added variant into apparent success or a zero/empty value while the intended
   effect never happened.
-- Asymmetric propagation across sibling paths: a new field, tenant/scope filter
+- Asymmetric propagation across sibling paths: a new field, tenant/scope filter,
   or variant handled in `create` or single-item lookup while omitted from
-  `cache_key`, `clone`/`merge`, equality/hash, `reset`/`clear`, or the
-  batch/stream/reload path.
+  cache/query keys, invalidation, `clone`/`merge`, equality/hash, form reset, or
+  the batch/stream/reload path.
 - A helper whose name promises more than its body establishes (`validate`,
   `normalize`, `ensure`, `reset`), leaving callers relying on an unchecked
   field, unnormalized input or unperformed step.
 - An invariant broken by a later mutator or a second constructor.
-- Success reported while the write, event or metric did not happen, or
-  happened twice.
+- Success reported while the write, event, or metric did not happen, happened
+  twice (such as an unguarded async action), or fired an unintended default
+  action alongside the intended one.
+- An interactive control or dynamic style rule that drops its effect on a
+  reachable input path (nested click targets, active input-method composition,
+  keyboard activation, or statically stripped class names).
 - A second call that differs from the first where callers rely on
   idempotence.
 - A value stored normalized and compared raw.

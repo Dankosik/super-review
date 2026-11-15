@@ -3,7 +3,7 @@ name: super-review
 description: "Explicit Super Review of Go, TypeScript, Rust, or Java PRs or local source for readability and maintainability, or help using that review."
 disable-model-invocation: true
 metadata:
-  version: "3.34.0"
+  version: "3.35.0"
 ---
 
 # Super Review

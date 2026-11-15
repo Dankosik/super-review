@@ -8,7 +8,15 @@
     ["AP05", "AP06"],
     ["AP07", "AP08"],
     ["AP09", "AP10"],
-    ["AP11", "AP12"]
+    ["AP11", "AP12"],
+    ["AP13", "AP14"],
+    ["AP15", "AP16"],
+    ["AP17", "AP18"],
+    ["AP19", "AP20"],
+    ["AP21", "AP22"],
+    ["AP23", "AP24"],
+    ["AP25", "AP26"],
+    ["AP27", "AP28"]
   ],
   "cases": [
     {
@@ -117,6 +125,150 @@
       "checks": [
         "Identifies DefaultRoutes as called once in main() before ListenAndServe over a 4-element builtin slice",
         "Reports no hot-path complexity finding"
+      ]
+    },
+    {
+      "id": "AP13",
+      "polarity": "report",
+      "decision": "query-cache mirroring into global Zustand store and derived count state collapsed",
+      "checks": [
+        "Flags mirroring useQuery data into useProjectStore.setProjects and local count state via useEffect without an independent draft lifecycle",
+        "Recommends reading the query result and deriving length directly while keeping transient component help state local"
+      ]
+    },
+    {
+      "id": "AP14",
+      "polarity": "retain",
+      "decision": "independent unsaved form draft state beside mutation retained",
+      "checks": [
+        "Recognizes draftName as an independent editable draft distinct from server query cache",
+        "Does not collapse draftName into render derivation or a global store"
+      ]
+    },
+    {
+      "id": "AP15",
+      "polarity": "report",
+      "decision": "render-nested child component and flag-driven submit Effect simplified",
+      "checks": [
+        "Flags MemberBadge declared inside InvitePanel render body and recommends hoisting to module scope with explicit props",
+        "Flags shouldSubmit boolean flag triggering useEffect for a button-click action and moves submission into an event handler"
+      ]
+    },
+    {
+      "id": "AP16",
+      "polarity": "retain",
+      "decision": "module-scoped subcomponent, direct event handler and ResizeObserver Effect retained",
+      "checks": [
+        "Retains module-scoped MemberBadge, direct async handleSend callback and the external ResizeObserver synchronization Effect with disconnect cleanup",
+        "Does not move ResizeObserver setup into render or invent a wrapper hook"
+      ]
+    },
+    {
+      "id": "AP17",
+      "polarity": "report",
+      "decision": "container use-client boundary and widget barrel coupling narrowed to interactive leaf",
+      "checks": [
+        "Identifies ArticleScreen marking the whole article view client-side and pulling marked plus the widgets barrel into the client graph solely for CopyPermalinkButton",
+        "Recommends keeping markdown rendering on the server and importing CopyPermalinkButton directly as the narrow client leaf"
+      ]
+    },
+    {
+      "id": "AP18",
+      "polarity": "retain",
+      "decision": "server markdown page with direct leaf client button import retained",
+      "checks": [
+        "Retains server-side marked execution in DocPage and direct leaf import of client CopyPermalinkButton",
+        "Reports no client-boundary or barrel-coupling burden"
+      ]
+    },
+    {
+      "id": "AP19",
+      "polarity": "report",
+      "decision": "browser-only typeof-window dead guards and redundant internal prop checks removed",
+      "checks": [
+        "Flags unreachable typeof window checks inside useEffect and onClick handler plus redundant Array.isArray and optional-call guards on typed internal props",
+        "Traces SettingsPage as the sole typed caller guaranteeing themes array and onSelect function"
+      ]
+    },
+    {
+      "id": "AP20",
+      "polarity": "retain",
+      "decision": "SSR-reachable window guard and untrusted localStorage narrowing retained",
+      "checks": [
+        "Retains typeof window guard in SSR-callable readStoredTheme and runtime narrowing of untrusted localStorage value",
+        "Does not remove boundary validation"
+      ]
+    },
+    {
+      "id": "AP21",
+      "polarity": "report",
+      "decision": "implicit form-submit button, empty-number zero coercion and unchecked fetch status reported",
+      "checks": [
+        "Traces clicking Remove tag button without explicit button type submitting the enclosing form",
+        "Traces clearing the number input turning empty string into 0 via Number() instead of null and fetch resolving on HTTP 4xx/5xx without checking res.ok"
+      ]
+    },
+    {
+      "id": "AP22",
+      "polarity": "retain",
+      "decision": "explicit button type, blank-to-null input parsing and checked fetch status retained",
+      "checks": [
+        "Verifies Remove button specifies non-submit type, empty input maps to null, res.ok is checked, and in-flight status prevents duplicate submit",
+        "Reports no form-boundary or error-handling defect"
+      ]
+    },
+    {
+      "id": "AP23",
+      "polarity": "report",
+      "decision": "uncancelled workspace fetch race and SSR module-global tenant leak reported",
+      "checks": [
+        "Traces slower earlier workspaceId fetch resolving after a workspace switch and overwriting totalEvents without AbortController or generation guard",
+        "Traces module-scoped mutable currentTenantId leaking across concurrent SSR requests"
+      ]
+    },
+    {
+      "id": "AP24",
+      "polarity": "retain",
+      "decision": "abort-guarded and workspace-tagged effect fetch retained",
+      "checks": [
+        "Verifies AbortController cleanup and workspaceId match prevent stale overwrites across switches",
+        "Reports no shared-state race"
+      ]
+    },
+    {
+      "id": "AP25",
+      "polarity": "report",
+      "decision": "per-row RSC payload bloat and scroll-loop synchronous layout thrashing reported",
+      "checks": [
+        "Traces FullOrderRecord serializing unused rawInvoiceHtml and auditLogEntries across the client boundary for up to 500 rows",
+        "Traces interleaved getBoundingClientRect read and style.opacity write inside the onScroll loop forcing per-row synchronous layout passes"
+      ]
+    },
+    {
+      "id": "AP26",
+      "polarity": "retain",
+      "decision": "projected RSC list items and batched geometry read-before-write scroll pass retained",
+      "checks": [
+        "Verifies OrdersPage projects id and title before crossing the client boundary and handleScroll batches all geometry reads before style writes",
+        "Reports no per-row serialization or layout-thrashing finding"
+      ]
+    },
+    {
+      "id": "AP27",
+      "polarity": "report",
+      "decision": "one-shot isVisible negative snapshot before async transfer settles flagged as false-green",
+      "checks": [
+        "Shows page.getByRole('alert').isVisible() resolves false immediately after click before fetch('/api/transfers') settles, passing even when /api/transfers fails",
+        "Provides a two-order event trace and recommends awaiting settled transfer state with web-first assertions"
+      ]
+    },
+    {
+      "id": "AP28",
+      "polarity": "retain",
+      "decision": "settled positive state wait followed by auto-retrying hidden alert assertion retained",
+      "checks": [
+        "Verifies awaiting 'Transfer scheduled' visibility settles the request before asserting alert is hidden",
+        "Reports no unstable or false-green assertion"
       ]
     }
   ]

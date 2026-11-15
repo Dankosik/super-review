@@ -35,13 +35,15 @@ what is left running. Add up what a caller waits in total.
 - A wait with no limit: a lock, a channel send, a join, a connect.
 - A shorter internal limit cutting work still inside the caller's longer
   one.
-- Backoff that exceeds its cap, never resets after success, or resets on
-  every failure.
-- Wall-clock time where elapsed time was meant.
+- Backoff that exceeds its cap, never resets after success, or resets on every
+  failure; or a debounce/throttle timer recreated per update instead of kept
+  across updates.
+- Wall-clock time where elapsed time was meant, or UTC midnight mixed with
+  local calendar dates.
 - A timeout reported as plain failure for an operation that is not
   idempotent, and then retried.
-- Local work that keeps running after its caller's deadline and still
-  publishes its result.
+- Local work or scheduled timers that keep running after their caller's
+  deadline, route change, or owner teardown and still publish stale state.
 
 For "the caller went away", name the suspension point where the future is
 dropped and what runs afterwards.

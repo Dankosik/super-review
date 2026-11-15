@@ -11,8 +11,10 @@ accepts iterables or entries directly, and drop round-trip serialization or
 re-parsing of already-parsed values used only to check a property.
 
 When `any`, `as` assertions, or `!` force multiple consumers to repeat an
-unstated shape assumption, move narrowing or decoding to the owning boundary
-(`unknown` alone validates nothing).
+unstated shape assumption (including `e.target as HTMLInputElement` or
+`as unknown as T` casts where typed `e.currentTarget`, `FormData`, component
+refs, or boundary schema decoding already express the shape), move narrowing or
+decoding to the owning seam (`unknown` alone validates nothing).
 
 **Keep when:** a direct pipeline, local mutable accumulator, staging step that
 preserves error order or atomic updates, or contained interop assertion already

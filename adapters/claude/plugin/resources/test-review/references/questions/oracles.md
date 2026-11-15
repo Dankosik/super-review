@@ -23,9 +23,12 @@ value comes from.
   `Ok` or `Err` without looking at the value.
 - A tautological assertion: the expected value is computed by the same code
   or by a copy of the production logic.
-- Testing past the seam: the assertion checks what a mock was told or what a
-  private helper did, while the observable result, error variant or effect at
+- Testing past the seam: the assertion checks what a mock was told, what a
+  private helper did, or a cosmetic presentation token, while collaborators are
+  mocked away and the observable result, error variant, or behavioral state at
   the real interface can break undetected.
+- Premature negative check: asserting that an error or effect is absent before
+  the async operation that would produce it has settled.
 - An interior-only boundary test: the test names a limit, threshold or edge
   yet supplies only a comfortable interior value, so `<` for `<=` or an
   off-by-one mutant passes.

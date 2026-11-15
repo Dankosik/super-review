@@ -1,24 +1,22 @@
 # Frontend routing
 
-Use this extension of [language routing](languages.md) for established React,
-Next.js, Tailwind CSS or shadcn/ui in included TypeScript/TSX source. It adds
-owner profiles, not a language, an agent type, or a replacement review workflow.
-A package dependency or `.tsx` suffix alone is not an applicability decision:
-inspect declarations, imports/re-exports, owning configuration and actual uses.
-A React-only package does not inherit Next.js constraints from another workspace.
+Extend [language routing](languages.md) when included TypeScript/TSX source
+establishes React (including SPA query, store, form, and router modules),
+Next.js, Tailwind CSS, or shadcn/ui through declarations, imports, owning
+configuration, and callers. Resolve per package and area: a Vite or plain React
+package stays independent of Next.js rules in sibling workspaces.
 
-Record the per-area baseline using [frontend context](frontend/context.md).
-Select from the following signals under [aspect selection](aspects.md), including
-its scope, policy, missing-evidence and completion rules. Ordinary frontend source
-can complete every selected question with no candidates.
+Record the per-area baseline with [frontend context](frontend/context.md), and
+select profiles from these source triggers under [aspect selection](aspects.md).
+Clean frontend source completes every selected question with zero candidates.
 
 | Profile | Owner | Signal in included source, not a finding |
 | --- | --- | --- |
-| [react-state](profiles/typescript/react-state.md) | data-flow | React state, derived render values, context/store subscriptions, draft or pending/optimistic state. |
-| [react-state-transitions](profiles/typescript/react-state-transitions.md) | representation | Existing interaction modes, correlated state/payloads or coordinated updates across handlers. |
-| [react-effects](profiles/typescript/react-effects.md) | function-cohesion | React Effects, custom Hooks, latest-value adapters, browser-only gates or event/Action handlers combining computation and interactions. |
-| [react-composition](profiles/typescript/react-composition.md) | api-clarity | Component/Hook contracts, children/slots, child inspection/cloning, transparent provider wrappers, controlled props or refs. |
-| [next-boundaries](profiles/typescript/next-boundaries.md) | abstractions | Next route entry points/types, server/client composition, Server Functions, providers or request adapters. |
+| [react-state](profiles/typescript/react-state.md) | data-flow | State ownership: local state, derived render values, query caches, client stores, URL state, form drafts, or optimistic state. |
+| [react-state-transitions](profiles/typescript/react-state-transitions.md) | representation | Mode representation: correlated status flags, multi-setter transitions, or raw form strings mixed with parsed domain types. |
+| [react-effects](profiles/typescript/react-effects.md) | function-cohesion | Interaction cohesion: Effects, custom Hooks, render-nested components, flag-driven Effect chains, latest-value refs, SSR gates, or multi-workflow closures. |
+| [react-composition](profiles/typescript/react-composition.md) | api-clarity | Component seams: props/Hooks, children/slots, `cloneElement` protocols, provider wrappers, memoization wrappers, type-erased form/table props, or refs. |
+| [next-boundaries](profiles/typescript/next-boundaries.md) | abstractions | Route and client seams: Next entry points/types, `"use client"`/`"use server"` cuts, client-imported server/barrel modules, Server Functions, or providers. |
 | [next-data-ownership](profiles/typescript/next-data-ownership.md) | data-flow | Next loaders, request inputs, server/client data handoffs, mutation, navigation-state lifetime and cache/revalidation ownership. |
 | [next-ui-boundaries](profiles/typescript/next-ui-boundaries.md) | control-flow | Loading/result/failure branches, Suspense/fallback composition or route/component recovery infrastructure. |
 | [tailwind-variants](profiles/typescript/tailwind-variants.md) | duplication | Tailwind utility sets, semantic tokens or variant mappings in included components. |

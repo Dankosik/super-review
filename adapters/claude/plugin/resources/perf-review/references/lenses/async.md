@@ -24,9 +24,10 @@ and the awaits that do not use each other's results.
   blocking JDBC/HTTP on a reactive thread, virtual-thread carrier pinning on
   older runtimes, `std::thread::sleep`, `block_on` inside async code, or
   parsing/serializing large payloads inline on a shared event loop.
-- Sequential awaits for independent operations: two lookups awaited one
-  after the other, a loop that awaits each item's request before sending the
-  next, where `join!`, `try_join!`, `JoinSet`, `FuturesUnordered`,
+- Sequential awaits for independent operations: two lookups awaited one after
+  the other, an `await` placed before a branch or streaming boundary that does
+  not read its result, or a loop that awaits each item's request before sending
+  the next, where `join!`, `try_join!`, `JoinSet`, `FuturesUnordered`,
   `buffer_unordered`, bounded `Promise.all`, `errgroup` or structured
   concurrency would overlap them.
 - Lock held across `.await` or async suspension: an async `Mutex`, `RwLock` or

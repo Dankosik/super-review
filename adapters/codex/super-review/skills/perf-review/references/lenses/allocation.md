@@ -46,7 +46,8 @@ or buffer it initializes, find how much of it is read.
 - Cross-seam repackaging: an intermediate `Vec`, slice, array, `List`, map or
   wrapper DTO materialized only to cross an internal layer or module seam
   within one unit and consumed once on the other side, where borrowing, a view
-  or streaming keeps the external contract.
+  or streaming keeps the external contract; or fresh broadcast or selector
+  values allocated per state tick that force `M` subscribers to re-run.
 - A value built only to measure it: serialized or formatted into a buffer
   to take its length, where the length follows from the parts.
 - A copy of a large buffer that is then only read: `to_vec` of a slice, a

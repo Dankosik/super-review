@@ -166,6 +166,227 @@
         "cmd/api/main.go": "package main\n\nimport (\n\t\"net/http\"\n\t\"example.com/feed/internal/boot\"\n)\n\nfunc main() {\n\troutes := boot.DefaultRoutes()\n\tfor _, route := range routes {\n\t\thttp.HandleFunc(route, func(w http.ResponseWriter, _ *http.Request) { _, _ = w.Write([]byte(\"ok\")) })\n\t}\n\t_ = http.ListenAndServe(\":8080\", nil)\n}\n",
         "internal/boot/routes.go": "package boot\n\nimport \"slices\"\n\nvar builtin = []string{\"/healthz\", \"/readyz\", \"/metrics\", \"/healthz\"}\n\nfunc DefaultRoutes() []string {\n\tout := make([]string, 0, len(builtin))\n\tfor _, r := range builtin {\n\t\tif !slices.Contains(out, r) {\n\t\t\tout = append(out, r)\n\t\t}\n\t}\n\treturn out\n}\n"
       }
+    },
+    {
+      "id": "AP13",
+      "skill": "super-review",
+      "language": "typescript",
+      "lens": "data-flow",
+      "request": "Review the assigned React SPA module through data-flow and applicable frontend profiles for readability and maintainability. Do not execute or edit code.",
+      "scope": "Whole-module review of src/projects/ProjectList.tsx and src/projects/projectStore.ts in a private Vite SPA.",
+      "files": {
+        "package.json": "{\n  \"name\": \"console-web\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"dependencies\": {\n    \"react\": \"^19.2.0\",\n    \"react-dom\": \"^19.2.0\",\n    \"@tanstack/react-query\": \"^5.66.0\",\n    \"zustand\": \"^5.0.3\"\n  }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"react-jsx\" }\n}\n",
+        "src/projects/projectStore.ts": "import { create } from \"zustand\";\n\nexport interface ProjectSummary {\n  readonly id: string;\n  readonly name: string;\n}\n\ninterface ProjectStoreState {\n  projects: readonly ProjectSummary[];\n  isHelpOpen: boolean;\n  setProjects: (projects: readonly ProjectSummary[]) => void;\n  setHelpOpen: (open: boolean) => void;\n}\n\nexport const useProjectStore = create<ProjectStoreState>((set) => ({\n  projects: [],\n  isHelpOpen: false,\n  setProjects: (projects) => set({ projects }),\n  setHelpOpen: (isHelpOpen) => set({ isHelpOpen }),\n}));\n",
+        "src/projects/ProjectList.tsx": "import { useEffect, useState } from \"react\";\nimport { useQuery } from \"@tanstack/react-query\";\nimport { useProjectStore, type ProjectSummary } from \"./projectStore\";\n\nasync function fetchProjects(teamId: string): Promise<readonly ProjectSummary[]> {\n  const res = await fetch(`/api/teams/${encodeURIComponent(teamId)}/projects`);\n  if (!res.ok) throw new Error(`HTTP ${res.status}`);\n  return (await res.json()) as readonly ProjectSummary[];\n}\n\nexport function ProjectList({ teamId }: { readonly teamId: string }) {\n  const { data } = useQuery({\n    queryKey: [\"projects\", teamId],\n    queryFn: () => fetchProjects(teamId),\n  });\n  const { projects, setProjects, isHelpOpen, setHelpOpen } = useProjectStore();\n  const [count, setCount] = useState(0);\n\n  useEffect(() => {\n    if (data) {\n      setProjects(data);\n      setCount(data.length);\n    }\n  }, [data, setProjects]);\n\n  return (\n    <section>\n      <header>\n        <h2>Projects ({count})</h2>\n        <button type=\"button\" onClick={() => setHelpOpen(!isHelpOpen)}>Help</button>\n      </header>\n      {isHelpOpen && <p>Select a project to inspect deployments.</p>}\n      <ul>\n        {projects.map((p) => <li key={p.id}>{p.name}</li>)}\n      </ul>\n    </section>\n  );\n}\n"
+      }
+    },
+    {
+      "id": "AP14",
+      "skill": "super-review",
+      "language": "typescript",
+      "lens": "data-flow",
+      "request": "Review the assigned React SPA module through data-flow and applicable frontend profiles for readability and maintainability. Do not execute or edit code.",
+      "scope": "Whole-module review of src/projects/ProjectNameForm.tsx in a private Vite SPA.",
+      "files": {
+        "package.json": "{\n  \"name\": \"console-web\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"dependencies\": {\n    \"react\": \"^19.2.0\",\n    \"react-dom\": \"^19.2.0\",\n    \"@tanstack/react-query\": \"^5.66.0\"\n  }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"react-jsx\" }\n}\n",
+        "src/projects/ProjectNameForm.tsx": "import { useState } from \"react\";\nimport { useMutation, useQueryClient } from \"@tanstack/react-query\";\n\nexport interface ProjectDetail {\n  readonly id: string;\n  readonly name: string;\n}\n\nexport function ProjectNameForm({ project }: { readonly project: ProjectDetail }) {\n  const [draftName, setDraftName] = useState(project.name);\n  const queryClient = useQueryClient();\n  const rename = useMutation({\n    mutationFn: async (nextName: string) => {\n      const res = await fetch(`/api/projects/${encodeURIComponent(project.id)}`, {\n        method: \"PATCH\",\n        headers: { \"content-type\": \"application/json\" },\n        body: JSON.stringify({ name: nextName }),\n      });\n      if (!res.ok) throw new Error(`HTTP ${res.status}`);\n    },\n    onSuccess: () => queryClient.invalidateQueries({ queryKey: [\"projects\", project.id] }),\n  });\n\n  return (\n    <form onSubmit={(e) => { e.preventDefault(); rename.mutate(draftName); }}>\n      <input value={draftName} onChange={(e) => setDraftName(e.currentTarget.value)} />\n      <button type=\"submit\" disabled={rename.isPending}>Save</button>\n    </form>\n  );\n}\n"
+      }
+    },
+    {
+      "id": "AP15",
+      "skill": "super-review",
+      "language": "typescript",
+      "lens": "function-cohesion",
+      "request": "Review the assigned React component through function-cohesion and react-effects for readability and maintainability. Do not execute or edit code.",
+      "scope": "Whole-module review of src/invites/InvitePanel.tsx in a private React 19 web app.",
+      "files": {
+        "package.json": "{\n  \"name\": \"team-web\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"dependencies\": {\n    \"react\": \"^19.2.0\",\n    \"react-dom\": \"^19.2.0\"\n  }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"react-jsx\" }\n}\n",
+        "src/invites/InvitePanel.tsx": "import { useEffect, useState } from \"react\";\n\nexport function InvitePanel({ members, onInvite }: {\n  readonly members: readonly string[];\n  readonly onInvite: (email: string) => Promise<void>;\n}) {\n  const [email, setEmail] = useState(\"\");\n  const [shouldSubmit, setShouldSubmit] = useState(false);\n  const [status, setStatus] = useState<\"idle\" | \"sent\">(\"idle\");\n\n  function MemberBadge({ address }: { readonly address: string }) {\n    return <li className=\"member-pill\">{address} ({email === address ? \"duplicate\" : \"active\"})</li>;\n  }\n\n  useEffect(() => {\n    if (!shouldSubmit) return;\n    setShouldSubmit(false);\n    void onInvite(email).then(() => {\n      setEmail(\"\");\n      setStatus(\"sent\");\n    });\n  }, [shouldSubmit, email, onInvite]);\n\n  return (\n    <div>\n      <input value={email} onChange={(e) => setEmail(e.currentTarget.value)} />\n      <button type=\"button\" onClick={() => setShouldSubmit(true)}>Send invite</button>\n      {status === \"sent\" && <span>Invitation sent</span>}\n      <ul>{members.map((m) => <MemberBadge key={m} address={m} />)}</ul>\n    </div>\n  );\n}\n"
+      }
+    },
+    {
+      "id": "AP16",
+      "skill": "super-review",
+      "language": "typescript",
+      "lens": "function-cohesion",
+      "request": "Review the assigned React component through function-cohesion and react-effects for readability and maintainability. Do not execute or edit code.",
+      "scope": "Whole-module review of src/invites/InvitePanel.tsx in a private React 19 web app.",
+      "files": {
+        "package.json": "{\n  \"name\": \"team-web\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"dependencies\": {\n    \"react\": \"^19.2.0\",\n    \"react-dom\": \"^19.2.0\"\n  }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"react-jsx\" }\n}\n",
+        "src/invites/InvitePanel.tsx": "import { useEffect, useRef, useState } from \"react\";\n\nfunction MemberBadge({ address, isDuplicate }: { readonly address: string; readonly isDuplicate: boolean }) {\n  return <li className=\"member-pill\">{address} ({isDuplicate ? \"duplicate\" : \"active\"})</li>;\n}\n\nexport function InvitePanel({ members, onInvite }: {\n  readonly members: readonly string[];\n  readonly onInvite: (email: string) => Promise<void>;\n}) {\n  const [email, setEmail] = useState(\"\");\n  const [status, setStatus] = useState<\"idle\" | \"sent\">(\"idle\");\n  const [widthPx, setWidthPx] = useState(0);\n  const panelRef = useRef<HTMLDivElement>(null);\n\n  useEffect(() => {\n    const node = panelRef.current;\n    if (!node) return;\n    const observer = new ResizeObserver(([entry]) => {\n      if (entry) setWidthPx(Math.round(entry.contentRect.width));\n    });\n    observer.observe(node);\n    return () => observer.disconnect();\n  }, []);\n\n  async function handleSend() {\n    await onInvite(email);\n    setEmail(\"\");\n    setStatus(\"sent\");\n  }\n\n  return (\n    <div ref={panelRef} data-compact={widthPx > 0 && widthPx < 420}>\n      <input value={email} onChange={(e) => setEmail(e.currentTarget.value)} />\n      <button type=\"button\" onClick={() => void handleSend()}>Send invite</button>\n      {status === \"sent\" && <span>Invitation sent</span>}\n      <ul>{members.map((m) => <MemberBadge key={m} address={m} isDuplicate={email === m} />)}</ul>\n    </div>\n  );\n}\n"
+      }
+    },
+    {
+      "id": "AP17",
+      "skill": "super-review",
+      "language": "typescript",
+      "lens": "abstractions",
+      "request": "Review the assigned Next.js App Router area through abstractions, next-boundaries and dependency-boundaries for readability and maintainability. Do not execute or edit code.",
+      "scope": "Whole-area review of app/docs/[slug]/page.tsx, app/docs/[slug]/article-screen.tsx and components/widgets/index.ts in a private Next.js 16 app.",
+      "files": {
+        "package.json": "{\n  \"name\": \"docs-portal\",\n  \"private\": true,\n  \"dependencies\": {\n    \"next\": \"16.3.0\",\n    \"react\": \"19.2.0\",\n    \"react-dom\": \"19.2.0\",\n    \"marked\": \"15.0.0\"\n  }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"preserve\" }\n}\n",
+        "components/widgets/index.ts": "export { CopyPermalinkButton } from \"./copy-permalink-button\";\nexport { InteractiveSqlPlayground } from \"./sql-playground\";\nexport { TelemetryFlamegraph } from \"./telemetry-flamegraph\";\n",
+        "components/widgets/copy-permalink-button.tsx": "\"use client\";\nimport { useState } from \"react\";\n\nexport function CopyPermalinkButton({ url }: { readonly url: string }) {\n  const [copied, setCopied] = useState(false);\n  return (\n    <button type=\"button\" onClick={() => { void navigator.clipboard.writeText(url).then(() => setCopied(true)); }}>\n      {copied ? \"Copied\" : \"Copy link\"}\n    </button>\n  );\n}\n",
+        "app/docs/[slug]/article-screen.tsx": "\"use client\";\nimport { marked } from \"marked\";\nimport { CopyPermalinkButton } from \"../../../components/widgets\";\n\nexport function ArticleScreen({ title, markdown, url }: {\n  readonly title: string;\n  readonly markdown: string;\n  readonly url: string;\n}) {\n  const renderedSummary = marked.parseInline(markdown.slice(0, 180));\n  return (\n    <article>\n      <header>\n        <h1>{title}</h1>\n        <CopyPermalinkButton url={url} />\n      </header>\n      <p>{String(renderedSummary)}</p>\n    </article>\n  );\n}\n",
+        "app/docs/[slug]/page.tsx": "import { ArticleScreen } from \"./article-screen\";\n\nexport default async function DocPage({ params }: { readonly params: Promise<{ slug: string }> }) {\n  const { slug } = await params;\n  return <ArticleScreen title={slug} markdown={`Overview for **${slug}**`} url={`https://docs.example/${slug}`} />;\n}\n"
+      }
+    },
+    {
+      "id": "AP18",
+      "skill": "super-review",
+      "language": "typescript",
+      "lens": "abstractions",
+      "request": "Review the assigned Next.js App Router area through abstractions, next-boundaries and dependency-boundaries for readability and maintainability. Do not execute or edit code.",
+      "scope": "Whole-area review of app/docs/[slug]/page.tsx and components/widgets/copy-permalink-button.tsx in a private Next.js 16 app.",
+      "files": {
+        "package.json": "{\n  \"name\": \"docs-portal\",\n  \"private\": true,\n  \"dependencies\": {\n    \"next\": \"16.3.0\",\n    \"react\": \"19.2.0\",\n    \"react-dom\": \"19.2.0\",\n    \"marked\": \"15.0.0\"\n  }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"preserve\" }\n}\n",
+        "components/widgets/copy-permalink-button.tsx": "\"use client\";\nimport { useState } from \"react\";\n\nexport function CopyPermalinkButton({ url }: { readonly url: string }) {\n  const [copied, setCopied] = useState(false);\n  return (\n    <button type=\"button\" onClick={() => { void navigator.clipboard.writeText(url).then(() => setCopied(true)); }}>\n      {copied ? \"Copied\" : \"Copy link\"}\n    </button>\n  );\n}\n",
+        "app/docs/[slug]/page.tsx": "import { marked } from \"marked\";\nimport { CopyPermalinkButton } from \"../../../components/widgets/copy-permalink-button\";\n\nexport default async function DocPage({ params }: { readonly params: Promise<{ slug: string }> }) {\n  const { slug } = await params;\n  const summary = String(marked.parseInline(`Overview for **${slug}**`));\n  return (\n    <article>\n      <header>\n        <h1>{slug}</h1>\n        <CopyPermalinkButton url={`https://docs.example/${slug}`} />\n      </header>\n      <p>{summary}</p>\n    </article>\n  );\n}\n"
+      }
+    },
+    {
+      "id": "AP19",
+      "skill": "super-review",
+      "language": "typescript",
+      "lens": "control-flow",
+      "request": "Review the assigned React component through control-flow and defensive-checks for readability and maintainability. Do not execute or edit code.",
+      "scope": "Whole-area review of src/settings/ThemePicker.tsx and its sole caller src/settings/SettingsPage.tsx in a private app.",
+      "files": {
+        "package.json": "{\n  \"name\": \"prefs-ui\",\n  \"private\": true,\n  \"dependencies\": { \"react\": \"^19.2.0\", \"react-dom\": \"^19.2.0\" }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"react-jsx\" }\n}\n",
+        "src/settings/SettingsPage.tsx": "import { ThemePicker, type ThemeName } from \"./ThemePicker\";\n\nconst THEMES: readonly ThemeName[] = [\"light\", \"dark\", \"system\"];\n\nexport function SettingsPage() {\n  return <ThemePicker themes={THEMES} onSelect={(next) => { document.documentElement.dataset.theme = next; }} />;\n}\n",
+        "src/settings/ThemePicker.tsx": "import { useEffect } from \"react\";\n\nexport type ThemeName = \"light\" | \"dark\" | \"system\";\n\nexport function ThemePicker({ themes, onSelect }: {\n  readonly themes: readonly ThemeName[];\n  readonly onSelect: (theme: ThemeName) => void;\n}) {\n  useEffect(() => {\n    if (typeof window === \"undefined\") return;\n    window.localStorage.setItem(\"theme-picker-opened\", \"1\");\n  }, []);\n\n  const safeThemes = Array.isArray(themes) ? themes : [];\n\n  function handlePick(theme: ThemeName) {\n    if (typeof window === \"undefined\") return;\n    window.localStorage.setItem(\"preferred-theme\", theme);\n    onSelect?.(theme);\n  }\n\n  return (\n    <div>\n      {safeThemes.map((t) => (\n        <button key={t} type=\"button\" onClick={() => handlePick(t)}>{t}</button>\n      ))}\n    </div>\n  );\n}\n"
+      }
+    },
+    {
+      "id": "AP20",
+      "skill": "super-review",
+      "language": "typescript",
+      "lens": "control-flow",
+      "request": "Review the assigned module through control-flow and defensive-checks for readability and maintainability. Do not execute or edit code.",
+      "scope": "Whole-module review of src/settings/readStoredTheme.ts called from both SSR and browser initialization.",
+      "files": {
+        "package.json": "{\n  \"name\": \"prefs-ui\",\n  \"private\": true,\n  \"dependencies\": { \"react\": \"^19.2.0\", \"react-dom\": \"^19.2.0\" }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"react-jsx\" }\n}\n",
+        "src/settings/readStoredTheme.ts": "export type ThemeName = \"light\" | \"dark\" | \"system\";\n\nexport function readStoredTheme(): ThemeName {\n  if (typeof window === \"undefined\") return \"system\";\n  const raw = window.localStorage.getItem(\"preferred-theme\");\n  if (raw === \"light\" || raw === \"dark\" || raw === \"system\") return raw;\n  return \"system\";\n}\n"
+      }
+    },
+    {
+      "id": "AP21",
+      "skill": "defect-review",
+      "language": "typescript",
+      "lens": "boundaries",
+      "request": "Run Defect Review through boundaries and results on src/checkout/CouponForm.tsx. Do not build or execute code.",
+      "scope": "Whole-module review of src/checkout/CouponForm.tsx in a production storefront.",
+      "files": {
+        "package.json": "{\n  \"name\": \"storefront\",\n  \"private\": true,\n  \"dependencies\": { \"react\": \"^19.2.0\", \"react-dom\": \"^19.2.0\" }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"react-jsx\" }\n}\n",
+        "docs/coupons.md": "# Coupon rules\n\n`maxRedemptions` is optional: leaving the field blank means unlimited redemptions (`null`). Clearing a coupon tag removes only that tag without submitting the form.\n",
+        "src/checkout/CouponForm.tsx": "import { useState } from \"react\";\n\nexport function CouponForm() {\n  const [code, setCode] = useState(\"\");\n  const [tags, setTags] = useState<string[]>([\"vip\"]);\n  const [maxRedemptions, setMaxRedemptions] = useState<number | null>(null);\n  const [saved, setSaved] = useState(false);\n\n  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {\n    e.preventDefault();\n    await fetch(\"/api/coupons\", {\n      method: \"POST\",\n      headers: { \"content-type\": \"application/json\" },\n      body: JSON.stringify({ code, tags, maxRedemptions }),\n    });\n    setSaved(true);\n  }\n\n  return (\n    <form onSubmit={(e) => void handleSubmit(e)}>\n      <input value={code} onChange={(e) => setCode(e.currentTarget.value)} />\n      <input\n        type=\"number\"\n        value={maxRedemptions ?? \"\"}\n        onChange={(e) => setMaxRedemptions(Number(e.currentTarget.value))}\n      />\n      {tags.map((tag) => (\n        <span key={tag}>\n          {tag}\n          <button onClick={() => setTags(tags.filter((t) => t !== tag))}>Remove</button>\n        </span>\n      ))}\n      <button type=\"submit\">Create coupon</button>\n      {saved && <p role=\"status\">Coupon created</p>}\n    </form>\n  );\n}\n"
+      }
+    },
+    {
+      "id": "AP22",
+      "skill": "defect-review",
+      "language": "typescript",
+      "lens": "boundaries",
+      "request": "Run Defect Review through boundaries and results on src/checkout/CouponForm.tsx. Do not build or execute code.",
+      "scope": "Whole-module review of src/checkout/CouponForm.tsx in a production storefront.",
+      "files": {
+        "package.json": "{\n  \"name\": \"storefront\",\n  \"private\": true,\n  \"dependencies\": { \"react\": \"^19.2.0\", \"react-dom\": \"^19.2.0\" }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"react-jsx\" }\n}\n",
+        "docs/coupons.md": "# Coupon rules\n\n`maxRedemptions` is optional: leaving the field blank means unlimited redemptions (`null`). Clearing a coupon tag removes only that tag without submitting the form.\n",
+        "src/checkout/CouponForm.tsx": "import { useState } from \"react\";\n\nexport function CouponForm() {\n  const [code, setCode] = useState(\"\");\n  const [tags, setTags] = useState<string[]>([\"vip\"]);\n  const [maxRedemptions, setMaxRedemptions] = useState<number | null>(null);\n  const [status, setStatus] = useState<\"idle\" | \"saving\" | \"saved\" | \"error\">(\"idle\");\n\n  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {\n    e.preventDefault();\n    if (status === \"saving\") return;\n    setStatus(\"saving\");\n    try {\n      const res = await fetch(\"/api/coupons\", {\n        method: \"POST\",\n        headers: { \"content-type\": \"application/json\" },\n        body: JSON.stringify({ code, tags, maxRedemptions }),\n      });\n      if (!res.ok) {\n        setStatus(\"error\");\n        return;\n      }\n      setStatus(\"saved\");\n    } catch {\n      setStatus(\"error\");\n    }\n  }\n\n  return (\n    <form onSubmit={(e) => void handleSubmit(e)}>\n      <input value={code} onChange={(e) => setCode(e.currentTarget.value)} />\n      <input\n        type=\"number\"\n        value={maxRedemptions ?? \"\"}\n        onChange={(e) => {\n          const raw = e.currentTarget.value.trim();\n          if (raw === \"\") { setMaxRedemptions(null); return; }\n          const parsed = Number(raw);\n          if (Number.isInteger(parsed) && parsed > 0) setMaxRedemptions(parsed);\n        }}\n      />\n      {tags.map((tag) => (\n        <span key={tag}>\n          {tag}\n          <button type=\"button\" onClick={() => setTags((prev) => prev.filter((t) => t !== tag))}>Remove</button>\n        </span>\n      ))}\n      <button type=\"submit\" disabled={status === \"saving\"}>Create coupon</button>\n      {status === \"saved\" && <p role=\"status\">Coupon created</p>}\n      {status === \"error\" && <p role=\"alert\">Could not save coupon</p>}\n    </form>\n  );\n}\n"
+      }
+    },
+    {
+      "id": "AP23",
+      "skill": "defect-review",
+      "language": "typescript",
+      "lens": "shared-state",
+      "request": "Run Defect Review through shared-state on src/analytics/WorkspaceMetrics.tsx and src/analytics/ssrContext.ts. Do not build or execute code.",
+      "scope": "Whole-area review of src/analytics in a multi-tenant Next.js application.",
+      "files": {
+        "package.json": "{\n  \"name\": \"analytics-app\",\n  \"private\": true,\n  \"dependencies\": { \"next\": \"16.3.0\", \"react\": \"19.2.0\", \"react-dom\": \"19.2.0\" }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"preserve\" }\n}\n",
+        "src/analytics/ssrContext.ts": "let currentTenantId = \"\";\n\nexport function setRequestTenant(tenantId: string): void {\n  currentTenantId = tenantId;\n}\n\nexport function getRequestTenant(): string {\n  return currentTenantId;\n}\n",
+        "src/analytics/WorkspaceMetrics.tsx": "\"use client\";\nimport { useEffect, useState } from \"react\";\n\nexport function WorkspaceMetrics({ workspaceId }: { readonly workspaceId: string }) {\n  const [totalEvents, setTotalEvents] = useState<number | null>(null);\n\n  useEffect(() => {\n    void fetch(`/api/workspaces/${encodeURIComponent(workspaceId)}/metrics`)\n      .then((res) => res.json() as Promise<{ totalEvents: number }>)\n      .then((payload) => setTotalEvents(payload.totalEvents));\n  }, [workspaceId]);\n\n  return <div>Events: {totalEvents ?? \"Loading...\"}</div>;\n}\n"
+      }
+    },
+    {
+      "id": "AP24",
+      "skill": "defect-review",
+      "language": "typescript",
+      "lens": "shared-state",
+      "request": "Run Defect Review through shared-state on src/analytics/WorkspaceMetrics.tsx. Do not build or execute code.",
+      "scope": "Whole-module review of src/analytics/WorkspaceMetrics.tsx in a multi-tenant Next.js application.",
+      "files": {
+        "package.json": "{\n  \"name\": \"analytics-app\",\n  \"private\": true,\n  \"dependencies\": { \"next\": \"16.3.0\", \"react\": \"19.2.0\", \"react-dom\": \"19.2.0\" }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"preserve\" }\n}\n",
+        "src/analytics/WorkspaceMetrics.tsx": "\"use client\";\nimport { useEffect, useState } from \"react\";\n\nexport function WorkspaceMetrics({ workspaceId }: { readonly workspaceId: string }) {\n  const [state, setState] = useState<{ workspaceId: string; totalEvents: number } | null>(null);\n\n  useEffect(() => {\n    const controller = new AbortController();\n    void fetch(`/api/workspaces/${encodeURIComponent(workspaceId)}/metrics`, { signal: controller.signal })\n      .then((res) => {\n        if (!res.ok) throw new Error(`HTTP ${res.status}`);\n        return res.json() as Promise<{ totalEvents: number }>;\n      })\n      .then((payload) => {\n        if (!controller.signal.aborted) setState({ workspaceId, totalEvents: payload.totalEvents });\n      })\n      .catch(() => {});\n    return () => controller.abort();\n  }, [workspaceId]);\n\n  const current = state?.workspaceId === workspaceId ? state.totalEvents : null;\n  return <div>Events: {current ?? \"Loading...\"}</div>;\n}\n"
+      }
+    },
+    {
+      "id": "AP25",
+      "skill": "perf-review",
+      "language": "typescript",
+      "lens": "io",
+      "request": "Run Performance Review through io and repeated-work on app/orders/page.tsx and app/orders/OrderScroller.tsx. Do not build or execute benchmarks.",
+      "scope": "Whole-area review of app/orders in a Next.js storefront serving up to 500 orders per page.",
+      "files": {
+        "package.json": "{\n  \"name\": \"orders-ui\",\n  \"private\": true,\n  \"dependencies\": { \"next\": \"16.3.0\", \"react\": \"19.2.0\", \"react-dom\": \"19.2.0\" }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"preserve\" }\n}\n",
+        "app/orders/page.tsx": "import { OrderScroller, type FullOrderRecord } from \"./OrderScroller\";\n\ndeclare function loadOrdersForAccount(): Promise<readonly FullOrderRecord[]>;\n\nexport default async function OrdersPage() {\n  const orders = await loadOrdersForAccount();\n  return <OrderScroller orders={orders} />;\n}\n",
+        "app/orders/OrderScroller.tsx": "\"use client\";\nimport { useRef } from \"react\";\n\nexport interface FullOrderRecord {\n  readonly id: string;\n  readonly title: string;\n  readonly rawInvoiceHtml: string;\n  readonly auditLogEntries: readonly string[];\n}\n\nexport function OrderScroller({ orders }: { readonly orders: readonly FullOrderRecord[] }) {\n  const rowRefs = useRef<Array<HTMLDivElement | null>>([]);\n\n  function handleScroll(e: React.UIEvent<HTMLDivElement>) {\n    const scrollTop = e.currentTarget.scrollTop;\n    for (const el of rowRefs.current) {\n      if (!el) continue;\n      const height = el.getBoundingClientRect().height;\n      el.style.opacity = height + scrollTop > 0 ? \"1\" : \"0.5\";\n    }\n  }\n\n  return (\n    <div onScroll={handleScroll} style={{ height: 600, overflowY: \"auto\" }}>\n      {orders.map((order, idx) => (\n        <div key={order.id} ref={(el) => { rowRefs.current[idx] = el; }}>{order.title}</div>\n      ))}\n    </div>\n  );\n}\n"
+      }
+    },
+    {
+      "id": "AP26",
+      "skill": "perf-review",
+      "language": "typescript",
+      "lens": "io",
+      "request": "Run Performance Review through io and repeated-work on app/orders/page.tsx and app/orders/OrderScroller.tsx. Do not build or execute benchmarks.",
+      "scope": "Whole-area review of app/orders in a Next.js storefront serving up to 500 orders per page.",
+      "files": {
+        "package.json": "{\n  \"name\": \"orders-ui\",\n  \"private\": true,\n  \"dependencies\": { \"next\": \"16.3.0\", \"react\": \"19.2.0\", \"react-dom\": \"19.2.0\" }\n}\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": { \"strict\": true, \"target\": \"ES2023\", \"jsx\": \"preserve\" }\n}\n",
+        "app/orders/page.tsx": "import { OrderScroller, type OrderListItem } from \"./OrderScroller\";\n\ninterface StoredOrder {\n  readonly id: string;\n  readonly title: string;\n  readonly rawInvoiceHtml: string;\n  readonly auditLogEntries: readonly string[];\n}\n\ndeclare function loadOrdersForAccount(): Promise<readonly StoredOrder[]>;\n\nexport default async function OrdersPage() {\n  const orders = await loadOrdersForAccount();\n  const items: OrderListItem[] = orders.map(({ id, title }) => ({ id, title }));\n  return <OrderScroller orders={items} />;\n}\n",
+        "app/orders/OrderScroller.tsx": "\"use client\";\nimport { useRef } from \"react\";\n\nexport interface OrderListItem {\n  readonly id: string;\n  readonly title: string;\n}\n\nexport function OrderScroller({ orders }: { readonly orders: readonly OrderListItem[] }) {\n  const rowRefs = useRef<Array<HTMLDivElement | null>>([]);\n\n  function handleScroll(e: React.UIEvent<HTMLDivElement>) {\n    const scrollTop = e.currentTarget.scrollTop;\n    const nodes = rowRefs.current;\n    const heights = nodes.map((el) => (el ? el.getBoundingClientRect().height : 0));\n    for (let i = 0; i < nodes.length; i++) {\n      const el = nodes[i];\n      if (el) el.style.opacity = heights[i]! + scrollTop > 0 ? \"1\" : \"0.5\";\n    }\n  }\n\n  return (\n    <div onScroll={handleScroll} style={{ height: 600, overflowY: \"auto\" }}>\n      {orders.map((order, idx) => (\n        <div key={order.id} ref={(el) => { rowRefs.current[idx] = el; }}>{order.title}</div>\n      ))}\n    </div>\n  );\n}\n"
+      }
+    },
+    {
+      "id": "AP27",
+      "skill": "test-review",
+      "language": "typescript",
+      "question": "determinism",
+      "request": "Run Test Review through determinism and oracles on src/transfers/TransferDialog.tsx and tests/transfer.spec.ts. Do not build or execute tests.",
+      "scope": "Whole-area review of src/transfers/TransferDialog.tsx and Playwright test tests/transfer.spec.ts.",
+      "files": {
+        "package.json": "{\n  \"name\": \"banking-web\",\n  \"private\": true,\n  \"devDependencies\": { \"@playwright/test\": \"^1.51.0\" }\n}\n",
+        "docs/transfers.md": "# Transfers\n\nSubmitting a valid transfer shows `Transfer scheduled` and renders no error alert. If `/api/transfers` fails, an accessible `alert` banner explains the rejection.\n",
+        "src/transfers/TransferDialog.tsx": "import { useState } from \"react\";\n\nexport function TransferDialog() {\n  const [outcome, setOutcome] = useState<\"idle\" | \"ok\" | \"err\">(\"idle\");\n  async function submit() {\n    const res = await fetch(\"/api/transfers\", { method: \"POST\" });\n    setOutcome(res.ok ? \"ok\" : \"err\");\n  }\n  return (\n    <div>\n      <button type=\"button\" onClick={() => void submit()}>Send transfer</button>\n      {outcome === \"ok\" && <p>Transfer scheduled</p>}\n      {outcome === \"err\" && <div role=\"alert\">Transfer rejected</div>}\n    </div>\n  );\n}\n",
+        "tests/transfer.spec.ts": "import { expect, test } from \"@playwright/test\";\n\ntest(\"valid transfer shows no error banner\", async ({ page }) => {\n  await page.goto(\"/transfers\");\n  await page.getByRole(\"button\", { name: \"Send transfer\" }).click();\n  const alertShown = await page.getByRole(\"alert\").isVisible();\n  expect(alertShown).toBe(false);\n});\n"
+      }
+    },
+    {
+      "id": "AP28",
+      "skill": "test-review",
+      "language": "typescript",
+      "question": "determinism",
+      "request": "Run Test Review through determinism and oracles on src/transfers/TransferDialog.tsx and tests/transfer.spec.ts. Do not build or execute tests.",
+      "scope": "Whole-area review of src/transfers/TransferDialog.tsx and Playwright test tests/transfer.spec.ts.",
+      "files": {
+        "package.json": "{\n  \"name\": \"banking-web\",\n  \"private\": true,\n  \"devDependencies\": { \"@playwright/test\": \"^1.51.0\" }\n}\n",
+        "docs/transfers.md": "# Transfers\n\nSubmitting a valid transfer shows `Transfer scheduled` and renders no error alert. If `/api/transfers` fails, an accessible `alert` banner explains the rejection.\n",
+        "src/transfers/TransferDialog.tsx": "import { useState } from \"react\";\n\nexport function TransferDialog() {\n  const [outcome, setOutcome] = useState<\"idle\" | \"ok\" | \"err\">(\"idle\");\n  async function submit() {\n    const res = await fetch(\"/api/transfers\", { method: \"POST\" });\n    setOutcome(res.ok ? \"ok\" : \"err\");\n  }\n  return (\n    <div>\n      <button type=\"button\" onClick={() => void submit()}>Send transfer</button>\n      {outcome === \"ok\" && <p>Transfer scheduled</p>}\n      {outcome === \"err\" && <div role=\"alert\">Transfer rejected</div>}\n    </div>\n  );\n}\n",
+        "tests/transfer.spec.ts": "import { expect, test } from \"@playwright/test\";\n\ntest(\"valid transfer schedules without error banner\", async ({ page }) => {\n  await page.goto(\"/transfers\");\n  await page.getByRole(\"button\", { name: \"Send transfer\" }).click();\n  await expect(page.getByText(\"Transfer scheduled\")).toBeVisible();\n  await expect(page.getByRole(\"alert\")).toBeHidden();\n});\n"
+      }
     }
   ]
 }
