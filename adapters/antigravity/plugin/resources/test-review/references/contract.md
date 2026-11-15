@@ -43,8 +43,10 @@ is something the project wrote down about its behavior:
 - a protocol or interface the project says it implements.
 
 A test's name says what the test claims to check; the behavior still needs a
-promise from the list above. The reviewer's view of what deserves a test,
-coverage targets, PR descriptions and `TODO` notes are not promises.
+promise from the list above, and a test assertion added in the same change is
+what this review judges, never a promise of its own. The reviewer's view of
+what deserves a test, coverage targets, PR descriptions and `TODO` notes are
+not promises.
 
 Quote a promise verbatim with path and lines, keeping its qualifiers. When
 it has two reasonable readings, a mutant that breaks only one proves
@@ -53,14 +55,18 @@ nothing.
 Rules for test code come from the root instruction files and the documents
 about tests that they name. A rule counts when it says what a test must or
 must not do in terms checkable against the test's source. For a PR, read
-promises and tests at the head commit and team rules at the target commit.
+promises and tests at the head commit, removed lines from the merge-base when a
+change drops or weakens a test, and team rules at the target commit.
 
 ## Findings
 
 A finding is one of three kinds. Anything less is an **unproven** candidate:
 listed apart with the missing piece and without advice. Do not lower the bar
 because tests look thin or because the review would otherwise report
-nothing. Attach no severity labels and prescribe no testing style.
+nothing. Attach no severity labels and prescribe no testing style. A question
+is finished when every promise and test in its scope has been probed against a
+concrete mutant, rule quotation or two-order trace; finding none is then a
+valid result.
 
 ### Unpinned
 
@@ -76,8 +82,10 @@ A promised behavior can break without any test failing. Four parts:
 3. **The tests that reach it.** Find every test that drives the changed
    lines: unit tests, integration tests, doc tests, tests in other packages.
    Search by the symbol and its callers. For each, say from its own lines
-   why it still passes: its input does not take the changed branch, or it
-   asserts nothing the mutant changes. A finding is a surviving mutant; a
+   why it still passes: its input stays inside the interior and never hits the
+   changed boundary, it does not take the changed branch, it asserts past the
+   seam on mocks or private state while leaving the promised outcome unpinned,
+   or it asserts nothing the mutant changes. A finding is a surviving mutant; a
    test whose assertion would fail kills it, and there is no finding. A test the project's own
    test command never runs protects on paper only; name it apart.
 4. **The witness**: an input and an assertion that hold for the original

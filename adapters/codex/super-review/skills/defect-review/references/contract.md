@@ -11,9 +11,9 @@ to understand it: callers, dependency source, documents, tests.
 In a change review a finding must come from the change:
 
 - the changed code is wrong;
-- the change removed something that was needed: a check, a cleanup, a
-  recording. Read the removed lines, because nothing in the new code shows
-  them;
+- the change removed or weakened something that was needed: a check, a cleanup,
+  a recording, a documented guarantee. Read the removed lines, because nothing
+  in the new code shows them;
 - the change breaks what a caller relies on. Read the callers of everything
   whose behavior changed;
 - the change makes an existing bug reachable.
@@ -65,8 +65,12 @@ A candidate whose trace has a gap is **unproven**: listed apart with the
 missing step and without advice. Do not lower the bar because a candidate is
 plausible, because several readers suspect it, or because the review would
 otherwise report nothing. Attach no severity labels and design no fix.
-A lens is finished when every operation in its files has been taken through
-the lens's Expect list; finding none is then a valid result.
+Treat every internal helper name (`validate_*`, `normalize_*`, `sanitize_*`,
+`ensure_*`, `reset`, `cleanup`), guard, silent fallback and comment as a
+**claim** to verify in its body and callers, never as proof that the invariant
+holds. A lens is finished when every operation and delegated claim in its files
+has been taken through the lens's Expect list; finding none is then a valid
+result.
 
 ## Basis
 
@@ -122,11 +126,12 @@ exists. Between a team rule and the code, the code is what breaks the rule.
 
 ## Documented behavior
 
-A document that describes the behavior on purpose is evidence about intent.
-It does not settle the claim. Record what it says and report the candidate
-anyway. The challenge then asks whether the document gives a reason, whether
+A document, comment or test that describes the behavior on purpose is evidence
+about intent. It does not settle the claim. One added in the same change shows
+only that the author wrote both, so it is self-ratifying rather than a prior
+contract. Record what it says and report the candidate anyway. The challenge then asks whether it gives a reason, whether
 the reason is true of this code, and whether it accepts the cost that was
-shown.
+shown where callers and operators would read it.
 
 - The reason is false, or the cost is never mentioned to whoever bears it:
   a bug that is also documented.

@@ -27,13 +27,14 @@ every path.
   had to finish.
 - A background loop that exits on the first error and is never restarted.
 - Cleanup written after the work instead of in a guard, so an early return,
-  a `?` or a dropped future skips it: the code is not cancellation-safe.
+  a `?` or a dropped future skips it (not cancellation-safe), or a guard whose
+  `Drop` silently detaches or discards fallible cleanup.
 - Shutdown that signals and does not wait, or waits without a limit.
 - Readiness reported before the thing is usable, or never withdrawn.
 - A leak: a queue, map, cache or list of handles that only grows, with an
   entry added per request, per key or per reconnect and never removed.
-- A second supervisor after a reconnect; a retry that starts a new attempt
-  while the old one runs.
+- A reload, reconnect or retry that starts a new supervisor, subscription or
+  attempt without ending or draining the previous one.
 
 ## Not a bug
 

@@ -2,41 +2,30 @@
 
 ## rust.functions.extract-for-clarity
 
-**Conceptual extraction.** Would a helper express an independently understandable
-operation, or merely move statements out of sight? Compare knowledge removed
-from the caller with new arguments, lifetimes, trait bounds and navigation.
-Keep a linear transformation together when extraction obscures its stages;
-size alone is not a reason to split.
-
-Describe a responsibility and real call, not just a cut point. Moving a guard,
-transaction or owned value into a helper can change its drop boundary. Preserve
-the relevant lifetime and effects; do not introduce clones, boxing or shared
-ownership merely to solve difficulties manufactured by the extraction.
-
-Apply the same test to helpers that already exist. One that only forwards its
-arguments, or that reads and writes its caller's locals through a row of `&mut`
-parameters, relocates statements without owning a decision; inlining it returns
-the story to one place. A helper used once still earns its place when its name,
-inputs, result and failure state a complete decision the caller can use without
-opening it.
+**Load-bearing helpers.** Read the function, its immediate helpers, and their
+calls as one operation. Extract a helper when its name, inputs, output, and
+error state a complete decision the caller can use without opening its body.
+Inline existing helpers that chop one linear pipeline into single-caller
+fragments, forward arguments unchanged, or mutate the caller's locals through a
+row of `&mut` parameters and bookkeeping tuples; they scatter the story across
+declarations without hiding a decision. Compare knowledge removed from the
+caller against added arguments, lifetimes, trait bounds, and navigation; line
+count alone never earns a split.
 
 ## rust.functions.coherent-purpose
 
-**One operation.** Does the function tell one coherent story, or interleave
-responsibilities that change for different existing reasons? A computation and
-its environment may deserve a boundary when their intermediate value is meaningful
-and the call remains comprehensible. Keep clear orchestration, including its
-error handling. What can remain an ordinary function stays one; a new service
-object, builder or trait is a question for abstractions.
+**One story.** Separate mixed responsibilities when one function interleaves
+orchestration with byte, index, or wire arithmetic; switches between unrelated
+bodies on a boolean or mode parameter; threads a Data Clump of parameters across
+calls instead of naming one value; buries inputs inside a long mid-function
+closure's captures; takes `self` without reading it (an associated or free
+function states that directly); or hides I/O or task spawning behind `new` where
+Rust names the effect (`File::open`, `TcpListener::bind`, `thread::spawn`).
 
-Signs of two stories in one function: a boolean or mode parameter that selects
-between bodies sharing little; steps at different levels, such as orchestration
-interleaved with byte or index arithmetic; a Data Clump, a group of parameters
-that travels together through several calls and would read as one named value;
-a long closure defined mid-function whose captures hide its inputs. A method that
-takes `self` without reading it reads better as an associated or free function,
-unless a trait fixes its signature. A `new` that opens a connection or spawns
-work puts those effects behind the plainest name; std names such constructors
-for what they do, as in `File::open`, `TcpListener::bind` and `thread::spawn`.
-A long flat `match` whose arms are parallel remains one story at any length;
-nesting and mixed levels cost more than lines.
+**Keep when:** a linear transformation, clear orchestration with `?`, or a long
+flat `match` with parallel arms already tells one story; a single-caller helper
+encapsulates a complete decision; a trait fixes an unused `&self` signature; or
+moving code across a call would shift a guard, transaction, or owned value's
+`Drop` boundary or manufacture borrow-checker friction solved by extra `.clone()`,
+boxing, or `Arc`. Ordinary functions suffice here; new service structs, builders,
+or traits belong to abstractions.

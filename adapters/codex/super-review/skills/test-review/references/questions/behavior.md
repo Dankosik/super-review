@@ -6,11 +6,12 @@ Work from the promises to the tests.
 
 ## Promises
 
-For each documented operation: the outcomes its description names and the
-condition for each; its boundaries (empty, absent, zero, one, the stated
-maximum, the inclusive or exclusive end of a range); defaults and units;
-what it leaves behind (the stored value, the emitted event, the metric with
-its labels).
+For each operation carrying a [promise](../contract.md#promises) in documents,
+doc comments, or its public name, signature, variants and units: the outcomes
+its description or types name and the condition for each; its boundaries
+(empty, absent, zero, one, the stated maximum, the inclusive or exclusive end
+of a range); defaults and units; what it leaves behind (the stored value, the
+emitted event, the metric with its labels).
 
 ## Look for
 
@@ -24,10 +25,11 @@ Mutants that show most:
 - The boundary taken as its neighbor: `<` for `<=`, the range end moved by
   one, an empty input treated as absent.
 - A documented default, limit or unit changed to another plausible value.
-- One documented outcome returned where another belongs: a hit for a stored
+- One promised outcome returned where another belongs: a hit for a stored
   empty value turned into a miss.
-- A validation moved after the effect it guards, or dropped on one of two
-  entry points.
+- A validation or normalization moved after the effect it guards, or dropped
+  on a sibling entry point (`reload` beside `load`, `try_from` beside
+  `from_str`, batch beside single).
 - The return value kept and the side effect dropped, doubled or relabelled.
 
 Put the mutant where the code makes the decision the promise is about, not

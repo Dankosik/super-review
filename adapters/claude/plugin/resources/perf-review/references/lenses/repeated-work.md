@@ -26,7 +26,8 @@ them changes between passes.
   of values that do not change inside the loop, which hoisting would move
   out.
 - The same value computed twice on one path: a key serialized, hashed or
-  validated in two layers; `contains_key` followed by `get` or `insert` on
+  validated in two layers because an inner layer treats already-validated
+  internal data as untrusted; `contains_key` followed by `get` or `insert` on
   the same key, where the entry API looks it up once.
 - A table, map or set rebuilt from constant data on every call.
 - A value formatted for a log line before the logging macro, so the work is

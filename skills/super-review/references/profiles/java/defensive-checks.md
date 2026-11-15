@@ -3,17 +3,19 @@
 Owner: control-flow
 Rule: java.flow.show-main-path
 
-**Settled facts.** Read each changed guard with the origin of the value it tests.
-Does it check a case the code has already ruled out? Such as a null check on a
-`final` field the constructor already checked (the constructor's own
-`requireNonNull` is the check, not noise), `requireNonNull` on a private
-method's parameter every caller has checked, `isPresent` then `get` on an
-`Optional` that cannot be empty, a `catch` for an exception nothing in the `try`
-can throw, a `catch` that only rethrows with no broader `catch` after it, or a
-`default` in a `switch` expression that already covers every constant or
-subtype, which also turns off the compiler's check for a new one. Each guard
-tells the reader the case can happen, sends them looking for where, and adds a
-branch to the main path.
+**Settled facts.** Read each changed guard or silent fallback with the origin of
+the value it tests. Does it check or supply a default for a case the code has
+already ruled out? Such as a null check on a `final` field the constructor
+already checked (the constructor's own `requireNonNull` is the check, not
+noise), `requireNonNull` on a private method's parameter every caller has
+checked, `isPresent` then `get` or `orElse` on an `Optional` that cannot be
+empty, `getOrDefault` on a map entry a preceding loop guaranteed, a `catch` for
+an exception nothing in the `try` can throw, a `catch` that only rethrows with
+no broader `catch` after it, or a `default` in a `switch` expression that
+already covers every constant or subtype, which also turns off the compiler's
+check for a new one. Each dead guard or silent fallback tells the reader the
+case can happen, sends them looking for where, and adds a branch to the main
+path.
 
 This profile traces whether a guard's case can occur, which control-flow
 otherwise leaves alone. A candidate needs the guarantee traced through quoted

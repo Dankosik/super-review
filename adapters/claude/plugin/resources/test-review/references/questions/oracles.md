@@ -7,9 +7,11 @@ protect. Its assertions decide whether it does.
 
 ## Promises
 
-For each test: what its name or comment says it checks, and the written
-promise behind that behavior. A test whose named behavior has no written
-promise is noted and not probed.
+For each test: what its name or comment says it checks, and the
+[promise](../contract.md#promises) behind that behavior (a document, doc
+comment, public name and signature, error or state variant, unit, or
+implemented trait). A test whose named behavior has no promise is noted and
+not probed.
 
 ## Look for
 
@@ -21,8 +23,12 @@ value comes from.
   `Ok` or `Err` without looking at the value.
 - A tautological assertion: the expected value is computed by the same code
   or by a copy of the production logic.
-- The assertion is on the mock: what the test double was told, not what the
-  code under test did with it.
+- Testing past the seam: the assertion checks what a mock was told or what a
+  private helper did, while the observable result, error variant or effect at
+  the real interface can break undetected.
+- An interior-only boundary test: the test names a limit, threshold or edge
+  yet supplies only a comfortable interior value, so `<` for `<=` or an
+  off-by-one mutant passes.
 - The expectation is broader than the promise: `contains` where the promise
   fixes the whole, any error where it names the variant.
 - The setup already guarantees the outcome.

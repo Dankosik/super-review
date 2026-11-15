@@ -2,35 +2,29 @@
 
 ## go.abstractions.earn-the-boundary
 
-**Information hiding.** Inspect a boundary and its actual consumers and apply the
-deletion test. What policy, variation, representation, or dependency knowledge
-does it remove from callers? Compare that benefit with the concepts and
-navigation it adds. A shallow wrapper that passes the same knowledge through
-another layer is a Middle Man; a deep one earns its place.
+**Load-bearing boundaries.** Test each interface, struct wrapper, generic
+parameter, and helper layer against the direct concrete call. Ask what policy,
+variation, representation, or dependency knowledge the boundary removes from
+callers versus the concepts and hops it adds. A deep boundary hides decisions
+behind a small contract; a shallow one forwards the same knowledge through
+another layer as a Middle Man.
 
-At the consumer, consider an existing standard capability such as `io.Reader`,
-a narrow consumer interface, or a function parameter for one operation. Do not
-mirror a producer's entire method set. A single implementation can justify an
-interface; returning a concrete type can expose useful behavior without an
-interface twin. Neither is a universal signature rewrite: preserve deliberate
-factory contracts and inspect real consumers before changing exported types.
+Check whether each seam is real. A producer-mirroring interface whose only
+other implementation is an internal test double is a hypothetical seam that
+charges production readers for a boundary the program does not vary. Look first
+for a concrete type, a plain function parameter for one operation, a narrow
+consumer-side interface, or a standard capability such as `io.Reader`. Flag
+pass-through wrapper types, single-use cleanup or action structs that a plain
+function, `defer`, or `context.AfterFunc` expresses inline, options or mode
+fields given the same value by every caller, and type parameters used where an
+interface or concrete type states the contract directly, or custom mechanics
+that duplicate a supported library operation.
 
-Retain wrappers that own units, adaptation, error translation, retries, or
-lifetime across boundaries; replace a single-use wrapper struct or helper type
-written only to run one cleanup or forward one call when a plain function,
-`defer`, or `context.AfterFunc` expresses the same scope inline. Explicit
-forwarding can intentionally restrict a method set; embedding promotes methods
-and is not merely shorter delegation. Inspect relevant methods, interface uses,
-and exposed fields before removing a wrapper or changing embedding.
-
-Compare custom mechanics with an existing project or supported library operation.
-Keep a helper that adds domain meaning. Generics should preserve a real algorithm
-or type relationship used by callers; when only an interface's methods are needed,
-a type parameter may add nothing. Do not erase useful typed results or replace
-genuinely dynamic reflection with an artificial generic framework. Judge actual
-use, not a quota of implementations or instantiations.
-
-Show what consumers no longer need to understand and preserve the observable
-contract. The goal is boundaries that each pass the deletion test: remove the
-ones that only add a hop, deepen the ones that leak, and keep the ones whose
-benefit outweighs their indirection.
+**Keep when:** the boundary owns units, adaptation, error translation, retries,
+domain meaning, or lifetime across callers; explicit forwarding intentionally
+restricts a method set (embedding promotes methods and exposed fields rather
+than merely shortening delegation); generics preserve a typed result or caller
+relationship without erasing types or forcing artificial frameworks onto
+dynamic reflection; or a factory contract or exported signature serves external
+consumers. Inspect real callers, interface uses, and exposed fields, show what
+knowledge callers drop, and preserve the observable contract.

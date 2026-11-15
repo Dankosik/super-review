@@ -2,25 +2,22 @@
 
 ## java.flow.show-main-path
 
-**Structured flow.** Can the reader follow the normal path, alternatives, and
-termination without retaining unrelated conditions? Compare guard clauses,
-ordinary branches, a switch, or a named predicate with the existing flow. Keep
-coherent alternatives together when early returns or extraction scatter them.
-Nesting or method length alone is not a finding.
+**Visible main path.** Trace the normal path, alternatives, and exits through
+the method. Target places where readers must hold unrelated conditions, mutable
+loop flags, stacked ternaries, `Optional` callback chains wrapping local
+control flow, or decisions pushed one call too low (passing a nullable or
+`Optional` argument into a private helper only to return immediately on absence).
 
-Use a supported switch expression or pattern only when it directly expresses the
-existing decision. A small switch can stay a switch without a polymorphic
-hierarchy; a chain of ternaries or `Optional` callbacks earns its place by
-leaving fewer conditions to hold, which shortness alone does not deliver.
-Keep a direct loop when it makes state changes, order, early exit, or checked
-exceptions easier to understand than stream operations.
+Use guard clauses, named predicates, or supported `switch` expressions and
+pattern matching when they flatten non-load-bearing ceremony and leave fewer
+conditions in mind, and omit redundant `default` branches on exhaustive
+enum/sealed switches so the compiler checks future variants.
 
-For a proposed rewrite, inspect short-circuit and evaluation order, null handling,
-fall-through, catch/finally scope, and the timing of side effects. In particular,
-`Optional.orElse` evaluates its argument eagerly while `orElseGet` invokes a
-supplier on absence; moving work between them is not a cosmetic substitution.
-An ordinary null guard or catch is not a problem by itself. Error-translation
-structure belongs here when the error-expression profile is selected.
-
-Explain which conditions the reader no longer needs to hold in mind, preserving
-the existing alternatives rather than introducing validation or behavior.
+**Keep when:** coherent `if`/`else` branches, a small `switch` (without a
+polymorphic hierarchy), an ordinary null guard or `catch`, or a direct loop
+handling state updates, early exit, or checked exceptions already reads clearer
+than streams or early returns. Preserve short-circuit and evaluation order, null
+handling, fall-through, `catch`/`finally` scope, and side-effect timing
+(`Optional.orElse` evaluates eagerly while `orElseGet` runs only on absence).
+Error-translation structure belongs here when `error-expression` is selected.
+Show which conditions the reader stops holding.

@@ -2,36 +2,28 @@
 
 ## ts.abstractions.earn-the-boundary
 
-**Abstraction cost.** Does the boundary let callers understand less, or make them
-learn another mechanism? Inspect its real implementations and uses and apply the
-deletion test. Prefer a plain function, structural type, or local cleanup scope
-when a shallow interface twin, factory, single-use wrapper class, inheritance
-layer, or generic wrapper adds no independent contract and only passes knowledge
-through as a Middle Man. Keep a deep class or adapter that owns meaningful
-behavior, invariants, lifecycle across callers, or substitution.
+**Load-bearing boundaries.** Test each class, interface, factory, wrapper,
+inheritance layer, and type-level construct against a plain function, structural
+type, or local cleanup scope. Ask whether the boundary lets callers understand
+less or forces them to learn another mechanism.
 
-Type parameters should express useful relationships, including inferred return
-types and callbacks, not merely repeat constraints. Compare a conditional/mapped
-type with a simpler named shape or standard utility by the knowledge a maintainer
-must reconstruct. Judge whether a parameter is needed by the relationship it
-expresses, whatever its textual occurrences. Retain generics and overloads that
-preserve input/output correlations or useful inference; reducing them to a broad
-union can erase the API contract.
+Check whether each seam is real. An interface twin mirroring one class, a
+port/adapter layer whose only second implementation is an internal test double,
+or a wrapper class, factory, builder, or inheritance layer that forwards calls
+without owning an invariant is a shallow Middle Man over a hypothetical seam.
+Flag type parameters that merely repeat a constraint without correlating inputs,
+outputs, or callbacks; options or configuration branches every caller fixes one
+way; and conditional, mapped, or derived types that force maintainers to
+reconstruct an independent contract from unrelated internals when an explicit
+named shape or standard utility states it directly. When supported, use standard
+inference to retire hand-maintained type bridges.
 
-A parameter can also preserve accepted input forms without appearing in the result:
-inspect fresh object-literal calls, contextual typing and explicit type arguments
-before replacing a generic with its constraint. Structural assignability alone does
-not establish identical excess-property checking at those calls. Retain useful
-openness; remove a parameter only when its actual role is unnecessary.
-
-For type-level transformations, identify the source of the relationship and the
-resulting shape, including optional/readonly modifiers and distribution over unions.
-Keep a keyed mapping that couples each key to its own payload; prefer an explicit
-shape when deriving it makes an independent contract depend on unrelated internals.
-A standard inference mechanism can remove a hand-maintained bridge when supported;
-extra precision is a gain while it keeps deliberate widening and caller obligations.
-
-Choose `type` or `interface` by the needed union/composition/augmentation semantics
-and effective team rules, not a universal preference. Preserve public structural
-compatibility, inference, and declaration merging before recommending a replacement.
-Name the indirection removed and explain why the surviving boundary is sufficient.
+**Keep when:** a deep class or adapter owns state, invariants, cross-caller
+lifecycle, or real substitution; generics or overloads preserve input-output
+correlations, inference, contextual typing, or excess-property checks on fresh
+object literals (structural assignability alone does not preserve excess-property
+checking); keyed mapped types couple each key to its own payload; or `type`
+versus `interface` choice, declaration merging, readonly/optional modifiers,
+union distribution, or public structural compatibility requires the current
+surface. Name the indirection removed and show why the surviving boundary holds
+the contract.

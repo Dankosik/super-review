@@ -2,78 +2,57 @@
 
 ## rust.abstractions.earn-the-boundary
 
-**Useful boundaries.** Which existing responsibility or variation does this
-trait, generic parameter, wrapper or macro hide, and what must callers learn
-in exchange? Apply the deletion test: prefer a deep boundary that removes
-knowledge to a shallow one forwarding calls through interface twins. A single
-implementation may serve a real capability boundary; its count alone does not
-establish a finding.
+**Load-bearing boundaries.** Test each trait, generic parameter, wrapper,
+builder, or macro against the direct concrete type or function. Ask which
+responsibility or variation it hides from callers and what callers must learn in
+exchange. Collapse shallow boundaries that forward calls through interface
+twins, and deepen leaky ones that push internal mechanics into every caller.
 
-Concrete types and functions are often enough. Generics can express capabilities;
-`dyn Trait` can express heterogeneous values or an established runtime boundary.
-Neither dispatch choice is inherently better. Inspect uses before changing bounds,
-associated types or public implementability. Dyn compatibility and supported
-async-trait usage may rule out an apparently simpler signature.
+Check whether each seam is real. A trait whose only other implementation is a
+test double for internal choreography is a hypothetical seam: production code
+pays for an interface the program does not vary. A layer whose methods forward
+arguments and results unchanged is a Middle Man. A struct built only to invoke
+one action hides a function, and a single-use struct written solely to run one
+cleanup expression in `Drop` or abort a task handle hides a local guard that
+`std::mem::DropGuard` (within MSRV) or an existing crate guard expresses at the
+site. Names such as `Manager`, `Service`, or `Helper` invite this ownership
+check, though the finding rests on the missing responsibility rather than the
+word.
 
-A trait whose only other implementation is a test double for internal
-choreography forwards calls without hiding variation; the production code pays
-for an interface the program does not need. A struct constructed only to invoke
-one action usually hides a function, and a single-use struct written solely to
-run one cleanup expression in `Drop` or abort a task handle hides a local guard
-that `std::mem::DropGuard` (within MSRV) or an existing crate guard expresses at
-the site; keep a dedicated guard type when it owns an invariant, exposes
-methods, or crosses an API boundary. Names such as manager, service or helpers
-invite this ownership check; they do not establish a finding by themselves.
+Flag Speculative Generality where a parameter, options struct, enum variant, or
+type parameter receives the same fixed value at every inspected caller or exists
+only for a hypothetical future variant: recommend the fixed form until a real
+caller varies it. Look for standard traits before bespoke ones: a crate trait
+forwarding to `Read`, `Write`, `Iterator`, `Display`, `FromStr`, or `Extend`
+repeats a known contract; a stateless one-method trait is a function or closure
+parameter; and crate-closed alternatives told apart by a kind tag or downcasting
+read directly as an `enum`.
 
-A parameter, options field, enum or type parameter for which every inspected
-caller supplies the same value offers a choice nobody makes: callers construct
-it and readers follow a branch with one outcome. Recommend the fixed form; the
-choice can return with the caller that needs it. A surface kept for a possible
-later variant is Speculative Generality, and the remedy stays the fixed form.
-Keep a choice a current caller varies, and apply the shared
-compatibility judgment where consumers lie outside the inspected source.
+Tighten generic obligations that leak across callers:
+- Move a trait bound on a `struct` or `enum` declaration (`T: Clone`, `T: Debug`)
+  to the `impl` blocks that actually require it.
+- Lift method bodies repeated across every implementor of a crate trait into a
+  provided method.
+- Replace a caller-chosen type parameter with an associated type when each
+  implementation fixes the output.
+- Replace a macro with an ordinary function when evaluation and ownership stay
+  clear, and flag macros that hide `return` or `?` or invent a miniature surface
+  language for public methods and bounds.
+- Compare derives with manual impls by their contract: use a derive to drop
+  field-by-field boilerplate, or a manual impl to avoid false generic bounds
+  (such as `Clone` on a function pointer's output), redact sensitive fields, or
+  format entries directly with `fmt::from_fn` and `debug_list`/`debug_map`
+  instead of staging temporary collections.
 
-Before a new trait, look for the standard one. A crate trait whose
-implementations forward to `Read`, `Write`, `Iterator`, `Display`, `FromStr` or
-`Extend` repeats a contract every Rust reader and library already knows, and a
-trait with one method and stateless implementations is a function or closure
-parameter. Alternatives the crate itself closes, told apart by a kind tag or by
-downcasting, read as an enum; keep `dyn` or generics where outside code adds
-implementations or the contract leaves the set open. A type parameter
-instantiated with one type needs, like a trait with one implementation, the
-variation or dependency direction it serves. A layer whose methods each forward
-to the next with the same arguments and result is a Middle Man: it adds a place
-to edit without a decision.
-
-A bound on a generic type's declaration that only some of its methods need,
-such as `T: Clone` or `T: Debug`, makes every user of the type satisfy it; the
-`impl` block that needs the bound can carry it. A method body that every
-implementor of a crate trait repeats can be a provided method, leaving
-implementors the methods that differ.
-
-Macros can legitimately capture syntax or share structure. Replace one with a
-function only when the same job remains clear without changing evaluation or
-ownership. A macro that hides a `return` or `?` takes an exit out of the
-reader's sight. Preserve relevant trait and macro contracts. A new framework or
-dependency answers an existing in-scope burden.
-
-For a demonstrated generic-API burden, distinguish an associated result fixed by
-an implementation from a parameter callers genuinely choose. Localize a bound to
-the operation needing it when that removes unrelated obligations; inspect other
-impls and downstream compatibility first. Native async trait syntax does not by
-itself preserve a dyn boundary or the returned future's `Send` contract. Do not
-replace existing erasure/boxing merely because newer syntax is available.
-
-Compare a derive's documented/generated impl contract, not its line count. A
-straightforward derive can replace field-by-field plumbing; a manual impl can
-avoid an unnecessary generic bound (for example cloning a function pointer need
-not clone its result type) or redact sensitive fields, and inside a manual
-`fmt::Debug` impl `fmt::from_fn` with `debug_list`/`debug_map` avoids staging
-intermediate collections just to format entries. A macro can usefully express
-domain syntax, while one that hides significant public methods or bounds may add
-a second language to learn. Use supplied expansion, accessible source or
-documented contracts only; do not execute procedural macros to settle the
-comparison.
+**Keep when:** a single implementation crosses a real capability, plugin, or
+dependency-direction boundary; `dyn Trait`, boxing, or erasure preserves
+heterogeneous storage, dyn compatibility, async-trait bounds, or a returned
+future's `Send` contract; a dedicated guard owns an invariant, exposes methods,
+or crosses an API boundary; outside code extends an open trait set; a macro
+legitimately captures syntax or evaluation order; or external consumers depend
+on the public signature under shared compatibility judgment. Judge macros from
+supplied expansion, accessible source, or documented contracts without executing
+procedural macros.
 
 Background: [associated types](https://doc.rust-lang.org/book/ch20-02-advanced-traits.html),
 [Clone derivation](https://doc.rust-lang.org/std/clone/trait.Clone.html),

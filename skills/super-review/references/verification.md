@@ -136,11 +136,15 @@ now. Taste is welcome when you can name what the reader gains.
 
 Candidates are material, not the agenda. Rewrite a workable remedy when you see a
 better one. Where several touch the same code, design it once. When they share a
-cause, fix the cause. Then picture the code with every accepted recommendation
-applied and ask whether you would be proud to have written it. If not, finish the
-job: what is still missing becomes your own candidate under the same bar. A
-remedy you rewrite or add passes the same preservation, lint and existing-owner
-checks as any other.
+cause, fix the cause. Watch especially for clean over-decomposition that passed
+specialist smell checks piecemeal: tidy pass-through helpers, hypothetical
+single-adapter seams, intermediate DTOs and defensive ceremony that vanish when
+the operation is written directly. Then picture the code with every accepted
+recommendation applied and ask whether you would be proud to have written it. If
+not, finish the job: what is still missing becomes your own candidate under the
+same bar. A remedy you rewrite or add passes the same preservation, lint and
+existing-owner checks as any other. Finish every verification and synthesis
+decision before formatting the report.
 
 ## Check the set
 

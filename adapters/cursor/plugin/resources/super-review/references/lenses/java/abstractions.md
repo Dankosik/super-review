@@ -2,27 +2,25 @@
 
 ## java.abstractions.earn-the-boundary
 
-**Information hiding.** Does this class, interface, generic type, or layer hide a
-meaningful decision and simplify its users as a deep boundary, or merely forward
-them elsewhere as a shallow Middle Man? Inspect actual callers and implementations
-and apply the deletion test. Prefer composition when it expresses
-the real collaboration more directly than inherited implementation coupling;
-retain inheritance or an interface when substitution, a framework contract, or
-an existing extension boundary earns it. One implementation is not proof that an
-interface is useless, and a concrete class does not need an interface twin.
+**Load-bearing boundaries.** Test each class, interface, hierarchy, builder,
+factory, and generic type against a direct concrete class, record, method,
+constructor, or `try`-with-resources scope. Ask what decision the boundary hides
+from callers versus the indirection it adds.
 
-Look for boundaries that conceal a stable responsibility rather than leak maps,
-casts, boolean modes, or framework mechanics into every caller. Generics should
-name a real relationship between types and remove reconstruction at uses, not
-create a platform for hypothetical future types. A direct method, constructor,
-or local `try`-with-resources scope can be clearer than a single-use wrapper
-class, factory, builder, registry, or fluent wrapper that holds no invariant of
-its own.
+Check whether each seam is real. A `*Service`/`*ServiceImpl` interface twin
+whose only other implementation is an internal test double is a hypothetical
+seam; a layer forwarding calls unchanged is a Middle Man; inheritance used only
+to share helper code couples implementations where composition states the
+collaboration directly; and a single-use wrapper class, builder, factory,
+registry, or fluent chain holding no invariant of its own adds ceremony without
+hiding complexity. Deepen leaky boundaries that push raw maps, casts, boolean
+modes, or framework plumbing into callers, and collapse speculative generic
+parameters built for hypothetical future types rather than a real type
+relationship at call sites.
 
-Before changing a boundary, inspect public/protected consumers, service-loader or
-reflection contracts, proxy requirements, and participating annotations. Missing
-dynamic or external context limits the remedy. Add a dependency or reorganize
-architecture only for a burden shown in this code.
-
-Show the implementation detail users no longer need to know, balanced against
-new indirection, configuration, and migration obligations.
+**Keep when:** an interface, superclass, wrapper, or annotation participates in
+real substitution, an extension boundary, framework proxies, reflection, service
+loaders, serialization, or public/protected consumer contracts, or when missing
+dynamic/external context leaves that contract open. Add no new dependency or
+architectural layer unless the code in scope already shows the burden. Show what
+implementation detail callers stop carrying.

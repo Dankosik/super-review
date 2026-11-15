@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.33.0 — 2026-11-15
+
+Tighten instruction clarity, trust boundaries, and structural judgment across Super Review 3.33.0, Defect Review 0.14.0, Test Review 0.13.0, and Performance Review 0.7.0 so reviewers verify internal claims and test designs against their direct idiomatic forms rather than trusting clean-looking surfaces.
+
+- **Super Review (`3.33.0`).** `review-contract` and `verification` test changed structure against its direct idiomatic form (`Design It Twice`), define `load-bearing` boundaries and real versus hypothetical `seams` (one production adapter beside an internal test double is a hypothetical seam), and separate candidate synthesis from report formatting. `finding-template` drops duplicated contract prose, `aspects` replaces hedged negative routing cues with positive source signals, and `abstractions`, `function-cohesion`, `control-flow`, `data-flow`, and `defensive-checks` across Go, TypeScript, Rust, and Java front-load positive targets (pass-through fragmentation, hypothetical seams, cross-seam repackaging, silent fallbacks on settled facts) with co-located `Keep when` constraints. All 56 stable rule IDs are unchanged.
+- **Defect Review (`0.14.0`).** Readers and challengers treat internal helper names (`validate_*`, `normalize_*`, `sanitize_*`, `ensure_*`, `reset`, `cleanup`), guards, silent fallbacks, and comments as claims to verify in callee bodies and callers, and treat comments or tests added in the same change as self-ratifying rather than prior contracts. Lenses add silent fallbacks (`unwrap_or_default`, `else { return Ok(()); }`, internal `_` arms, `filter_map(Result::ok)`), `Default`/serde-default bypasses, fail-open defaults, partial-step timeout helpers, detached fallible `Drop` cleanup, and `reload`/`reconnect` leaks; paired passes report each lens separately.
+- **Test Review (`0.13.0`).** Aligns question leading terms on full `[promise]` contracts, treats diff-added assertions as under review rather than promises, reads removed merge-base lines when tests are weakened, and checks for testing past the seam (mock choreography and private fields), interior-only boundary inputs, unpinned sibling entry points, and silent-fallback mutants.
+- **Performance Review (`0.7.0`).** Treats internal helper seams, layered conversions, and defensive clones as transparent to hot-path cost, flags cross-seam repackaging and repeated validation/serialization of settled internal data, and requires separate per-lens passes when paired.
+
+Package, native configuration, and fixture checks pass; behavioral model comparison remains NOT RUN.
+
 ## 3.32.0 — 2026-11-15
 
 Super Review now checks inline boundary glue around already-imported types and libraries, partial delegation of generic mechanics, split representations of one fact, and local-source boundary compatibility across Go, TypeScript, Rust and Java.

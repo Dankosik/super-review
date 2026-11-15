@@ -2,26 +2,22 @@
 
 ## ts.data.make-transformations-visible
 
-**Provenance and ownership.** Can readers see where a value originates, how it is
-transformed, and who can change it? Prefer named intermediate values or a small
-explicit transformation when dense spreads, reducers, casts, or distant mutation
-hide those facts; remove round-trip serialization/formatting used only to test
-an input property, re-parsing of already-parsed values, or intermediate arrays
-built only to feed an API that accepts iterables or entries directly. Keep a
-direct pipeline, staging that preserves error order or atomic updates, or a
-local accumulator when it already expresses the work. Local mutation can be the
-most maintainable form.
+**Visible provenance and ownership.** Trace where each value originates, how it
+changes shape, and who can mutate it. Name intermediate stages when dense
+spreads, nested reducers, casts, or distant mutations hide the transition.
+Collapse cross-seam repackaging where code materializes intermediate arrays,
+maps, or DTO objects only to cross an internal helper call or feed an API that
+accepts iterables or entries directly, and drop round-trip serialization or
+re-parsing of already-parsed values used only to check a property.
 
-When `any`, assertions, or non-null assertions force multiple consumers to repeat
-an unstated shape assumption, identify the owning boundary and the concrete contract
-that would remove that knowledge. An existing narrowing/decoder can make the
-assumption local; `unknown` alone does not define the shape or validate anything.
-Judge each assertion where it stands, using the narrowing the project already has.
-A documented,
-contained interop assertion can be the clearest available expression.
+When `any`, `as` assertions, or `!` force multiple consumers to repeat an
+unstated shape assumption, move narrowing or decoding to the owning boundary
+(`unknown` alone validates nothing).
 
-Inspect aliases before proposing immutable-looking rewrites: object/array spread
-and `Readonly<T>` are shallow, and nested objects may remain shared. Preserve
-property precedence, object identity, omitted properties, ordering, and deliberate
-mutation. Recommend a readonly view only when it communicates the actual ownership
-contract without pretending to freeze data or breaking consumers.
+**Keep when:** a direct pipeline, local mutable accumulator, staging step that
+preserves error order or atomic updates, or contained interop assertion already
+states the work clearly. Inspect aliasing before proposing immutable-looking
+rewrites: object/array spread and `Readonly<T>` are shallow, leaving nested
+objects shared. Preserve property precedence, object identity, omitted versus
+`undefined` properties, key order, and deliberate mutation, and recommend
+`readonly` views only when they match actual ownership without breaking callers.

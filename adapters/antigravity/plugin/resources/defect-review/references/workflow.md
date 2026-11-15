@@ -49,10 +49,11 @@ One lens per reader. For a small change, about three hundred changed lines
 or fewer in one package, or a package of about a thousand lines reviewed
 whole, give one reader a related pair instead: results with boundaries,
 errors with time, lifecycle with shared-state, stated-facts with
-team-rules. Split a large scope by package, and split a lens by area when
-its files are more than one reader can read in full: a reader that skims
-loses the lines it skipped. Readers overlap on purpose, and merging is
-yours.
+team-rules. A paired reader runs each lens's full pass and reports each lens's
+coverage separately; finishing one never closes its partner. Split a large
+scope by package, and split a lens by area when its files are more than one
+reader can read in full: a reader that skims loses the lines it skipped.
+Readers overlap on purpose, and merging is yours.
 
 ## Readers
 
@@ -106,13 +107,15 @@ challenger's tone or agreement between agents is not evidence.
   `declared` basis says no more than the declaration. A `principle` names
   someone at this place who relies on it. Taste is rejected.
 - **Weigh the challenge as an argument, not a ruling.** A `falls` needs
-  specific quoted counter-evidence; check it. "This seems intended" defeats
-  nothing. A `stands` with no account of what was tried is no challenge. A
-  `disputed` needs the decision quoted with a reason that is true and a cost
-  that was accepted.
+  specific quoted counter-evidence; check it. "This seems intended", a helper's
+  name without its body, or a self-ratifying comment or test added in the same
+  change defeats nothing. A `stands` with no account of what was tried is no
+  challenge. A `disputed` needs the decision quoted with a reason that is true
+  and a cost that was accepted.
 - **Settle disagreements.** On a fact, from the source. On whether the
   behavior is acceptable when both have the facts right, the candidate is
-  disputed.
+  disputed. Finish deciding every candidate and checking siblings before
+  drafting the report.
 
 | Outcome | When |
 | --- | --- |
