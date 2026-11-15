@@ -5,7 +5,10 @@
 **Reasons, not narration.** Is a non-obvious choice or caller obligation discoverable
 from the declaration and nearby context? Document the specific constraint when a
 clearer name or shape cannot express it: an interop assertion, public widening,
-module side effect, ownership transfer, or supported consumer limitation.
+module side effect, ownership transfer, supported consumer limitation, or the
+exact boundary difference that keeps custom code where an apparent runtime or
+package API cannot replace it (while checking whether a workaround comment
+signals a missed direct API).
 
 Read surrounding source and available uses before declaring a comment missing.
 A reason already expressed by a discriminant, useful name, or self-contained type

@@ -40,23 +40,37 @@ ending in a `_` arm, is not connected even when its forward `match` is
 exhaustive; read both directions for a key set the assigned code declares or
 edits.
 
-Compare implicated handwritten mechanics with existing helpers, supported
-standard-library operations and the owning crate's declared dependencies. Name
-the exact operation and why its contract fits more directly; retain domain
-adaptation. A familiar loop can be clearer than a reusable callback or macro.
-Do not add a crate or raise MSRV merely to save lines.
+Compare implicated handwritten mechanics and inline boundary glue with existing
+helpers, supported standard-library operations within `rust-version`, and the
+owning crate's declared dependencies. Check whether an already-imported type or
+crate owns the rule, constant or conversion written inline: re-parsing an
+already-parsed value, formatting only to test an input property, matching raw
+error or SQL codes a crate classifies, manual URL/header/form/unit math beside
+the crate that defines it, or working around an indirect library path when a
+direct method exists. When code mixes generic framing, encoding or coordination
+with a domain or protocol rule, delegate the generic mechanism to the library
+and keep the domain rule local. A familiar loop can be clearer than a reusable
+callback or macro. Do not add a crate or raise MSRV merely to save lines.
 
-A handwritten non-trivial general mechanism, such as a date, URL or CLI grammar
-parser, an encoding, or a backoff policy with jitter and caps, repeats knowledge
-a maintained implementation already owns: its edge cases, parsing and failure
-handling. A one-line formula is not such a mechanism. Weigh
-that owned surface, not the line count. When a declared dependency or `std`
-supplies the matching contract, recommend it. When only a new crate would,
-report the owned surface and leave adopting the crate as a named dependency
-decision. A tiny fixed grammar, an explicit std-only or `no_std` constraint, or
-a semantic difference can justify custom code; fewer dependencies alone do not.
+A handwritten general mechanism — such as a date, URL or CLI grammar parser, an
+encoding, or a backoff policy with jitter and caps — repeats knowledge a
+maintained implementation already owns: its edge cases, parsing and failure
+handling. Weigh that owned surface, not the line count. Do not propose a new
+external crate for a trivial one-line formula, but do use an operation or
+constant that `std`, the workspace or an already-declared crate already owns
+rather than maintaining a second copy of that rule. When `std` or a declared
+dependency supplies the matching contract, recommend it (naming any Cargo
+feature or workspace-dependency edit if needed); when only a net-new crate
+would, report the owned surface and leave adopting the crate as a named
+dependency decision. A tiny fixed grammar, an explicit std-only or `no_std`
+constraint, or a boundary difference can justify custom code; fewer dependencies
+alone do not.
 
-Preserve relevant ordering, ownership, failure and evaluation behavior. A
-repeated match can remain clear when its cases change independently. Retaining
-understandable duplication is valid; an abstraction answers shared knowledge,
-which textual similarity alone does not show.
+Preserve relevant accepted inputs, first-error precedence, ordering, ownership,
+cancellation/drop timing, time precision, evaluation behavior, and wire or
+stored bytes. When custom code must stay because the apparent `std` or crate
+operation differs on one of those boundaries, retain it and let rationale check
+whether that constraint is recorded at the site. A repeated match can remain
+clear when its cases change independently. Retaining understandable duplication
+is valid; an abstraction answers shared knowledge, which textual similarity
+alone does not show.

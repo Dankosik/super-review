@@ -70,15 +70,19 @@ improvement, revise the remedy, or retain the exact missing fact.
 
 Inspect only the preservation constraints implicated by that transformation,
 using the matching context from [language routing](languages.md): exact supported
-operation/signature, effects, API/type contracts, ownership/mutation, error identity,
-absence, and resource lifetime. Keep Go, TypeScript, Rust, and Java preservation rules scoped
+operation/signature, accepted inputs, error identity and which error surfaces
+first, effects, API/type contracts, ownership/mutation, cancellation and drop
+timing, time precision, wire or stored bytes, and absence. Keep Go, TypeScript, Rust, and Java preservation rules scoped
 to their own language; account for TypeScript inference and emitted module behavior.
 For Rust, inspect implicated trait/auto-trait contracts, ownership, eager/lazy
 evaluation and guard/drop lifetimes under the selected language context.
 For Java, inspect implicated null/absence, overload/override and generic
 signatures, mutability, evaluation timing, exception causes and resource or
 framework/proxy ownership under the selected language context.
-Do not infer equivalence from a happy-path example or empty literal search.
+Do not infer equivalence from a happy-path example or empty literal search;
+read locally available standard-library or lockfile-resolved dependency source
+under [source-access rules](harnesses/source-access.md#file-boundaries-and-source-anchors)
+when a boundary detail depends on what an external callee actually does.
 Before accepting, read whether the resulting code would pass the project's lint
 policy (such as `clippy.toml`, `[lints]` or crate-level `deny`) and the other
 checks its CI or build files run, such as a duplication baseline, generated or
@@ -87,17 +91,24 @@ Also read every use of a changed type or name including excluded tests, name
 collisions, and code left dead once optional regions are removed. A remedy that
 introduces a type, helper or constant needs a search of the snapshot for an
 existing owner: reuse it or say why a new one is needed. Repair or reject a
-remedy that fails. The same search applies to code the change itself writes
-by hand: an owner that already exists in the snapshot, the standard library or
-a declared dependency makes it a candidate under existing-helpers.
+remedy that fails. The same search applies to code the change itself writes by
+hand — standalone helpers, single-purpose wrapper or guard types, manual trait
+or interface impls, and boundary glue or re-derivations around standard or
+imported types: an owner that already exists in the snapshot, the standard
+library or a declared dependency makes it a candidate under existing-helpers,
+including handing over the generic part of a mechanism while keeping the
+application's own domain or protocol rule. When a plausible library replacement
+differs on a boundary that callers rely on so the custom code stays, check
+whether rationale records that constraint.
 
 The target's own history is evidence too. When the history of the target files
 shows that a name or shape was introduced recently, changing it again needs a
 burden that name or shape causes, not a preference; leave specialists unaware
 of that history.
 
-Narrow advice that needs a newer API or an uncertain compatibility, or keep it
-unresolved; verification reads source and claims no tested equivalence.
+Narrow advice that needs a newer API or a compatibility fact local source
+cannot settle, or keep it unresolved; verification reads source and claims no
+tested equivalence.
 
 A clarity change may change what callers, operators or logs observe: error text,
 a public variant, a runtime check a type now makes redundant. Accept it when that

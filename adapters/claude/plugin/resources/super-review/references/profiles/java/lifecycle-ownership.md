@@ -6,8 +6,10 @@ Rule: java.data.make-transformations-visible
 **Resource ownership.** Can readers locate who acquires, borrows, transfers, and
 releases the changed resource or background operation? Trace its actual lifetime,
 not a checklist for leaks. Prefer lexical try-with-resources for an owned
-`AutoCloseable` when it makes that scope explicit and preserves the contract.
-Keep an explicit lifecycle when ownership crosses methods or a container owns it.
+`AutoCloseable` when it makes that scope explicit and preserves the contract,
+rather than a one-off wrapper class that holds no invariant beyond closing one
+handle. Keep an explicit lifecycle type when ownership crosses methods, carries
+state, or a container owns it.
 
 Do not close a caller-owned stream, connection, or shared executor merely because
 it can be closed. Resource-backed streams can outlive the method creating them.

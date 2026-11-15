@@ -14,10 +14,25 @@ existing responsibility, not with an abstract preference for structured tasks.
 
 A `JoinSet` can give a same-output task group one owner and remove manual handle
 bookkeeping. It yields completion order, not spawn order, and dropping it aborts
-remaining tasks. Dropping a `JoinHandle` instead detaches its task. Keep handles
-when intentional detachment, ordering or another established contract needs them.
-Abort is not cooperative cleanup; already running blocking tasks are not
-interrupted by abort. Preserve the actual task kinds and shutdown behavior.
+remaining tasks; when shutdown aborts every task and discards outputs,
+`JoinSet::shutdown().await` expresses `abort_all()` plus the `join_next` drain
+loop in one call (keep the loop when shutdown inspects individual outcomes or
+panics). Dropping a `JoinHandle` instead detaches its task; when `tokio-util` is
+declared and a single handle only needs abort-on-drop, `AbortOnDropHandle`
+replaces a one-off wrapper struct and `Drop` impl. Keep handles when intentional
+detachment, ordering or another established contract needs them. Abort is not
+cooperative cleanup; already running blocking tasks are not interrupted by
+abort. Preserve the actual task kinds and shutdown behavior.
+
+When changed code pairs shared state (`Mutex`, atomics or a `watch::Sender`)
+with a separate `Notify` so readers can wait for a state transition, compare a
+single `watch` channel (`send_modify` with `Receiver::wait_for`): `watch` holds
+the current state alongside its wakeup so late subscribers see it without a
+hand-maintained flag-and-notify protocol. Keep `Notify` when there is no state
+to store or single-permit `notify_one` semantics are intended; `notify_waiters`
+wakes futures created by `notified()` before the call without requiring `pin!`
+and `enable()`, whereas `enable()` still matters when registering a waiter
+before checking state to avoid a race with `notify_one`.
 
 For cooperative shutdown, distinguish notification from completion. An existing
 `CancellationToken` can express the signal; `TaskTracker` can express waiting for
@@ -42,8 +57,11 @@ of a proposed clarity change, not a search for races, leaks or async defects.
 A sleep-and-recheck loop over state the same code base writes hides the
 condition it waits for behind a flag and a cadence. An existing completion or
 change notification, such as a join, `watch` or `CancellationToken`, can name
-that condition. Polling remains the clear form for external state that offers
-no notification, given an owner, cadence and terminal condition.
+that condition; on a `watch::Receiver`, `wait_for` replaces a manual
+`borrow_and_update` + `changed().await` predicate loop when the receiver only
+awaits a state matching a predicate. Polling remains the clear form for external
+state that offers no notification, given an owner, cadence and terminal
+condition.
 
 Sources: [JoinSet](https://docs.rs/tokio/latest/tokio/task/struct.JoinSet.html),
 [JoinHandle](https://docs.rs/tokio/latest/tokio/task/struct.JoinHandle.html),

@@ -8,9 +8,13 @@ another declaration to tell which value is current and who can mutate it.
 
 Separate meaningful stages when reusing one variable hides a change of meaning.
 Keep intermediate values that explain an operation; remove ones that merely
-relay it. Narrow a value's scope or keep a mutation near its use when this reduces
-the state a reader must track. Read helper bodies and callers before claiming a
-pipeline becomes clearer.
+relay it, re-parse an already-parsed value from text, round-trip format a value
+only to test a property on the input, or materialize a temporary slice/map only
+to feed a formatter or builder that accepts items directly. Narrow a value's
+scope or keep a mutation near its use when this reduces the state a reader must
+track; keep staging that preserves error order, all-or-nothing writes, or a
+needed snapshot. Read helper bodies and callers before claiming a pipeline
+becomes clearer.
 
 Visible local mutation is not inherently worse than a copy. Account for shared
 slice/map storage, pointer receivers, shallow copies, nil/empty distinctions,

@@ -37,13 +37,19 @@ waits for.
 
 Prefer a clearer name, type, assertion or structure when it removes the need for
 commentary. Keep comments that record a reason, rejected alternative, external
-constraint or invariant spanning items the code cannot enforce. A comment that
-restates what the adjacent name, signature or statement already shows still
-costs an edit whenever the code changes; recommend deleting it or moving its fact
-into a name or type. Remove or correct a comment only with evidence that it is
-redundant or stale. Doc comments that become product output, such as clap help,
-OpenAPI or schema descriptions, and configuration notes, are interface text,
-not commentary. A rustdoc reference to an item can use an intra-doc link, which
-`cargo doc` reports after a rename or removal for the items it documents. Show what a future
-reader would learn and where it belongs without turning documentation into a
-correctness review.
+constraint or invariant spanning items the code cannot enforce — and when custom
+mechanics must stay where an apparent `std` or crate operation looks equivalent
+(because of invalid-input rules, error precedence, cancellation, precision or
+private dependency behavior), record that concrete boundary and dependency
+reason so the next maintainer does not replace it blindly. Conversely, a comment
+explaining a workaround for feeding a library indirectly invites checking
+whether a direct API removes both workaround and comment. A comment that restates
+what the adjacent name, signature or statement already shows still costs an edit
+whenever the code changes; recommend deleting it or moving its fact into a name
+or type. Remove or correct a comment only with evidence that it is redundant or
+stale. Doc comments that become product output, such as clap help, OpenAPI or
+schema descriptions, and configuration notes, are interface text, not
+commentary. A rustdoc reference to an item can use an intra-doc link, which
+`cargo doc` reports after a rename or removal for the items it documents. Show
+what a future reader would learn and where it belongs without turning
+documentation into a correctness review.

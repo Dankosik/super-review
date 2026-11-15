@@ -29,6 +29,7 @@ TOUCHED = (
     "references/lenses/rust/representation.md",
     "references/profiles/rust/dependency-boundaries.md",
     "references/profiles/rust/error-expression.md",
+    "references/profiles/rust/existing-helpers.md",
     "references/profiles/rust/lifecycle-ownership.md",
     *(f"references/rust/{name}.md" for name in MECHANISMS),
 )

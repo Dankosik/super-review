@@ -10,9 +10,12 @@ need for commentary; retain a useful explanation rather than calling it noise.
 
 Javadoc can explain supported null/absence, ownership, live view versus snapshot,
 required sequencing, units, and exception meaning that a signature cannot convey.
-Comments can preserve evidence-backed reasons for framework constraints, deliberate
-copying, ordering, or compatibility workarounds. Spend comments on what the code
-cannot say, which a restated accessor or Javadoc on every method does not add.
+Comments can preserve evidence-backed reasons for framework constraints,
+deliberate copying, ordering, compatibility workarounds, or the concrete
+boundary difference keeping custom code where an apparent JDK or declared-library
+method differs (while treating a workaround comment about an indirect library
+call as a cue to check for a direct API). Spend comments on what the code cannot
+say, which a restated accessor or Javadoc on every method does not add.
 Do not invent a rationale from a plausible story.
 Annotation-driven contracts may need a short explanation, not another layer.
 

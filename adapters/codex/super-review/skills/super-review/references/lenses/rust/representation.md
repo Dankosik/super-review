@@ -17,10 +17,17 @@ encode it.
 Compare the current representation with its strongest simpler alternative through
 one complete read or transition. Name the relationships each leaves the maintainer
 to preserve: positional correspondence, mutually dependent fields, duplicated
-state or updates in several places. Fewer fields are not necessarily fewer
-relationships. A remaining budget may replace a limit and consumed count when
-neither original value is needed; keep stored history, reservations, snapshots or
-derived values that carry an existing invariant or justified cost bound.
+state or updates in several places. Watch for one fact held in two places whose
+link the type does not express: cached or derived projections stored apart from
+their source registry or configuration so callers must pass both in lockstep,
+redundant parsed forms kept side by side when one suffices, state paired with a
+separate boolean flag or wakeup primitive where one state-carrying primitive or
+`Option` expresses both, or mode-specific fields allocated inertly in modes that
+never read them. Fewer fields are not necessarily fewer relationships: linking a
+projection to a borrow or reference of its source can remove an implicit caller
+obligation even when the struct still carries cached slices. Keep stored history,
+reservations, snapshots or derived values that carry an existing invariant or
+justified cost bound.
 
 A type alias names a type but does not give the concept a home: two aliases of
 one primitive leave readers to track which value is which by position. A newtype

@@ -49,10 +49,17 @@ established generator/framework convention unless handwritten code shows a
 demonstrated burden. Generated output
 itself remains excluded.
 
-When proposing reuse, name the exact supported helper/API and preserve
-evaluation order, mutability, null/absence policy, exceptions, and
-boundary-specific adaptation. Equal constants may represent different units or
-policies. Extract the common knowledge, not accidental syntax; retain
-duplication when that knowledge is independent. Show what change to the already
-implemented rule becomes local, without inventing future features as a reason to
-generalize.
+When proposing reuse, name the exact supported helper/API and check whether
+inline rules, constants, conversions or call-site plumbing duplicate an
+operation already owned by the JDK (at the module's release baseline) or a
+declared library — such as re-parsing an already-parsed value, matching raw
+error or SQL codes a library classifies, or hand-building URLs, headers, forms
+or unit math. Delegate the generic mechanism while keeping domain or protocol
+adaptation local; do not add a new library for a trivial formula. Preserve
+accepted inputs, first-exception order, evaluation order, mutability,
+null/absence policy, cancellation/interruption, time precision, and wire or
+stored bytes. Equal constants may represent different units or policies. Extract
+the common knowledge, not accidental syntax; retain duplication when that
+knowledge is independent or when boundary semantics intentionally differ. Show
+what change to the already implemented rule becomes local, without inventing
+future features as a reason to generalize.

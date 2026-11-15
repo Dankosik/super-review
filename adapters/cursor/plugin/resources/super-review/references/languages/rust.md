@@ -3,26 +3,32 @@
 **Compatibility.** Read the owning crate's `Cargo.toml` at H and resolve explicitly
 inherited `edition` and `rust-version` through its workspace, including
 `package.workspace` when present. The supported minimum Rust version (MSRV), not
-a newer local toolchain or a sibling crate, bounds syntax and library advice.
-An edition is not an MSRV. Read relevant features, target declarations, `cfg`
-conditions and `no_std`/`alloc` boundaries; mutually exclusive implementations
-need not coexist. Read dependency declarations, `Cargo.lock` or committed Cargo
-configuration only when a proposed operation depends on them. Missing baseline
-or feature context limits that recommendation; it does not authorize an upgrade.
+a newer local toolchain or a sibling crate, bounds syntax and library advice —
+and also defines what `std` already stabilizes for this crate, so check whether
+types and methods stabilized within that MSRV replace handwritten mechanics or
+wrapper ceremony. An edition is not an MSRV. Read relevant features, target
+declarations, `cfg` conditions and `no_std`/`alloc` boundaries; mutually
+exclusive implementations need not coexist. Read workspace and crate dependency
+declarations, `Cargo.lock`, committed Cargo configuration, and locally present
+sysroot or locked dependency source when a proposed operation or boundary check
+depends on them. Missing baseline or feature context limits that recommendation;
+it does not authorize an upgrade.
 
 **Library context.** Resolve the actual dependency version and enabled features
 for the owning crate before using a mechanism below. A dependency elsewhere in a
-workspace is not an applicability signal. These are conditional reference notes,
-not new profiles, rule IDs, mandatory dependencies or extra coverage passes.
-Read only the note implicated by source and the assigned owner's question; another
-section can supply preservation context, not authority to review another lens.
+workspace is not an applicability signal by itself, though workspace-declared
+crates inform dependency-cost tradeoffs when `existing-helpers` evaluates custom
+mechanics. These are conditional reference notes, not new profiles, rule IDs,
+mandatory dependencies or extra coverage passes. Read only the note implicated
+by source and the assigned owner's question; another section can supply
+preservation context, not authority to review another lens.
 
 | Mechanism | Existing owners | Reference |
 | --- | --- | --- |
-| Tokio task groups, shutdown, selection or waiting for a condition | data-flow/lifecycle-ownership; control-flow | [Tokio](../rust/tokio.md) |
-| Serde wire shape or deserialization lifetime | representation; api-clarity | [Serde](../rust/serde.md) |
+| Tokio task groups, shutdown, selection, state notifications or waiting for a condition | data-flow/lifecycle-ownership; control-flow | [Tokio](../rust/tokio.md) |
+| Serde wire shape, deserialization lifetime or two-step `Value` plumbing | representation; api-clarity; duplication | [Serde](../rust/serde.md) |
 | clap argument grammar or repeated command knowledge | api-clarity; change-locality | [clap](../rust/clap.md) |
-| Axum HTTP contract or adapter/application boundary | api-clarity; function-cohesion/effects-separation | [Axum](../rust/axum.md) |
+| Axum HTTP contract, middleware state or adapter/application boundary | api-clarity; function-cohesion/effects-separation | [Axum](../rust/axum.md) |
 | thiserror or anyhow error types, conversions or context chains | control-flow/error-expression; api-clarity | [error crates](../rust/errors.md) |
 | tracing spans, events or instrumentation | function-cohesion/effects-separation; control-flow/error-expression | [tracing](../rust/tracing.md) |
 
@@ -47,9 +53,9 @@ the next change something you can name, report it, however small.
 **Idiom owners.** Idiom is evidence inside the assigned lens, not a separate
 pass. Patterns, `?` and branch forms belong to control-flow, and a check for a case
 the types or code already rule out to its defensive-checks profile; bindings,
-moves and iteration to data-flow; a standard operation replacing handwritten
-mechanics to duplication; signatures and standard traits to api-clarity; types
-that carry facts to representation; conventional name forms to naming; helpers
+moves and iteration to data-flow; a standard or declared-dependency operation
+replacing handwritten mechanics or boundary glue to duplication; signatures and
+standard traits to api-clarity; types that carry facts to representation; conventional name forms to naming; helpers
 and layers to function-cohesion and abstractions; the project's established way
 of handling a concern to conventions; where an item lives to placement; how
 many cases and passes a computation needs to logic. Report an idiom under the
@@ -69,9 +75,11 @@ procedural macros during review. Missing expansion or generated source remains
 an evidence gap.
 
 **Preservation.** Check only properties implicated by a proposed transformation:
-borrowing versus consuming, aliasing and mutation, error types and sources,
-short-circuiting and eager/lazy evaluation, and drop/guard lifetime. `Clone` need
-not create independent data; cloning an `Arc` preserves shared ownership. A
+borrowing versus consuming, aliasing and mutation, accepted inputs, error types,
+sources and first-error precedence, short-circuiting and eager/lazy evaluation,
+cancellation and drop/guard lifetime, time precision, and wire or stored bytes.
+`Clone` need not create independent data; cloning an `Arc` preserves shared
+ownership. A
 collection can deliberately snapshot data or end a borrow. Public signatures,
 trait implementations, auto traits, lifetime captures, serialization and FFI
 layouts can constrain a local simplification. Inspect available consumers;

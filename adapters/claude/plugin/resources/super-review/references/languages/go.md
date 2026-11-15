@@ -2,11 +2,14 @@
 
 **Compatibility.** Read the nearest enclosing `go.mod` at H and the relevant
 file's build constraints. The module's `go` directive is the starting language
-and library baseline; a newer local toolchain, `toolchain` preference, or sibling
-module does not by itself authorize newer syntax or APIs here. Account for
-version/platform-specific files when relevant. Do not assume mutually exclusive
-implementations coexist. Missing version or consumer context limits the advice;
-it is not permission to upgrade or run a build.
+and library baseline — both bounding newer syntax and defining which standard-library
+packages and operations are already available; a newer local toolchain, `toolchain`
+preference, or sibling module does not by itself authorize newer syntax or APIs
+here. Read `go.work`, `go.sum` and locally present standard-library or locked
+module source when an external API's availability or boundary behavior matters.
+Account for version/platform-specific files when relevant. Do not assume mutually
+exclusive implementations coexist. Missing version or consumer context limits the
+advice; it is not permission to upgrade or run a build.
 
 **Craft.** Read the source against how an experienced Go author would write the
 same operation today, under the module's baseline, by the defaults of Effective
@@ -24,9 +27,10 @@ however small.
 **Idiom owners.** Idiom is evidence inside the assigned lens, not a separate
 pass. Early returns, `switch` forms and error checks belong to control-flow, and
 a check for a case the code already rules out to its defensive-checks profile;
-scope, slice/map sharing and value versus pointer to data-flow; a standard or
-project operation replacing custom mechanics to abstractions, and knowledge
-repeated across copies to duplication; signatures,
+scope, slice/map sharing and value versus pointer to data-flow; a standard,
+declared-module or project operation replacing handwritten mechanics or boundary
+glue to duplication, and unnecessary wrapper boundaries to abstractions;
+knowledge repeated across copies to duplication; signatures,
 results, `context` placement and standard interfaces to api-clarity; defined
 types, zero values and constant sets to representation; `MixedCaps`, initialisms,
 receiver names and package-qualified names to naming; helpers, wrappers,
@@ -51,15 +55,18 @@ formatting/import-order chores or spelling preferences without a concrete cost
 or an effective team rule. Never run tools such as gofmt, goimports or linters
 during the review.
 
-**Reuse.** Actively compare handwritten mechanics implicated by the change with
-existing project helpers and supported standard-library operations, including
-ordinary string, slice, map, and I/O operations. Identify the exact operation
-and why its contract expresses the work more directly; keep domain adaptation.
-A familiar loop can beat a callback or iterator pipeline. Newer syntax, generics,
-or a dependency is not an improvement by itself. Establish availability and the
-relevant semantics from reliable language knowledge and permitted evidence;
-when uncertain, narrow or withhold that replacement rather than inventing an API
-or requesting broader tools. Do not require a web/tutorial lookup on every PR.
+**Reuse.** Actively compare handwritten mechanics and boundary glue implicated by
+the change with existing project helpers, standard-library operations within the
+`go` baseline, and modules already in `go.mod` — including ordinary string, slice,
+map, time, URL, HTTP, SQL and I/O operations. Identify the exact operation and
+why its contract expresses the work more directly; delegate generic mechanics
+while keeping domain or protocol adaptation in application code. A familiar loop
+can beat a callback or iterator pipeline. Newer syntax, generics, or a dependency
+is not an improvement by itself. Establish availability and boundary semantics
+(accepted inputs, first error returned, cancellation, time precision, wire bytes)
+from reliable language knowledge and permitted local source evidence; when
+uncertain, narrow or withhold that replacement rather than inventing an API or
+requesting broader tools. Do not require a web/tutorial lookup on every PR.
 
 **Preservation.** Inspect the properties implicated by the proposed change, not
 a bug checklist: nil versus empty and absent versus zero; sharing and mutation;

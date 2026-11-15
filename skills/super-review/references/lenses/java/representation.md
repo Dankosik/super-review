@@ -4,12 +4,15 @@
 
 **Data modeling.** Does the changed representation directly name existing
 concepts and alternatives, or make readers remember positions, parallel indexes,
-magic strings, and combinations of flags? Primitive Obsession and Data Clumps
-are the usual shapes of this burden. Inspect construction and consumption
-together. A small value class, enum, or supported record can give stable data a
-name; an existing collection may already express the relationship without a new
-domain type. A stronger type expresses invariants and requirements the code
-already maintains; the product's invariants themselves stay as they are.
+magic strings, combinations of flags, or the implicit link between a cached or
+derived projection and a separately passed source? Primitive Obsession and Data
+Clumps are the usual shapes of this burden. Inspect construction and consumption
+together. A small value class, enum, supported record, or projection holding a
+reference to its source can give correlated data one home; an existing
+collection or single parsed representation may already express the fact without
+keeping duplicate forms or inert mode-specific fields. A stronger type expresses
+invariants and requirements the code already maintains; the product's invariants
+themselves stay as they are.
 
 A record is a transparent value carrier, not a universal class replacement.
 Before recommending one, inspect identity versus component equality, constructor

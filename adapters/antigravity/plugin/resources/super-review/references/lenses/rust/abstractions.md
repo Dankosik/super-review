@@ -18,7 +18,11 @@ async-trait usage may rule out an apparently simpler signature.
 A trait whose only other implementation is a test double for internal
 choreography forwards calls without hiding variation; the production code pays
 for an interface the program does not need. A struct constructed only to invoke
-one action usually hides a function. Names such as manager, service or helpers
+one action usually hides a function, and a single-use struct written solely to
+run one cleanup expression in `Drop` or abort a task handle hides a local guard
+that `std::mem::DropGuard` (within MSRV) or an existing crate guard expresses at
+the site; keep a dedicated guard type when it owns an invariant, exposes
+methods, or crosses an API boundary. Names such as manager, service or helpers
 invite this ownership check; they do not establish a finding by themselves.
 
 A parameter, options field, enum or type parameter for which every inspected
@@ -63,10 +67,13 @@ replace existing erasure/boxing merely because newer syntax is available.
 Compare a derive's documented/generated impl contract, not its line count. A
 straightforward derive can replace field-by-field plumbing; a manual impl can
 avoid an unnecessary generic bound (for example cloning a function pointer need
-not clone its result type). A macro can usefully express domain syntax, while one
-that hides significant public methods or bounds may add a second language to
-learn. Use supplied expansion, accessible source or documented contracts only;
-do not execute procedural macros to settle the comparison.
+not clone its result type) or redact sensitive fields, and inside a manual
+`fmt::Debug` impl `fmt::from_fn` with `debug_list`/`debug_map` avoids staging
+intermediate collections just to format entries. A macro can usefully express
+domain syntax, while one that hides significant public methods or bounds may add
+a second language to learn. Use supplied expansion, accessible source or
+documented contracts only; do not execute procedural macros to settle the
+comparison.
 
 Background: [associated types](https://doc.rust-lang.org/book/ch20-02-advanced-traits.html),
 [Clone derivation](https://doc.rust-lang.org/std/clone/trait.Clone.html),

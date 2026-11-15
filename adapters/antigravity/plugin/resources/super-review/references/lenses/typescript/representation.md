@@ -4,11 +4,13 @@
 
 **State expressed directly.** Does the data shape expose the concepts already
 present, or make every reader reconstruct relationships among flags, optional
-fields, parallel arrays, or string keys? Primitive Obsession and Data Clumps are
-the usual shapes of this burden. Read producers and consumers before
-recommending a representation. A discriminated union can make existing correlated
-alternatives explicit; it expresses the states and domain rules the code already
-keeps.
+fields, parallel arrays, string keys, or a cached/derived projection kept apart
+from its source so callers must keep two arguments or fields aligned? Primitive
+Obsession and Data Clumps are the usual shapes of this burden. Read producers
+and consumers before recommending a representation. A discriminated union,
+linked reference, or single parsed representation can make correlated states and
+invariants explicit instead of leaving inert fields, paired boolean flags, or
+duplicate representations to drift.
 
 Compare a named object, tuple, union, `Map`, or record by the relationship it makes
 visible. A short-lived tuple or simple object can already be clear. Preserve

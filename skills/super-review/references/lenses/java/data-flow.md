@@ -11,8 +11,12 @@ an immutable redesign answers an ownership burden beyond mutation itself.
 Choose a loop, stream pipeline, or named intermediate by the transformation it
 exposes. Side-effecting lambdas, mutable captures, and nested collectors may hide
 what a straightforward loop states directly; a simple filter/map pipeline may
-remove distracting mechanics. Do not infer performance benefits or parallelize
-work as a readability recommendation.
+remove distracting mechanics, and direct inspection or typed transfer beats
+re-parsing an already-parsed value, round-trip formatting to test a property, or
+collecting into a temporary collection only to feed a builder or formatter that
+accepts elements directly. Keep staging that preserves exception order,
+all-or-nothing output, or snapshots. Do not infer performance benefits or
+parallelize work as a readability recommendation.
 
 When replacing collection operations, distinguish mutable copies, fixed-size
 lists, unmodifiable live views, and snapshots. `List.copyOf` rejects null elements;

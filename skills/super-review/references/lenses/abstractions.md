@@ -16,9 +16,12 @@ interface twin. Neither is a universal signature rewrite: preserve deliberate
 factory contracts and inspect real consumers before changing exported types.
 
 Retain wrappers that own units, adaptation, error translation, retries, or
-lifetime. Explicit forwarding can intentionally restrict a method set; embedding
-promotes methods and is not merely shorter delegation. Inspect relevant methods,
-interface uses, and exposed fields before removing a wrapper or changing embedding.
+lifetime across boundaries; replace a single-use wrapper struct or helper type
+written only to run one cleanup or forward one call when a plain function,
+`defer`, or `context.AfterFunc` expresses the same scope inline. Explicit
+forwarding can intentionally restrict a method set; embedding promotes methods
+and is not merely shorter delegation. Inspect relevant methods, interface uses,
+and exposed fields before removing a wrapper or changing embedding.
 
 Compare custom mechanics with an existing project or supported library operation.
 Keep a helper that adds domain meaning. Generics should preserve a real algorithm

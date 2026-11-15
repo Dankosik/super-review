@@ -56,7 +56,16 @@ complete registry that owns the key set, but a partial label/handler table must
 not define the domain. A known domain type may instead constrain its table while
 keeping value inference.
 
-For repeated types and handlers, show which exact knowledge is shared and which
-adaptation stays local. A configurable helper with flags for unrelated cases can
-be worse than small repetition. Deduplicate shared knowledge rather than matching
-text, and build on the clear helpers the project already has.
+For repeated types, handlers and boundary glue, show which exact knowledge is
+shared and which adaptation stays local. Check whether inline rules, constants,
+conversions or formatting/parsing steps duplicate an operation already owned by
+the platform runtime or an imported package — such as re-parsing a validated or
+parsed value, hand-assembling URLs, query parameters, headers or unit constants,
+or working around an indirect library call when a direct API exists. Hand the
+generic mechanism to that owner while keeping domain policy in application code;
+do not add an external package for a trivial formula, and retain custom code
+whose boundary semantics (accepted inputs, first error thrown, cancellation,
+time precision, wire output) intentionally differ. A configurable helper with
+flags for unrelated cases can be worse than small repetition. Deduplicate shared
+knowledge rather than matching text, and build on the clear helpers the project
+already has.

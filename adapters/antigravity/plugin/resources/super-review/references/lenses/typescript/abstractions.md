@@ -4,10 +4,11 @@
 
 **Abstraction cost.** Does the boundary let callers understand less, or make them
 learn another mechanism? Inspect its real implementations and uses and apply the
-deletion test. Prefer a plain function or structural type when a shallow interface
-twin, factory, inheritance layer, or generic wrapper adds no independent contract
-and only passes knowledge through as a Middle Man. Keep a deep class or adapter
-that owns meaningful behavior, lifecycle, or substitution.
+deletion test. Prefer a plain function, structural type, or local cleanup scope
+when a shallow interface twin, factory, single-use wrapper class, inheritance
+layer, or generic wrapper adds no independent contract and only passes knowledge
+through as a Middle Man. Keep a deep class or adapter that owns meaningful
+behavior, invariants, lifecycle across callers, or substitution.
 
 Type parameters should express useful relationships, including inferred return
 types and callbacks, not merely repeat constraints. Compare a conditional/mapped

@@ -8,9 +8,13 @@ choice exists, or a caller know to use it, that the code cannot express clearly
 on its own? Absence of a comment diff does not answer this question.
 
 Prefer clearer expression or a meaningful name for explainable mechanics. Keep
-comments preserving a reason, constraint, unit, protocol, or intentional tradeoff;
-remove repetition only when it obscures useful information. Neither comment
-density nor exported status alone establishes a finding.
+comments preserving a reason, constraint, unit, protocol, or intentional
+tradeoff — including the specific boundary or package difference when custom
+code must stay instead of an obvious standard-library or imported-module call;
+conversely, treat a comment explaining an indirect library workaround as a cue
+to check whether a direct API eliminates both. Remove repetition only when it
+obscures useful information. Neither comment density nor exported status alone
+establishes a finding.
 
 Read Go doc comments with their declarations as a caller-facing contract. When
 relevant, make supported zero/nil behavior, partial results, mutation, ownership,

@@ -2,14 +2,16 @@
 
 **Compatibility.** Establish the changed module/source set's supported language
 and API baseline at H from its Maven or Gradle configuration and relevant parent,
-root, property, or convention files. `--release` constrains language and platform
-APIs; `source`/`target` and the JDK running the build are not equivalent evidence.
-A newer toolchain or sibling module does not authorize newer syntax here. Account
-for explicit preview flags, framework/library versions, annotation processors,
-and `module-info.java` where a proposed change depends on them. Read configuration
-as text only: do not execute Maven, Gradle, wrappers, processors, or builds to
-resolve inheritance. Missing/dynamic/external configuration limits that advice;
-it does not license a guessed version or an upgrade.
+root, property, lockfile, or convention files. `--release` constrains language and
+platform APIs — and defines which JDK APIs are already available; `source`/`target`
+and the JDK running the build are not equivalent evidence. A newer toolchain or
+sibling module does not authorize newer syntax here. Account for explicit preview
+flags, framework/library versions, annotation processors, `module-info.java`, and
+locally available JDK or locked dependency source where a proposed change or
+boundary check depends on them. Read configuration as text only: do not execute
+Maven, Gradle, wrappers, processors, or builds to resolve inheritance.
+Missing/dynamic/external configuration limits that advice; it does not license a
+guessed version or an upgrade.
 
 **Scope.** Review handwritten production `.java`, not tests or generated output.
 Use source-set/build evidence for custom layouts. Standard test roots and explicit
@@ -60,13 +62,17 @@ choice: do not recommend what it denies, and leave listing its violations to the
 project's own checks. No formatting, import-order, or modifier churn without a
 concrete burden or an effective convention. Do not run formatters or linters.
 
-**Reuse.** Compare changed handwritten mechanics with existing project helpers
-and supported JDK operations. Name the exact replacement and the contract that
-makes it clearer; retain domain adaptation. A loop can communicate ordering,
-early exit, mutation, or checked failure better than a pipeline. Do not add a
-library, reflection, or generic framework merely to remove a few repeated lines.
-Use reliable API knowledge and permitted evidence; narrow uncertain advice
-rather than inventing APIs or requiring web/tutorial reads on every review.
+**Reuse.** Compare changed handwritten mechanics and boundary glue with existing
+project helpers, supported JDK operations, and libraries already declared in the
+module's build. Name the exact replacement and the contract that makes it
+clearer; delegate generic mechanics while retaining domain or protocol
+adaptation, and verify boundary semantics (accepted inputs, first exception
+thrown, cancellation/interruption, time precision, wire output). A loop can
+communicate ordering, early exit, mutation, or checked failure better than a
+pipeline. Do not add a library, reflection, or generic framework merely to
+remove a few repeated lines. Use reliable API knowledge and permitted local
+source evidence; narrow uncertain advice rather than inventing APIs or requiring
+web/tutorial reads on every review.
 
 **Preservation.** Inspect only properties implicated by the proposed change:
 null versus absence/empty, identity versus value equality, overload/override and

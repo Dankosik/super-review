@@ -29,8 +29,10 @@ Separate request adaptation from a meaningful application operation when the
 resulting call removes HTTP knowledge. Retain a short handler that already tells
 one story; service/repository/mapper wrappers are not an end in themselves.
 `State`/`FromRef` may expose an existing substate instead of the entire application,
-but a new state type per handler can add navigation without removing knowledge.
-A shared-handle clone can be the intended transfer, not excess copying.
+and `middleware::from_fn_with_state` passes router state directly into
+middleware without per-request state-cloning closures around `from_fn`, while a
+new state type per handler can add navigation without removing knowledge. A
+shared-handle clone can be the intended transfer, not excess copying.
 
 For an implicated extraction, preserve guard/drop boundaries and the handler
 future's `Send` requirement. Inspect actual state and suspension points rather
