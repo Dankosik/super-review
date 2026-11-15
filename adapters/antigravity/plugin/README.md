@@ -1,0 +1,87 @@
+# Google Antigravity
+
+The native plugin provides `/super-review`, `/defect-review`, `/test-review` and
+`/perf-review` in the Antigravity App and CLI. Super Review covers Go, TypeScript,
+Rust and Java readability; the other three skills cover Rust bugs, tests and
+performance respectively. Each keeps its own contract and report format.
+
+## Install
+
+From a checkout containing `adapters/antigravity/plugin`, run:
+
+```sh
+agy plugin validate --strict ./adapters/antigravity/plugin
+agy plugin install ./adapters/antigravity/plugin
+agy plugin list --json
+```
+
+The checked-in plugin is generated and self-contained; consumers need no Bun or
+build step. From `super-review-<version>-antigravity.zip`, extract it and install
+the extracted `super-review` directory instead. Older releases do not include
+this archive. Start a new conversation after installation. Install this payload,
+not the repository root's manifest for other harnesses. No public Antigravity
+Marketplace listing is implied. Installation is an explicit user setup action;
+a review does not install or rewrite configuration.
+
+```text
+/super-review Review my staged and unstaged changes.
+/defect-review Проверь этот Rust PR на ошибки.
+/test-review Review the tests for this Rust module.
+/perf-review Review the hot paths in this Rust module.
+```
+
+Antigravity discovers skills automatically as well as through slash commands.
+The descriptions and entrypoints require an explicit request for the named
+review; generic code-review requests do not select a review family member.
+There is no assumed `disable-model-invocation` frontmatter support. Help explains
+usage without reading source or launching agents.
+
+## Native execution and boundaries
+
+The current chat orchestrates and keeps its model and effort. Six custom roles
+provide independent specialists/readers and separate defect/performance
+challengers. Each uses `model: inherit`, `mainAgent: false`, `subagent: true`,
+`commandExecutionPolicy: off`, and only `view_file` and `grep_search` in its tool
+allowlist. No shell, editor, delegation tool or MCP server is configured for a
+child. The parent uses native read-only inspection for source acquisition and
+passes exact resource paths and revision contents as needed. There is no custom
+runtime, API client or extra model login.
+
+`invoke_subagent` must support the installed custom roles and fresh contexts.
+Use the existing workspace, avoiding branch/worktree creation. An idle agent
+retains context when messaged; a challenge needs a fresh invocation. Collect full
+results, not lifecycle statuses. The shared workflow controls coverage and
+concurrency. Built-in `research`/`self`, `/boost` and `/swarm` are different roles
+and workflows and do not substitute for these reviewers.
+
+Antigravity documents `inherit`, `flash` and `pro` model tiers. A user override
+is honored only when the live native selector can represent it; an arbitrary
+model name is not assumed to map to a tier. An unavailable choice stops affected
+launches for clarification. A child prompt does not change its model. Report the
+requested selection separately from any effective identity exposed by the host;
+missing identity is unverified. The adapter pins no cheaper model by default.
+
+These instructions target App/CLI custom subagents. Legacy IDE skill discovery
+alone does not establish custom-role execution: when independent agents are
+unavailable, disclose the limitation as the selected skill requires. Tool
+allowlists do not establish that the parent is sandboxed or prove runtime
+enforcement in every Antigravity version.
+
+## Maintainer evidence
+
+Edit `adapters/antigravity/*.md`, `adapters/antigravity/agents/*.md` and the four
+canonical `references/harnesses/antigravity.md` files; regenerate with
+`bun run build`. Build, validation, package tests and native
+`agy plugin validate --strict adapters/antigravity/plugin` check delivery and
+configuration. Packaging emits `super-review-<version>-antigravity.zip` with its
+checksum. Evaluator-only contrasting inputs live in `evals/antigravity`.
+
+Native validation with local CLI 1.5.9 is distinct from a model run. End-to-end
+discovery, tool enforcement, delegation, model routing and review quality are
+NOT RUN until actual native traces are recorded. No quality or speed improvement
+is claimed from package checks.
+
+Official references checked on 2026-11-15:
+[plugin manifest, components and validation](https://antigravity.google/docs/build-plugins),
+[skills and slash commands](https://antigravity.google/docs/skills), and
+[custom roles, tools, model tiers and lifecycle](https://antigravity.google/docs/subagents).

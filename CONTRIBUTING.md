@@ -39,7 +39,7 @@ bun run package
 Policy changes need contrasting evaluation cases and honest behavioral evidence.
 Tests verify resource identities, native configuration and packaging; they do not
 prove recommendation quality. Changes to roles need native configuration checks.
-CI validates the Claude plugin and OpenCode tool exposure without executing models.
+CI validates the Claude and Antigravity plugins and OpenCode tool exposure without executing models.
 Use the [evaluation protocol](https://github.com/Dankosik/super-review/tree/main/evals)
 for changed agent decisions and the [instruction-boundary cases](https://github.com/Dankosik/super-review/tree/main/evals/instruction-boundaries) for
 changed launch, policy, coverage and handoff decisions, the
@@ -53,7 +53,7 @@ Do not claim a behavioral pass from fixture integrity; record unavailable model
 runs explicitly. Keep the
 routing-first experiment separate until its comparison justifies promotion.
 
-Codex and Claude install trees are generated. Edit canonical skill files and
+Codex, Claude, Cursor and Antigravity install trees are generated. Edit canonical skill files and
 adapter templates, then rebuild; do not edit delivery copies. Version 3 ships no
 custom source-reader runtime. Use native host tools in review instructions.
 

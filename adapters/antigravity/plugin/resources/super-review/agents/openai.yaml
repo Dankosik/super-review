@@ -1,0 +1,6 @@
+interface:
+  display_name: "Super Review"
+  short_description: "Focused readability and maintainability review of Go/TypeScript/Rust/Java source"
+  default_prompt: "Use $super-review to review this Go, TypeScript, Rust, or Java PR or local source."
+policy:
+  allow_implicit_invocation: false

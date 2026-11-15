@@ -1,0 +1,6 @@
+interface:
+  display_name: "Performance Review"
+  short_description: "Find unneeded work on hot paths of Rust source: each cost traced through the code and tested by an independent challenge"
+  default_prompt: "Use $perf-review to find unneeded work on the hot paths of this Rust PR or local source."
+policy:
+  allow_implicit_invocation: false

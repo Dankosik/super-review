@@ -2,7 +2,7 @@
 name: super-review
 description: "Use for an explicitly requested Super Review: independent readability and maintainability review of Go, TypeScript (including React 19, Next.js 16, Tailwind and shadcn/ui), Rust, or Java PRs or local source."
 metadata:
-  version: "3.29.0"
+  version: "3.30.0"
 ---
 
 # Super Review
@@ -18,6 +18,7 @@ for advice, without claiming tested equivalence.
 
 Orchestrate through the active adapter: [Codex](references/harnesses/codex.md),
 [Claude Code](references/harnesses/claude.md), [Cursor](references/harnesses/cursor.md),
+[Antigravity](references/harnesses/antigravity.md),
 or the installed OpenCode role. When the user explicitly asks to run specialists
 in another installed harness, launch them there through
 [external specialists](references/harnesses/external.md).

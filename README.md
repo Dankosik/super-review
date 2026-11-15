@@ -4,7 +4,7 @@
 
 <p align="center">
   <b>AI code review for readable, maintainable Go, TypeScript, Rust and Java code</b><br>
-  Claude Code · Codex · Cursor · OpenCode
+  Claude Code · Codex · Cursor · OpenCode · Google Antigravity
 </p>
 
 <p align="center">
@@ -24,8 +24,8 @@
   <a href="#faq">FAQ</a>
 </p>
 
-**Super Review** is an AI code review plugin for **Claude Code, Codex, Cursor and
-OpenCode**. It reviews pull requests, local changes or a whole project in
+**Super Review** is an AI code review plugin for **Claude Code, Codex, Cursor,
+OpenCode and Google Antigravity**. It reviews pull requests, local changes or a whole project in
 **Go, TypeScript, Rust and Java** for one thing: how easy the code is to read
 and change. Independent specialist agents each answer one question; an
 orchestrator checks their evidence and hands you a report of concrete,
@@ -71,6 +71,10 @@ Marketplace listing is a separate Cursor review.
 [Releases](https://github.com/Dankosik/super-review/releases) and use its
 `super-review` launcher; see [the OpenCode adapter](docs/opencode.md).
 
+**Google Antigravity App/CLI**: install the [native plugin](docs/antigravity.md)
+with `agy plugin install ./adapters/antigravity/plugin` from this checkout.
+It includes all four review skills and their read-only custom roles.
+
 **Any agent that reads skills**: download the skill archive from
 [Releases](https://github.com/Dankosik/super-review/releases).
 
@@ -85,6 +89,7 @@ and removing old configuration.
 | Claude Code | `/super-review:review` |
 | Codex | `$super-review` or select the plugin |
 | Cursor | `/super-review` in Agent chat |
+| Google Antigravity | `/super-review` in App or CLI chat ([guide](docs/antigravity.md)) |
 | OpenCode | `/super-review` via the bundled launcher ([guide](docs/opencode.md)) |
 
 Follow the command with what to review:
@@ -204,6 +209,7 @@ flowchart LR
 | Codex | your model and effort | GPT-6.1 Terra/high |
 | Claude Code | your session model and effort | Sonnet/medium |
 | Cursor | your chat model | `inherit` by default; request an override in the prompt |
+| Google Antigravity | your chat model and effort | `inherit`; overrides require native selector support |
 | OpenCode | your provider/model | your provider/model |
 
 In Cursor, ask for a specialist model in the prompt, for example
@@ -235,7 +241,7 @@ A separate skill in the same plugin hunts bugs in Rust.
 ```text
 /super-review:defects Review crates/infra-cache in the current project.
 $defect-review Hunt for bugs in this PR.
-/defect-review Hunt for bugs in this PR.   (OpenCode)
+/defect-review Hunt for bugs in this PR.   (OpenCode / Antigravity)
 ```
 
 Independent readers each take one lens, or a related pair for a small change:
@@ -256,7 +262,7 @@ source itself and tries to show it is not a bug. When the behavior is a
 deliberate choice whose stated reason holds, the finding is reported as
 disputed, with the cost and the decision side by side.
 
-Rust only, in Claude Code, Codex and OpenCode. See [the design](docs/defect-review.md)
+Rust only, in Claude Code, Codex, OpenCode and Antigravity. See [the design](docs/defect-review.md)
 and [the contract](skills/defect-review/references/contract.md).
 
 ## Test Review (experimental, Rust)
@@ -266,7 +272,7 @@ A third skill asks whether your tests would fail if a plausible bug appeared.
 ```text
 /super-review:tests Review the tests of crates/infra-cache in the current project.
 $test-review Would the tests in this PR notice a mistake in what it changes?
-/test-review Would the tests in this PR notice a mistake?   (OpenCode)
+/test-review Would the tests in this PR notice a mistake?   (OpenCode / Antigravity)
 ```
 
 A finding names a promised behavior that no test pins down, and shows it with:
@@ -282,7 +288,7 @@ the rule asks for synchronization, is shown by quoting both. Mutants your tests
 catch are counted, not reported, and the review says what it did not probe.
 
 It does not build or run your tests, so it is not a mutation-score tool. Rust
-only, in Claude Code, Codex and OpenCode. See [the design](docs/test-review.md)
+only, in Claude Code, Codex, OpenCode and Antigravity. See [the design](docs/test-review.md)
 and [the contract](skills/test-review/references/contract.md).
 
 ## Performance Review (experimental, Rust)
@@ -293,7 +299,7 @@ often.
 ```text
 /super-review:perf Review the request path of crates/api in the current project.
 $perf-review Find unneeded work on the hot paths this PR touches.
-/perf-review Find unneeded work on the hot paths this PR touches.   (OpenCode)
+/perf-review Find unneeded work on the hot paths this PR touches.   (OpenCode / Antigravity)
 ```
 
 Independent readers each take one lens, or a related pair for a small change:
@@ -328,7 +334,7 @@ its basis. The report ends by asking whoever applies a
 finding to check those counts first, then to measure time where the saving
 is time, a benchmark for CPU and load at production concurrency for
 contention, and to keep the change only if the gain shows. Rust only, in Claude
-Code, Codex and OpenCode. See
+Code, Codex, OpenCode and Antigravity. See
 [the design](docs/review-family.md#how-performance-review-shows-a-cost) and
 [the contract](skills/perf-review/references/contract.md).
 
@@ -375,7 +381,7 @@ Super Review. JavaScript/JSX, CSS and MDX are not standalone targets.
 
 - [Design](docs/design.md) and [the review family](docs/review-family.md)
 - [Model profiles](docs/model-profiles.md) and [native integrations](docs/native-integrations.md)
-- [Cursor](docs/cursor.md) and [OpenCode](docs/opencode.md) adapters
+- [Cursor](docs/cursor.md), [OpenCode](docs/opencode.md) and [Antigravity](docs/antigravity.md) adapters
 - [Validation](docs/validation.md): package checks kept apart from model evidence
 - [Instruction audit](docs/instruction-audit.md): 3.0.1 scope corrections and coverage defaults
 - Maintainer evaluation cases: [frontend](https://github.com/Dankosik/super-review/tree/main/evals/frontend), [Spring](https://github.com/Dankosik/super-review/tree/main/evals/spring). Fixture checks do not claim measured model-quality gains.

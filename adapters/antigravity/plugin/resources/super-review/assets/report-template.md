@@ -1,0 +1,108 @@
+# Super Review
+
+Write in the language of the user's request, even when instructions and packets
+are in English. This is an information contract, not a requirement
+for empty headings or tables. Combine compact context, rules and coverage when
+none is lost. Omit an empty file map, recommendation list or implementation order
+when there are no accepted changes; state that outcome explicitly. Preserve
+source/instruction identity, actual coverage, limits, every candidate disposition
+and every accepted recommendation, including merges. A short presentation must
+not become a top-N finding limit.
+
+## Outcome
+
+Lead with changes offering the clearest supported maintenance benefit, considering
+scope and adoption cost, not bug severity or finding count. With none accepted,
+say no implementation recommendations were accepted under the completed coverage;
+do not claim perfection or absence of observations when unresolved ones remain.
+Name the recommendations with an observable effect; claim unchanged behavior only
+when none has one. Stated counts match the R headings and the decision table, and
+every R-ID is a recommendation.
+
+## Context and status
+
+PR URL and B/H/D, or local root, review extent, selected view and both endpoint
+identities (commits, index blobs or working-file hashes); the branch of a local
+HEAD and, when it is not the default branch or is behind its upstream, the target
+files that differ; Super Review version; `complete` or `partial`; independent or
+explicitly limited sequential execution; specialist model/profile and reasoning
+effort when available. Include trusted instruction revision/digests when exposed,
+otherwise `content identity unverified`, as defined by the contract, apart from
+B/H/D. Explain actual identity/scope conflicts.
+
+## Applied rules
+
+Languages and applicable compiler/runtime baselines, team policy sources/revisions,
+overrides, disabled rules, and conflicts. Keep language-specific coverage explicit.
+Identify code references actually used, their pinned revisions and the convention
+illustrated; do not imply the example itself was a reviewed change.
+
+## Coverage
+
+Record planned lens/profile selection and omissions with signals or structural
+reasons; group matching scopes/reasons. Keep `not requested` and `not checked`
+distinct from completed work or genuine non-applicability. Show later additions
+and focused continuations without implying repeated full passes.
+
+| Area/files | Lens, profiles, task | Selection and actual execution | Reason or evidence |
+| --- | --- | --- | --- |
+
+A compact pair shows both lenses under one task, each with its own status.
+A profile-only task covers that question, not its whole owner. A failed selected
+profile makes that area partial even when the base pass finished. Content profiles
+are not model profiles. List excluded tests, generated/vendor/binary files and
+unsupported languages; never imply they were reviewed.
+
+## File map
+
+| File | Reason it participates | Recommendation IDs |
+| --- | --- | --- |
+
+## Recommendations
+
+### R-001 — <concrete change>
+
+Location at the reviewed endpoint/snapshot: verified file and symbol, with verified
+lines/link when available or a distinguishing source span. Label old comparison
+evidence separately; keep old/new paths for renames and old-side anchors for
+removed source. Do not invent a current location. Links identify that pinned
+revision, not the current branch. Scope: local or cross-file.
+Basis: effective rules and contributing profiles, including convention-only advice.
+Connect the observation to the selected comparison or whole-source snapshot; distinguish
+supporting context. Explain
+the reading/maintenance task, supported transformation, net benefit, source-supported keep
+alternative, and relevant preservation constraints. State the observable effect:
+`none`, or what callers, operators or logs will see differently, with any
+precondition. Include affected files and originating candidate IDs. Make the bounded change usable by a coding agent;
+retain the minimal resulting-shape sketch when a structural recommendation needs
+it to show the improvement. Do not replace it with only a pattern name, or expand
+a clear local edit into a design exercise. A full patch or new feature design is unnecessary.
+Repeat for **every** accepted recommendation, including merged contributions.
+
+## Implementation order
+
+State only real dependencies, independent accepted changes, or labeled alternatives.
+Use the reconciled resulting design: recommendations that were alternatives must
+not become consecutive mandatory steps. Name any remaining shared prerequisite.
+A simple change stays a single step.
+
+## Limits and decisions
+
+Explain unfinished coverage and missing context. State that behavior, bugs,
+security, product requirements and test coverage were not independently validated,
+and no project checks or source edits were performed.
+
+| Candidate | Accepted / rejected / merged / unresolved | Reason or demonstrated observation and remaining gap | R-ID if accepted/merged |
+| --- | --- | --- | --- |
+
+Retain useful unresolved observations with their source anchors and the missing
+fact that would settle the remedy; do not silently drop them or label
+them required changes. This appendix is traceability, not a second task list.
+
+## For whoever implements this
+
+Close with three instructions for the person or agent that applies the report:
+implement only the accepted recommendations and leave unresolved items to their
+owners; keep each recommendation's observable effect as stated; when a
+recommendation has to be done differently or proves wrong, say so and why
+instead of changing course silently.
