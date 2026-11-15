@@ -19,10 +19,11 @@ test:
 - **Elapsed real time.** A fixed sleep before an assertion; a polling loop
   bounded only by wall-clock time; an assertion that a duration fell inside
   a real-time window.
-- **Order.** Two tasks assumed to run in a given order; a message assumed to
-  arrive before the check; iteration order of an unordered collection.
-- **Shared state.** A global recorder, environment variable or static
-  changed by one test and read by another.
+- **Order.** Two tasks assumed to run in a given order; a message or async
+  update assumed to arrive before a synchronous check; iteration order of an
+  unordered collection.
+- **Shared state.** A global recorder, environment variable, persistent client
+  state, or static changed by one test and read by another.
 - **The machine.** A fixed port or path, the local time zone, the network.
 - **Randomness.** Unseeded input with no reported seed.
 

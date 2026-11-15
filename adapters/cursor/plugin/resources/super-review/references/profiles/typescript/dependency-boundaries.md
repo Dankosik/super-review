@@ -3,24 +3,23 @@
 Owner: abstractions
 Rule: ts.abstractions.earn-the-boundary
 
-**Explicit dependencies.** Does a module expose the capabilities its work needs,
-or make readers discover ambient configuration and transport/framework objects?
-Inspect construction and actual consumers. A small structural capability or a
-boundary adapter can remove knowledge from the core; a parallel interface and
-factory for every module often add it instead.
+**Explicit module seams.** Inspect construction, imports, and consumers so each
+module states the capabilities it actually uses.
 
-Distinguish type dependencies from runtime imports before proposing `import type`
-or reorganizing exports. Preserve intentional side-effect imports, decorator
-metadata, module augmentation, and the project's emitter/module-resolution behavior.
-For a public-boundary remedy, connect the source declaration, runtime entry point
-and declaration selected by the consumer's import/require conditions. `.d.ts`,
-`.d.mts` and `.d.cts` describe module formats, not interchangeable packaging styles;
-a class or enum may be consumed as a value as well as a type. `paths` resolution
-does not itself rewrite emitted specifiers. A direct type/value re-export can remove
-opaque forwarding when these contracts match; retain a facade that owns a real
-compatibility or initialization responsibility. Missing artifact evidence limits
-that remedy rather than triggering a package audit or a guessed ESM/CJS rewrite.
+- **Ambient or transport leakage**: domain logic reaching into global config or
+  framework/transport objects -> pass a small structural capability or adapt at
+  the seam rather than inventing one-implementation DI factories.
+- **Barrel and client-graph coupling**: runtime barrels (`index.ts`) or shared
+  `"use client"` helpers coupling lightweight callers or client subtrees to
+  server-only modules, stateful Hooks, or heavy UI widgets (editors, charts,
+  icon packs) -> import direct module entry points so those graphs stay
+  separate.
+- **Opaque re-export forwarding**: pass-through value/type wrappers with no
+  compatibility or init role -> re-export directly after verifying runtime
+  versus type usage (`import type`, classes/enums used as values, `.d.ts`/`.d.mts`/`.d.cts`
+  `exports` conditions, and `paths` emit behavior).
 
-Do not demand a barrel ban, dependency-injection container, or ESM migration.
-Keep a direct import when it states the real dependency most clearly. Missing
-package or consumer context limits the change, not the need to disclose it.
+**Keep when:** a direct import already states the real dependency, a barrel or
+facade owns a public package contract or initialization order, side-effect
+imports or decorator/module-augmentation metadata are load-bearing, or missing
+package/consumer context leaves ESM/CJS conditions unverified.

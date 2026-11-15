@@ -34,7 +34,11 @@ what sets that number.
 - Reconnection: a client, connection pool, TLS session or prepared statement
   created per request instead of shared.
 - A whole file or response read into memory to use a prefix or one field,
-  where a streaming read would stop early.
+  where a streaming read would stop early; or whole server records serialized
+  per row across a view boundary where only a projection of fields is read.
+- Interleaved layout reads and writes in a loop: reading rendered geometry
+  after mutating styles or nodes per element instead of batching reads before
+  writes.
 - A query per request that filters, joins or sorts on columns no index in
   the repository's migrations covers. The plan is the database's: without
   the plan or the table sizes, the candidate is unproven.

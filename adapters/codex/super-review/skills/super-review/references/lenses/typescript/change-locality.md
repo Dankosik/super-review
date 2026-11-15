@@ -17,8 +17,10 @@ convention offers generic `types`, `utils`, and `constants` layers.
 When moving declarations or exports, inspect import cycles, runtime module evaluation,
 package exports, and type-only consumers implicated by the move. A barrel can be a
 useful public boundary or an extra indirection; it is not automatically wrong.
-Explain the specific future edit already implied by existing code that becomes
-more local — including symmetric `encode`/`decode`, cache-key, reset, single vs
-batch, or rolling **D**-to-**H** schema twins where a new property or union
-member otherwise relies on manual search across unlinked sites. The evidence is existing code, and the claim is locality rather than
-performance.
+Explain the concrete future edit already implied by existing code that becomes
+local: symmetric `encode`/`decode` pairs, server cache keys or client
+`queryKey`/`invalidateQueries` (`queryOptions` or key factories), form
+`defaultValues`/`reset`/schema field sets, single versus batch paths, or
+rolling **D**-to-**H** schema twins where adding a field, filter, or union
+member otherwise forces Shotgun Surgery across unlinked files. Ground the claim
+in existing code and locality, never speculative variants or performance.

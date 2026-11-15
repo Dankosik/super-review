@@ -2,13 +2,14 @@
 
 ## ts.conventions.follow-established-approach
 
-**One way per concern.** Name the recurring concerns the changed code handles,
-such as fetching data, validating and parsing input, representing failure
-(throwing, rejected promises or result unions), logging, environment and
-configuration, time, identifiers, shared state, dependency construction, and the
-project's own mechanisms. How does this package already handle each one? Where
-the change adds a second way, the next reader has to learn both, and the next
-change to that concern has to be made in both styles.
+**One way per concern.** Name the recurring concerns the changed code handles:
+data fetching and caching (such as ad-hoc `useEffect` + `fetch` beside an
+established query library), form state and validation, URL `searchParams`
+versus local UI state, semantic theme tokens versus raw color literals, failure
+representation (throwing, rejected promises, or result unions), logging,
+configuration, time, identifiers, shared state, dependency construction, and
+project-specific mechanisms. Adding a second way forces every next reader to
+learn both and every next change to touch both styles.
 
 Search before judging: the owning package first, then the workspace for
 precedent; a sibling package's choice is not this package's. Look at competing

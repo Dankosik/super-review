@@ -76,8 +76,10 @@ predictable process without wasting attention:
   Surgery*, *load-bearing*, *seam*, *mutant*, *witness*, *hot path*, *Amdahl's
   law*), repeated as exact tokens rather than re-explained in paraphrases.
   Front-load the positive target; steering by negation activates the forbidden
-  behavior. Reserve `Never` for hard read-only, safety, or isolation guardrails,
-  paired immediately with what to do instead.
+  behavior. Write flat rules as `**Leading term**: burden -> target`, and use
+  no em-dashes in prose (rewrite with a colon, comma, period, parentheses, or
+  conjunction). Reserve `Never` for hard read-only, safety, or isolation
+  guardrails, paired immediately with what to do instead.
 - **Environment over cache, and ruthless no-op pruning:** never restate what one
   lookup in the environment reveals (manifests, directory layout, tool schemas)
   or how to do what a strong model already does (reading a long file in full,

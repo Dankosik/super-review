@@ -3,30 +3,26 @@
 Owner: representation
 Rule: ts.representation.express-concepts
 
-**An action with a name.** Do readers reconstruct one existing interaction from
-correlated flags, optional payloads or coordinated setters scattered across
-handlers? Read initialization, every writer and the rendered alternatives. A
-named state shape or an event-oriented reducer can expose the relationship and
-give an existing transition one owner. Explain which repeated interpretation or
-coordinated edit disappears; counting `useState` calls is not evidence.
+**Named transitions.** Read initialization, every writer, and the rendered
+branches together so one interaction lifecycle has one representation.
 
-Keep independent selections, drafts and visibility controls independent. A reducer
-that only renames setters, a generic dispatch protocol, or a union that forbids
-currently accepted combinations adds obligations rather than meaning. Prefer
-actual interaction names such as `draftConfirmed` over one action per field only
-when the interaction really governs those fields. Neither reducers nor state
-machines are mandatory dependencies or architecture.
+- **Boolean status soup**: correlated flags (`isLoading`, `isError`, `isSuccess`,
+  `hasData`), optional payloads, or multi-setter updates that force JSX to guard
+  contradictory states -> collapse into a discriminated status union or an
+  event-named reducer (`draftConfirmed`), and name which coordinated edits
+  disappear. Counting `useState` calls alone proves nothing.
+- **Raw form leakage**: conflating raw HTML input strings (`""` while editing)
+  with parsed domain payloads (`number | null`) across downstream consumers ->
+  decode once at the submission or schema seam so domain callers receive the
+  parsed type.
 
-Preserve updater ordering, queued/functional update semantics, lazy initialization,
-reset/key lifetime, committed versus optimistic meaning and existing observable
-intermediate states. Keep I/O and user interactions outside a pure reducer. Do not
-invent valid/invalid domain states or add exhaustive guards to hunt bugs. If
-external state owners or consumers are unavailable, separate the supported
-representation observation from the unresolved remedy.
-
-This profile deepens the conditional representation lens; it does not replace the
-data-flow question about who owns each value. Report new cross-owner signals to
-the parent rather than performing a second lens in this task.
+**Keep when:** selections, drafts, and visibility toggles vary independently, or
+a proposed union/reducer would merely rename per-field setters or forbid
+combinations callers currently rely on. Preserve updater order, functional
+updates, lazy init, `key`/reset lifetime, committed versus optimistic meaning,
+and observable intermediate states, keeping I/O outside pure reducers. Leave
+remedies unresolved when external state consumers are outside visibility. State
+ownership belongs to `data-flow`; hand cross-owner signals back to the parent.
 
 Background: [reducers](https://react.dev/learn/extracting-state-logic-into-a-reducer)
 and [state structure](https://react.dev/learn/choosing-the-state-structure).

@@ -1,27 +1,27 @@
 # Frontend context
 
-Apply with [TypeScript context](../languages/typescript.md), not instead of it.
-Resolve the owning package and supported consumers at the pinned source revision.
-Read configuration as text, never by executing imports or commands. This context
-supports quality advice, not a hooks, rendering, security, accessibility, visual,
-performance or dependency-upgrade audit.
+Pair with [TypeScript context](../languages/typescript.md) to support quality
+judgment on the owning package and its consumers at the pinned revision. Read
+configuration as text; never execute imports, builds, or commands.
 
-**Baseline.** Record only what affects the assignment: React and React DOM/runtime
-and type baselines, consumer peer ranges and actual Compiler configuration;
-Next.js version and App/Pages Router per area, relevant `next.config.*` settings
-(including whether `cacheComponents` is enabled), runtime and boundary directives;
-Tailwind major, entry CSS, tokens, custom variants and relevant source registration;
-shadcn `components.json` when present, aliases, actual local primitives and their
-Radix, Base UI or React Aria imports, `cn` and variant helpers. Resolve the backend
-per component, not once for the repository. Missing `components.json` alone
-does not disprove shadcn provenance; source and imports may establish it.
-
-A lockfile's React 19 does not remove a library's React 18 consumer commitment.
-React 19 does not imply Compiler activation or every later 19.x API. Next.js 16
-does not imply Cache Components activation. Tailwind v4 guidance must not be
-applied as a required v3 migration. Do not assume shadcn has one npm version,
-a fixed directory, or a single primitive backend. Read only relevant local
-components/helpers, not the entire generated registry or upstream library.
+**Baseline.** Record only facts that govern the assigned area:
+- **React**: runtime and `@types/react` versions, consumer peer ranges, and
+  verified Compiler config. A lockfile's React 19 leaves a library's React 18
+  peer contract intact, and React 19 implies neither Compiler activation nor
+  every 19.x minor API.
+- **SPA / client stack**: established query caches (TanStack Query, SWR), client
+  stores (Zustand, Jotai, Redux Toolkit), form/schema bindings (React Hook Form,
+  TanStack Form, Zod, Valibot), and routers (React Router, TanStack Router) with
+  their majors when implicated.
+- **Next.js**: major version, App vs Pages Router per area, `next.config.*`
+  flags (`cacheComponents` requires explicit config even on Next 16), runtime,
+  and `"use client"`/`"use server"` directives.
+- **Tailwind & shadcn/ui**: Tailwind major (keep v3 configs on v3 rather than
+  forcing v4 `@theme` migration), entry CSS, semantic tokens, custom variants,
+  `components.json` or import-established local primitives, and each component's
+  actual Radix, Base UI, or React Aria backend. Read only implicated local
+  primitives. Locally maintained shadcn files are production source; generated
+  output, vendor code, and tests stay excluded.
 
 **Capability gates.** A version is necessary evidence, not proof that a particular
 renderer, integration, consumer or generated declaration supports the remedy.
