@@ -24,8 +24,11 @@ back out, through every default, conversion, clamp and validation. Compare
 what should be accepted with what the code accepts, in both directions.
 
 - A range, relation or required key enforced on one loading path and not
-  another: file, environment, default, reload.
-- Two defaults for one key.
+  another: file, environment, `Default`, serde default, `From`, reload.
+- A validation or normalization helper whose body checks fewer invariants than
+  downstream callers rely on after calling it.
+- Two defaults for one key, or a missing/invalid value silently defaulted to
+  `0`, `false` or `""` where refusal was required (fail-open).
 - Seconds read as milliseconds, bytes as characters, a duration truncated to
   whole seconds.
 - A narrowing cast or saturating arithmetic where refusal was the answer.

@@ -27,6 +27,13 @@ what it returns.
   excludes.
 - A miss reported as an empty value or the reverse; a default returned where
   "none" was the answer.
+- A silent fallback (`unwrap_or_default`, `unwrap_or`, `let Some(..) = .. else
+  { return Ok(()); }`, or a wildcard `_` arm over an internal enum) turning a
+  missing entry, unexpected state or newly added variant into apparent success
+  or a zero/empty value while the intended effect never happened.
+- A helper whose name promises more than its body establishes (`validate`,
+  `normalize`, `ensure`, `reset`), leaving callers relying on an unchecked
+  field, unnormalized input or unperformed step.
 - An invariant broken by a later mutator or a second constructor.
 - Success reported while the write, event or metric did not happen, or
   happened twice.

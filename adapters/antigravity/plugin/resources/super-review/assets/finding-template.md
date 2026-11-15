@@ -26,37 +26,11 @@ coverage remains `unfinished`, never an empty clean result.
 
 ## C-<task>-<number>: <concrete observation>
 
-- Change anchor: verified path, symbol and endpoint, with source lines or a short
-  verbatim span distinguishing the expression. Use H/new for surviving source and
-  D/old for removed source; record both paths when a rename requires them. Diff
-  positions are not source lines. A D-only location explains a deletion, not an
-  invented H line or permission to restore unrelated old code. Explain how the
-  selected comparison introduces, worsens, or makes the burden relevant,
-  grounding current impact in the change and available new-side context. For
-  local changes use the declared old/new views; for whole-project scope, anchor
-  directly in that snapshot. Distinguish supporting context and state any
-  location ambiguity instead of guessing.
-- Basis: effective rule IDs and contributing profiles; identify convention-only advice.
-- Observation: source evidence and the concrete reading/maintenance cost, named
-  with the contract's vocabulary where a term fits. State what is established.
-- Remedy: supported improvement, or `unresolved` with the exact missing evidence
-  or decision. Distinguish unavailable facts from a remaining tradeoff between
-  supported alternatives; do not invent a source gap or a remedy. For a proposal,
-  show how an actual declaration/use becomes clearer, the remaining tradeoff,
-  and the strongest source-supported keep alternative. Scale explanation to the change.
-  When a structural proposal's benefit depends on the resulting shape, include a
-  minimal sketch of the relevant types, signatures, owner or transition. Show
-  which relationships disappear and which still need an owner; a pattern name
-  alone is insufficient. Omit a sketch for a self-explanatory local edit. This is
-  a bounded illustration, not a complete patch or a claim of tested equivalence.
-- Preserve: relevant contracts/effects and constraints implicated by the proposal;
-  identify what is known versus still unverified. State the remedy's observable
-  effect, `none` or what callers, operators or logs see differently, and any
-  precondition it needs. Do not invent a remedy to fill fields.
-- Affected files: verified paths and real dependencies, including excluded tests
-  and other uses the change forces to update (edit sites, not reviewed scope);
-  distinguish inspected from still-needed consumer context. Use `none` for remaining gaps only when warranted.
+- Change anchor: verified path, symbol and [endpoint](../references/harnesses/source-access.md#file-boundaries-and-source-anchors) (`H`/new for surviving code, `D`/old for deletions, both on renames, or declared local/snapshot view), with source lines or a short verbatim span, plus how the change introduces or exposes the burden.
+- Basis: effective rule IDs and contributing profiles; mark convention-only advice.
+- Observation: quoted source evidence and the concrete reading or maintenance burden, using [the contract's vocabulary](../references/review-contract.md#vocabulary) (`load-bearing`, `seam`, `shallow`, smells) where a term fits.
+- Remedy: direct supported improvement (with a minimal type/signature sketch when shape is the point, and the strongest source-backed reason to keep the current form), or `unresolved` naming the exact missing fact or team decision.
+- Preserve: implicated contracts, effects, observable changes (`none` or what callers/operators/logs see differently) and any precondition.
+- Affected files: verified edit sites (including excluded tests or callers forced to update), distinguishing inspected consumers from still-needed context, or `none`.
 
-Prefer verified paths/symbols to guessed lines. A small before/after example can
-clarify a supported change; a full patch is unnecessary. Explain evidence and
-tradeoffs, not a reasoning transcript or checklist score.
+Prefer verified paths and symbols to guessed lines. State evidence and tradeoffs, not a reasoning transcript.

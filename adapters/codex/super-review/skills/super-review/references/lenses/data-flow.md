@@ -2,31 +2,23 @@
 
 ## go.data.make-transformations-visible
 
-**Ownership.** Follow a value from its origin through transformations, storage,
-and use. Identify where a reader must remember a previous meaning or inspect
-another declaration to tell which value is current and who can mutate it.
+**Visible ownership and transitions.** Follow each value from origin through
+transformations, storage, and use. Target places where readers must remember an
+earlier meaning of a reused variable, jump across internal helpers to see who
+mutates a value, or watch data get repackaged only to cross an internal seam.
 
-Separate meaningful stages when reusing one variable hides a change of meaning.
-Keep intermediate values that explain an operation; remove ones that merely
-relay it, re-parse an already-parsed value from text, round-trip format a value
-only to test a property on the input, or materialize a temporary slice/map only
-to feed a formatter or builder that accepts items directly. Narrow a value's
-scope or keep a mutation near its use when this reduces the state a reader must
-track; keep staging that preserves error order, all-or-nothing writes, or a
-needed snapshot. Read helper bodies and callers before claiming a pipeline
-becomes clearer.
+Remove non-load-bearing staging: split a variable when reuse hides a change of
+meaning; narrow a binding's scope to keep mutation next to its use; collapse
+cross-seam repackaging where a function materializes an intermediate slice, map,
+or adapter struct only to pass items to an internal helper, builder, or
+formatter that can accept them directly; and drop round-trip formatting or
+re-parsing of an already-parsed value just to test an input property. Read
+helper bodies and callers before claiming a rewrite simplifies the flow.
 
-Visible local mutation is not inherently worse than a copy. Account for shared
-slice/map storage, pointer receivers, shallow copies, nil/empty distinctions,
-and order when assessing a proposed shape. These constrain the advice; do not
-scan for races, missing synchronization, or runtime defects.
-
-Choose value or pointer semantics for the actual ownership and method contract,
-not presumed allocation savings. Receiver changes affect method sets; struct
-copies can retain shared reference fields, and values containing used synchronization
-primitives must not be copied. Explain these only when implicated by your proposed
-cleanup, not as an invitation to hunt for copying bugs.
-
-Show the specific origin, transition, or mutation whose ownership becomes easier
-to follow. The aim is visible ownership: a simple update, a clear sequence of
-statements and a single copy already deliver it, whatever their style.
+**Keep when:** an intermediate binding names a real stage, or staging preserves
+error precedence, all-or-nothing writes, or an intentional snapshot; or visible
+local mutation, a clear statement sequence, or a single copy already makes
+ownership plain. Account for shared slice/map backing storage, nil versus empty
+slices, shallow struct copies, receiver method-set rules, and non-copyable
+`sync` primitives as constraints on your rewrite rather than a hunt for race or
+allocation bugs. Show which origin, transition, or mutation becomes clear.

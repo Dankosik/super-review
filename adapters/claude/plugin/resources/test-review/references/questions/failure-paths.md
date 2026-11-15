@@ -27,7 +27,8 @@ Mutants that show most:
 
 - One cause reported under a neighboring failure's variant, status or label.
 - A distinguishable cause folded into the general arm.
-- A failure turned into success, absence or a default.
+- A failure or missing state turned into success, absence or a silent fallback
+  (`unwrap_or_default`, `else { return Ok(()); }`, or a wildcard `_` arm).
 - The recording skipped on one early return, or done twice.
 - A fresh duration passed where the remaining budget was computed; a limit
   removed from one wait.

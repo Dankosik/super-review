@@ -63,7 +63,9 @@ why. A small change is not a reason to drop one.
 One lens per reader. For a small change, about three hundred changed lines
 or fewer in one package, or a package of about a thousand lines reviewed
 whole, give one reader a related pair instead: complexity with allocation,
-async with contention, io with repeated-work. Split a large scope by
+async with contention, io with repeated-work. A paired reader runs each lens's
+full pass and reports each lens's coverage separately; finishing one never
+closes its partner. Split a large scope by
 package, and split a lens by area when its files are more than one reader
 can read in full: a reader that skims loses the lines it skipped. Readers
 overlap on purpose, and merging is yours.
@@ -152,7 +154,8 @@ class first, then a round trip, system call or blocking wait per element,
 then an allocation or copy per element, then constant work per request.
 Within a class, the larger multiplier first. Constant work per request is
 reported compactly. A candidate unproven only for want of evidence that its
-path is hot becomes a question to the user in the report.
+path is hot becomes a question to the user in the report. Finish deciding,
+ranking and checking siblings before drafting the report.
 
 ## Siblings
 

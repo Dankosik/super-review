@@ -2,24 +2,23 @@
 
 ## ts.functions.extract-for-clarity
 
-**Useful names.** Does a helper name an independent operation or remove repeated
-knowledge, rather than simply hide lines? Compare the whole affected function and
-its calls. Extract a cohesive transformation when the caller becomes a clearer
-account of its task; retain a linear sequence when helpers would scatter the story.
-The finding is a scattered or tangled story, which length alone does not show.
-Check closure captures, `this`, callback identity, and async boundaries
-implicated by extraction.
+**Load-bearing helpers.** Read the function, its local or module helpers, and
+its calls as one operation. Extract a helper when it names an independent
+calculation or adapter whose contract callers can use without opening its body.
+Inline single-caller helpers, tiny subcomponents, or wrapper hooks created only
+to satisfy a line budget when they scatter one linear sequence across
+declarations and pass local state around as parameter bags.
 
 ## ts.functions.coherent-purpose
 
-**One responsibility.** Can a reader describe the operation without combining
-unrelated responsibilities? Separate independent calculations or adapters when the
-boundary makes their inputs and outcomes intelligible. A branch, object
-construction, or JSX fragment becomes its own function or component when it is a
-separate responsibility.
+**One story.** Separate responsibilities when a function or component tangles
+independent calculations, adapter formatting, state transitions, and external
+effects, or switches between unrelated bodies on a mode flag. Extract a branch,
+object builder, custom hook, or JSX subcomponent when its inputs and result form
+a self-contained concept rather than a slice of its caller's variables.
 
-For established UI code, distinguish presentation, state transitions, and external
-effects only where the changed function genuinely mixes separate concepts. A
-custom hook or component should encapsulate a meaningful responsibility, not merely
-reduce line count. Preserve the framework's actual invocation, identity, and lifetime
-contracts; do not create a general hooks-correctness or performance review.
+**Keep when:** a linear sequence or component render already reads as one story
+in one place; or extracting/inlining would alter closure captures, `this`
+binding, callback or element identity, async ordering, or the UI framework's
+hook invocation and lifecycle rules (this lens judges cohesion, not hook bugs or
+re-render tuning).

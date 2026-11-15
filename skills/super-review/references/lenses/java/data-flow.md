@@ -2,29 +2,22 @@
 
 ## java.data.make-transformations-visible
 
-**Value history.** Can readers see where a value comes from, how it changes, and
-who can mutate or retain it? Trace the changed value through relevant uses.
-Prefer local variables and direct transformations over hidden fields or captured
-mutable holders when that removes state tracking. Keep a clear local accumulator;
-an immutable redesign answers an ownership burden beyond mutation itself.
+**Visible value history.** Trace each changed value from origin through
+transformations, storage, and callers. Prefer local variables and direct
+transformations over hidden mutable fields or single-element holder arrays, and
+replace side-effecting stream lambdas or nested collectors with a direct loop or
+named intermediate when that exposes state updates. Collapse cross-seam
+repackaging where code builds temporary lists, maps, or adapter DTOs only to
+cross a private helper boundary or feed a builder/formatter that accepts
+elements directly, and drop round-trip formatting or re-parsing of
+already-parsed values.
 
-Choose a loop, stream pipeline, or named intermediate by the transformation it
-exposes. Side-effecting lambdas, mutable captures, and nested collectors may hide
-what a straightforward loop states directly; a simple filter/map pipeline may
-remove distracting mechanics, and direct inspection or typed transfer beats
-re-parsing an already-parsed value, round-trip formatting to test a property, or
-collecting into a temporary collection only to feed a builder or formatter that
-accepts elements directly. Keep staging that preserves exception order,
-all-or-nothing output, or snapshots. Do not infer performance benefits or
-parallelize work as a readability recommendation.
-
-When replacing collection operations, distinguish mutable copies, fixed-size
-lists, unmodifiable live views, and snapshots. `List.copyOf` rejects null elements;
-`Stream.toList` returns an unmodifiable list, while `Collectors.toList` does not
-promise a particular mutability or implementation. Check actual caller needs,
-null policy, aliases, ordering, and element mutability. A `final` reference does
-not make its object immutable. Lazy stream operations also change when work runs;
-resource-backed streams carry a lifetime beyond a collection transformation.
-
-Name the hidden transformation or ownership fact that becomes visible, including
-the strongest reason to retain the current expression of the value history.
+**Keep when:** a local accumulator, simple `filter`/`map` pipeline, or staging
+step that preserves exception order, all-or-nothing output, or an intentional
+snapshot already makes the value history clear. Distinguish mutable copies,
+fixed-size lists, live unmodifiable views, and snapshots (`List.copyOf` rejects
+nulls; `Stream.toList` is unmodifiable and permits nulls; `Collectors.toList`
+makes no mutability promise; `final` freezes only the reference; and lazy or
+resource-backed streams carry execution timing and close lifetimes). Do not
+parallelize streams or claim performance gains here. Show which ownership or
+transformation fact becomes visible.

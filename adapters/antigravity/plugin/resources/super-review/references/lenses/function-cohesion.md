@@ -2,30 +2,27 @@
 
 ## go.functions.extract-for-clarity
 
-**Cohesion.** Read the function, its immediate helpers, and their calls as one
-operation. Extract when a helper names an independently meaningful responsibility,
-centralizes shared knowledge, or hides a level of detail the caller need not
-understand. Judge the resulting call and remaining body together.
-
-A helper earns its place when readers can use its contract without immediately
-opening it. Account for parameters, returned bookkeeping, and hidden effects;
-moving the same mental work behind a call is not decomposition. Neither function
-length nor a separate verb justifies extraction.
+**Load-bearing helpers.** Read the function, its immediate helpers, and their
+calls as one operation. Extract a helper when it names an independent decision,
+centralizes repeated knowledge, or hides low-level mechanics the caller can use
+without opening its body. Inline existing single-caller helpers that chop one
+linear story into step-by-step fragments, forward parameters unchanged, or pass
+local state across declarations as bookkeeping arguments and return tuples.
+Judge the resulting call and remaining body together; neither line count nor a
+fresh verb earns a boundary.
 
 ## go.functions.coherent-purpose
 
-A handler may coherently read, validate, act, and render. Keep such a sequence
-together when it tells one story. Conversely, inline or regroup fragmentary
-helpers when they force readers to reconstruct that sequence across declarations
-without hiding useful knowledge. Keep even a one-line helper when it names a
-real concept or owns a meaningful boundary.
+**One story.** Separate responsibilities when a function mixes orchestration
+with low-level parsing, index/byte mechanics, or a mode parameter that selects
+between bodies sharing little. Regroup fragmented helpers back into their caller
+when reading the sequence (`read -> validate -> act -> render`) in one place is
+clearer than jumping across declarations.
 
-In Go, a helper also creates a new defer boundary. Keep cleanup, a lock's scope
-and named-result updates on the side of that boundary they belong to.
-A closure may deliberately retain local state; compare that purpose with explicit
-inputs rather than extracting captured variables into bookkeeping parameters.
-
-Compare keeping, extracting, and inlining only where the observed burden warrants
-it. Preserve contracts, needed values, resource lifetime, and effect ordering.
-Regroup a function's own steps to tell its story; a new service, interface or
-package architecture is a question for abstractions.
+**Keep when:** a linear handler or flat `switch` already tells one coherent
+story at one level of detail; a one-line helper names a real domain rule or owns
+a boundary; a closure deliberately holds local state that explicit parameters
+would turn into bookkeeping; or moving statements across a call would shift a
+`defer` boundary, lock scope, error order, or named-result update. Regroup a
+function's own steps here; new services, interfaces, or package layers belong to
+abstractions.

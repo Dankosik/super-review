@@ -3,14 +3,16 @@
 Owner: control-flow
 Rule: rust.flow.show-main-path
 
-**Settled facts.** Read each changed guard with the origin of the value it tests.
-Does it check a case the types or the code have already ruled out? Such as an
-`is_empty` check before an iteration that does nothing on empty input, a bounds
-check before `get`, an `unwrap_or_default` on an `Option` the code always
-fills, a match arm for an error that a function in the snapshot never returns,
-or validation repeated on a value whose type was constructed by validating it.
-Each guard tells the reader the case can happen, sends them looking for where,
-and adds a branch to the main path.
+**Settled facts.** Read each changed guard or silent fallback with the origin of
+the value it tests. Does it check or invent a default for a case the types or
+the code have already ruled out? Such as an `is_empty` check before an iteration
+that does nothing on empty input, a bounds check before `get`, an
+`unwrap_or_default`, `unwrap_or`, or `let Some(..) = .. else { return Ok(()); }`
+on an `Option` the code always fills, a match arm for an error that a function
+in the snapshot never returns, or validation repeated on a value whose type was
+constructed by validating it. Each dead guard or silent fallback tells the
+reader the case can happen, sends them looking for where, and adds a branch to
+the main path.
 
 In Rust such a guard often means a value travels as a looser type than it is: a
 `String` that is always a valid identifier, an `Option` that is always `Some`

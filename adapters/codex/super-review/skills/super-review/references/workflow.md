@@ -82,9 +82,9 @@ about a thousand lines reviewed whole. Larger areas keep one lens per task.
 | 6 | rationale with conventions, whichever are selected |
 | 7 | logic, when selected |
 
-A lens whose partner is not selected runs alone. A paired task reports each
-lens's coverage separately, and the report marks the pair. Whether pairing
-costs attention is unverified, so this is not the default.
+A lens whose partner is not selected runs alone. A paired task runs each lens's
+full pass and reports each lens's coverage separately, and the report marks the
+pair. Whether pairing costs attention is unverified, so this is not the default.
 
 Before dispatch, announce the number of tasks. When a review of a whole
 project would start more than forty, ask the user whether to narrow it or run
@@ -174,10 +174,12 @@ work. Continue collecting and deciding within the authorized plan without asking
 for approval after the first completions. A completed child is not the whole review.
 Do not run another full review or a generic self-check loop.
 
-Reconcile related changes. Map every accepted candidate to one `R-001`-style
-recommendation, directly or through a recorded merge, and check the mapping against
-the report. Every accepted finding reaches the report, whatever its length. Use
-[the report template](../assets/report-template.md).
+Reconcile related changes across lenses so one shallow module or tangled flow
+yields one coherent target shape rather than competing local tweaks. Map every
+accepted candidate to one `R-001`-style recommendation, directly or through a
+recorded merge, and finish every verification and disposition decision before
+drafting the report. Every accepted finding reaches the report, whatever its
+length. Use [the report template](../assets/report-template.md).
 
 Reconcile the coverage ledger with inspected evidence and task results, by scope
 and snapshot, not by response count. Repeated delivery of one result adds no

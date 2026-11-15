@@ -3,14 +3,16 @@
 Owner: control-flow
 Rule: go.flow.show-main-path
 
-**Settled facts.** Read each changed guard with the origin of the value it tests.
-Does it check a case the code has already ruled out? Such as a nil check on a
-result whose constructor never returns nil, a length check before a `range`, a
+**Settled facts.** Read each changed guard or silent fallback with the origin of
+the value it tests. Does it check or supply a default for a case the code has
+already ruled out? Such as a nil check or silent zero-value return on a result
+whose constructor never returns nil, a length check before a `range`, a
 fallback for a map key a preceding loop guaranteed, or validation repeated after
-the value was parsed into a type that holds the fact. Each guard tells the reader
-the case can happen, sends them looking for where, and adds a branch to the main
-path. Go's zero values already cover much of what defensive code re-checks (the
-spec's nil slice and map semantics, `errors.Is` and `errors.As` on a nil error).
+the value was parsed into a type that holds the fact. Each dead guard or silent
+fallback tells the reader the case can happen, sends them looking for where, and
+adds a branch to the main path. Go's zero values already cover much of what
+defensive code re-checks (the spec's nil slice and map semantics, `errors.Is`
+and `errors.As` on a nil error).
 
 This profile traces whether a guard's case can occur, which control-flow
 otherwise leaves alone. A candidate needs the guarantee traced through quoted

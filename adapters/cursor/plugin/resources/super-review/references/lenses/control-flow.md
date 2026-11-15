@@ -2,28 +2,23 @@
 
 ## go.flow.show-main-path
 
-**Reading order.** Trace the main path and its alternatives through the complete
-function. Identify where a reader must retain a condition, flag, or pending
-branch to understand a later step. Recommend a change that removes that burden,
-not merely nesting or lines.
+**Visible main path.** Trace the normal path, alternatives, and exits through
+the complete function. Target places where a reader must hold a pending branch,
+mutable loop flag, repeated check, or distant named-result update in mind to
+understand a later step.
 
-Use a guard clause when it exposes the main path; simplify redundant branches
-when the expression remains direct. Name a compound predicate when its name
-expresses a real condition better than the expression. Keep effects visible and
-ordered rather than hiding them in dense boolean expressions or callbacks.
+Flatten non-load-bearing ceremony: use guard clauses or early returns to expose
+the main path; collapse redundant branches and boolean flags set in a loop only
+to branch afterward; name a compound predicate when the name states a domain
+condition clearer than the operators; lift a nil or mode check up to the single
+caller when that caller just constructed the case; replace distant named-result
+mutations with explicit `return` expressions; and pull side effects out of dense
+boolean expressions or callbacks into visible order.
 
-Retain a clear switch, meaningful alternatives, and idiomatic error handling.
-Repeated error checks are not duplication merely because their syntax matches;
-a long linear operation may already be easier to read than dispatch machinery.
-Check the proposed shape against effect ordering, short-circuit evaluation,
-deferred cleanup, and error returns. Understand those constraints without
-auditing condition truth or reporting logical bugs.
-
-In Go, explicit return expressions can remove the need to reconstruct named
-result state across distant branches. Keep named results that clarify the API or
-are deliberately updated by deferred code. A bare return in a tiny clear function
-is not automatically a problem; avoid trading visible exits for hidden callbacks.
-
-Show which decisions become easier to follow at the affected branch and main
-path. The gain is less state for the reader to hold, which visual flatness alone
-does not deliver.
+**Keep when:** a `switch`, balanced `if`/`else`, or linear sequence of idiomatic
+`if err != nil` checks already reads directly (matching error-check syntax is
+not duplication, and linear code beats dispatch machinery); named results clarify
+an exported signature or coordinate with `defer`; or a bare `return` sits in a
+tiny clear function. Preserve effect order, short-circuit evaluation, `defer`
+cleanup, and error returns; judge reading burden rather than auditing condition
+truth for logic bugs. Show which state the reader stops holding.

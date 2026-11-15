@@ -2,21 +2,23 @@
 
 ## ts.flow.show-main-path
 
-**Visible decisions.** Can readers follow the main result and its alternatives
-without mentally evaluating nested callbacks, ternaries, or scattered state flags?
-Name a meaningful condition or use a guard when it removes that burden. Retain a
-short conditional or a straightforward loop when extraction adds navigation cost.
+**Visible main path.** Trace the normal result, alternatives, and exits through
+the function. Target nested ternaries, callback pyramids, mutable loop flags,
+repeated checks on already-narrowed values, and decisions pushed one call too
+low (passing an optional or union value into a single-caller helper only to
+return immediately on `undefined` or branch back out).
 
-Use existing discriminants and control-flow narrowing to make branches legible.
-Add branches, validation, or exhaustiveness machinery only where they make an
-existing decision easier to read. Preserve distinctions among missing, nullish,
-and falsy values; `||`, `??`, optional chaining, and explicit checks are not
-interchangeable.
+Use guard clauses, named predicates, existing discriminants, and TypeScript
+control-flow narrowing to expose the main path, and choose `async`/`await` or a
+promise chain according to whichever states the sequence directly. Spell out
+variants over module-owned discriminated unions when a catch-all `default` hides
+which cases reach it.
 
-Compare `async`/`await` and promise chains by how clearly they expose the existing
-sequence. Either spelling can be the clear one. A rewrite must preserve when work
-starts, serial versus concurrent execution, short-circuiting, rejection handling,
-callback invocation, and cleanup boundaries. `Promise.all` is not a cosmetic
-replacement for sequential awaits; removing `await` inside `try` can alter error
-handling. These are constraints on advice, not a search for async bugs. Identify
-the actual path that becomes easier to read, or keep the existing expression.
+**Keep when:** a short conditional or direct loop already reads clearer than
+extracted helpers; or changing the expression would alter distinctions among
+missing properties, `undefined`, `null`, and falsy values (`||`, `??`, optional
+chaining, and `in` are not interchangeable), serial versus concurrent work
+(`Promise.all` is not a cosmetic substitute for sequential `await`), error
+capture (`return await` inside `try`/`catch`/`finally`), short-circuiting, or
+cleanup timing. Judge reading burden rather than hunting async bugs, and show
+which path becomes easier to follow.

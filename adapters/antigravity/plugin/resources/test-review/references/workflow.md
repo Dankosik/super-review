@@ -72,7 +72,8 @@ Merge candidates whose mutants break the same promise at the same place and
 keep the smaller mutant. Where several proven findings touch one operation,
 check whether one witness kills all their mutants; if it does, give that
 witness once and name the findings it covers. Each candidate ends as proven, unproven with the
-missing piece, or rejected with the counter-evidence.
+missing piece, or rejected with the counter-evidence. Finish every decision and
+missed-test search before drafting the report.
 
 ## Report
 

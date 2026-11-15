@@ -20,11 +20,12 @@ Take each claim through all four.
    early return, a conversion, a destructor or a retry between two steps
    that the trace skipped? Does the callee or dependency do what the step
    says, at the version the lockfile resolves?
-2. **The trigger does not happen.** Follow the callers. Is the input refused
-   upstream, the state unreachable, the configuration outside its validated
-   range? A trigger that needs a broken precondition is weaker, not void.
-   For a library, "no caller here does this" defeats nothing when the public
-   interface admits it.
+2. **The trigger does not happen.** Follow the callers and open any validation
+   helper they rely on; a helper's name is not proof of what it checks. Is the
+   input refused upstream, the state unreachable, the configuration outside its
+   validated range? A trigger that needs a broken precondition is weaker, not
+   void. For a library, "no caller here does this" defeats nothing when the
+   public interface admits it.
 3. **The expectation is wrong.** Is the basis read correctly, with its
    qualifiers? Does the lens's own "Not a bug" list cover this? Does a
    higher-authority source say otherwise? Does something about this code
@@ -33,9 +34,12 @@ Take each claim through all four.
    a fact about a protocol and a driver, not a slogan.
 4. **The behavior is a deliberate, reasoned choice.** Look for the decision:
    a decision record, a guide passage, a comment at the code, a test that
-   pins the behavior. Is a reason given? Is it true of this code today? Does
+   pins the behavior. A self-ratifying comment or test added in the same change
+   shows only that the author wrote both, not that callers or operators
+   accepted the cost. Is a reason given? Is it true of this code today? Does
    it accept the cost that was shown, where the affected party would read
-   it?
+   it, without breaking what existing callers or higher-authority documents
+   still rely on?
 
 Also ask whether anyone is harmed: who observes the effect, and what do they
 do differently because of it?

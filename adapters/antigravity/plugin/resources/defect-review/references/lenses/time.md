@@ -23,7 +23,8 @@ measures it. Follow the limit inward: is the same deadline carried, or a new
 duration started? Follow every way the wait can end to what is reported and
 what is left running. Add up what a caller waits in total.
 
-- A fresh duration passed down where a deadline was computed above.
+- A fresh duration passed down where a deadline was computed above, or a helper
+  whose name promises a bounded operation while wrapping only one inner step.
 - A stage outside the budget that should cover it: the limit starts after
   the lookup, the file read or the wait for a permit.
 - Sequential steps or retries that each get the whole budget, instead of

@@ -40,6 +40,10 @@ or buffer it initializes, find how much of it is read.
   holds such storage and is built per unit.
 - A collected `Vec` used once: `collect` only to iterate, take a length or
   test emptiness.
+- Cross-seam repackaging: an intermediate `Vec`, map or owned wrapper struct
+  materialized only to cross an internal layer or module seam within one unit
+  and consumed once on the other side, where borrowing or passing the iterator
+  keeps the external contract.
 - A value built only to measure it: serialized or formatted into a buffer
   to take its length, where the length follows from the parts.
 - A copy of a large buffer that is then only read: `to_vec` of a slice, a

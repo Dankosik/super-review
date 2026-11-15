@@ -70,9 +70,12 @@ A candidate whose trace has a gap is **unproven**: listed apart with the
 missing step and without advice. Do not lower the bar because a pattern is
 known to be slow, because several readers suspect it, or because the review
 would otherwise report nothing. Attach no severity labels and no estimated
-timings. A lens is finished when every path in its files that runs per
-request, per element or in a loop has been taken through the lens's Expect
-list; finding none is then a valid result.
+timings. Treat internal helper boundaries, layered conversions and defensive
+clones on a hot path as transparent: any pass, copy, allocation or re-check
+that is not load-bearing across the seam is work to trace. A lens is finished
+when every path in its files that runs per request, per element or in a loop
+has been taken through the lens's Expect list; finding none is then a valid
+result.
 
 ## Hot path
 
