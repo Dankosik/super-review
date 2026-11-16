@@ -1,48 +1,34 @@
 # Serde mechanisms inside existing Rust questions
 
-Use only for an implicated Serde boundary and the assigned owner under
-[Rust context](../languages/rust.md). This is not a separate profile. Resolve the
-format crate, Serde/derive versions and features; core Serde's MSRV alone does not
-establish the MSRV of the derive/transitive dependency combination.
+Use only for an implicated Serde boundary under [Rust context](../languages/rust.md),
+verifying the format crate, Serde/`derive` versions, MSRV across transitive
+derives, and `no_std`/`alloc`/`rc` features without executing procedural macros.
 
 ## representation
 
-Does handwritten serialization express a real format adaptation or merely repeat
-the data shape? A derive with explicit `rename`, `transparent`, or `from`/`try_from`
-can localize a mechanical representation or existing wire-to-domain conversion.
-Compare both serialization and deserialization contracts, not just one JSON value.
-`transparent` describes Serde's representation, not Rust layout or FFI ABI.
-
-Keep a custom visitor or `with` adapter for a meaningful legacy format, input
-alternatives or diagnostics, and share an existing crate-local `with` or
-`serde_with` adapter across modules when they encode the same wire rule. Avoid a
-two-pass dance that deserializes a field into an intermediate `String`,
-`Cow<str>` or `Value` only to run a second deserializer (`StrDeserializer`,
-`from_value`) when the target type or a field adapter can deserialize directly;
-conversely, when code already holds a parsed `serde_json::Value` and only removes
-or inspects one map entry, a direct `as_object_mut` / `get` operation avoids a
-single-use `#[derive(Deserialize)]` wrapper struct. `alias`, `default`, renaming
-and directional skipping have different contracts. An enum must not silently
-replace published fields. `untagged` tries variants in declaration order:
-reordering is not merely cosmetic. Internal/adjacent/untagged deserialization
-needs `alloc`; externally tagged enum deserialization can work without it. This
-does not make every field or format allocation-free. Check actual
-`no_std`/`alloc`, `derive` and `rc` capabilities. Serde's `rc` support does not
-preserve shared-pointer identity across the wire.
+- **Direct wire adaptation**: replace boilerplate visitors with `rename`,
+  `transparent` (Serde wire shape only, never Rust/FFI layout), or
+  `from`/`try_from` when both serialize and deserialize contracts match; share
+  repeated crate-local `with`/`serde_with` wire rules across modules. Eliminate
+  two-pass deserialization through intermediate `String`/`Cow<str>`/`Value` when
+  the target type or field adapter parses directly, and conversely use direct
+  `Value` map access rather than a one-off `#[derive(Deserialize)]` struct to
+  read or strip a single key from an already-parsed `Value`.
+- **Keep when**: a custom visitor preserves legacy inputs, diagnostics, or
+  directional `alias`/`default`/skip contracts; reordering `#[serde(untagged)]`
+  variants would change first-match behavior; internal, adjacent, or untagged
+  enum representations buffer via `alloc` in a `no_std` crate; `rc` serialization
+  is mistaken for shared-pointer identity preservation; or merging wire DTO and
+  domain model would couple external wire fields to internal invariants.
 
 ## api-clarity
 
-Does the result borrow a surviving input, or become independent of temporary
-storage? `Deserialize<'de>` can express the former; `DeserializeOwned` expresses
-independence for all input lifetimes. `Deserialize<'static>` is not a substitute
-for the latter. An owned `String` may remove more caller obligations than a
-borrowed field saves. `Cow` does not promise automatic borrowing for every format
-or representation: inspect field attributes and the format's deserializer.
-
-Retain a clear DTO/domain boundary and existing helpers. Do not require one type
-to serve both wire and domain roles, a new serialization crate, or a derive whose
-bounds/diagnostics change the supported contract. Unavailable macro output stays
-a local evidence gap; never execute derive macros during review.
+- **Deserialization lifetimes**: use `DeserializeOwned` when results outlive
+  temporary input buffers (`Deserialize<'static>` is not equivalent), and
+  `Deserialize<'de>` only when callers benefit from borrowing surviving input
+  (`Cow<'de, str>` borrows only when field attributes and format escapes allow;
+  an owned `String` often removes more caller lifetime ceremony than borrowing
+  saves).
 
 Sources: [container attributes](https://serde.rs/container-attrs.html),
 [field attributes](https://serde.rs/field-attrs.html),

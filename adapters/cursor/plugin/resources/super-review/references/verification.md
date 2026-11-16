@@ -27,7 +27,7 @@ match path, old/new side (**H**/new paths for surviving code, **D**/old paths
 for deleted comparison evidence, preserved path mappings for renames, and the
 selected index/worktree view rather than `HEAD` alone for local changes),
 containing symbol, enclosing context for repeated snippets, and exact source
-line range — never diff hunk offsets, a moving branch, or treating a removed
+line range; never use diff hunk offsets or a moving branch, or treat a removed
 declaration as code still present at **H**. Repair a wrong line or stale path
 from already-supplied matching bytes (without another full scan) when the same
 observation holds at a verified location; cite verified path, symbol, and
@@ -38,11 +38,11 @@ acceptance of an unsupported claim or rejection of a separately supported
 burden.
 
 **Trace the factual premise.** Trace the relevant construction, branch, and
-source-supported countercase in the explanation — whether named fields can
+source-supported countercase in the explanation (whether named fields can
 coexist, whether the operation adds or removes data, whether a guarantee is
 enforced by the type or only by current control flow, and what effective state
-callers observe versus raw stored values (bounded evidence for the
-recommendation, not a program-wide correctness audit). Narrow an overstated
+callers observe versus raw stored values, as bounded evidence for the
+recommendation rather than a program-wide correctness audit). Narrow an overstated
 explanation when the concrete maintenance burden survives; an accurate remedy
 never makes an inaccurate premise acceptable.
 
@@ -54,8 +54,8 @@ a stated engineering reason (accepting with a stated risk is not a decision, and
 the observation's main point is never an optional part of its remedy). Leave a
 supported observation `unresolved` (with its specific gap and no implementation
 instruction) only when settling the remedy requires a fact source cannot supply
-— external consumer, product intent, or unrecorded team preference, naming that
-fact — or would change a behavioral decision under the contract; reject an
+(external consumer, product intent, or unrecorded team preference, naming that
+fact) or would change a behavioral decision under the contract; reject an
 unsupported observation or leave it `unresolved` pending identified source.
 Judge caller and implementation together at the candidate's actual scope: reject
 for insufficient benefit only with a source-specific tradeoff (never merely
@@ -65,10 +65,10 @@ justifying a redesign by piling up unrelated tweaks.
 
 **Check preservation, project checks, and existing owners.** Inspect the
 preservation constraints implicated by the transformation under
-[language routing](languages.md) — exact supported operation/signature, accepted
+[language routing](languages.md) (exact supported operation/signature, accepted
 inputs, error identity and which error surfaces first, effects, API/type
 contracts, ownership/mutation, cancellation and drop timing, time precision,
-wire or stored bytes, and absence — keeping each language's rules scoped to its
+wire or stored bytes, and absence), keeping each language's rules scoped to its
 own context: Go, TypeScript (including type inference and emitted module
 behavior), Rust (trait/auto-trait contracts, ownership, eager/lazy evaluation,
 and guard/drop lifetimes), and Java (null/absence, overload/override and generic
@@ -86,17 +86,17 @@ read-only source:
 - **Committed project checks:** read whether the resulting code passes the
   project's lint policy (`clippy.toml`, `[lints]`, crate-level `deny`),
   duplication baselines, generated or template-region markers, and doc/CI/build
-  checks — read them, never run them.
+  checks (read them; never run them).
 - **Every affected use:** read every use of a changed type or name (including
   excluded tests), name collisions, and code left dead once optional regions
   are removed; repair or reject a remedy that breaks them.
 - **Existing owners:** search the snapshot, standard library, and declared
-  dependencies whenever a remedy introduces a type, helper, or constant — or
+  dependencies whenever a remedy introduces a type, helper, or constant, or
   whenever the target code itself hand-writes standalone helpers, single-purpose
   wrapper/guard types, manual trait/interface impls, or boundary glue around
-  standard/imported types — reusing an existing owner (or handing over generic
+  standard/imported types: reuse an existing owner (or hand over generic
   mechanics under `existing-helpers` while keeping application domain/protocol
-  rules), explaining why a new owner is needed, or checking `rationale` when a
+  rules), explain why a new owner is needed, or check `rationale` when a
   boundary difference requires keeping custom code.
 - **Target history and observable effects:** when target file history shows a
   name or shape was introduced recently, require a burden that name or shape

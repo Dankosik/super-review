@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.36.3 — 2026-11-16
+
+Distill Super Review 3.36.3 Rust lenses, crate reference notes, frontend/Spring contexts, and `existing-helpers` profiles from textbook syntax catalogs, minor-version release tables, and duplicated prose to semantic intent, boundary equivalence, and co-located `Keep when` rules, and eliminate all em-dashes across agent-facing instructions while keeping all 56 stable rule IDs unchanged.
+
+- **Rust lenses and crate notes (`lenses/rust/*`, `references/rust/*`).** Compresses `api-clarity.md`, `representation.md`, and `duplication.md` plus `tokio.md`, `errors.md`, `serde.md`, `axum.md`, `clap.md`, and `tracing.md` to leading-word burden-to-target rules and semantic preservation boundaries, removing Clippy/Rust-Book syntax lists, Cargo feature tutorials, and a stale `std::fmt::NumBuffer` reference (`NumBuffer` lives in `core::fmt`).
+- **Baseline verification and co-located `existing-helpers` (`frontend/context.md`, `spring/context.md`, `profiles/**/existing-helpers.md`).** Replaces hardcoded React/Next minor-version matrices, Spring release-note lists, and stdlib method/version catalogs with on-disk manifest/`.d.ts`/BOM verification, anti-folklore contract traps, and a unified `existing-helpers` priority and boundary-equivalence structure across Go, TypeScript, Rust, and Java.
+- **Instruction prose hygiene (`references/**`, `tests/resources.test.ts`).** Removes all 37 em-dashes across 15 Super Review reference files and adds a mechanical assertion keeping `AGENTS.md`, `SKILL.md`, and `references/**/*.md` free of em-dashes across all four skills.
+
+Package, native configuration, and fixture checks pass; behavioral model comparison remains NOT RUN.
+
 ## 3.36.2 — 2026-11-16
 
 Distill TypeScript and Rust contexts and cross-language lenses in Performance Review 0.10.2 alongside Super Review 3.36.2 from API syntax cookbooks and library caches to semantic search anchors, anti-folklore traps, and `finding` versus `tradeoff` boundaries, tighten `AP33`–`AP36` Rust contrast symmetry, and codify intent-over-syntax authoring rules in `AGENTS.md` while keeping all 56 stable rule IDs and per-skill boundaries unchanged.

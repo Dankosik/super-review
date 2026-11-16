@@ -3,7 +3,7 @@
 **Compatibility.** Read the owning crate's `Cargo.toml` at H and resolve explicitly
 inherited `edition` and `rust-version` through its workspace, including
 `package.workspace` when present. The supported minimum Rust version (MSRV), not
-a newer local toolchain or a sibling crate, bounds syntax and library advice —
+a newer local toolchain or a sibling crate, bounds syntax and library advice
 and also defines what `std` already stabilizes for this crate, so check whether
 types and methods stabilized within that MSRV replace handwritten mechanics or
 wrapper ceremony. An edition is not an MSRV. Read relevant features, target

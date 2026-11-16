@@ -3,7 +3,7 @@
 **Compatibility.** Establish the changed module/source set's supported language
 and API baseline at H from its Maven or Gradle configuration and relevant parent,
 root, property, lockfile, or convention files. `--release` constrains language and
-platform APIs — and defines which JDK APIs are already available; `source`/`target`
+platform APIs and defines which JDK APIs are already available; `source`/`target`
 and the JDK running the build are not equivalent evidence. A newer toolchain or
 sibling module does not authorize newer syntax here. Account for explicit preview
 flags, framework/library versions, annotation processors, `module-info.java`, and

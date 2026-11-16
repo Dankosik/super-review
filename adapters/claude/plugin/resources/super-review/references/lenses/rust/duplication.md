@@ -40,37 +40,22 @@ ending in a `_` arm, is not connected even when its forward `match` is
 exhaustive; read both directions for a key set the assigned code declares or
 edits.
 
-Compare implicated handwritten mechanics and inline boundary glue with existing
-helpers, supported standard-library operations within `rust-version`, and the
-owning crate's declared dependencies. Check whether an already-imported type or
-crate owns the rule, constant or conversion written inline: re-parsing an
-already-parsed value, formatting only to test an input property, matching raw
-error or SQL codes a crate classifies, manual URL/header/form/unit math beside
-the crate that defines it, or working around an indirect library path when a
-direct method exists. When code mixes generic framing, encoding or coordination
-with a domain or protocol rule, delegate the generic mechanism to the library
-and keep the domain rule local. A familiar loop can be clearer than a reusable
-callback or macro. Do not add a crate or raise MSRV merely to save lines.
+**Maintained owners.** Compare handwritten mechanics and inline boundary glue
+with workspace helpers, `std` operations within `rust-version`, and declared
+dependencies (re-parsing parsed values, formatting only to test an input
+property, matching raw error or SQL codes a crate classifies, manual
+URL/header/form/unit plumbing beside the crate that owns it, or indirect library
+workarounds when a direct API exists). Delegate generic framing, encoding,
+parsing, backoff, or coordination to `std` or the declared crate (naming any
+Cargo feature or workspace-dependency edit; when only a net-new crate handles
+non-trivial edge cases, name adopting it as a dependency decision) and keep
+domain or protocol rules local. Never propose a new crate or higher MSRV for a
+trivial formula.
 
-A handwritten general mechanism — such as a date, URL or CLI grammar parser, an
-encoding, or a backoff policy with jitter and caps — repeats knowledge a
-maintained implementation already owns: its edge cases, parsing and failure
-handling. Weigh that owned surface, not the line count. Do not propose a new
-external crate for a trivial one-line formula, but do use an operation or
-constant that `std`, the workspace or an already-declared crate already owns
-rather than maintaining a second copy of that rule. When `std` or a declared
-dependency supplies the matching contract, recommend it (naming any Cargo
-feature or workspace-dependency edit if needed); when only a net-new crate
-would, report the owned surface and leave adopting the crate as a named
-dependency decision. A tiny fixed grammar, an explicit std-only or `no_std`
-constraint, or a boundary difference can justify custom code; fewer dependencies
-alone do not.
-
-Preserve relevant accepted inputs, first-error precedence, ordering, ownership,
-cancellation/drop timing, time precision, evaluation behavior, and wire or
-stored bytes. When custom code must stay because the apparent `std` or crate
-operation differs on one of those boundaries, retain it and let rationale check
-whether that constraint is recorded at the site. A repeated match can remain
-clear when its cases change independently. Retaining understandable duplication
-is valid; an abstraction answers shared knowledge, which textual similarity
-alone does not show.
+**Keep when:** cases evolve independently; a plain loop reads more clearly than
+a callback or macro; an explicit `no_std`, std-only, or tiny fixed-grammar
+constraint justifies local code; or the candidate `std`/crate operation differs
+on accepted inputs, first-error precedence, ordering, ownership,
+cancellation/drop timing, time precision, evaluation behavior, or wire/stored
+bytes (retain custom code and let `rationale` check whether that boundary is
+recorded at the site).

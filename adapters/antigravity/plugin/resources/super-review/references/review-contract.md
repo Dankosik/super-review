@@ -92,8 +92,8 @@ scope.
 **Completion bar.** A candidate is a demonstrated burden (investigated across
 declarations, uses, and the strongest source case for keeping the current form)
 paired with a proposed remedy, never a suspicion. Specialists return every
-independent supported burden — separating observation certainty from remedy
-certainty and reporting cross-lens tradeoffs as they see them — while the
+independent supported burden (separating observation certainty from remedy
+certainty and reporting cross-lens tradeoffs as they see them), while the
 orchestrator alone accepts implementation changes. The assigned question is
 complete when every changed declaration, call seam, and selected profile in its
 scope has been tested against that direct idiomatic form and every

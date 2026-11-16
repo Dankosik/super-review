@@ -9,7 +9,7 @@ on its own? Absence of a comment diff does not answer this question.
 
 Prefer clearer expression or a meaningful name for explainable mechanics. Keep
 comments preserving a reason, constraint, unit, protocol, or intentional
-tradeoff — including the specific boundary or package difference when custom
+tradeoff, including the specific boundary or package difference when custom
 code must stay instead of an obvious standard-library or imported-module call;
 conversely, treat a comment explaining an indirect library workaround as a cue
 to check whether a direct API eliminates both. Remove repetition only when it

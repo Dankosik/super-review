@@ -2,7 +2,7 @@
 
 **Compatibility.** Read the nearest enclosing `go.mod` at H and the relevant
 file's build constraints. The module's `go` directive is the starting language
-and library baseline — both bounding newer syntax and defining which standard-library
+and library baseline, both bounding newer syntax and defining which standard-library
 packages and operations are already available; a newer local toolchain, `toolchain`
 preference, or sibling module does not by itself authorize newer syntax or APIs
 here. Read `go.work`, `go.sum` and locally present standard-library or locked
@@ -57,7 +57,7 @@ during the review.
 
 **Reuse.** Actively compare handwritten mechanics and boundary glue implicated by
 the change with existing project helpers, standard-library operations within the
-`go` baseline, and modules already in `go.mod` — including ordinary string, slice,
+`go` baseline, and modules already in `go.mod`, including ordinary string, slice,
 map, time, URL, HTTP, SQL and I/O operations. Identify the exact operation and
 why its contract expresses the work more directly; delegate generic mechanics
 while keeping domain or protocol adaptation in application code. A familiar loop

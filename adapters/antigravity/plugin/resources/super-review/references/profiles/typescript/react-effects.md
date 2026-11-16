@@ -18,13 +18,15 @@ synchronize with an external system in an Effect.
   (filters, table selection, edit drawer, delete dialog) or unrelated mount
   callbacks -> extract a subcomponent, pure calculation, or domain-named Hook
   whose inputs and return value state one responsibility.
-- **Latest-value ref plumbing** (React 19.2+ verified): a ref plus sync Effect
-  written solely so another Effect reads fresh committed values without
-  re-subscribing -> replace with `useEffectEvent` inside that Effect, keeping
-  genuinely reactive inputs in dependencies.
-- **Client-only mount gates** (React/React DOM 19.3+ verified): a mounted-flag
-  Effect whose sole job is skipping SSR -> consider `use(browser())` only after
-  verifying the nearest `<Suspense>` fallback and first-commit timing match.
+- **Latest-value ref plumbing** (when `useEffectEvent` is supported by resolved
+  React runtime/types): a ref plus sync Effect written solely so another Effect
+  reads fresh committed values without re-subscribing -> replace with
+  `useEffectEvent` inside that Effect, keeping genuinely reactive subscription
+  inputs in dependencies.
+- **Client-only mount gates** (when `use(browser())` is supported by resolved
+  React/React DOM and the renderer): a mounted-flag Effect whose sole job is
+  skipping SSR -> consider `use(browser())` only when the nearest `<Suspense>`
+  fallback and first-commit timing match; defer when timing differs.
 
 **Keep when:** an Effect synchronizes a real widget, observer, timer, or
 browser subscription with colocated cleanup; moving work to an event would drop

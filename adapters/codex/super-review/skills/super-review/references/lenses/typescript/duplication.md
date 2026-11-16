@@ -59,7 +59,7 @@ keeping value inference.
 For repeated types, handlers and boundary glue, show which exact knowledge is
 shared and which adaptation stays local. Check whether inline rules, constants,
 conversions or formatting/parsing steps duplicate an operation already owned by
-the platform runtime or an imported package — such as re-parsing a validated or
+the platform runtime or an imported package, such as re-parsing a validated or
 parsed value, hand-assembling URLs, query parameters, headers or unit constants,
 or working around an indirect library call when a direct API exists. Hand the
 generic mechanism to that owner while keeping domain policy in application code;
