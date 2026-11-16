@@ -31,7 +31,6 @@ Bind values where they are decided and let ownership tell the true story:
   `find`, `min_by_key`, or `max_by_key`.
 - Express conversions directly: `From` for lossless widening, `TryFrom` for
   checked conversions, `format!` over multi-step string `+`/`push_str` assembly,
-  `std::fmt::NumBuffer` (within MSRV) for local integer formatting,
   `Cow::Borrowed` when an unchanged slice stays borrowed, and direct checks on
   parsed values or input bytes/chars instead of round-trip formatting or
   re-parsing text across internal calls.

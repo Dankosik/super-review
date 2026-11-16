@@ -40,7 +40,7 @@ so a clean result shows what was looked for.
 Centralize demonstrated shared knowledge in the smallest meaningful operation.
 Also check whether handwritten rules, constants, conversions or call-site glue
 duplicate an operation already owned by the Go standard library (at the module's
-`go` directive) or an already-imported module — such as re-parsing a parsed
+`go` directive) or an already-imported module, such as re-parsing a parsed
 value, matching raw status or error strings a package classifies, or assembling
 URLs, headers, forms, queries or units by hand. Delegate the generic mechanism
 to that owner while keeping domain or protocol rules local; do not propose a new

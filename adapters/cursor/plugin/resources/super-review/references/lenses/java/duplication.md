@@ -52,7 +52,7 @@ itself remains excluded.
 When proposing reuse, name the exact supported helper/API and check whether
 inline rules, constants, conversions or call-site plumbing duplicate an
 operation already owned by the JDK (at the module's release baseline) or a
-declared library — such as re-parsing an already-parsed value, matching raw
+declared library, such as re-parsing an already-parsed value, matching raw
 error or SQL codes a library classifies, or hand-building URLs, headers, forms
 or unit math. Delegate the generic mechanism while keeping domain or protocol
 adaptation local; do not add a new library for a trivial formula. Preserve

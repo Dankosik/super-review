@@ -1,67 +1,42 @@
 # Tokio mechanisms inside existing Rust questions
 
 Use only for established Tokio code and the assigned owner under
-[Rust context](../languages/rust.md). This is not a separate profile or a
-runtime recommendation. Check the resolved Tokio/tokio-util versions and features;
-`JoinSet` and `TaskTracker` need their crates' `rt` feature, `select!` needs Tokio's
-`macros`. Do not assume the newest operation exists in an older dependency.
+[Rust context](../languages/rust.md), verifying resolved `tokio`/`tokio-util`
+versions and enabled Cargo features before proposing an operation.
 
 ## data-flow with lifecycle-ownership
 
-Can the reader identify who owns the work, signals cancellation and waits for its
-completion? Compare handwritten coordination with the mechanism matching that
-existing responsibility, not with an abstract preference for structured tasks.
-
-A `JoinSet` can give a same-output task group one owner and remove manual handle
-bookkeeping. It yields completion order, not spawn order, and dropping it aborts
-remaining tasks; when shutdown aborts every task and discards outputs,
-`JoinSet::shutdown().await` expresses `abort_all()` plus the `join_next` drain
-loop in one call (keep the loop when shutdown inspects individual outcomes or
-panics). Dropping a `JoinHandle` instead detaches its task; when `tokio-util` is
-declared and a single handle only needs abort-on-drop, `AbortOnDropHandle`
-replaces a one-off wrapper struct and `Drop` impl. Keep handles when intentional
-detachment, ordering or another established contract needs them. Abort is not
-cooperative cleanup; already running blocking tasks are not interrupted by
-abort. Preserve the actual task kinds and shutdown behavior.
-
-When changed code pairs shared state (`Mutex`, atomics or a `watch::Sender`)
-with a separate `Notify` so readers can wait for a state transition, compare a
-single `watch` channel (`send_modify` with `Receiver::wait_for`): `watch` holds
-the current state alongside its wakeup so late subscribers see it without a
-hand-maintained flag-and-notify protocol. Keep `Notify` when there is no state
-to store or single-permit `notify_one` semantics are intended; `notify_waiters`
-wakes futures created by `notified()` before the call without requiring `pin!`
-and `enable()`, whereas `enable()` still matters when registering a waiter
-before checking state to avoid a race with `notify_one`.
-
-For cooperative shutdown, distinguish notification from completion. An existing
-`CancellationToken` can express the signal; `TaskTracker` can express waiting for
-tracked work after closing the tracker. Its wait completes when closed and empty;
-dropping the tracker does not abort tasks. It neither collects task results like a
-`JoinSet` nor replaces the work's cancellation response. Keep a clear existing
-sequence rather than introducing a generic lifecycle manager.
-
-Owned inputs and cloned shared handles can make task ownership explicit. Check
-the executor's actual `Send`/`'static` bounds and values held across suspension,
-not a blanket `Send + Sync` rule. Do not replace ownership with borrows that
-manufacture lifetime coupling, or change guard/drop scopes during extraction.
+Compare handwritten task and wakeup plumbing with the Tokio primitive that owns
+that exact contract:
+- **Task groups and handles**: `JoinSet` owns a homogeneous task group, yields
+  in completion (not spawn) order, and aborts remaining tasks on drop (`shutdown`
+  discards outputs; keep a `join_next` drain loop when inspecting outcomes or
+  panics). Dropping a bare `JoinHandle` detaches the task instead (`AbortOnDropHandle`
+  replaces a one-off abort wrapper when `tokio-util` is declared). Keep detached
+  handles or spawn-ordered vectors when intentional, and note that task abort is
+  non-cooperative and does not interrupt running blocking pool closures.
+- **State transitions vs wakeups**: when shared state (`Mutex`, atomics, or
+  `watch::Sender`) is paired with a separate `Notify` solely so readers await a
+  state transition, a single `watch` channel (`send_modify` + `Receiver::wait_for`)
+  couples state and wakeup for late subscribers. Keep `Notify` when no state is
+  stored or single-permit `notify_one` queue semantics are intended (`notify_waiters`
+  wakes prior `notified()` futures directly, whereas `enable()` before checking
+  state still prevents lost single-permit wakeups).
+- **Cooperative shutdown**: `CancellationToken` signals cancellation while
+  `TaskTracker` awaits completion after `close` without aborting tasks on drop
+  or collecting return values. Keep explicit task ownership (`Send`/`'static`
+  where the executor requires it) without manufacturing lifetime coupling or
+  shifting lock/drop scopes across `.await`.
 
 ## control-flow
 
-A direct `select!` often explains competing events better than a callback wrapper.
-Preserve branch priority, polling and the losing future's cancellation contract
-when changing that expression. Cancellation safety is operation-specific; neither
-an `.await` nor a borrowed future establishes it. Treat this only as preservation
-of a proposed clarity change, not a search for races, leaks or async defects.
-
-A sleep-and-recheck loop over state the same code base writes hides the
-condition it waits for behind a flag and a cadence. An existing completion or
-change notification, such as a join, `watch` or `CancellationToken`, can name
-that condition; on a `watch::Receiver`, `wait_for` replaces a manual
-`borrow_and_update` + `changed().await` predicate loop when the receiver only
-awaits a state matching a predicate. Polling remains the clear form for external
-state that offers no notification, given an owner, cadence and terminal
-condition.
+- **Competing events and conditions**: direct `select!` expresses competing
+  branches without callback wrappers, and `watch::Receiver::wait_for` or an
+  existing completion primitive replaces internal sleep-and-recheck loops.
+  **Keep when:** polling external state that exposes no notification (given an
+  owner, cadence, and terminal condition), or when rewriting `select!` would
+  alter branch priority, polling order, or operation-specific cancellation
+  safety (judge only to preserve behavior, never as an async bug audit).
 
 Sources: [JoinSet](https://docs.rs/tokio/latest/tokio/task/struct.JoinSet.html),
 [JoinHandle](https://docs.rs/tokio/latest/tokio/task/struct.JoinHandle.html),

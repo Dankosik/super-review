@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readdirSync, readFileSync } from "node:fs";
+import { relative, resolve } from "node:path";
 
 const root = resolve(import.meta.dir, "..");
 const read = (path: string) => readFileSync(resolve(root, path), "utf8");
@@ -46,3 +46,16 @@ for (const [suite, packet, pattern] of [
     for (const item of cases) expect(item.expect.length).toBeGreaterThan(0);
   });
 }
+
+test("agent-facing instructions contain no em-dashes", () => {
+  const walkMd = (dir: string): string[] => readdirSync(dir, { withFileTypes: true })
+    .flatMap(entry => entry.isDirectory() ? walkMd(resolve(dir, entry.name))
+      : entry.name.endsWith(".md") ? [relative(root, resolve(dir, entry.name)).replaceAll("\\", "/")] : []);
+  const targets = ["AGENTS.md"];
+  for (const skill of ["super-review", "defect-review", "test-review", "perf-review"]) {
+    targets.push(`skills/${skill}/SKILL.md`, ...walkMd(resolve(root, `skills/${skill}/references`)));
+  }
+  for (const path of targets) {
+    expect(read(path), path).not.toContain("—");
+  }
+});

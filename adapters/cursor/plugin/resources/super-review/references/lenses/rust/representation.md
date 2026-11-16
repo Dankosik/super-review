@@ -3,72 +3,39 @@
 ## rust.representation.express-concepts
 
 **Explicit concepts.** Can readers understand implemented states and their data
-from the representation, or reconstruct a protocol across flags, sentinels or
-parallel collections? Primitive Obsession and Data Clumps are the usual shapes
-of this burden. Explain it assuming the implementation works as intended. Bug
+from the representation, or must they reconstruct a protocol across flags,
+sentinels, or parallel collections? Primitive Obsession and Data Clumps are the
+usual shapes of this burden. Judge assuming the code behaves as intended; bug
 prevention alone is outside scope.
 
-An enum with associated data, an existing domain type or a small newtype can give
-an implicit concept one home. Keep tuples, options or primitives when the local
-operation already explains them. Typestate machinery or a wrapper earns its
-place by expressing a concept the code already maintains, not because Rust can
-encode it.
+Compare the representation with its strongest simpler alternative across
+construction, matching, and consumers:
+- **Aligned state and relationships**: collapse mutually dependent fields,
+  two-phase `Option` init fields unwrapped by every reader, `Option<Vec<T>>` or
+  `Option<String>` where `None` and empty mean the same, boolean/wakeup pairs
+  covered by one state-carrying primitive, mode-only fields inert in other
+  modes, or derived projections passed alongside their source registry by hand
+  into an enum with associated data, a cohesive struct, or a borrow-linked view
+  (fewer implicit caller obligations beat fewer fields).
+- **Domain units and closed sets**: replace string or integer tags, bare
+  duration/path/address/count primitives converted at each use, manually
+  deduplicated/sorted `Vec`s, field-by-field `Default` mutation where a struct
+  literal shows the whole value, or positional boundary tuples with an enum,
+  standard domain type (`Duration`, `PathBuf`, `IpAddr`, `NonZero*`), set/map,
+  or newtype (`type` aliases do not separate shared primitives).
+- **Carried validity**: when validated input travels further, prefer a shape
+  that cannot hold the invalid state or a newtype with private fields and a
+  validating constructor, tracing every construction path (`Deserialize`,
+  `Default`, `From`, public fields) before calling a property carried (an enum
+  variant holding `Vec<T>` does not prove non-emptiness, and a single
+  unreachable branch does not justify a wrapper).
 
-Compare the current representation with its strongest simpler alternative through
-one complete read or transition. Name the relationships each leaves the maintainer
-to preserve: positional correspondence, mutually dependent fields, duplicated
-state or updates in several places. Watch for one fact held in two places whose
-link the type does not express: cached or derived projections stored apart from
-their source registry or configuration so callers must pass both in lockstep,
-redundant parsed forms kept side by side when one suffices, state paired with a
-separate boolean flag or wakeup primitive where one state-carrying primitive or
-`Option` expresses both, or mode-specific fields allocated inertly in modes that
-never read them. Fewer fields are not necessarily fewer relationships: linking a
-projection to a borrow or reference of its source can remove an implicit caller
-obligation even when the struct still carries cached slices. Keep stored history,
-reservations, snapshots or derived values that carry an existing invariant or
-justified cost bound.
-
-A type alias names a type but does not give the concept a home: two aliases of
-one primitive leave readers to track which value is which by position. A newtype
-gives identifiers or units that share a primitive their own concept. Keep an
-invariant-bearing field private behind the operations that maintain it. Getters
-over private fields of passive internal data restate the field list; a public
-type may keep fields private for layout or evolution freedom under the shared
-compatibility judgment.
-
-Look for facts the type could carry and the code re-derives: a `String` or
-integer compared against literals to select behavior, where an enum names the
-closed set; a duration, path, address or count held as a bare integer or string
-and converted at each use, where `Duration`, `PathBuf`, `IpAddr` or a `NonZero`
-type keeps the unit; an `Option` field that is `None` only between construction
-and a later `init`, which every reader then unwraps; `Option<Vec<T>>` or
-`Option<String>` whose `None` and empty mean the same; a tuple stored in a field
-or crossing a function boundary whose members are told apart by position; a
-`Vec` kept sorted or duplicate-free by hand, where a set or map states it; a
-value pieced together by assigning fields of a `Default` one at a time, where a
-literal shows the whole; a comment saying when a field is valid or meaningful,
-which an enum variant holding that field would state. Each is a candidate only
-with the readers who pay for it: a wire type keeps its published shape, and a
-`None` that callers act on is a state.
-
-A checked value should not look unchecked. When validated input travels on as
-the raw `String` or number, later code checks it again or asserts on trust.
-Prefer a shape that cannot hold the invalid state, such as an enum or a
-non-empty collection type. Where that is impractical, a newtype with a private
-field and a validating constructor lets each consumer state what it requires in
-its signature. Trace the other ways to build it, such as `Deserialize`,
-`Default`, a public field or a `From` impl, before calling the property
-carried; a single unreachable branch is too little to carry a new type.
-
-Distinguish a useful semantic name from a stronger type guarantee. An explicit
-wildcard variant can remove the need to connect parsing with empty-iterator
-behavior, but a variant containing a Vec does not prove that Vec nonempty.
-An empty aggregate can already express the intended identity without a wrapper;
-independently varying facts need not become mutually exclusive enum variants.
-
-Compare construction, matching and actual consumers. Representation changes may
-affect serialization, FFI layout, visibility, trait/auto-trait implementations
-and destruction. A wire DTO is not a private domain model. Do not add new states
-or silently change an encoding. Prefer a compatible internal view or explanation
-when an external contract cannot change.
+**Keep when:** local context already explains a tuple, `Option`, or primitive;
+`None` is a distinct caller state; empty aggregates already express identity;
+independent facts vary orthogonally rather than as mutually exclusive variants;
+stored snapshots, reservations, or cached projections preserve a point-in-time
+invariant or justified cost bound; private fields on a public type preserve
+layout or evolution freedom (passive internal structs need no getters); or
+wire/Serde, FFI layout, visibility, auto-trait, or drop contracts fix the shape
+(a wire DTO is not a private domain model; prefer a compatible internal view
+when an external contract cannot change).

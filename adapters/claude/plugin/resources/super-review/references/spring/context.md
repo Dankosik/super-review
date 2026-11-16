@@ -1,89 +1,63 @@
 # Spring context
 
-Apply inside the assigned Java quality question. The shared contract and Java
-context own judgment, supported source, authority and read-only scope. Spring
-knowledge explains a demonstrated reading burden or constrains its remedy; it
-does not add a framework-correctness, transaction, query-performance or security
-audit. Preserve clear code and the project's technical choices.
+Apply inside the assigned Java quality question under [Spring routing](../spring.md).
+The shared contract and Java context own judgment, supported source, authority,
+and read-only scope: Spring contracts explain a demonstrated reading burden or
+constrain its remedy rather than adding a framework-correctness, transaction,
+query-performance, or security audit.
 
-## Establish the relevant baseline
+## Baseline and capability traps
 
-Use the owning module/source set at the pinned revision, not a sibling service
-or the build JDK. Read available Maven parent/BOM/dependencyManagement, Gradle
-platform/catalog/convention files, committed locks and explicit overrides as
-text. Distinguish a managed version, a declared dependency and an actually used
-mechanism. A Boot plugin version alone is not proof of the effective library set.
-Do not run Maven/Gradle, resolve dependencies, inspect runtime beans or invent
-missing external configuration. Unknown facts limit the affected advice only.
+Read the owning module's Maven parent/BOM/`dependencyManagement`, Gradle
+platform/catalog/convention files, committed lockfiles, and overrides at the
+pinned revision as text (never run Maven/Gradle, resolve dependencies, or infer
+the effective library set from a Boot plugin or the build JDK alone). Record
+only implicated facts: Framework and Boot versions (Boot may be absent), actual
+MVC vs WebFlux server/client stack, Spring Data module, Jakarta Persistence API
+and ORM provider, validation and JSON configuration, annotation processors, and
+proxy/transaction settings. Missing baseline evidence limits only version-sensitive
+advice.
 
-Record only what the proposed change needs: Framework and Boot versions (Boot
-may be absent); actual MVC/WebFlux server or client API; Spring Data module;
-Persistence API and provider/version; validation provider; JSON mapper/version,
-modules and handwritten configuration; processors/generated-member contracts;
-proxy mode, transaction manager and applicable scope/registration settings.
-The same annotation spelling can participate in different execution models.
-A broad dependency inventory is not another review task.
+Guard against framework folklore when judging remedies:
+- **Constructor binding vs injection**: `@ConfigurationProperties` binding and
+  bean dependency injection are distinct construction paths; a single-constructor
+  `@Autowired` can deliberately opt out of inferred properties binding.
+- **Selection, validation, and routing**: `@Fallback` or parameter-name
+  autowiring (`-parameters`) requires verifying baseline/compiler support and
+  never replaces runtime per-message routing; MVC `MethodArgumentNotValidException`,
+  WebFlux `WebExchangeBindException`, and AOP method validation have distinct
+  contracts; declarative API versioning applies only on a verified Framework
+  baseline with unchanged HTTP contracts.
+- **Persistent records**: JPA `@Entity` classes cannot be Java `record`s; record
+  `@Embeddable` or ID types require verifying both the declared Persistence API
+  version and actual provider support rather than assuming portable spec behavior
+  from a provider extension.
 
-Useful version boundaries, not upgrade recommendations:
+## Implicated preservation contracts
 
-- Boot 3 changed constructor-binding conventions. Properties registration and
-  dependency injection are different construction paths; single-constructor
-  @Autowired can deliberately opt out of inferred constructor binding.
-- Framework 6.1 added built-in controller method validation; distinguish it from
-  AOP method validation. Name-based autowiring also depends on parameter metadata
-  such as -parameters. Framework 6.2 introduced @Fallback; it is not a universal
-  replacement for explicit qualifiers or runtime choice.
-- Framework 6 supports non-public transactional methods with class-based proxies
-  under its documented rules; interface-based proxies differ. Proxy versus
-  AspectJ mode, manager selection and configured rollback rules remain material.
-- Framework 7 API versioning is an option only on a supported baseline with the
-  same existing HTTP contract. It does not justify upgrading or redesigning URLs.
-- Persistence 3.2 permits certain record embeddables/ID classes, not record
-  entities. Provider-specific support on an earlier API is a different claim.
-  Check both the API and actual provider before proposing a persistent shape.
+- **Wiring and configuration**: inspect component/import discovery, bean
+  names/aliases, qualifiers, `@Conditional*` back-off/ordering, provider lookup,
+  and scope. Full `@Configuration` proxies and lite/`proxyBeanMethods = false`
+  differ whenever `@Bean` methods call one another directly, and a bean factory
+  method or annotation can satisfy an external registration contract with zero
+  literal Java callers.
+- **Operations and transactions**: trace the real entry point, proxy mode
+  (class vs interface, proxy vs AspectJ), and transaction owner. Self-invocation
+  inside a bean creates no separate proxy boundary, though it still runs inside
+  an already active outer transaction; imperative (`TransactionTemplate`) and
+  reactive (`TransactionalOperator`) transactions have distinct lifetime and
+  subscription models, and pure helpers need not become beans.
+- **Entities and value shapes**: separate identity-bearing managed entities,
+  detached objects, value types, and query projections, preserving access mode,
+  provider constructors, mutability, generated IDs, serializer names, and lazy
+  boundaries. Interface twins, DTO/entity merging, universal mappers, annotation
+  deletion, `record` conversion, and declarative rewrites earn acceptance only by
+  removing a concrete burden under identical contracts.
 
-## Preserve only contracts implicated by the recommendation
-
-For wiring changes, inspect component/import discovery, bean names/aliases,
-qualifiers, constructor selection, conditions, provider lookup and scope. Boot
-properties binding is not interchangeable with arbitrary JavaBean injection.
-Full @Configuration interception and lite/proxyBeanMethods=false configuration
-also differ when @Bean methods call one another. A method name or annotation may
-be an externally consumed registration contract despite no literal Java callers.
-
-For method extraction/inlining, identify the real entry point, proxy/advice and
-transaction owner. Self-invocation does not create a separately advised boundary,
-but can execute within an already active outer transaction. Preserve propagation,
-manager, rollback/exception translation and effect timing implicated by the move.
-A pure helper need not become a bean. Imperative transactions and Reactor-context
-transactions have different lifetime models; retain an established programmatic
-TransactionTemplate/TransactionalOperator when its explicit scope is useful.
-
-For persistent/serialized values, distinguish identity-bearing managed entities,
-detached objects, value types and query projections. Inspect actual access mode,
-constructors, mutability, generated identifiers, serialization names and relevant
-lazy access before changing representation or moving mapping. Do not scan for
-leaks, N+1 queries, races or missing validation to manufacture a quality finding.
-Bean scopes and container lifecycle are ownership evidence, not a demand to close
-every AutoCloseable or replace providers with eagerly cached values.
-
-Use [Spring routing](../spring.md) for owner profiles. Compare an exact supported
-mechanism with handwritten mechanics only for the same responsibility. State the
-knowledge removed, obligations retained and strongest reason to keep the current
-form. Interface twins, DTO/entity merging, universal mappers, annotation deletion,
-records and declarative replacements are not automatic improvements.
-
-## Primary references
-
-These explain mechanisms; consult the matching version when evidence is needed,
-not every page in every review. Current web documentation never establishes the
-target's dependencies, and unavailable evidence does not authorize an upgrade.
-
+Primary references (consult only when verifying an implicated contract):
 [Boot dependency coordinates](https://docs.spring.io/spring-boot/3.5/appendix/dependency-versions/coordinates.html),
 [Boot 3 migration](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide),
 [autowiring qualifiers](https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired-qualifiers.html),
 [transaction annotations](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html),
-[Framework 7 release notes](https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-7.0-Release-Notes),
 [Persistence 3.2 specification](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2),
-[Hibernate 6.6](https://docs.hibernate.org/orm/6.6/introduction/html_single/).
-Hibernate is an example of provider documentation, not an assumed project choice.
+and [Hibernate 6.6](https://docs.hibernate.org/orm/6.6/introduction/html_single/).

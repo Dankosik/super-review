@@ -21,7 +21,7 @@ present today; for variation that is only imagined it is Speculative Generality.
 A new boundary is useful when it reduces the knowledge required to make the
 demonstrated change.
 
-Name all verified participating paths and the decision they share — including
+Name all verified participating paths and the decision they share, including
 symmetric counterparts (`Encode`/`Decode`, cache-key builders, `Clone`/`Reset`,
 single vs batch entry points, and rolling **D**-to-**H** format readers) where
 adding one field or variant forces unlinked manual edits in twin sites. Report this
