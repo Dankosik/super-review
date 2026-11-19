@@ -5,51 +5,49 @@ requires?**
 
 ## Expect
 
-- A lock on a hot path is held only for the work that needs it: the
-  critical section reads, copies or swaps what it must and releases before
-  computing, allocating, logging, sending or doing I/O.
-- State that many read and few write is read without excluding other
-  readers: an `RwLock`, a swapped `Arc` snapshot, a copy per thread or
-  shard.
-- One lock or counter that every request takes is split when callers touch
-  different keys: shards, a lock per key, a concurrent map.
-- Atomics that every request writes on every core are kept apart or summed
-  per thread.
+- A lock on a hot path is held only for the work that needs it: the critical
+  section reads, copies, or swaps what it must and releases before computing,
+  allocating, logging, sending, or doing I/O.
+- Read-mostly state is read without excluding other readers: a reader-writer
+  lock, a swapped immutable snapshot, or per-thread/sharded state.
+- One lock or counter touched by every request is split when callers touch
+  independent keys.
+- Atomics written on every core are kept apart or aggregated per thread.
 
 ## Look for
 
-Find what every concurrent request touches: a `Mutex`, an `RwLock`, an
-atomic, a channel, a shared `Arc`, a cross-tab Web Lock or a pool. For each,
-note what is done while it is held, how often callers reach it, and whether
-they need each other's writes.
+Find every shared synchronization point concurrent units touch: locks, sharded
+maps, atomics, channels, shared refcounts, pools. For each, note what runs
+while it is held, how often callers reach it, and whether they need each
+other's writes.
 
-- Wide critical section: a guard alive across a computation, an allocation,
-  dropping a large collection, a log call, a channel send or I/O; a guard
-  bound with `let` that lives to the end of a long function, or an unnamed
-  guard in a `match` or `if let` scrutinee held across the arm body.
-- A global or redundant lock on the hot path: a `Mutex<HashMap>` cache read by
-  every request; a `Mutex` around a value that is only read after startup, or
-  around a client or pool handle that already synchronizes internally.
-- A write lock taken for reads; an `RwLock` whose writers come so often that
-  readers gain nothing from it.
-- Atomics under load: one counter every request increments on every core,
-  so its cache line moves between cores; hot values that different threads
-  write placed side by side in one struct (false sharing).
-- One `Arc` cloned and dropped per item from many threads, all updating the
-  same count.
-- One channel consumer, one connection or a pool of one that every request
-  passes through, or `N` eager low-priority fetches saturating a bounded
-  connection or worker pool ahead of critical work.
+- **Wide critical sections**: a guard alive across computation, allocation,
+  dropping heap-owning collections, logging, channel sends, or I/O; guards kept
+  alive to the end of a scope or across branch bodies (including temporary
+  scrutinee guards); whole-structure queries that lock every shard of a sharded
+  map.
+- **Global or redundant locks**: an exclusive lock on a read-mostly cache, a
+  lock around immutable post-startup state, or an outer lock wrapping a client
+  or pool handle that already synchronizes internally.
+- **Write locks on reads or writer-starved reader-writer locks**: taking an
+  exclusive lock for read paths, or using a reader-writer lock when frequent
+  writers prevent concurrency.
+- **Hot atomics and false sharing**: a single counter or shared reference count
+  updated per item from many cores, or hot fields written by different threads
+  sharing a cache line.
+- **Single-lane bottlenecks**: one channel consumer, one connection, or a
+  pool of one serializing every request, or eager low-priority work saturating
+  a bounded pool ahead of critical work.
 
 ## Not a finding
 
-- A lock nobody takes concurrently: a single-threaded runtime, a value one
-  task owns, a lock taken once per batch rather than per item. Contention
-  needs callers that overlap, shown from the source or a profile.
-- A critical section that must include the work to keep an invariant, such
-  as a check and an update that have to happen together. Narrowing it
-  changes behavior.
-- Replacing a lock with lock-free code or `unsafe`: a tradeoff, never a
-  plain finding.
-- A claim that one memory ordering is cheaper than another, without a
-  profile or benchmark: it is a claim about code generation.
+- A lock nobody takes concurrently: a single-threaded runtime, a value one task
+  owns, a lock taken once per batch rather than per item. Contention needs
+  callers that overlap, shown from the source or a profile.
+- A critical section that must include the work (or a destructor with
+  observable synchronization) to keep an invariant: narrowing it changes
+  behavior.
+- Replacing a lock with lock-free code or `unsafe`: a tradeoff, never a plain
+  finding.
+- A claim that one memory ordering is cheaper than another, without a profile
+  or benchmark: it is a claim about code generation.

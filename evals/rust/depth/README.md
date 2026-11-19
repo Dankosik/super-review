@@ -103,6 +103,40 @@ the unchanged RD54 single-caller helper, and six Rust packets. It records
 which recommendations surfaced, which controls were retained, and the
 separate fixture and compiler checks.
 
+## Routing, idiomatic depth and workspace scale (RD81-RD98)
+
+Baseline: Super Review 3.36.5 at `2378027`. This pass closes routing/ownership
+gaps in `languages.md`, `languages/rust.md`, `serde.md`, `errors.md`,
+`tracing.md`, `diagnostics.md`, and `error-expression.md`, adds the conditional
+[SQLx note](../../../skills/super-review/references/rust/sqlx.md), extends
+[Axum](../../../skills/super-review/references/rust/axum.md) for pass-through
+Tower middleware, adds workspace-internal `publish = false` visibility and
+vertical call-spine guidance, and covers nine contrasting pairs:
+
+| Decision | Instruction action | Contrasts |
+| --- | --- | --- |
+| Combinator golf & Edition 2024 `if let` chains vs scrutinee lock drop scope | Rust control-flow, lifecycle-ownership, Rust context preservation | RD81-82 |
+| 1:1 mirrored internal DTO & viral single-impl generics vs wire/domain + multi-impl seam | Rust abstractions | RD83-84 |
+| Unnecessary `#[async_trait]` & channel-as-RPC actor vs `dyn` async trait & autonomous actor | Rust abstractions, lifecycle-ownership | RD85-86 |
+| Builder `Option` mandatory field failing in `build()` vs `Builder::new(required)` | Rust api-clarity | RD87-88 |
+| Macro hiding `return`/trivial getters vs uniform primitive-trait declarative macro | Rust abstractions | RD89-90 |
+| Manual blanket `From<io::Error>` erasing path/op vs contextual `map_err` + `source()` | Rust error-expression | RD91-92 |
+| SQLx pool/tx single-query twins & raw `"23505"` vs multi-query `&mut PgConnection` & `"40001"` | Rust SQLx note, duplication/existing-helpers | RD93-94 |
+| Pass-through `tower::Layer`/`Service` vs `from_fn_with_state` vs `poll_ready` permit gate | Rust Axum note, function-cohesion/effects-separation | RD95-96 |
+| `publish = false` workspace fixed `pub` param vs published crate + `?`/`From` + `pub use` alias | Rust unused-surface, Rust context visibility | RD97-98 |
+
+All 18 packets (`RD81-RD98`) passed `cargo +1.98.1 check --offline --all-targets`
+with `RUSTFLAGS="-D warnings"` against local cached dependencies (`async-trait 0.1.92`,
+`tokio 1.54.1`, `tokio-util 0.7.20`, `sqlx 0.8.6`, `axum 0.8.9`, `http`, `tower-layer`,
+`tower-service`). The bounded baseline-versus-candidate specialist comparison
+(28 fresh runs across `RD81-RD98`) is recorded in
+[2026-11-19-rust-cleanliness](results/2026-11-19-rust-cleanliness/README.md):
+`RD81` improved (unwinding nested combinator plumbing instead of re-chaining it),
+all other positive inputs matched without regression, an initial unintended
+base-`abstractions` leak in `RD98` was caught and tightened in round 2, and all
+9 retain controls (`RD82`, `RD84`, `RD86`, `RD88`, `RD90`, `RD92`, `RD94`,
+`RD96`, `RD98` r2) completed with zero candidates.
+
 ## Replay and grading
 
 `inputs.json` contains independent neutral packets. Give a reviewer exactly one

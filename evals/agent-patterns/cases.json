@@ -2,29 +2,109 @@
   "kind": "evaluator-only",
   "status": "PARTIAL",
   "reader_stage_results": "results/2026-11-19-rust-perf/README.md",
+  "depth_and_challenger_results": "results/2026-11-19-rust-perf-depth/README.md",
   "baseline_revision": "0fb601394c6035072aed5391f4f55c2563614b17",
   "contrast_pairs": [
-    ["AP01", "AP02"],
-    ["AP03", "AP04"],
-    ["AP05", "AP06"],
-    ["AP07", "AP08"],
-    ["AP09", "AP10"],
-    ["AP11", "AP12"],
-    ["AP13", "AP14"],
-    ["AP15", "AP16"],
-    ["AP17", "AP18"],
-    ["AP19", "AP20"],
-    ["AP21", "AP22"],
-    ["AP23", "AP24"],
-    ["AP25", "AP26"],
-    ["AP27", "AP28"],
-    ["AP29", "AP30"],
-    ["AP31", "AP32"],
-    ["AP33", "AP34"],
-    ["AP35", "AP36"],
-    ["AP37", "AP38"],
-    ["AP39", "AP40"],
-    ["AP41", "AP42"]
+    [
+      "AP01",
+      "AP02"
+    ],
+    [
+      "AP03",
+      "AP04"
+    ],
+    [
+      "AP05",
+      "AP06"
+    ],
+    [
+      "AP07",
+      "AP08"
+    ],
+    [
+      "AP09",
+      "AP10"
+    ],
+    [
+      "AP11",
+      "AP12"
+    ],
+    [
+      "AP13",
+      "AP14"
+    ],
+    [
+      "AP15",
+      "AP16"
+    ],
+    [
+      "AP17",
+      "AP18"
+    ],
+    [
+      "AP19",
+      "AP20"
+    ],
+    [
+      "AP21",
+      "AP22"
+    ],
+    [
+      "AP23",
+      "AP24"
+    ],
+    [
+      "AP25",
+      "AP26"
+    ],
+    [
+      "AP27",
+      "AP28"
+    ],
+    [
+      "AP29",
+      "AP30"
+    ],
+    [
+      "AP31",
+      "AP32"
+    ],
+    [
+      "AP33",
+      "AP34"
+    ],
+    [
+      "AP35",
+      "AP36"
+    ],
+    [
+      "AP37",
+      "AP38"
+    ],
+    [
+      "AP39",
+      "AP40"
+    ],
+    [
+      "AP41",
+      "AP42"
+    ],
+    [
+      "AP43",
+      "AP44"
+    ],
+    [
+      "AP45",
+      "AP46"
+    ],
+    [
+      "AP47",
+      "AP48"
+    ],
+    [
+      "AP49",
+      "AP50"
+    ]
   ],
   "cases": [
     {
@@ -403,6 +483,78 @@
       "checks": [
         "Follows final_total through ledger.send(total): the same worker supplies both the response and an independently awaited completion receipt, including when the caller stops waiting.",
         "Recognizes that aborting the worker on timeout or caller departure can lose the ledger receipt. The caller's deadline can still bound its own wait."
+      ]
+    },
+    {
+      "id": "AP43",
+      "polarity": "report",
+      "decision": "quadratic front Vec::drain per frame replaced with cursor offset and single compaction",
+      "checks": [
+        "Traces self.buf.drain(..frame_len) shifting all remaining buffered bytes down to index 0 on every decoded frame (O(K * N) bytes copied across up to 1,000 frames per chunk)",
+        "Proposes advancing a read offset across frames and clearing or compacting self.buf at most once on exit (including error paths), preserving FrameError::FrameTooLarge, pending_bytes(), and partial-frame retention"
+      ]
+    },
+    {
+      "id": "AP44",
+      "polarity": "retain",
+      "decision": "cursor-offset frame decoder with single end-of-batch compaction retained",
+      "checks": [
+        "Verifies FrameDecoder::decode_all advances offset in O(1) per frame, clears in O(1) when consumed, compacts trailing partial bytes at most once, and skips compaction when offset is 0",
+        "Reports no complexity finding"
+      ]
+    },
+    {
+      "id": "AP45",
+      "polarity": "report",
+      "decision": "owned tuple lookup key and intermediate serde_json::json! Value tree eliminated on per-request audit encoding",
+      "checks": [
+        "Traces (tenant.to_owned(), route.to_owned()) allocating up to 2 temporary Strings per request solely for HashMap::get and proposes a collision-free borrowed lookup trait (keeping default SipHash for externally supplied keys)",
+        "Traces serde_json::json!({...}) allocating a Value::Object map, 5 static key Strings, and up to 2 value Strings per request and proposes streaming a borrowed #[derive(Serialize)] struct directly via serde_json::to_writer in matching key order"
+      ]
+    },
+    {
+      "id": "AP46",
+      "polarity": "retain",
+      "decision": "borrowed dyn PairKey lookup and direct borrowed Decision struct streaming retained",
+      "checks": [
+        "Verifies Borrow<dyn PairKey> performs zero-allocation lookup without delimiter collisions and Decision<'a> streams directly into the reused out buffer via serde_json::to_writer with zero intermediate heap allocations",
+        "Reports no allocation finding"
+      ]
+    },
+    {
+      "id": "AP47",
+      "polarity": "report",
+      "decision": "per-item DashMap::len whole-shard scan, shard Ref guard held across score_payload, and per-item RuleHandle Arc clones in Rayon par_iter reported",
+      "checks": [
+        "Traces DashMap::len() locking all S shards per item, DashMap::get Ref read guard staying held across the 1 KB score_payload loop, and derived RuleHandle::clone() executing 4 contended Arc refcount atomic RMWs per item across 8 Rayon cores",
+        "Proposes borrowing &self.handle, removing the len() > 0 guard, and copying the u32 cap out of Ref before calling score_payload while keeping live mid-batch visibility"
+      ]
+    },
+    {
+      "id": "AP48",
+      "polarity": "retain",
+      "decision": "borrowed Rayon handle and narrow DashMap shard lookup dropping Ref before score_payload retained",
+      "checks": [
+        "Verifies score_batch borrows &self.handle without per-item Arc clones, queries only the key's shard without len(), and drops the DashMap Ref guard before running score_payload while preserving live mid-batch cap visibility",
+        "Reports no contention finding"
+      ]
+    },
+    {
+      "id": "AP49",
+      "polarity": "report",
+      "decision": "unbuffered per-piece writeln! syscalls, triple stat syscalls per path, and loop-invariant env::var lookup reported",
+      "checks": [
+        "Traces writeln!(report, ...) on unbuffered &mut File issuing piece-by-piece write syscalls (wrapped in BufWriter with explicit flush()? under the stated post-Ok read contract) and chained try_exists/is_file/fs::metadata issuing 3 -> 1 stat syscalls while preserving NotFound skip vs other io::Error propagation",
+        "Traces loop-invariant env::var(\"AUDIT_PREFIX\") acquiring the process environment lock and allocating a String per path (N -> 1 hoisted after the empty-slice guard)"
+      ]
+    },
+    {
+      "id": "AP50",
+      "polarity": "retain",
+      "decision": "BufWriter-buffered output with explicit flush, single fs::metadata check, and hoisted env::var retained",
+      "checks": [
+        "Verifies env::var is hoisted once after the empty guard, fs::metadata runs once per path reusing is_file() and len(), and report writes go through BufWriter with a single trailing flush()?",
+        "Reports no io or repeated-work finding"
       ]
     }
   ]

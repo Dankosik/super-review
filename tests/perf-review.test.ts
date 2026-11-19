@@ -156,19 +156,18 @@ test("delivery copies are identical and only the adapters that support it carry 
   expect(existsSync(resolve(root, "adapters/cursor/plugin/resources/perf-review"))).toBe(false);
   for (const role of ["perf-review", "perf-reader", "perf-challenger"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
   expect(read("scripts/package.py")).toContain('"perf-review"');
-  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.10.3");
+  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.10.4");
 });
 
-test("TypeScript frontend performance rules distinguish behavior-keeping findings from tradeoffs and stay prose-clean", () => {
+test("TypeScript performance context anchors verification and decision boundaries and stays prose-clean", () => {
   const ts = flat("skills/perf-review/references/languages/typescript.md");
   for (const anchor of [
-    "**Off-React frame state, sub-frame input, and idle `rAF` loops**:",
-    "**Compositor animations, layout thrashing, and style invalidation**:",
-    "**Canvas/WebGL frame allocations and encoding**:",
-    "**Streaming UI tails**:",
-    "**React Compiler, store selector fan-out, and derived Effects**:",
-    "**Per-row setup, portals, and virtualization**:",
-    "**Web storage, IndexedDB batching, and Worker transfers**:",
+    "## Where TypeScript code states its cost",
+    "## Verify in source",
+    "## Questions to settle before claiming",
+    "## TypeScript boundaries",
+    "## Not a finding in TypeScript",
+    "React Compiler",
     "pointerrawupdate",
     "document.hidden",
     "content-visibility: auto",
@@ -187,35 +186,49 @@ test("TypeScript frontend performance rules distinguish behavior-keeping finding
   }
 });
 
-test("Rust performance rules distinguish behavior-keeping findings from tradeoffs and guard false positives", () => {
+test("Rust performance context anchors source verification, equivalence questions, and boundaries", () => {
   const rust = flat("skills/perf-review/references/languages/rust.md");
   for (const anchor of [
-    "**Ownership, clones, and buffer capacity reuse**:",
-    "**Map lookups, `HashMap::entry`, and eager fallbacks**:",
-    "**Sorting, UTF-8 strings, and `regex` engines**:",
-    "**`serde` streams, borrowing, and directory walks**:",
-    "**Pooled clients and SQL round trips**:",
-    "**Async executors, lock lifetimes, and fan-out (`tokio`, `rayon`)**:",
-    "**Observability, errors, build profiles, and `Cargo.toml` baseline**:",
-    "clone_from",
-    "std::collections::HashMap::entry",
-    "slice::sort_by_key(f)",
-    "select_nth_unstable",
-    "eq_ignore_ascii_case",
-    "hits and misses alike",
-    "serde_json::from_reader",
-    "fmt::Write",
-    "RawValue",
-    "DirEntry::file_type()",
-    "UNNEST",
-    "rayon::par_iter()",
-    "rayon::spawn",
-    "re-registers timer-wheel",
+    "## Where Rust code states its cost",
+    "## Verify in source",
+    "## Questions to settle before claiming",
+    "## Rust boundaries",
+    "## Not a finding in Rust",
+    "Cargo.lock",
+    "lib/rustlib/src/rust/library",
+    "share/doc/rust/html/src",
+    "rust-version",
+    "#[derive(Clone)]",
+    "make_mut",
+    "if let",
+    "O(capacity)",
+    "tokio::task::block_in_place",
+    "JoinHandle",
+    "with_capacity(n)",
+    "`write!` on unbuffered `io::Write`",
+    "Vec::set_len",
     "Vec::new()",
-    "tracing::{debug,trace}!",
-    "log::max_level()",
-    "RUST_LIB_BACKTRACE",
+    "`unsafe`",
   ]) {
     expect(rust).toContain(anchor);
   }
+  for (const [lang, boundary] of [["go", "## Go boundaries"], ["java", "## Java boundaries"]] as const) {
+    const text = flat(`skills/perf-review/references/languages/${lang}.md`);
+    for (const heading of ["## Verify in source", "## Questions to settle before claiming", boundary]) {
+      expect(text).toContain(heading);
+    }
+  }
+  const workflow = flat("skills/perf-review/references/workflow.md");
+  expect(workflow).toContain("build and dependency baseline manifests");
+  expect(workflow).toContain("standard library source root");
+  const allocation = flat("skills/perf-review/references/lenses/allocation.md");
+  expect(allocation).toContain("Arc::make_mut");
+  const asyncLens = flat("skills/perf-review/references/lenses/async.md");
+  expect(asyncLens).toContain("current_thread");
+  expect(asyncLens).toContain("JoinHandle");
+  const contract = flat("skills/perf-review/references/contract.md");
+  expect(contract).toContain("Future::poll");
+  expect(contract).toContain("standard library or runtime source");
+  const challenge = flat("skills/perf-review/references/challenge.md");
+  expect(challenge).toContain("standard library, runtime, and locked dependency source");
 });

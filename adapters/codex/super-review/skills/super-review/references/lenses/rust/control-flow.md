@@ -11,8 +11,14 @@ Let checks produce values and decisions sit where they are made:
   followed by `unwrap`, `expect`, or indexing) with `if let`, `let else`, a
   `match` binding, or `first()`/`get()`.
 - Flatten a main path buried under stacked `if let Some`/`Ok` blocks with `?` or
-  `let else` when failure only exits, and collapse conditions tested twice in
-  one function.
+  `let else` when failure only exits, or with `if let` chains (when both
+  Edition 2024 and MSRV support them) when nested conditions guard a local
+  action without early return; collapse conditions tested twice in one function.
+- Unwind opaque combinator chains (deeply nested `.map`/`.and_then`/
+  `.map_or_else`, `try_fold` threading multi-field accumulator tuples, or nested
+  `FutureExt`/`StreamExt` combinators) into direct `let else`, `?`, `for`, or
+  linear `async`/`.await` when the chain hides the main path or forces extra
+  closure-capture ceremony.
 - Replace a mutable flag set in a loop and read afterward with `find`, `any`,
   `position`, an early `return`, or a `loop`/labeled block that breaks with a
   value (`for` and `while` cannot break with a value).
@@ -30,13 +36,17 @@ Let checks produce values and decisions sit where they are made:
 
 **Keep when:** a `match` performs contextual recovery or distinct per-arm work;
 an ordinary loop makes state updates, early exits, or error accumulation clearer
-than combinators (accumulating all errors is not fail-fast); an `unwrap` or
+than combinators (accumulating all errors is not fail-fast); a stream combinator
+expresses bounded concurrency (`buffer_unordered`); an `unwrap` or
 `expect` marks an invariant no nearby pattern can bind without roundabout code;
 a catch-all expresses a uniform remainder or is required for a
 `#[non_exhaustive]` enum outside its defining crate; or a rewrite would change
 error conversion, closure return boundaries, evaluation order, eager versus
-lazy effects, drop scopes, or exceed the crate's edition/MSRV. Show which
-decisions become easier to follow.
+lazy effects, drop scopes (binding a lock guard before `if let` drops it before
+branching, whereas moving it into an `if let` or `match` scrutinee keeps it
+alive across matched arms, and across an `if let`'s `else` branch before
+Edition 2024), or exceed the crate's edition/MSRV. Show which decisions become
+easier to follow.
 
 Background: [Option](https://doc.rust-lang.org/std/option/enum.Option.html)
 and [Iterator](https://doc.rust-lang.org/std/iter/trait.Iterator.html).

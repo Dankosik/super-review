@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.36.6 — 2026-11-19
+
+- **Distilled Performance Review (`perf-review 0.10.4`).** Compresses `references/languages/rust.md` (241 to 86 lines), `references/languages/typescript.md` (133 to 85 lines), `go.md`, `java.md`, all six cross-language lenses, `contract.md`, and `workflow.md`, replacing API encyclopedias and duplicated syntax lists with on-disk stdlib/locked-crate verification (`Cargo.lock`, `vendor/`, `~/.cargo/registry/src`, `rust-src`/`rust-docs`), five diagnostic equivalence questions, and explicit `finding` versus `tradeoff` versus `not a finding` boundaries. `contract.md` and `challenge.md` require verifying both current cost and proposed cheaper forms against on-disk standard library and dependency source. Adds `AP43`–`AP50` Rust depth contrasts and records the [depth](https://github.com/Dankosik/super-review/tree/v3.36.6/evals/agent-patterns/results/2026-11-19-rust-perf-depth) and [distilled reader](https://github.com/Dankosik/super-review/tree/v3.36.6/evals/agent-patterns/results/2026-11-19-rust-perf-distill) probes across `AP33`–`AP50` on `flash` (100% recall across all 9 report cases, 0 false-positive plain findings across all 9 retain controls; challenger traps on the distilled prose are recorded as `NOT RUN`).
+- **Rust cleanliness and `sqlx` guidance (`super-review 3.36.6`).** Refines Rust routing, context, lenses, profiles, and conditional library notes (`axum`, `errors`, `serde`, `tracing`), adds the conditional `references/rust/sqlx.md` note with orchestrator-selected `rust/*.md` resource paths, adds `RD81`–`RD98` contrasts, and records the [28-run Rust cleanliness comparison](https://github.com/Dankosik/super-review/tree/v3.36.6/evals/rust/depth/results/2026-11-19-rust-cleanliness) with offline `rustc 1.98.1` verification. All 56 stable rule IDs are unchanged.
+
 ## 3.36.5 — 2026-11-19
 
 - Performance Review 0.10.3 checks owned UTF-8 conversions against the project's minimum Rust version and preserves lossy decoding on malformed input.

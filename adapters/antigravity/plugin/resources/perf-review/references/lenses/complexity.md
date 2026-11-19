@@ -4,67 +4,56 @@
 
 ## Expect
 
-- Work for one request grows with its input no faster than the result
-  requires. Matching, joining or deduplicating N items against M takes
-  O(N + M) with a map or a set, not O(N·M) with scans.
-- A collection fits how the hot path uses it: lookup by key, ordered
-  iteration, removal from the front.
-- A question about part of the data does not process all of it: the
-  minimum without a full sort, the first match without collecting every
-  match, one field without cloning the whole value.
+- Work for one unit grows with its input no faster than the result requires.
+  Matching, joining, or deduplicating `N` items against `M` takes `O(N + M)`
+  with a map or set, not `O(N * M)` with scans.
+- A collection fits how the hot path uses it: lookup by key, ordered iteration,
+  removal from the front.
+- A question about part of the data does not process all of it: top-`k` or
+  median without a full sort, first match without collecting every match, one
+  field without cloning the whole value.
 - Hashing on a hot path pays only for the protection its table needs:
   resistance to hash flooding where outside input decides which keys go in.
 
 ## Look for
 
 For each loop or iterator chain on a hot path, find what bounds its length,
-then what each iteration does with other collections.
+then what each iteration does with other collections or prefixes.
 
-- Nested passes: `contains`, `iter().position`, `iter().find`, `iter().any`,
-  `Array.includes`, `slices.Contains` or `List.contains` on a linear sequence
-  inside a loop over another input; deduplication by scanning what was kept;
-  indexed `remove` or `insert` / `splice` inside a loop.
-- Linear search per lookup: the same `Vec`, slice, array or `List` searched by
-  key on every call where a map or a sorted index built once would answer.
-- A `Vec`, slice, `Array.shift()` or `ArrayList.remove(0)` used as a queue; a
-  sorted sequence sorted again after each insertion.
-- A full sort, per-comparison key recomputation (`sort_by_key` running an
-  allocating or expensive key closure `O(N log N)` times instead of once per
-  item), `collect`, slice copy or `clone` of a collection to answer one
-  question: sorting to take the first or the k-th element, materializing a list
-  only to count or test emptiness, or testing `M` compiled patterns for match
-  presence or matching pattern indices in a loop where one multi-pattern
-  automaton (`RegexSet`) scans the input once.
-- A string indexed by character in a loop, `chars().nth(i)` or
-  `chars().count()` per iteration, each walking it from the start.
-- Quadratic accumulation or re-parsing per step: `format!("{acc}{x}")`, Go
-  `s += piece` or `String` `+` in a loop without `strings.Builder`/`StringBuilder`,
-  TypeScript `[...acc, x]` / `{ ...acc, [k]: v }` inside `.reduce()`, re-parsing
-  an entire growing buffer or transcript from byte 0 on every streamed chunk, or
-  deep-cloning an entire `N`-node state tree per edit where structural sharing
-  copies only the `O(depth)` spine.
-- The default `HashMap` or `HashSet` hasher on a hot path where only the
-  program decides which keys go in: integers or identifiers it assigns, a
-  table filled at startup and only looked up afterwards, entries added only
-  after their key is verified. A lookup with a key from a request cannot
-  flood a table it cannot add to. The hash runs over the whole key, so a
-  long key hashed per request, such as a token or a path, costs the most.
-- A `BTreeMap` on a hot path where nothing needs the order.
-- The same subproblem computed again in recursion where its result could be
-  kept (memoization).
-- Over-parallelization: `par_iter`, a thread or a task per item over inputs
-  small enough that splitting and joining cost more than the work.
+- **Nested linear scans and front shifts**: linear membership/find checks
+  inside another loop, deduplication by scanning kept elements, removing from
+  or inserting at the front of a contiguous sequence per item in a loop, or
+  re-sorting after every insertion.
+- **Repeated linear lookup**: searching the same sequence by key on every call
+  where an index or map built once would answer in `O(1)` or `O(log N)`.
+- **Full work for a partial question**: sorting everything to take the first or
+  `k`-th item, recomputing an allocating key inside every sort comparison
+  (`O(N log N)` instead of `O(N)`), materializing a collection only to count or
+  check emptiness, or scanning an input `M` times against `M` separate patterns
+  when one multi-pattern pass suffices.
+- **Quadratic prefix growth, UTF-8 indexing, or re-parsing**: appending or
+  spreading a growing string, slice, or object per step; indexing characters
+  from the start of a UTF-8 string in a loop; re-parsing a full growing buffer
+  from offset 0 on each chunk; or deep-cloning an `N`-node tree per edit.
+- **Unneeded hashing or ordered maps**: a lookup table whose value is cheaper
+  to derive directly; an ordered tree map where nothing relies on key order; or
+  the default hash-flood-resistant hasher on a hot path where only the program
+  decides which keys go in (program-assigned IDs, startup-filled tables, or
+  entries added only after verification). A lookup with a key from a request
+  cannot flood a table it cannot add to.
+- **Repeated subproblems or over-parallelization**: unmemoized overlapping
+  recursion, or parallel splitting over tiny inputs where fork/join overhead
+  exceeds the work.
 
 ## Not a finding
 
-- Quadratic work over an input that something keeps small: a fixed-size
-  array, a list a protocol or configuration bounds to a handful of entries.
-  Name the bound.
-- A faster hasher for a table whose keys requests, peers or files decide.
-  The default hasher's resistance to hash flooding protects it, and
-  replacing it is a security decision.
+- Quadratic work over an input that something keeps small: a fixed-size array,
+  or a list a protocol or configuration bounds to a handful of entries. Name
+  the bound.
+- A faster hasher for a table whose keys requests, peers or files decide. The
+  default hasher's resistance to hash flooding protects it, and replacing it is
+  a security decision.
 - One collection over another of the same complexity for this use, or a
-  hand-written loop over a standard operation already in the better class,
-  such as `retain` or `sort`.
-- Sequential CPU work that could run in parallel: splitting it spends more
-  CPU for less latency, a tradeoff at most.
+  hand-written loop over a standard operation already in the better class.
+- Sequential CPU work that could run in parallel: splitting it spends more CPU
+  for less latency, a tradeoff at most.

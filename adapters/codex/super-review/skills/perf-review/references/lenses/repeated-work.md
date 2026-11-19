@@ -4,59 +4,47 @@
 
 ## Expect
 
-- Work whose inputs do not change across iterations or requests is done
-  once: hoisted out of the loop, built at startup, held in a `static`
-  through `LazyLock` or `OnceLock`, or cached with a stated key and
-  lifetime.
-- Input is parsed once where it enters and passed on as the parsed value.
-- A value one request needs in several places is computed once for that
-  request.
+- Work whose inputs do not change across iterations or requests is done once:
+  hoisted out of the loop, built at startup, initialized lazily once, or cached
+  with a stated key and lifetime.
+- Input is parsed once at entry and passed on as the parsed value.
+- A value one unit needs in several places is computed or looked up once.
 
 ## Look for
 
 For each computation on the hot path, list its inputs and ask whether any of
 them changes between passes.
 
-- Compilation per call: `Regex::new`, a template, a schema, a glob or a SQL
-  statement built inside a function that runs per request or per line.
-- Parsing or reading per use: a configuration value, an environment
-  variable, a URL, a date format or a header parsed or looked up on each
-  call; a file read per request whose content changes only on deploy.
-- Loop-invariant or render-invariant work: a lookup, a conversion, an
-  allocation, formatter/schema setup, or an `O(N)` / `O(N log N)` pass over
-  unchanged items re-run on every loop iteration or unrelated state tick; eager
-  barrel or full icon/locale registry imports initializing `M` unused modules on
-  entry; or a container `"use client"` boundary hydrating `K` static subtrees
-  for one interactive leaf.
-- Coarse UI state fan-out and per-row setup: driving 60 to 120 Hz
-  pointer, scroll or animation values through component state across `M` static
-  children, subscribing `N` list rows to a whole collection so changing 1 item
-  re-renders all `N`, synchronizing synchronous derived state in `useEffect` for
-  a double render pass, re-rendering or re-parsing completed stream items per
-  chunk, or instantiating duplicate observers, closed modal trees or invariant
-  utility-class merges per row.
-- The same value computed or fetched twice on one path: a key serialized,
-  hashed or validated in two layers because an inner layer treats
-  already-validated internal data as untrusted; duplicate reads in one request
-  tree without request-scoped deduplication; `contains_key` followed by `get`
-  or `insert` on the same key, where an entry lookup that does not allocate an
-  owned key on hits looks it up once.
-- A table, map or set rebuilt from constant data on every call.
-- A value formatted for a log line before the logging macro, so the work is
-  done even when that level is disabled.
-- A span per element: `#[instrument]` on a function called per element,
-  recording its arguments on every enabled call.
-- A metric looked up by name and labels on every call, where a handle kept
-  from registration would do.
+- **Compilation per call**: compiling a regex, template, schema, glob, or SQL
+  statement inside a function called per request or per item.
+- **Invariant parsing or environment reads**: re-reading or re-parsing an
+  environment variable, configuration value, URL, date format, header, or
+  deploy-static file on every pass.
+- **Loop-invariant or render-invariant work**: repeating lookups, conversions,
+  formatter/schema setup, or `O(N)` passes over unchanged inputs on every
+  iteration or unrelated update; eagerly initializing unused modules or static
+  client subtrees on route entry.
+- **Coarse UI fan-out and per-row setup**: driving high-frequency frame values
+  through broad component state, subscribing `N` rows to a whole collection so
+  one edit re-renders all `N`, running synchronous derived effects for an extra
+  render pass, re-rendering finished stream items per chunk, or duplicating
+  observers, closed portals, or invariant setup per row.
+- **Duplicate work on one path**: validating, hashing, serializing, or fetching
+  the same value twice across layers in one unit; probing a map twice for the
+  same key (`contains` then `get`/`insert`) when a single non-allocating lookup
+  suffices.
+- **Constant tables rebuilt per call**: rebuilding a static lookup map, set, or
+  table from constant data on each invocation.
+- **Eager observability overhead**: formatting log arguments before a level
+  check, recording per-element trace spans and arguments on enabled hot paths,
+  or resolving metric handles by name and labels on every call.
 
 ## Not a finding
 
 - Loop-invariant arithmetic or a field read the optimizer may hoist. A claim
   that it does not is about code generation and needs a profile.
-- A cache whose staleness would change results callers rely on, such as
-  configuration a reload must refresh. A cache with a stated staleness is a
-  tradeoff.
-- Work a dependency already caches inside, at the locked version; say where
-  its cache is.
-- Work done once per process or per connection, at startup or on a cold
-  path.
+- A cache whose staleness changes results callers rely on, such as reloaded
+  configuration. A cache with a stated staleness is a tradeoff.
+- Work a dependency already caches inside at the locked version; say where its
+  cache is.
+- Work done once per process or per connection, at startup or on a cold path.

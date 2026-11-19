@@ -11,7 +11,10 @@ indirect workaround where a crate exposes a direct API), delegate the generic
 part to the first existing owner that fits and keep domain rules local:
 
 1. **Standard library** stabilized within the crate's `rust-version` and
-   `no_std`/`alloc` target constraints.
+   `no_std`/`alloc` target constraints, including when changed code introduces
+   new uses of legacy crates whose role `std` already covers (such as lazy/once
+   statics, terminal checks, or parallelism counts) without turning untouched
+   legacy uses into a migration backlog.
 2. **Workspace helpers** across crates and modules (including trait methods and
    extension traits), searched by parameter/return types and call shape.
 3. **Crate dependencies** already enabled in this crate's `Cargo.toml`,

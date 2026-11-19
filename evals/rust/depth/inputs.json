@@ -1159,6 +1159,290 @@
       "context": [
         "The transport contract assigns 401 and 403 to the two named authentication and authorization cases, and 503 to all remaining refusals, including future ones."
       ]
+    },
+    {
+      "id": "RD81",
+      "request": "Review the supplied production source through control-flow for readability and maintainability.",
+      "lens": "control-flow",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs. The public API and its behavior are supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-81\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n",
+        "src/lib.rs": "use std::num::ParseIntError;\n\npub fn resolve_port(\n    entries: &[(String, String)],\n    key: &str,\n    default_port: u16,\n) -> Result<u16, ParseIntError> {\n    entries\n        .iter()\n        .find(|(k, _)| k == key)\n        .map(|(_, v)| v.trim())\n        .and_then(|s| (!s.is_empty()).then_some(s))\n        .map_or_else(\n            || Ok(default_port),\n            |raw| {\n                raw.parse::<u16>().map(|port| {\n                    if port == 0 {\n                        default_port\n                    } else {\n                        port\n                    }\n                })\n            },\n        )\n}\n\npub fn select_banner<'a>(\n    enabled: bool,\n    primary: Option<&'a str>,\n    fallback: Option<&'a str>,\n) -> Option<&'a str> {\n    if enabled {\n        if let Some(p) = primary {\n            if let Some(f) = fallback {\n                if !p.is_empty() && !f.is_empty() {\n                    return Some(p);\n                }\n            }\n        }\n    }\n    fallback.filter(|f| !f.is_empty())\n}\n"
+      },
+      "context": [
+        "Private workspace crate targeting Edition 2024 and Rust 1.98.",
+        "Both functions return exact results for empty, zero, and missing inputs."
+      ]
+    },
+    {
+      "id": "RD82",
+      "request": "Review the supplied production source through control-flow for readability and maintainability.",
+      "lens": "control-flow",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs. The public API and its behavior are supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-82\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n",
+        "src/lib.rs": "use std::sync::Mutex;\n\n/// Pops the next queued job and forwards it after releasing `pending`.\npub fn dispatch_next(pending: &Mutex<Vec<u64>>, on_job: impl FnOnce(u64)) -> bool {\n    let next = pending\n        .lock()\n        .expect(\"queue lock should not be poisoned\")\n        .pop();\n    if let Some(job_id) = next {\n        on_job(job_id);\n        return true;\n    }\n    false\n}\n\npub fn first_nonzero_port(candidates: &[u16], default_port: u16) -> u16 {\n    for &port in candidates {\n        if port != 0 {\n            return port;\n        }\n    }\n    default_port\n}\n"
+      },
+      "context": [
+        "on_job may re-enter or acquire other locks, so pending must be unlocked before on_job runs.",
+        "first_nonzero_port is an ordinary linear loop with an early return."
+      ]
+    },
+    {
+      "id": "RD83",
+      "request": "Review the supplied production source through abstractions for readability and maintainability.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-83\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n",
+        "src/lib.rs": "use std::collections::HashMap;\n\n#[derive(Clone)]\npub struct AccountRecord {\n    pub id: u64,\n    pub handle: String,\n    pub active: bool,\n}\n\npub struct AccountDto {\n    pub id: u64,\n    pub handle: String,\n    pub active: bool,\n}\n\nimpl From<AccountRecord> for AccountDto {\n    fn from(row: AccountRecord) -> Self {\n        Self {\n            id: row.id,\n            handle: row.handle,\n            active: row.active,\n        }\n    }\n}\n\npub trait AccountStore {\n    fn fetch(&self, id: u64) -> Option<AccountRecord>;\n}\n\npub trait Clock {\n    fn now_secs(&self) -> u64;\n}\n\npub struct MemoryStore {\n    accounts: HashMap<u64, AccountRecord>,\n}\n\nimpl AccountStore for MemoryStore {\n    fn fetch(&self, id: u64) -> Option<AccountRecord> {\n        self.accounts.get(&id).cloned()\n    }\n}\n\npub struct SystemClock;\n\nimpl Clock for SystemClock {\n    fn now_secs(&self) -> u64 {\n        0\n    }\n}\n\npub struct AccountService<S: AccountStore, C: Clock> {\n    store: S,\n    clock: C,\n}\n\nimpl<S: AccountStore, C: Clock> AccountService<S, C> {\n    pub fn new(store: S, clock: C) -> Self {\n        Self { store, clock }\n    }\n\n    pub fn load(&self, id: u64) -> Option<(AccountDto, u64)> {\n        let dto = AccountDto::from(self.store.fetch(id)?);\n        Some((dto, self.clock.now_secs()))\n    }\n}\n\npub struct AccountController<S: AccountStore, C: Clock> {\n    service: AccountService<S, C>,\n}\n\nimpl<S: AccountStore, C: Clock> AccountController<S, C> {\n    pub fn new(service: AccountService<S, C>) -> Self {\n        Self { service }\n    }\n\n    pub fn get(&self, id: u64) -> Option<(AccountDto, u64)> {\n        self.service.load(id)\n    }\n}\n"
+      },
+      "context": [
+        "publish = false workspace-internal crate; MemoryStore and SystemClock are the only production implementations of AccountStore and Clock across the entire workspace.",
+        "AccountDto is not serialized on an external wire format; it only crosses from AccountService to AccountController."
+      ]
+    },
+    {
+      "id": "RD84",
+      "request": "Review the supplied production source through abstractions for readability and maintainability.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-84\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n",
+        "src/lib.rs": "use std::collections::HashMap;\n\n/// External wire payload accepted from the HTTP API.\npub struct WireAccount {\n    pub id: u64,\n    pub raw_handle: String,\n}\n\n#[derive(Clone)]\npub struct Handle(String);\n\nimpl Handle {\n    pub fn parse(raw: &str) -> Option<Self> {\n        let trimmed = raw.trim();\n        if trimmed.is_empty() || !trimmed.is_ascii() {\n            return None;\n        }\n        Some(Self(trimmed.to_ascii_lowercase()))\n    }\n\n    pub fn as_str(&self) -> &str {\n        &self.0\n    }\n}\n\n#[derive(Clone)]\npub struct Account {\n    id: u64,\n    handle: Handle,\n}\n\nimpl Account {\n    pub fn id(&self) -> u64 {\n        self.id\n    }\n\n    pub fn handle(&self) -> &Handle {\n        &self.handle\n    }\n}\n\nimpl TryFrom<WireAccount> for Account {\n    type Error = &'static str;\n\n    fn try_from(wire: WireAccount) -> Result<Self, Self::Error> {\n        let handle = Handle::parse(&wire.raw_handle).ok_or(\"invalid handle\")?;\n        Ok(Self { id: wire.id, handle })\n    }\n}\n\npub trait AccountStore {\n    fn fetch(&self, id: u64) -> Option<Account>;\n}\n\npub struct MemoryStore {\n    accounts: HashMap<u64, Account>,\n}\n\nimpl AccountStore for MemoryStore {\n    fn fetch(&self, id: u64) -> Option<Account> {\n        self.accounts.get(&id).cloned()\n    }\n}\n\npub struct FallbackStore<P, F> {\n    primary: P,\n    fallback: F,\n}\n\nimpl<P: AccountStore, F: AccountStore> AccountStore for FallbackStore<P, F> {\n    fn fetch(&self, id: u64) -> Option<Account> {\n        self.primary.fetch(id).or_else(|| self.fallback.fetch(id))\n    }\n}\n\npub fn format_display_name(store: &dyn AccountStore, id: u64) -> Option<String> {\n    let account = store.fetch(id)?;\n    Some(format!(\"#{} @{}\", account.id(), account.handle().as_str()))\n}\n"
+      },
+      "context": [
+        "WireAccount isolates external HTTP payload fields from Account's validated Handle invariant.",
+        "Production wires both MemoryStore and FallbackStore through AccountStore."
+      ]
+    },
+    {
+      "id": "RD85",
+      "request": "Review the supplied production source through abstractions for readability and maintainability.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-85\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n\n[dependencies]\nasync-trait = \"0.1\"\ntokio = { version = \"1\", features = [\"rt\", \"sync\"] }\n",
+        "src/lib.rs": "use async_trait::async_trait;\nuse tokio::sync::{mpsc, oneshot};\n\n#[async_trait]\npub trait TokenLookup {\n    async fn lookup(&self, key: &str) -> Option<String>;\n}\n\npub async fn resolve_token<L: TokenLookup>(lookup: &L, key: &str) -> Option<String> {\n    lookup.lookup(key).await\n}\n\nenum CounterCmd {\n    Inc(oneshot::Sender<u64>),\n    Get(oneshot::Sender<u64>),\n}\n\n#[derive(Clone)]\npub struct CounterHandle {\n    tx: mpsc::Sender<CounterCmd>,\n}\n\nimpl CounterHandle {\n    pub fn spawn() -> Self {\n        let (tx, mut rx) = mpsc::channel(16);\n        tokio::spawn(async move {\n            let mut value = 0u64;\n            while let Some(cmd) = rx.recv().await {\n                match cmd {\n                    CounterCmd::Inc(reply) => {\n                        value += 1;\n                        let _ = reply.send(value);\n                    }\n                    CounterCmd::Get(reply) => {\n                        let _ = reply.send(value);\n                    }\n                }\n            }\n        });\n        Self { tx }\n    }\n\n    pub async fn inc(&self) -> Option<u64> {\n        let (tx, rx) = oneshot::channel();\n        self.tx.send(CounterCmd::Inc(tx)).await.ok()?;\n        rx.await.ok()\n    }\n\n    pub async fn get(&self) -> Option<u64> {\n        let (tx, rx) = oneshot::channel();\n        self.tx.send(CounterCmd::Get(tx)).await.ok()?;\n        rx.await.ok()\n    }\n}\n"
+      },
+      "context": [
+        "TokenLookup is only used statically inside this workspace crate (never as dyn TokenLookup and never spawned via generic tokio::spawn).",
+        "CounterHandle only guards a single u64 with no background timers, I/O, or autonomous work."
+      ]
+    },
+    {
+      "id": "RD86",
+      "request": "Review the supplied production source through abstractions for readability and maintainability.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-86\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n\n[dependencies]\nasync-trait = \"0.1\"\ntokio = { version = \"1\", features = [\"macros\", \"rt\", \"sync\", \"time\"] }\n",
+        "src/lib.rs": "use std::time::Duration;\nuse async_trait::async_trait;\nuse tokio::sync::mpsc;\n\n#[async_trait]\npub trait Notifier: Send + Sync {\n    async fn notify(&self, event: &str);\n}\n\npub struct Fanout {\n    sinks: Vec<Box<dyn Notifier>>,\n}\n\nimpl Fanout {\n    pub fn new(sinks: Vec<Box<dyn Notifier>>) -> Self {\n        Self { sinks }\n    }\n\n    pub async fn broadcast(&self, event: &str) {\n        for sink in &self.sinks {\n            sink.notify(event).await;\n        }\n    }\n}\n\npub fn spawn_periodic_flusher(\n    flush_every: Duration,\n    mut flush: impl FnMut(Vec<String>) + Send + 'static,\n) -> mpsc::Sender<String> {\n    let (tx, mut rx) = mpsc::channel::<String>(64);\n    tokio::spawn(async move {\n        let mut pending = Vec::new();\n        let mut tick = tokio::time::interval(flush_every);\n        loop {\n            tokio::select! {\n                maybe_item = rx.recv() => match maybe_item {\n                    Some(item) => pending.push(item),\n                    None => {\n                        if !pending.is_empty() {\n                            flush(std::mem::take(&mut pending));\n                        }\n                        break;\n                    }\n                },\n                _ = tick.tick() => {\n                    if !pending.is_empty() {\n                        flush(std::mem::take(&mut pending));\n                    }\n                }\n            }\n        }\n    });\n    tx\n}\n"
+      },
+      "context": [
+        "Fanout stores heterogeneous runtime-configured Notifier implementations in Vec<Box<dyn Notifier>>.",
+        "spawn_periodic_flusher owns autonomous timer-driven batching and a final flush on channel close."
+      ]
+    },
+    {
+      "id": "RD87",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-87\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n",
+        "src/lib.rs": "use std::time::Duration;\n\n#[derive(Debug, PartialEq, Eq)]\npub enum ClientConfigError {\n    MissingEndpoint,\n}\n\npub struct ClientConfig {\n    pub endpoint: String,\n    pub timeout: Duration,\n    pub max_retries: u32,\n}\n\npub struct ClientBuilder {\n    endpoint: Option<String>,\n    timeout: Duration,\n    max_retries: u32,\n}\n\nimpl ClientBuilder {\n    pub fn new() -> Self {\n        Self {\n            endpoint: None,\n            timeout: Duration::from_secs(5),\n            max_retries: 2,\n        }\n    }\n\n    pub fn endpoint(mut self, endpoint: String) -> Self {\n        self.endpoint = Some(endpoint);\n        self\n    }\n\n    pub fn timeout(mut self, timeout: Duration) -> Self {\n        self.timeout = timeout;\n        self\n    }\n\n    pub fn max_retries(mut self, max_retries: u32) -> Self {\n        self.max_retries = max_retries;\n        self\n    }\n\n    pub fn build(self) -> Result<ClientConfig, ClientConfigError> {\n        let endpoint = self.endpoint.ok_or(ClientConfigError::MissingEndpoint)?;\n        Ok(ClientConfig {\n            endpoint,\n            timeout: self.timeout,\n            max_retries: self.max_retries,\n        })\n    }\n}\n\npub fn default_client(endpoint: String) -> Result<ClientConfig, ClientConfigError> {\n    ClientBuilder::new()\n        .endpoint(endpoint)\n        .timeout(Duration::from_secs(10))\n        .build()\n}\n\npub fn retrying_client(endpoint: String) -> Result<ClientConfig, ClientConfigError> {\n    ClientBuilder::new()\n        .endpoint(endpoint)\n        .max_retries(5)\n        .build()\n}\n"
+      },
+      "context": [
+        "publish = false workspace-internal crate; default_client and retrying_client are the only callers.",
+        "endpoint is always required; timeout and max_retries are optional settings with defaults."
+      ]
+    },
+    {
+      "id": "RD88",
+      "request": "Review the supplied production source through api-clarity for readability and maintainability.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-88\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n",
+        "src/lib.rs": "use std::time::Duration;\n\npub struct ClientConfig {\n    pub endpoint: String,\n    pub timeout: Duration,\n    pub max_retries: u32,\n}\n\npub struct ClientBuilder {\n    endpoint: String,\n    timeout: Duration,\n    max_retries: u32,\n}\n\nimpl ClientBuilder {\n    pub fn new(endpoint: String) -> Self {\n        Self {\n            endpoint,\n            timeout: Duration::from_secs(5),\n            max_retries: 2,\n        }\n    }\n\n    pub fn timeout(mut self, timeout: Duration) -> Self {\n        self.timeout = timeout;\n        self\n    }\n\n    pub fn max_retries(mut self, max_retries: u32) -> Self {\n        self.max_retries = max_retries;\n        self\n    }\n\n    pub fn build(self) -> ClientConfig {\n        ClientConfig {\n            endpoint: self.endpoint,\n            timeout: self.timeout,\n            max_retries: self.max_retries,\n        }\n    }\n}\n\npub fn default_client(endpoint: String) -> ClientConfig {\n    ClientBuilder::new(endpoint)\n        .timeout(Duration::from_secs(10))\n        .build()\n}\n\npub fn retrying_client(endpoint: String) -> ClientConfig {\n    ClientBuilder::new(endpoint)\n        .max_retries(5)\n        .build()\n}\n"
+      },
+      "context": [
+        "endpoint is taken in ClientBuilder::new(endpoint), both optional settings vary across callers, and build() is infallible."
+      ]
+    },
+    {
+      "id": "RD89",
+      "request": "Review the supplied production source through abstractions for readability and maintainability.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-89\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n",
+        "src/lib.rs": "macro_rules! require_non_empty {\n    ($val:expr, $field:literal) => {\n        if $val.trim().is_empty() {\n            return Err(format!(\"missing {}\", $field));\n        }\n    };\n}\n\nmacro_rules! str_getter {\n    ($name:ident) => {\n        pub fn $name(&self) -> &str {\n            &self.$name\n        }\n    };\n}\n\npub struct Deployment {\n    service: String,\n    region: String,\n}\n\nimpl Deployment {\n    pub fn parse(service: &str, region: &str) -> Result<Self, String> {\n        require_non_empty!(service, \"service\");\n        require_non_empty!(region, \"region\");\n        Ok(Self {\n            service: service.trim().to_owned(),\n            region: region.trim().to_owned(),\n        })\n    }\n\n    str_getter!(service);\n    str_getter!(region);\n}\n"
+      },
+      "context": [
+        "Both macros are private to this module and used twice each."
+      ]
+    },
+    {
+      "id": "RD90",
+      "request": "Review the supplied production source through abstractions for readability and maintainability.",
+      "lens": "abstractions",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-90\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n",
+        "src/lib.rs": "pub trait SignedMetric {\n    fn as_i64(self) -> i64;\n}\n\nmacro_rules! impl_signed_metric {\n    ($($ty:ty),+ $(,)?) => {\n        $(impl SignedMetric for $ty {\n            fn as_i64(self) -> i64 {\n                i64::from(self)\n            }\n        })+\n    };\n}\n\nimpl_signed_metric!(i8, i16, i32, i64, u8, u16, u32);\n"
+      },
+      "context": [
+        "SignedMetric is implemented uniformly across seven lossless integer types via a small local declarative macro."
+      ]
+    },
+    {
+      "id": "RD91",
+      "request": "Review the supplied production source through control-flow and error-expression for readability and maintainability.",
+      "lens": "control-flow",
+      "profiles": [
+        "error-expression"
+      ],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-91\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n",
+        "src/lib.rs": "use std::error::Error;\nuse std::fmt;\nuse std::fs;\nuse std::io;\nuse std::path::Path;\n\n#[derive(Debug)]\npub enum SyncError {\n    Io(io::Error),\n    EmptySource,\n}\n\nimpl fmt::Display for SyncError {\n    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n        match self {\n            Self::Io(_) => f.write_str(\"file i/o failed\"),\n            Self::EmptySource => f.write_str(\"source file is empty\"),\n        }\n    }\n}\n\nimpl Error for SyncError {\n    fn source(&self) -> Option<&(dyn Error + 'static)> {\n        match self {\n            Self::Io(err) => Some(err),\n            Self::EmptySource => None,\n        }\n    }\n}\n\nimpl From<io::Error> for SyncError {\n    fn from(err: io::Error) -> Self {\n        Self::Io(err)\n    }\n}\n\npub fn sync_normalized(src: &Path, dst: &Path) -> Result<usize, SyncError> {\n    let raw = fs::read_to_string(src)?;\n    let normalized = raw.trim();\n    if normalized.is_empty() {\n        return Err(SyncError::EmptySource);\n    }\n    fs::write(dst, normalized)?;\n    Ok(normalized.len())\n}\n"
+      },
+      "context": [
+        "No error crate is declared; callers report SyncError and its source() chain.",
+        "sync_normalized performs both reading src and writing dst in one operation."
+      ]
+    },
+    {
+      "id": "RD92",
+      "request": "Review the supplied production source through control-flow and error-expression for readability and maintainability.",
+      "lens": "control-flow",
+      "profiles": [
+        "error-expression"
+      ],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-92\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n",
+        "src/lib.rs": "use std::error::Error;\nuse std::fmt;\nuse std::fs;\nuse std::io;\nuse std::path::{Path, PathBuf};\n\n#[derive(Debug)]\npub enum SyncError {\n    Read { path: PathBuf, source: io::Error },\n    Write { path: PathBuf, source: io::Error },\n    EmptySource { path: PathBuf },\n}\n\nimpl fmt::Display for SyncError {\n    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n        match self {\n            Self::Read { path, .. } => write!(f, \"failed to read {}\", path.display()),\n            Self::Write { path, .. } => write!(f, \"failed to write {}\", path.display()),\n            Self::EmptySource { path } => write!(f, \"source file {} is empty\", path.display()),\n        }\n    }\n}\n\nimpl Error for SyncError {\n    fn source(&self) -> Option<&(dyn Error + 'static)> {\n        match self {\n            Self::Read { source, .. } | Self::Write { source, .. } => Some(source),\n            Self::EmptySource { .. } => None,\n        }\n    }\n}\n\npub fn sync_normalized(src: &Path, dst: &Path) -> Result<usize, SyncError> {\n    let raw = fs::read_to_string(src).map_err(|source| SyncError::Read {\n        path: src.to_path_buf(),\n        source,\n    })?;\n    let normalized = raw.trim();\n    if normalized.is_empty() {\n        return Err(SyncError::EmptySource {\n            path: src.to_path_buf(),\n        });\n    }\n    fs::write(dst, normalized).map_err(|source| SyncError::Write {\n        path: dst.to_path_buf(),\n        source,\n    })?;\n    Ok(normalized.len())\n}\n"
+      },
+      "context": [
+        "No error crate is declared; callers report SyncError and its source() chain."
+      ]
+    },
+    {
+      "id": "RD93",
+      "request": "Review the supplied production source through duplication and existing-helpers for readability and maintainability.",
+      "lens": "duplication",
+      "profiles": [
+        "existing-helpers"
+      ],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-93\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n\n[dependencies]\nsqlx = { version = \"0.8\", default-features = false, features = [\"postgres\", \"runtime-tokio\"] }\n",
+        "src/lib.rs": "use sqlx::{PgPool, Postgres, Transaction};\n\npub async fn load_balance(pool: &PgPool, account_id: i64) -> Result<Option<i64>, sqlx::Error> {\n    sqlx::query_scalar(\"SELECT balance FROM accounts WHERE id = $1\")\n        .bind(account_id)\n        .fetch_optional(pool)\n        .await\n}\n\npub async fn load_balance_tx(\n    tx: &mut Transaction<'_, Postgres>,\n    account_id: i64,\n) -> Result<Option<i64>, sqlx::Error> {\n    sqlx::query_scalar(\"SELECT balance FROM accounts WHERE id = $1\")\n        .bind(account_id)\n        .fetch_optional(&mut **tx)\n        .await\n}\n\npub fn is_duplicate_account(err: &sqlx::Error) -> bool {\n    match err {\n        sqlx::Error::Database(db_err) => db_err.code().as_deref() == Some(\"23505\"),\n        _ => false,\n    }\n}\n"
+      },
+      "context": [
+        "publish = false workspace-internal repository crate using sqlx 0.8 with Postgres.",
+        "load_balance and load_balance_tx execute the same single query for pool and transaction callers."
+      ]
+    },
+    {
+      "id": "RD94",
+      "request": "Review the supplied production source through duplication and existing-helpers for readability and maintainability.",
+      "lens": "duplication",
+      "profiles": [
+        "existing-helpers"
+      ],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-94\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n\n[dependencies]\nsqlx = { version = \"0.8\", default-features = false, features = [\"postgres\", \"runtime-tokio\"] }\n",
+        "src/lib.rs": "use sqlx::PgConnection;\n\npub async fn transfer_balance(\n    conn: &mut PgConnection,\n    from_id: i64,\n    to_id: i64,\n    amount: i64,\n) -> Result<(), sqlx::Error> {\n    sqlx::query(\"UPDATE accounts SET balance = balance - $1 WHERE id = $2\")\n        .bind(amount)\n        .bind(from_id)\n        .execute(&mut *conn)\n        .await?;\n    sqlx::query(\"UPDATE accounts SET balance = balance + $1 WHERE id = $2\")\n        .bind(amount)\n        .bind(to_id)\n        .execute(&mut *conn)\n        .await?;\n    Ok(())\n}\n\npub fn is_serialization_conflict(err: &sqlx::Error) -> bool {\n    match err {\n        sqlx::Error::Database(db_err) => db_err.code().as_deref() == Some(\"40001\"),\n        _ => false,\n    }\n}\n"
+      },
+      "context": [
+        "transfer_balance runs two sequential statements on the caller's connection or transaction (&mut **tx).",
+        "Postgres SQLSTATE 40001 (serialization_failure) maps to ErrorKind::Other in sqlx."
+      ]
+    },
+    {
+      "id": "RD95",
+      "request": "Review the supplied production source through function-cohesion and effects-separation for readability and maintainability.",
+      "lens": "function-cohesion",
+      "profiles": [
+        "effects-separation"
+      ],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-95\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n\n[dependencies]\naxum = \"0.8\"\nhttp = \"1\"\ntower-layer = \"0.3\"\ntower-service = \"0.3\"\n",
+        "src/lib.rs": "use std::convert::Infallible;\nuse std::future::Future;\nuse std::pin::Pin;\nuse std::sync::Arc;\nuse std::task::{Context, Poll};\n\nuse axum::extract::Request;\nuse axum::response::{IntoResponse, Response};\nuse http::StatusCode;\nuse tower_layer::Layer;\nuse tower_service::Service;\n\n#[derive(Clone)]\npub struct RequireTenantLayer {\n    expected: Arc<str>,\n}\n\nimpl RequireTenantLayer {\n    pub fn new(expected: Arc<str>) -> Self {\n        Self { expected }\n    }\n}\n\nimpl<S> Layer<S> for RequireTenantLayer {\n    type Service = RequireTenantService<S>;\n\n    fn layer(&self, inner: S) -> Self::Service {\n        RequireTenantService {\n            inner,\n            expected: Arc::clone(&self.expected),\n        }\n    }\n}\n\n#[derive(Clone)]\npub struct RequireTenantService<S> {\n    inner: S,\n    expected: Arc<str>,\n}\n\nimpl<S> Service<Request> for RequireTenantService<S>\nwhere\n    S: Service<Request, Response = Response, Error = Infallible> + Clone + Send + 'static,\n    S::Future: Send + 'static,\n{\n    type Response = Response;\n    type Error = Infallible;\n    type Future = Pin<Box<dyn Future<Output = Result<Response, Infallible>> + Send>>;\n\n    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {\n        self.inner.poll_ready(cx)\n    }\n\n    fn call(&mut self, req: Request) -> Self::Future {\n        let expected = Arc::clone(&self.expected);\n        let mut inner = self.inner.clone();\n        Box::pin(async move {\n            let header = req.headers().get(\"x-tenant-id\").and_then(|v| v.to_str().ok());\n            if header != Some(expected.as_ref()) {\n                return Ok(StatusCode::FORBIDDEN.into_response());\n            }\n            inner.call(req).await\n        })\n    }\n}\n"
+      },
+      "context": [
+        "Applied only to an Axum Router handling axum::extract::Request -> axum::response::Response with Error = Infallible.",
+        "poll_ready performs no custom readiness or backpressure logic."
+      ]
+    },
+    {
+      "id": "RD96",
+      "request": "Review the supplied production source through function-cohesion and effects-separation for readability and maintainability.",
+      "lens": "function-cohesion",
+      "profiles": [
+        "effects-separation"
+      ],
+      "scope": "All production declarations in src/lib.rs inside a workspace-internal crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"rust-depth-96\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n\n[dependencies]\naxum = \"0.8\"\ntokio = { version = \"1\", features = [\"sync\"] }\ntokio-util = \"0.7\"\ntower-layer = \"0.3\"\ntower-service = \"0.3\"\n",
+        "src/lib.rs": "use std::convert::Infallible;\nuse std::future::Future;\nuse std::pin::Pin;\nuse std::sync::Arc;\nuse std::task::{Context, Poll};\n\nuse axum::extract::Request;\nuse axum::response::Response;\nuse tokio::sync::{OwnedSemaphorePermit, Semaphore};\nuse tokio_util::sync::PollSemaphore;\nuse tower_layer::Layer;\nuse tower_service::Service;\n\n#[derive(Clone)]\npub struct PermitGateLayer {\n    semaphore: Arc<Semaphore>,\n}\n\nimpl PermitGateLayer {\n    pub fn new(max_inflight: usize) -> Self {\n        Self {\n            semaphore: Arc::new(Semaphore::new(max_inflight)),\n        }\n    }\n}\n\nimpl<S> Layer<S> for PermitGateLayer {\n    type Service = PermitGateService<S>;\n\n    fn layer(&self, inner: S) -> Self::Service {\n        PermitGateService {\n            inner,\n            semaphore: PollSemaphore::new(Arc::clone(&self.semaphore)),\n            permit: None,\n        }\n    }\n}\n\npub struct PermitGateService<S> {\n    inner: S,\n    semaphore: PollSemaphore,\n    permit: Option<OwnedSemaphorePermit>,\n}\n\nimpl<S> Service<Request> for PermitGateService<S>\nwhere\n    S: Service<Request, Response = Response, Error = Infallible> + Send,\n    S::Future: Send + 'static,\n{\n    type Response = Response;\n    type Error = Infallible;\n    type Future = Pin<Box<dyn Future<Output = Result<Response, Infallible>> + Send>>;\n\n    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {\n        if self.permit.is_none() {\n            match self.semaphore.poll_acquire(cx) {\n                Poll::Ready(Some(permit)) => self.permit = Some(permit),\n                Poll::Ready(None) | Poll::Pending => return Poll::Pending,\n            }\n        }\n        self.inner.poll_ready(cx)\n    }\n\n    fn call(&mut self, req: Request) -> Self::Future {\n        let permit = self\n            .permit\n            .take()\n            .expect(\"poll_ready must acquire a permit before call\");\n        let fut = self.inner.call(req);\n        Box::pin(async move {\n            let _permit = permit;\n            fut.await\n        })\n    }\n}\n"
+      },
+      "context": [
+        "Caller relies on Tower poll_ready backpressure to hold a semaphore permit before dispatching call.",
+        "axum::middleware::from_fn_with_state delegates poll_ready directly to the inner service and cannot enforce permit readiness."
+      ]
+    },
+    {
+      "id": "RD97",
+      "request": "Review the supplied production source through abstractions and unused-surface for readability and maintainability.",
+      "lens": "abstractions",
+      "profiles": [
+        "unused-surface"
+      ],
+      "scope": "All production declarations across the workspace snapshot (render and cli crates).",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"render\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n\n[workspace]\nmembers = [\"cli\"]\n",
+        "src/lib.rs": "pub struct Record {\n    pub id: u64,\n    pub label: String,\n    pub trace: String,\n}\n\npub fn format_record(record: &Record, include_trace: bool) -> String {\n    if include_trace {\n        format!(\"{}: {} [{}]\", record.id, record.label, record.trace)\n    } else {\n        format!(\"{}: {}\", record.id, record.label)\n    }\n}\n",
+        "cli/Cargo.toml": "[package]\nname = \"cli\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = false\n\n[dependencies]\nrender = { path = \"..\" }\n",
+        "cli/src/lib.rs": "use render::{Record, format_record};\n\npub fn render_summary(records: &[Record]) -> Vec<String> {\n    records.iter().map(|r| format_record(r, false)).collect()\n}\n"
+      },
+      "context": [
+        "Complete workspace snapshot; render has publish = false and no consumers outside this workspace.",
+        "Every call to format_record passes include_trace = false."
+      ]
+    },
+    {
+      "id": "RD98",
+      "request": "Review the supplied production source through abstractions and unused-surface for readability and maintainability.",
+      "lens": "abstractions",
+      "profiles": [
+        "unused-surface"
+      ],
+      "scope": "All production declarations in src/lib.rs of a published library crate.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"render\"\nversion = \"1.2.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\npublish = true\n",
+        "src/lib.rs": "use std::num::ParseIntError;\n\nmod internal {\n    pub struct Metric {\n        count: u64,\n    }\n\n    impl Metric {\n        pub(crate) fn from_nonzero(count: u64) -> Option<Self> {\n            (count > 0).then_some(Self { count })\n        }\n\n        pub fn count(&self) -> u64 {\n            self.count\n        }\n    }\n}\n\npub use internal::Metric as ExportedMetric;\n\n#[derive(Debug)]\npub enum RenderError {\n    Zero,\n    Parse(ParseIntError),\n}\n\nimpl From<ParseIntError> for RenderError {\n    fn from(err: ParseIntError) -> Self {\n        Self::Parse(err)\n    }\n}\n\npub fn render_metric(\n    input: &str,\n    include_unit: bool,\n) -> Result<(ExportedMetric, String), RenderError> {\n    let count: u64 = input.trim().parse()?;\n    let metric = ExportedMetric::from_nonzero(count).ok_or(RenderError::Zero)?;\n    let text = if include_unit {\n        format!(\"{} items\", metric.count())\n    } else {\n        metric.count().to_string()\n    };\n    Ok((metric, text))\n}\n"
+      },
+      "context": [
+        "Published SemVer 1.2.0 library crate with external downstream consumers outside this snapshot.",
+        "From<ParseIntError> is invoked via ? in render_metric, and internal::Metric keeps its non-zero invariant private behind the pub use ExportedMetric re-export."
+      ]
     }
   ]
 }

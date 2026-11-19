@@ -19,7 +19,10 @@ compiler as co-maintainer, standard vocabulary and the least machinery. It
 assigns each kind of idiom to the lens that owns it, so idiomatic expression is
 reviewed inside the eight questions and not as a ninth pass. Each lens names
 the forms it looks for beside the case for keeping the code. Conditional notes
-cover Tokio, Serde, clap, Axum, thiserror/anyhow and tracing.
+cover Tokio, Serde, clap, Axum, SQLx, thiserror/anyhow and tracing; the
+orchestrator includes implicated notes in the matching owner's selected resource
+paths from crate manifests and source rather than relying on specialist
+self-discovery alone.
 
 ## Sources and scope
 
@@ -31,22 +34,26 @@ The guidance is an original synthesis of the
 External references supply context rather than mandatory team policy. No tutorial
 lookup is required for each review.
 
-The reader accepts `.rs` and narrowly named Cargo/toolchain/configuration context
-while retaining pinned B/H/D, GET-only access, bounded windows, pagination, regular
-file checks and binary/generated exclusions. No Rust toolchain is required during
-a review: it never builds, runs, formats, lints or expands reviewed code.
+Native host tools read `.rs` and Cargo/toolchain/configuration context at pinned
+B/H/D or local snapshot views, with regular-file checks and binary/generated
+exclusions. No Rust toolchain is required during a review: it never builds,
+runs, formats, lints or expands reviewed code.
 
 Path/header filtering is not Rust parsing. Conventional test paths are filtered;
 specialists resolve custom Cargo targets and test-only declarations from manifest
-and source context. Mixed files remain in scope for production items. Incidental
-test text is not reviewed coverage. Unknown generated inclusions and missing macro
-expansions are explicit gaps. Cargo files are context, not a dependency audit.
+and source context. Mixed files remain in scope for production items, and
+partitioning sizes work by production lines rather than inline `#[cfg(test)]`
+modules while keeping vertical call spines intact across workspace-internal
+crates. Incidental test text is not reviewed coverage. Unknown generated
+inclusions and missing macro expansions are explicit gaps. Cargo files are
+context, not a dependency audit.
 
-Crate MSRV, edition, features and no_std constraints bound advice. A newer toolchain
-does not authorize newer APIs. Public contracts, trait obligations, drop scopes
-and evaluation order constrain related recommendations. Source reading does not
-prove equivalence or soundness. Bugs, security, tests and business correctness
-remain outside scope.
+Crate MSRV, edition, `publish` status, features, committed lints and `no_std`
+constraints bound advice. A newer toolchain does not authorize newer APIs.
+Public contracts, trait obligations, drop scopes (including `if let` / `match`
+scrutinee temporaries) and evaluation order constrain related recommendations.
+Source reading does not prove equivalence or soundness. Bugs, security, tests
+and business correctness remain outside scope.
 
 ## Policy and validation
 
@@ -55,10 +62,10 @@ with no implicit cross-language migration. See the
 [team convention example](../examples/team-rules/RUST.md). Disabling an owner rule
 also governs its profiles in the declared language and scope.
 
-`tests/rust-support.test.ts` checks source access and resource wiring, not model
-judgment. `evals/rust/` separates raw packets from evaluator expectations; neither
-is installed as reviewer guidance. Live model evaluations have not been run for
-this addition. Mechanical checks do not establish recommendation precision/recall.
-
-The shared file classifier is `adapters/opencode/lib/source-files.ts`; Rust uses
-the same inventory/read/search path as Go and TypeScript, not a second classifier.
+`tests/rust-routing.test.ts`, `tests/rust-depth.test.ts` and
+`tests/resources.test.ts` check resource wiring, rule stability and delivery
+alignment, not model judgment. `evals/rust/` separates raw packets from
+evaluator expectations (`R01-R12`, `RD01-RD98`, and `RM01-RM06`); neither is
+installed as reviewer guidance. Bounded specialist comparisons are recorded
+under `evals/rust/depth/results/` and `evals/rust/maintenance/results/`.
+Mechanical checks do not establish recommendation precision/recall.

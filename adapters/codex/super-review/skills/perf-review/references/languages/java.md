@@ -10,46 +10,44 @@ JFR/async-profiler flamegraphs or SQL `EXPLAIN` plans, batch-size and pool
 settings (`application.yml`/`properties`), and `--release` / `sourceCompatibility`
 in `pom.xml` or `build.gradle*`.
 
-## Semantics to settle before claiming
+## Verify in source
 
-A candidate that rests on one of these must show it from the source, the
-documentation or the resolved dependency version, not from memory.
+The version in use is what Maven (`pom.xml`) or Gradle (`gradle.lockfile`,
+version catalog, `build.gradle*`) resolves, never memory. Inspect dependency
+sources already on disk (`~/.m2/repository`, `~/.gradle/caches`) and local JDK
+sources when present. Verify both the current cost and the cheaper form's
+behavior, and check API and runtime semantics (including virtual-thread pinning
+behavior on the target JDK) against the project's declared Java version. Do not
+run builds or download artifacts. When needed source is absent on disk, mark the
+step as an assumption: name the artifact, the version, and the question its
+source would answer.
 
-- **ORM / JDBC round trips (N+1 and row-by-row writes).** Accessing lazy JPA
-  associations (`@OneToMany`, `@ManyToOne(fetch = LAZY)`) inside a loop fires one
-  SQL query per parent unless fetched together (`JOIN FETCH`, `@EntityGraph`, or
-  batch fetching). Calling `save` / `executeUpdate` per item without JDBC
-  batching (note: Hibernate disables insert batching on `GenerationType.IDENTITY`),
-  or loading full entities into persistence context just to count, check
-  existence (`existsBy...`) or project two scalar columns, multiplies round
-  trips and managed-entity state.
-- **Boxing, strings and collections.** `Stream<Integer>` / `List<Long>` and
-  boxed map counters allocate wrapper objects outside small caches where
-  `IntStream`/`LongStream` or primitive buffers avoid boxing. String `+` across
-  loop iterations (when `javac` cannot fold a single expression) copies prefixes
-  each turn (`StringBuilder` reuses one buffer). Pre-sizing `new ArrayList<>(n)`
-  and `HashMap.newHashMap(n)` (Java 19+) avoids resize rehashes.
-- **Repeated heavy initialization.** `Pattern.compile`, `String.matches`,
-  `String.replaceAll` and `String.split` (for non-trivial regexes) compile a
-  `Pattern` on every call. Constructing Jackson `ObjectMapper`, `ValidatorFactory`,
-  `JAXBContext` or `HttpClient` per request repeats expensive reflection and
-  metadata setup on thread-safe types meant to be shared.
-- **Threads, locks and reactive/virtual executors.** Blocking I/O or
-  `CompletableFuture.join()` on a Netty/Reactor/WebFlux event-loop thread stalls
-  all multiplexed connections on that core. On Java 21–23 virtual threads (prior
-  to JEP 491 in Java 24), blocking inside `synchronized` pins the carrier OS
-  thread (`ReentrantLock` avoids pinning). Holding `@Transactional` or
-  `synchronized` across an outbound HTTP/RPC call ties up a DB connection from
-  HikariCP or blocks peers for the full network RTT.
-- **What a cheaper form may use.** Respect the module's Java language level and
-  declared dependencies in `pom.xml` or `build.gradle*`.
+## Questions to settle before claiming
 
-## Dependencies
+- **ORM and JDBC round trips**: do lazy associations inside loops or
+  serializers trigger N+1 queries, do per-item writes bypass JDBC batching
+  (check whether the ID generator disables batching), or do queries hydrate full
+  managed entities only to count, test existence, or read scalar projections?
+- **Boxing, strings, and collections**: do boxed streams/collections, loop
+  string concatenation, or unsized collections allocate per element where
+  primitive streams, reused builders, or pre-sizing keeps behavior? Check
+  whether pre-sizing trusts an uncapped external length.
+- **Repeated heavy initialization**: does per-call regex compilation
+  (`Pattern.compile`, `String.matches`/`replaceAll`/`split`) or per-request
+  construction of reusable thread-safe clients/mappers repeat reflection or
+  automaton setup?
+- **Threads, locks, and executors**: does blocking I/O or waiting run on a
+  non-blocking event loop, does blocking inside `synchronized` pin virtual-thread
+  carriers on the project's target JDK, or does a transaction/lock stay held
+  across an outbound network call?
 
-The version in use is resolved by Maven (`pom.xml`) or Gradle
-(`gradle.lockfile`, version catalog, `build.gradle*`). Read dependency sources
-already on disk (`~/.m2/repository`, `~/.gradle/caches`) without running builds
-or downloads; when absent, record the assumption.
+## Java boundaries
+
+- **Finding**: compiles and runs on the declared Java level and dependencies in
+  `pom.xml` or `build.gradle*` while keeping transaction, error, and API
+  contracts.
+- **Tradeoff**: adds a dependency, changes transaction/batch failure boundaries,
+  holds cached state longer, or uses unsafe/reflection internals.
 
 ## Not a finding in Java
 

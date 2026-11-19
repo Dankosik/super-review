@@ -876,6 +876,196 @@
       "contrasts": [
         "RD79"
       ]
+    },
+    {
+      "id": "RD81",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Unwind resolve_port's nested Option/Result combinator chain into a direct main path using let-else and ?.",
+        "Flatten select_banner's nested if/if-let pyramid using Edition 2024 if-let chains while preserving the fallback behavior."
+      ],
+      "contrasts": [
+        "RD82"
+      ]
+    },
+    {
+      "id": "RD82",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Retain the separate let binding before if-let in dispatch_next: folding pending.lock() into the if-let scrutinee would keep the MutexGuard alive across on_job.",
+        "Retain the straightforward loop in first_nonzero_port."
+      ],
+      "contrasts": [
+        "RD81"
+      ]
+    },
+    {
+      "id": "RD83",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Flag AccountDto as a 1:1 mirrored internal DTO (Middle Man) that translates no invariant or external wire contract.",
+        "Flag AccountStore/Clock single-implementation generic cascades (<S: AccountStore, C: Clock>) and AccountController's pass-through forwarding layer."
+      ],
+      "contrasts": [
+        "RD84"
+      ]
+    },
+    {
+      "id": "RD84",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Retain WireAccount separate from Account: the boundary normalizes and validates Handle invariants.",
+        "Retain AccountStore: it has multiple real production implementations and no forwarding-layer cascade."
+      ],
+      "contrasts": [
+        "RD83"
+      ]
+    },
+    {
+      "id": "RD85",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Remove #[async_trait] from TokenLookup: Rust 1.98 supports native async fn in statically dispatched traits without boxing.",
+        "Replace CounterHandle's spawned channel-as-RPC actor with direct shared state (such as an atomic or plain state wrapper) because there is no autonomous background work."
+      ],
+      "contrasts": [
+        "RD86"
+      ]
+    },
+    {
+      "id": "RD86",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Retain #[async_trait] on Notifier: Vec<Box<dyn Notifier>> requires dyn compatibility.",
+        "Retain the background actor task in spawn_periodic_flusher: it owns autonomous periodic flushing and channel-close draining."
+      ],
+      "contrasts": [
+        "RD85"
+      ]
+    },
+    {
+      "id": "RD87",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Take the mandatory endpoint in ClientBuilder::new(endpoint) rather than storing Option<String> and returning Err(MissingEndpoint) from build(), eliminating the runtime missing-field error without typestate ceremony."
+      ],
+      "contrasts": [
+        "RD88"
+      ]
+    },
+    {
+      "id": "RD88",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Retain ClientBuilder: required input is passed to new(), optional settings vary across callers, and build() is infallible without typestate ceremony."
+      ],
+      "contrasts": [
+        "RD87"
+      ]
+    },
+    {
+      "id": "RD89",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Replace require_non_empty! (which hides early return) with a plain helper function returning Result<&str, String> used with ?.",
+        "Replace str_getter! with explicit fn service and fn region methods so public method definitions remain directly readable and searchable."
+      ],
+      "contrasts": [
+        "RD90"
+      ]
+    },
+    {
+      "id": "RD90",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Retain impl_signed_metric!: it removes seven identical trait implementations cleanly without hiding control flow or synthesizing unsearchable API names."
+      ],
+      "contrasts": [
+        "RD89"
+      ]
+    },
+    {
+      "id": "RD91",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Flag the blanket manual From<io::Error> conversion used across both fs::read_to_string(src)? and fs::write(dst, normalized)?: it erases which path and operation failed.",
+        "Recommend carrying path and operation context via local map_err while preserving io::Error as Error::source() without duplicating the cause in Display."
+      ],
+      "contrasts": [
+        "RD92"
+      ]
+    },
+    {
+      "id": "RD92",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Retain the explicit map_err conversions and structured variants: each I/O failure records its path and operation while preserving source() without repeating the cause in Display."
+      ],
+      "contrasts": [
+        "RD91"
+      ]
+    },
+    {
+      "id": "RD93",
+      "rule": "rust.duplication.share-knowledge",
+      "expect": [
+        "Collapse load_balance and load_balance_tx into one single-query function accepting impl sqlx::Executor<'_, Database = Postgres>.",
+        "Replace raw SQLSTATE \"23505\" comparison with db_err.is_unique_violation() (or DatabaseError::kind())."
+      ],
+      "contrasts": [
+        "RD94"
+      ]
+    },
+    {
+      "id": "RD94",
+      "rule": "rust.duplication.share-knowledge",
+      "expect": [
+        "Retain &mut PgConnection in transfer_balance: it executes two sequential queries where single-use impl Executor would be consumed by the first query.",
+        "Retain explicit db_err.code() == Some(\"40001\"): sqlx::error::ErrorKind maps serialization_failure to ErrorKind::Other."
+      ],
+      "contrasts": [
+        "RD93"
+      ]
+    },
+    {
+      "id": "RD95",
+      "rule": "rust.functions.coherent-purpose",
+      "expect": [
+        "Replace the hand-rolled RequireTenantLayer/RequireTenantService and boxed-future boilerplate with axum::middleware::from_fn_with_state."
+      ],
+      "contrasts": [
+        "RD96"
+      ]
+    },
+    {
+      "id": "RD96",
+      "rule": "rust.functions.coherent-purpose",
+      "expect": [
+        "Retain PermitGateLayer/PermitGateService: poll_ready enforces genuine readiness backpressure that axum::middleware::from_fn_with_state cannot express."
+      ],
+      "contrasts": [
+        "RD95"
+      ]
+    },
+    {
+      "id": "RD97",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Recommend removing the unused include_trace parameter (and its dead branch) from format_record and updating cli/src/lib.rs, rather than leaving the remedy unresolved over hypothetical external callers: render is publish = false and every workspace consumer is present."
+      ],
+      "contrasts": [
+        "RD98"
+      ]
+    },
+    {
+      "id": "RD98",
+      "rule": "rust.abstractions.earn-the-boundary",
+      "expect": [
+        "Retain internal::Metric (re-exported via pub use as ExportedMetric and enforcing non-zero count via private field), From<ParseIntError> (used implicitly by ?), and include_unit on the published library API without falsely marking any of them unused."
+      ],
+      "contrasts": [
+        "RD97"
+      ]
     }
   ]
 }
