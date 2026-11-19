@@ -24,13 +24,14 @@ compatibility judgment; when a current consumer keeps either path alive, its
 selection and removal condition belong where a maintainer will find them.
 
 Rust can make the compiler list the places a change must visit. An exhaustive
-`match` over an enum this crate owns, a struct literal without
+`match` over an enum, a struct literal without
 `..Default::default()` and a pattern without `..` turn a new variant or field
 into an error at every site that must decide. A `_` arm, a rest pattern or a
 default fill takes those sites off the list, and the next change then depends
 on a search. Recommend the exhaustive form where each site makes a decision per
-variant or field. Keep the wildcard for a foreign or `#[non_exhaustive]` type
-and for a remainder that is uniform by intent, and the default fill where new
+variant or field. A `#[non_exhaustive]` enum can be matched exhaustively in its
+defining crate and requires a catch-all downstream. Keep a wildcard wherever
+the remainder is uniform by intent, and the default fill where new
 fields should stay invisible to that caller. Likewise, a set of strings or
 integers the crate defines and compares in several modules becomes one visible
 set as an enum, and symmetric twin operations (`encode`/`decode`, `cache_key`,

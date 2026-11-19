@@ -1067,6 +1067,98 @@
       "context": [
         "Callers in sibling modules acquire a LeaseGuard, pass it across step functions, and call commit() when ownership of the slot transfers to a long-lived session; uncommitted exits roll the counter back. Multiple worker tasks pop items from WorkQueue so each push wakes one waiter."
       ]
+    },
+    {
+      "id": "RD75",
+      "request": "Review the supplied production source through the assigned lens for readability and maintainability.",
+      "lens": "change-locality",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs. The public API and its documented behavior are supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"transport\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\n",
+        "src/lib.rs": "#[non_exhaustive]\npub enum Refusal {\n    Unauthenticated,\n    PermissionDenied,\n    Busy,\n}\n\npub fn status(refusal: Refusal) -> u16 {\n    match refusal {\n        Refusal::Unauthenticated => 401,\n        Refusal::PermissionDenied => 403,\n        _ => 503,\n    }\n}\n"
+      },
+      "context": [
+        "This crate assigns an HTTP status to each refusal. A decision on the status is required when introducing a refusal."
+      ]
+    },
+    {
+      "id": "RD76",
+      "request": "Review the supplied production source through the assigned lens for readability and maintainability.",
+      "lens": "change-locality",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs. The public API and its documented behavior are supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"transport\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\n\n[dependencies]\nprotocol = { path = \"protocol\" }\n",
+        "src/lib.rs": "pub use protocol::Refusal;\n\npub fn status(refusal: Refusal) -> u16 {\n    match refusal {\n        Refusal::Unauthenticated => 401,\n        Refusal::PermissionDenied => 403,\n        _ => 503,\n    }\n}\n",
+        "protocol/Cargo.toml": "[package]\nname = \"protocol\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\n",
+        "protocol/src/lib.rs": "#[non_exhaustive]\npub enum Refusal {\n    Unauthenticated,\n    PermissionDenied,\n    Busy,\n}\n"
+      },
+      "context": [
+        "The protocol dependency is independently versioned. The transport contract assigns 401 and 403 to the two named authentication and authorization cases, and 503 to all remaining refusals, including future ones."
+      ]
+    },
+    {
+      "id": "RD77",
+      "request": "Review the supplied production source through the assigned lens for readability and maintainability.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs. The public API and its documented behavior are supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"allocations\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\n",
+        "src/lib.rs": "use std::{cell::Cell, future::Future};\n\n/// Each future advances its counter on first poll, wrapping at the limit.\n/// Collecting or discarding unpolled tickets leaves the counters unchanged.\npub fn tickets(counters: &[Cell<u32>]) -> impl Iterator<Item = impl Future<Output = u32>> {\n    counters.iter().map(issue)\n}\n\nasync fn issue(counter: &Cell<u32>) -> u32 {\n    let ticket = successor(counter.get()).await;\n    counter.set(ticket);\n    ticket\n}\n\nasync fn successor(last: u32) -> u32 {\n    last.wrapping_add(1)\n}\n"
+      },
+      "context": [
+        "Consumers may collect tickets and discard some before polling. Only a polled ticket advances its counter, with wrapping sequence numbers."
+      ]
+    },
+    {
+      "id": "RD78",
+      "request": "Review the supplied production source through the assigned lens for readability and maintainability.",
+      "lens": "api-clarity",
+      "profiles": [],
+      "scope": "All production declarations in src/lib.rs. The public API and its documented behavior are supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"allocations\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\n",
+        "src/lib.rs": "use std::{cell::Cell, future::Future};\n\n/// Each future advances its counter on first poll, wrapping at the limit.\n/// Collecting or discarding unpolled tickets leaves the counters unchanged.\npub fn tickets(counters: &[Cell<u32>]) -> impl Iterator<Item = impl Future<Output = u32>> {\n    counters.iter().map(issue)\n}\n\nasync fn issue(counter: &Cell<u32>) -> u32 {\n    let ticket = counter.get().wrapping_add(1);\n    counter.set(ticket);\n    ticket\n}\n"
+      },
+      "context": [
+        "Consumers may collect tickets and discard some before polling. Only a polled ticket advances its counter, with wrapping sequence numbers."
+      ]
+    },
+    {
+      "id": "RD79",
+      "request": "Review the supplied production source through the assigned lens for readability and maintainability.",
+      "lens": "control-flow",
+      "profiles": [
+        "defensive-checks"
+      ],
+      "scope": "All production declarations in src/lib.rs. The public API and its documented behavior are supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"transport\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\n\n[dependencies]\nprotocol = { path = \"protocol\" }\n",
+        "src/lib.rs": "pub use protocol::Refusal;\n\npub fn status(refusal: Refusal) -> u16 {\n    match refusal {\n        Refusal::Unauthenticated => 401,\n        Refusal::PermissionDenied => 403,\n        _ => 503,\n    }\n}\n",
+        "protocol/Cargo.toml": "[package]\nname = \"protocol\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\n",
+        "protocol/src/lib.rs": "pub enum Refusal {\n    Unauthenticated,\n    PermissionDenied,\n    Busy,\n}\n"
+      },
+      "context": [
+        "The protocol dependency is separately versioned. When upgrading it, the transport team assigns an HTTP status to each new refusal."
+      ]
+    },
+    {
+      "id": "RD80",
+      "request": "Review the supplied production source through the assigned lens for readability and maintainability.",
+      "lens": "control-flow",
+      "profiles": [
+        "defensive-checks"
+      ],
+      "scope": "All production declarations in src/lib.rs. The public API and its documented behavior are supported.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"transport\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.98\"\n",
+        "src/lib.rs": "#[non_exhaustive]\npub enum Refusal {\n    Unauthenticated,\n    PermissionDenied,\n    Busy,\n}\n\npub fn status(refusal: Refusal) -> u16 {\n    match refusal {\n        Refusal::Unauthenticated => 401,\n        Refusal::PermissionDenied => 403,\n        _ => 503,\n    }\n}\n"
+      },
+      "context": [
+        "The transport contract assigns 401 and 403 to the two named authentication and authorization cases, and 503 to all remaining refusals, including future ones."
+      ]
     }
   ]
 }

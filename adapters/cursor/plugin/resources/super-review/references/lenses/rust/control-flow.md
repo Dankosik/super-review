@@ -22,9 +22,8 @@ Let checks produce values and decisions sit where they are made:
   `Option` its only caller just constructed, or takes `Option<T>` only to return
   immediately on `None`, let the caller call the specific path directly so the
   callee's signature states what it actually needs.
-- Spell out variants in a `_` wildcard arm over a crate-owned enum when readers
-  cannot tell which variants reach it or a new variant would silently take a
-  branch written for others.
+- Spell out the variants when the match can be exhaustive here and a wildcard
+  obscures which cases reach it or a new variant needs its own decision.
 - Use `Option::transpose`, `collect::<Result<_, _>>()`, or `try_fold` (within
   edition/MSRV) when they express optional or fail-fast work more directly than
   manual plumbing.
@@ -33,10 +32,11 @@ Let checks produce values and decisions sit where they are made:
 an ordinary loop makes state updates, early exits, or error accumulation clearer
 than combinators (accumulating all errors is not fail-fast); an `unwrap` or
 `expect` marks an invariant no nearby pattern can bind without roundabout code;
-a `_` arm covers a foreign or `#[non_exhaustive]` type or a genuinely uniform
-remainder; or a rewrite would change error conversion, closure return
-boundaries, evaluation order, eager versus lazy effects, drop scopes, or exceed
-the crate's edition/MSRV. Show which decisions become easier to follow.
+a catch-all expresses a uniform remainder or is required for a
+`#[non_exhaustive]` enum outside its defining crate; or a rewrite would change
+error conversion, closure return boundaries, evaluation order, eager versus
+lazy effects, drop scopes, or exceed the crate's edition/MSRV. Show which
+decisions become easier to follow.
 
 Background: [Option](https://doc.rust-lang.org/std/option/enum.Option.html)
 and [Iterator](https://doc.rust-lang.org/std/iter/trait.Iterator.html).

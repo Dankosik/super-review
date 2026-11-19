@@ -816,6 +816,66 @@
       "contrasts": [
         "RD73"
       ]
+    },
+    {
+      "id": "RD75",
+      "rule": "rust.change.localize-existing-variation",
+      "expect": [
+        "Name Busy explicitly so adding a refusal brings this policy decision back to the compiler. The enum attribute permits an exhaustive match inside its defining crate. Preserve every status."
+      ],
+      "contrasts": [
+        "RD76"
+      ]
+    },
+    {
+      "id": "RD76",
+      "rule": "rust.change.localize-existing-variation",
+      "expect": [
+        "Keep the fallback for the external non-exhaustive enum and uniform remaining policy. A re-export does not move its definition. Naming Busy separately alongside the same fallback buys no decision."
+      ],
+      "contrasts": [
+        "RD75"
+      ]
+    },
+    {
+      "id": "RD77",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Express successor as a direct computation inside issue, or as a synchronous helper. Its only caller immediately awaits it. Keep the public iterator of futures and the read and increment at poll time."
+      ],
+      "contrasts": [
+        "RD78"
+      ]
+    },
+    {
+      "id": "RD78",
+      "rule": "rust.api.express-the-call",
+      "expect": [
+        "Retain deferred issue. Iterating creates independently disposable futures; a rewrite that advances the counter while producing an item changes the contract. A different spelling of the same deferred operation requires a concrete reading benefit."
+      ],
+      "contrasts": [
+        "RD77"
+      ]
+    },
+    {
+      "id": "RD79",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Name Busy explicitly. This external enum is exhaustive and an upgrade adding a variant requires a fresh mapping decision. Keep all three statuses."
+      ],
+      "contrasts": [
+        "RD80"
+      ]
+    },
+    {
+      "id": "RD80",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Keep the uniform default. The enum is local, but enumerating the remainder would make future ordinary refusals require edits despite the uniform contract."
+      ],
+      "contrasts": [
+        "RD79"
+      ]
     }
   ]
 }
