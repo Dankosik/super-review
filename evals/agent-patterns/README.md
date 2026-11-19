@@ -29,15 +29,16 @@ supported languages (`Go`, `TypeScript`, `Rust`, `Java`).
 
 ## Isolation protocol
 
-- `inputs.json` contains thirty-six neutral single-case packets (`AP01`–`AP36`),
+- `inputs.json` contains neutral single-case packets (`AP01`–`AP42`),
   each with pinned file contents (and an explicit `diff` when the case is a
   change review). Supply at most one input object per fresh agent run together
   with the canonical skill contract, matching language context, assigned lens or
   question, and finding template.
-- `cases.json` is evaluator-only: it maps `AP01`–`AP36` into eighteen symmetric
+- `cases.json` is evaluator-only: it maps the packets into symmetric
   contrast pairs (positive finding vs clean retention/rejection control) and
   records the checkable grading criteria.
-- Status: `NOT RUN`. Mechanical checks in `tests/agent-patterns.test.ts` verify
-  input/grader isolation, contrast symmetry, language/skill coverage, and
-  absence from packaged plugins; they do not measure model quality. Real-repo
-  runs remain required under `evals/README.md` before claiming behavioral gains.
+- Status is `PARTIAL`. The [Rust performance reader probes](results/2026-11-19-rust-perf/README.md)
+  cover first-assignment routing, derived values, copy-on-write and task lifetime.
+  They exercise one assigned lens at a time. The full corpus and end-to-end
+  review workflow remain unevaluated here. Mechanical checks in
+  `tests/agent-patterns.test.ts` cover packet isolation, pair identities and packaging.

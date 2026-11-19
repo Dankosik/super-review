@@ -37,7 +37,7 @@ const suite = JSON.parse(read("cases.json")) as {
 // Mechanical fixture and isolation integrity only; these do not measure model judgment.
 test("agent-patterns packets and evaluator cases are isolated and symmetric across all four skills and languages", () => {
   expect(suite.kind).toBe("evaluator-only");
-  expect(suite.status).toBe("NOT RUN");
+  expect(suite.status).toBe("PARTIAL");
   expect(suite.baseline_revision).toMatch(/^[0-9a-f]{40}$/);
 
   const ids = inputs.map(item => item.id);

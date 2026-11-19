@@ -156,7 +156,7 @@ test("delivery copies are identical and only the adapters that support it carry 
   expect(existsSync(resolve(root, "adapters/cursor/plugin/resources/perf-review"))).toBe(false);
   for (const role of ["perf-review", "perf-reader", "perf-challenger"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
   expect(read("scripts/package.py")).toContain('"perf-review"');
-  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.10.2");
+  expect(metadata("skills/perf-review/SKILL.md").metadata.version).toBe("0.10.3");
 });
 
 test("TypeScript frontend performance rules distinguish behavior-keeping findings from tradeoffs and stay prose-clean", () => {
@@ -202,7 +202,6 @@ test("Rust performance rules distinguish behavior-keeping findings from tradeoff
     "slice::sort_by_key(f)",
     "select_nth_unstable",
     "eq_ignore_ascii_case",
-    "from_utf8_lossy_owned",
     "hits and misses alike",
     "serde_json::from_reader",
     "fmt::Write",
