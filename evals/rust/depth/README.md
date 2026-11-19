@@ -95,6 +95,14 @@ registry (`RD72`); and replacing single-use `Drop` ceremony and split
 `LeaseGuard` at MSRV 1.85 and single-waiter `Notify::notify_one` (`RD74`).
 Behavioral baseline/candidate comparison for `RD69-RD74`: **NOT RUN**.
 
+## Callback policies, enum matches and deferred effects (RD75-RD80)
+
+The [2026-11-19 comparison](results/2026-11-19-rust-decisions/README.md)
+uses the complete production portion of an outbox module at two revisions,
+the unchanged RD54 single-caller helper, and six Rust packets. It records
+which recommendations surfaced, which controls were retained, and the
+separate fixture and compiler checks.
+
 ## Replay and grading
 
 `inputs.json` contains independent neutral packets. Give a reviewer exactly one

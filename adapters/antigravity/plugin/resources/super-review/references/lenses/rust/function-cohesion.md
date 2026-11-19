@@ -5,6 +5,10 @@
 **Load-bearing helpers.** Read the function, its immediate helpers, and their
 calls as one operation. Extract a helper when its name, inputs, output, and
 error state a complete decision the caller can use without opening its body.
+A callback in a linear operation can own a separate policy. When its branches
+translate domain outcomes into decisions for the caller, try naming the whole
+mapping so readers can follow the operation and inspect the policy separately.
+Keep a short translation inline when its name would only repeat the expression.
 Inline existing helpers that chop one linear pipeline into single-caller
 fragments, forward arguments unchanged, or mutate the caller's locals through a
 row of `&mut` parameters and bookkeeping tuples; they scatter the story across

@@ -15,8 +15,10 @@ Express what the call actually accepts, returns, and promises:
   lifetimes on lookup-only keys. Reserve `AsRef`, `Into`, or `IntoIterator`
   conversion generics for varied callers; in internal application code whose
   callers are known, concrete types read directly.
-- **Honest effects and results**: drop never-failing `Result`, always-`Some`
-  `Option`, and never-awaiting `async fn` wrappers; return values directly
+- **Honest effects and results**: use a synchronous helper for work without
+  suspension when callers need only its immediate result. Keep the future when
+  callers rely on deferring or discarding the work before its first poll.
+  Drop never-failing `Result` and always-`Some` `Option`; return values directly
   instead of writing into a `&mut` buffer every caller creates empty; pass the
   needed value rather than a whole configuration or state struct for one field;
   and replace positional multi-element tuples or ambiguous boolean arguments with

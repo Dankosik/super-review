@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.36.4 — 2026-11-19
+
+- Rust function-cohesion reviews now consider whether a callback owns a policy that callers could use by name. In the outbox comparison, the revised reviewer identified the retry classification inside the publication handler and retained the version with a named mapper.
+- Rust control-flow and change-locality reviews distinguish enum matches that should force a decision on each new variant from uniform fallback policies. The guidance accounts for the defining crate of a `#[non_exhaustive]` enum.
+- Rust API reviews check whether callers depend on a future deferring work until its first poll before suggesting a synchronous helper. The [nine paired specialist comparisons](https://github.com/Dankosik/super-review/tree/v3.36.4/evals/rust/depth/results/2026-11-19-rust-decisions) include both useful changes and cases where the reviewer kept the source.
+
 ## 3.36.3 — 2026-11-16
 
 Distill Super Review 3.36.3 Rust lenses, crate reference notes, frontend/Spring contexts, and `existing-helpers` profiles from textbook syntax catalogs, minor-version release tables, and duplicated prose to semantic intent, boundary equivalence, and co-located `Keep when` rules, and eliminate all em-dashes across agent-facing instructions while keeping all 56 stable rule IDs unchanged.
