@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.36.5 — 2026-11-19
+
+- Performance Review 0.10.3 checks owned UTF-8 conversions against the project's minimum Rust version and preserves lossy decoding on malformed input.
+- The [Rust performance evaluation](https://github.com/Dankosik/super-review/tree/v3.36.5/evals/agent-patterns/results/2026-11-19-rust-perf) separates cached assignments from derived values, temporary owners from required snapshots, and abandoned Tokio work from shared completion. The extra cache prompt produced the same decisions as the baseline in the four paired cases.
+
 ## 3.36.4 — 2026-11-19
 
 - Rust function-cohesion reviews now consider whether a callback owns a policy that callers could use by name. In the outbox comparison, the revised reviewer identified the retry classification inside the publication handler and retained the version with a named mapper.

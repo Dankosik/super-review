@@ -1,6 +1,7 @@
 {
   "kind": "evaluator-only",
-  "status": "NOT RUN",
+  "status": "PARTIAL",
+  "reader_stage_results": "results/2026-11-19-rust-perf/README.md",
   "baseline_revision": "0fb601394c6035072aed5391f4f55c2563614b17",
   "contrast_pairs": [
     ["AP01", "AP02"],
@@ -20,7 +21,10 @@
     ["AP29", "AP30"],
     ["AP31", "AP32"],
     ["AP33", "AP34"],
-    ["AP35", "AP36"]
+    ["AP35", "AP36"],
+    ["AP37", "AP38"],
+    ["AP39", "AP40"],
+    ["AP41", "AP42"]
   ],
   "cases": [
     {
@@ -316,8 +320,8 @@
       "polarity": "report",
       "decision": "unbuffered serde_json reader, per-comparison sort_by_key allocations, eager ok_or formatting, per-call regex captures slot allocation and owned-key HashMap entry hits reported",
       "checks": [
-        "Traces unbuffered File passed to serde_json::from_reader, sort_by_key running to_ascii_lowercase across O(N log N) comparisons, and ok_or eagerly formatting on present tags",
-        "Traces CODE_RE.captures allocating capture slots on every call where is_match suffices and routes.entry(rec.tenant.clone()) allocating a String on every cache hit while leaving kept buckets.unwrap_or(Vec::new()) and disabled tracing::debug! unflagged"
+        "Traces unbuffered File reads, per-comparison lowercase and optional-tag sort keys, and eager error formatting on present tags. Preserves stable order by folded code then decoded tag.",
+        "Traces per-call capture slots and the redundant clone of the owned tenant in entry. Moving that key into the table preserves the first accepted assignment, including a later record with a different shard. Keeps the empty Vec fallback and disabled tracing."
       ]
     },
     {
@@ -325,8 +329,8 @@
       "polarity": "retain",
       "decision": "Cow-borrowed slice deserialization, zero-allocation ASCII comparator, lazy ok_or_else, regex is_match and borrowed HashMap hit lookup retained without false positives",
       "checks": [
-        "Verifies serde_json::from_slice borrows private Cow<'_, str> fields while preserving escaped-string decoding, sort_by compares ASCII bytes without allocating, ok_or_else defers formatting, CODE_RE.is_match allocates nothing, and routes.get borrows &str on hits",
-        "Does not flag kept buckets.unwrap_or(Vec::new()), worker-cached LazyLock<Regex>, or disabled tracing::debug! macro arguments"
+        "Checks borrowed slice deserialization with escaped-string decoding, the non-allocating ASCII comparator, lazy error formatting, match presence without capture slots and the borrowed-key hit path.",
+        "Retains first-assignment routing across manifests, including conflicting later assignments. Leaves the empty Vec fallback, compiled regex and disabled tracing in place."
       ]
     },
     {
@@ -345,6 +349,60 @@
       "checks": [
         "Verifies reqwest::Client is used directly via &self and drains the scale body before CPU work, rules uses RwLock with org_rules dropping the read guard at the let semicolon and replace_rules dropping the old map after unlocking, rayon::spawn + oneshot offloads par_iter without blocking Tokio worker or blocking-pool threads, and UNNEST batches all inserts atomically in one constant prepared statement",
         "Reports no contention, executor-blocking or N-round-trip finding"
+      ]
+    },
+    {
+      "id": "AP37",
+      "polarity": "report",
+      "decision": "Compute every shard directly from the byte length.",
+      "checks": [
+        "Shows every entry originates solely from the key length; a hit hashes a tenant to avoid reading its length and taking a fixed remainder.",
+        "Removes the table and its lookups, preserving output order, multiplicity, empty and UTF-8 names and the original integer expression. Changing only the hasher misses the saving."
+      ]
+    },
+    {
+      "id": "AP38",
+      "polarity": "retain",
+      "decision": "Keep the direct per-tenant calculation.",
+      "checks": [
+        "Recognizes constant work per output apart from materializing the required return values.",
+        "Does not introduce memoization for repeated names or deduplicate ordered results."
+      ]
+    },
+    {
+      "id": "AP39",
+      "polarity": "report",
+      "decision": "The command-local snapshot keeps a second strong owner alive through every successful edit, copying the entire flags slice even when readers are absent",
+      "checks": [
+        "Traces the handle clone in snapshot and the distinct payload copy in make_mut. The local Snapshot survives its last length read. For S slots and K successful toggles without readers, that lifetime causes K copies of S bytes, including N squared bytes for N commands on an N-slot board.",
+        "Borrows the length directly or ends the local snapshot before mutation. Keeps the invalid-index error, immediate bit toggle and any immutable snapshots held by external readers."
+      ]
+    },
+    {
+      "id": "AP40",
+      "polarity": "retain",
+      "decision": "Unique ownership permits an in-place toggle and a reader of the current version requires detachment on the first successful edit",
+      "checks": [
+        "Follows the reader-held strong handle to the original version. Its first overlapping edit must preserve those bytes, and later edits can be in place while the reader continues to hold the already-detached version. The fixed-length image changes at one byte, with no intermediate buffer.",
+        "Traces rejection before mutation and reports no avoidable repeated payload copy on the sole-owner path."
+      ]
+    },
+    {
+      "id": "AP41",
+      "polarity": "report",
+      "decision": "The timed-out reply waiter keeps tracking batch progress after losing its only result consumer.",
+      "checks": [
+        "Traces timeout dropping the owned join handle: its final_total task can keep a watch subscription and wake on progress changes until the feed finishes or closes. The separate ledger task already delivers the required receipt.",
+        "Stops or eliminates only the reply waiter, preserving independent ledger delivery after deadline or caller departure and the caller's success, closed-feed, deadline and worker-error outcomes. Credit a supported tradeoff when earlier receiver drop changes what the producer can observe; watch notifications can coalesce."
+      ]
+    },
+    {
+      "id": "AP42",
+      "polarity": "retain",
+      "decision": "Keep the shared completion worker alive after its caller times out.",
+      "checks": [
+        "Follows final_total through ledger.send(total): the same worker supplies both the response and an independently awaited completion receipt, including when the caller stops waiting.",
+        "Recognizes that aborting the worker on timeout or caller departure can lose the ledger receipt. The caller's deadline can still bound its own wait."
       ]
     }
   ]

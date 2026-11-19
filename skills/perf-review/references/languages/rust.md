@@ -55,10 +55,11 @@ documentation, or the resolved dependency version rather than memory.
   `to_ascii_lowercase()` allocations (**finding** on ASCII inputs; keep Unicode
   case conversion on general text because non-ASCII characters can fold into
   ASCII). `str::replace` copies non-empty strings even on zero matches, and
-  `String::from_utf8_lossy(b).into_owned()` copies valid UTF-8 where borrowing
-  `Cow::Borrowed` or converting an owned `Vec<u8>` via `String::from_utf8` with a
-  lossy `Err` fallback (`from_utf8_lossy_owned` from Rust 1.87) avoids the
-  allocation (**finding**). Hoist `Regex::new`; prefer `is_match` or `find` over
+  `String::from_utf8_lossy(b).into_owned()` copies nonempty valid UTF-8.
+  Borrow the valid text or reuse an owned input buffer while preserving
+  replacement of malformed sequences. Check owned conversion APIs such as
+  `from_utf8_lossy_owned` against the project's MSRV and verify buffer reuse
+  on the claimed path. Hoist `Regex::new`; prefer `is_match` or `find` over
   `captures` (which allocates capture slots on hits and misses alike) when
   capture groups go unread, and `RegexSet` over `M`-regex loops when byte spans
   and captures go unread (**finding**).
