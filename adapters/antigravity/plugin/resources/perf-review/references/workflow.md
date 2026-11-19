@@ -3,193 +3,152 @@
 For the orchestrator. Readers and challengers work from
 [the contract](contract.md).
 
-## Source
+## 1. Pin source and gather context
 
-Read the source where it is. For local scope, read the working tree and note
-HEAD. Local changes are what the user names: uncommitted work against HEAD,
-or a branch against its merge-base with the main branch. When the request
-does not say, take the branch together with its uncommitted work.
+1. **Pin the target without modifying the tree.**
+   - Local scope: read the working tree and record `HEAD`. For local changes,
+     take uncommitted work against `HEAD` or the branch against its merge-base
+     with main (when unspecified, branch plus uncommitted work).
+   - PR: read files at the head commit and diff from merge-base without
+     checking out. Fetch missing PR commits if possible (adds objects only);
+     otherwise read via GitHub and note in the report that code outside changed
+     files could not be searched.
+   - Named branch or ref not checked out: resolve it once to a commit and give
+     readers that commit, not the branch name.
+   - Before writing the final report on a local tree, re-check `HEAD` and the
+     status of scoped files; list any files that changed mid-review.
+2. **Locate load evidence, manifests, and local source roots once.**
+   - Load evidence: repo benchmarks, load/latency/throughput docs, and any
+     user-supplied profile, flamegraph, or benchmark output.
+   - Manifests: build and dependency baseline manifests (crate and workspace
+     `Cargo.toml` and `Cargo.lock`, `go.mod`/`go.sum`,
+     `package.json`/`tsconfig.json` and lockfile, or `pom.xml`/Gradle manifests)
+     plus any on-disk dependency or standard library source root already present
+     (`vendor/`, `~/.cargo/registry/src`, installed Rust `rust-src` /
+     `rust-docs`, `node_modules/`, `GOMODCACHE`/`GOROOT`).
+   - Hand both lists to every reader and challenger as context only, never as a
+     list of hot paths or suspected waste. Read-only semantic navigation (LSP,
+     `ast-grep`, symbol indexes) may locate callers and dispatch targets; read
+     every trace step in full source before citing it.
+3. **For whole-project source, also locate where work enters the program.**
+   - Find handlers, route/page renders, interactive UI event or animation-frame
+     paths, stream/message consumers, CLI dispatch loops, scheduled jobs,
+     library public entries, benchmark targets, and supplied profile frames.
+   - Readers get the packages and modules those entries reach; list entries and
+     unreached code in the report. (For PR or local changes, scope stays the
+     change.)
+   - **Early stop:** When no entry in the scope runs per unit of work (startup,
+     wiring, and shutdown only), start no readers; report the entries, how
+     often each runs, and where per-unit work runs instead. Code registered to
+     run per unit (handlers, jobs) counts as per-unit work.
 
-For a PR, read files at the head commit and take the change from the
-merge-base, without checking anything out. When the PR's commits are not in
-the local repository, fetch them: that adds objects and moves no branch or
-working file. If you cannot, read through GitHub and say in the
-report that code outside the changed files could not be searched.
-
-When the user names a branch or commit that is not checked out, such as the
-main branch, resolve it once to a commit and give readers that commit, not
-the name: a branch can move during the review.
-
-Other sessions may change a local tree while agents read it. Before the
-report, check HEAD and the status of the scope's files again. If either
-changed, name the changed files in the report: findings in them may rest on
-two versions.
-
-Locate once where evidence of load lives for the reviewed area: benchmarks
-in the repository, documents that state load, latency or throughput
-targets, and any profile, flamegraph or benchmark output the user supplied.
-Every reader gets the same list. It says where evidence of what runs often
-lives; it is not a list of hot paths or suspected waste. Read-only semantic
-navigation (LSP references and implementations, `ast-grep`, or existing symbol
-indexes) may locate callers and dynamic dispatch targets; read every step of a
-trace in the source files in full before citing it.
-
-For whole-project source, also locate where work enters the program: request
-handlers, route/page renders, interactive UI event or animation-frame paths,
-message or stream consumers, the main loop or command dispatch of a
-command-line tool, scheduled jobs, the public interface of a library, the
-functions the repository's benchmarks call and the frames of a supplied
-profile. Readers get the packages and modules those entries reach. List the
-entries in the report, and the code they do not reach as not reviewed, so a
-missing entry shows. An entry says where work starts, not which path is hot.
-For a PR or local changes, the scope stays the change.
-
-When no entry in the scope runs per unit of work, because the scope only
-starts, wires and stops a long-lived program, start no readers. Report the
-entries, how often each runs and where the per-unit work runs instead. Code
-the scope registers to run per unit, such as a handler or a job, is per-unit
-work.
-
-## Lenses
+## 2. Select lenses and partition
 
 | Lens | Asks | Selected when the area has |
 | --- | --- | --- |
-| [complexity](lenses/complexity.md) | Does the work grow with the input faster than the result needs? | Loops, searches, sorts, collections, per-row renders, growing-stream parses or parallel iterators over input whose size callers set. |
-| [allocation](lenses/allocation.md) | Does each unit allocate, copy or initialize more than it keeps or reads? | Owned values, deep clones, per-frame scratch objects, copied worker buffers, fresh subscriber collections or fixed-capacity storage built per element, tick or request. |
-| [async](lenses/async.md) | Does async code keep the executor free and run independent waits together? | `async` code, route loaders/Server Components, client fetch chains, frame/timer loops, spawned tasks, async locks. |
-| [io](lenses/io.md) | Does each unit cost more round trips, system calls or connections than it needs? | Database, network, file, inter-process, browser storage, server-to-client serialization or DOM layout/style calls. |
+| [complexity](lenses/complexity.md) | Does the work grow with the input faster than the result needs? | Loops, searches, sorts, collections, per-row renders, growing-stream parses or parallel iterators over caller-sized input. |
+| [allocation](lenses/allocation.md) | Does each unit allocate, copy or initialize more than it keeps or reads? | Owned values, clones, per-frame scratch storage, copied buffers, fresh subscriber values or fixed-capacity storage built per unit. |
+| [async](lenses/async.md) | Does async code keep the executor free and run independent waits together? | `async` code, route loaders/Server Components, fetch chains, frame/timer loops, spawned tasks, async locks. |
+| [io](lenses/io.md) | Does each unit cost more round trips, system calls or connections than it needs? | Database, network, file, IPC, browser storage, server-to-client serialization or DOM layout/style calls. |
 | [contention](lenses/contention.md) | Do concurrent callers wait on each other more than the shared state requires? | Locks, atomics, channels, cross-tab locks or pools shared across requests, tabs, workers or threads. |
-| [repeated-work](lenses/repeated-work.md) | Is work that gives the same answer every time done again on each pass? | Compilation, parsing, configuration reads, barrel initialization, coarse UI subscriptions, per-row observers/portals or invariant derivations on a hot path. |
+| [repeated-work](lenses/repeated-work.md) | Is work that gives the same answer every time done again on each pass? | Compilation, parsing, config/env reads, barrel init, coarse UI subscriptions, per-row setup or invariant derivations on a hot path. |
 
-Select every lens whose signal is present, and say which were left out and
-why. A small change is not a reason to drop one.
+Select every lens whose signal is present and state which were omitted and why
+(never drop a lens just because a change is small).
 
-One lens per reader. For a small change, about three hundred changed lines
-or fewer in one package, or a package of about a thousand lines reviewed
-whole, give one reader a related pair instead: complexity with allocation,
-async with contention, io with repeated-work. A paired reader runs each lens's
-full pass and reports each lens's coverage separately; finishing one never
-closes its partner. Partition mixed-language scopes by language, and split a
-large scope or lens along vertical call spines (`entry -> domain -> store`)
-rather than horizontal directory slices when its files are more than one reader
-can read in full: a reader that skims loses the lines it skipped, and a reader
-follows calls across partition boundaries when tracing a hot path. Readers
-overlap on purpose, and merging is yours.
+Assign one lens per reader. For a small change (~300 changed lines or fewer in
+one package) or a whole package of ~1,000 lines, pair related lenses instead:
+complexity with allocation,
+async with contention, io with repeated-work. Each paired reader runs both full
+passes and reports coverage separately. Partition mixed-language scopes by
+language, and split large scopes along vertical call spines
+(`entry -> domain -> store`) when one reader cannot read all files in full.
+Readers overlap on purpose; you merge their outputs.
 
-## Readers
+## 3. Run fresh readers
 
-Start each reader in a fresh context with nothing from this conversation or
-from other readers. Give it the target and revision, its lens or pair, the
-exact files, for a change review the change itself with its removed lines
-(supplied directly in the packet when readers lack Git or shell access),
-the located evidence of load, for a whole project the entries, and the
-paths of the contract, its lens, the matching language context
-([Go](languages/go.md), [TypeScript](languages/typescript.md),
-[Rust](languages/rust.md) or [Java](languages/java.md)) and the
-[result format](../assets/finding-template.md). Never give it an expected
-inefficiency, a suspected line or another reader's result, nor what was
-settled before this review: earlier findings or fixes, decisions to respect,
-severity. A reader that inherits conclusions repeats them.
+Start each reader in a fresh context with no conversation history and no peer
+results. Supply: target and pinned revision, assigned lens or pair, exact files
+(plus the diff with removed lines inline when readers lack Git/shell access),
+located load evidence, manifests and on-disk source roots, entries (for whole
+projects), and paths to [the contract](contract.md), its lens, the matching
+language context ([Go](languages/go.md), [TypeScript](languages/typescript.md),
+[Rust](languages/rust.md) or [Java](languages/java.md)), and
+[the result format](../assets/finding-template.md). Never supply suspected
+waste, prior findings, decisions to respect, or severity.
 
-Run up to eight agents at once unless the user sets another limit, honoring any
-explicit user reader/challenger model or effort override through supported
-native configuration.
+Run up to eight agents concurrently unless the user overrides the limit,
+honoring explicit user model/effort overrides through native configuration. If
+a reader leaves files in its scope unread, dispatch one fresh retry for that
+lens with only the unread files; anything still unread goes in the report.
 
-Read each reader's list of what in its scope it could not read. Give that
-part, once, to a fresh reader with the same lens and only those files. What
-is still unread goes in the report.
+## 4. Merge and challenge
 
-## Challenge
+Merge candidates with the same root cause across readers, preserving each
+cost's trace. Before launching challengers, run a cross-seam pass across shard
+boundaries for cross-module repackaging, N+1 calls behind interfaces, and
+caches/batches/indexes removed in a change whose callers lived in another
+partition; add any traced candidate you find to the matching lens's challenge.
 
-First merge candidates with the same cause, from any readers, keeping each
-trace. One cause often shows up through several lenses, such as a clone of a
-large map inside a lock that both allocates per request and keeps every
-other caller waiting for the copy: report it as one candidate with each
-cost's trace. Before launching challengers, run your own cross-seam pass across
-the boundaries between shards: cross-module repackaging, N+1 calls hidden
-behind repository interfaces, and caches, batches or indexes removed in `D..H`
-whose callers lived in another partition. Any candidate you find yourself while
-reading, with a trace, joins the others here and goes to the challenger of the
-lens it belongs to.
-Every candidate with a trace goes to a fresh challenger, one per reader
-task; a merged candidate goes to only one of them. Give it the same
+Send every traced candidate to a fresh challenger (one per reader task; a
+merged candidate goes to one challenger). Give it the same
 materials, lens included, plus [the challenge](challenge.md), and for each
-candidate only the location, hot path, cost trace, cheaper form and
-resource. Strip the reader's reasoning, its notes and its confidence. A
-trace the reader left incomplete is not one: finish the missing step from
-the source yourself before the challenge, or the candidate is unproven. Do
-not hand a challenger the job of completing it.
+candidate only location, hot path, cost trace, cheaper form, and resource.
+Strip the reader's reasoning, notes, and confidence. Never ask a challenger to
+finish an incomplete trace: complete a missing step from source yourself first,
+or mark the candidate unproven.
 
-## Decide
+## 5. Decide
 
-You own the decision on every candidate. A reader's confidence, a
-challenger's tone or agreement between agents is not evidence.
+You own every decision. Confidence, tone, or agreement between agents is not
+evidence.
 
-- **Walk each trace yourself.** Every quoted line is there, each step does
-  the work it claims for one unit, nothing rests on unread code, the
-  multiplier really reaches this code, the counts before and after follow
-  from the steps, and the cost of an operation the form makes cheaper rests
-  on the basis the claim names. A step about behavior that neither you nor the
-  challenger read in source or documentation, the standard
-  library's and the runtime's included, rests on memory, and the candidate
-  is unproven. Read missing code yourself when it is at hand; do not
-  rewrite the trace into a different claim.
-- **Check the hot path.** Its basis is a caller, a loop, a document, a
-  measurement or the user's words. Code that looks central is not a basis.
-- **Check the cheaper form.** Walk it through the inputs the entry admits:
-  empty, one, duplicates, a failure halfway, a dropped future or cancelled
-  context. Check that it builds within the project's `rust-version`, features
-  and targets (or its Go, TypeScript or Java language and dependency baseline).
-  Name everything it changes. When you see a form that removes more of the work,
-  such as a borrow where the reader reserved capacity, use it instead; check
-  the new form the same way, yourself or through the challenger.
-- **Check findings on one path together.** Cheaper forms that each keep
-  behavior can lose it together, when one relies on a check, an order or a
-  value another removes. Walk the forms that touch one function or path
-  applied together. When they conflict, say which to apply, or give a
-  combined form that keeps behavior.
-- **Weigh the challenge as an argument, not a ruling.** A `falls` needs
-  specific quoted counter-evidence; check it. "The compiler optimizes this"
-  defeats nothing without a profile, a benchmark or a documented guarantee.
-  A `stands` with no account of what was tried is no challenge. A
-  `tradeoff` needs the change named and who would notice it.
-- **Settle disagreements.** On a fact, from the source. On whether a change
-  in behavior is acceptable when both have the facts right, the candidate
-  is a tradeoff.
+- **Walk each trace yourself.** Confirm every quoted line, each step's work per
+  unit, that the multiplier reaches this code, and that counts or per-operation
+  costs follow from the trace. Any step resting on unread source or docs
+  (including stdlib/runtime) is unproven; read missing local source yourself,
+  without rewriting the trace into a different claim.
+- **Check the hot path.** Require a source, document, measurement, or user
+  basis; looking central is not a basis.
+- **Check the cheaper form.** Walk empty, single, duplicate, halfway-failure,
+  dropped-future, and cancelled-context inputs. Confirm it builds within the
+  project's language, runtime, feature, and target baseline, and name every
+  change. If you see a strictly cheaper behavior-keeping form, check it the
+  same way (yourself or via challenger).
+- **Check findings on one path together.** Walk combined forms on the same
+  function or path; resolve conflicts or give a combined behavior-keeping form.
+- **Weigh the challenge as an argument, not a ruling.** Verify quoted
+  counter-evidence on `falls`, reject optimizer speculation without a profile,
+  benchmark, or documented guarantee, reject an unbacked `stands`, and require
+  named changes and affected parties on `tradeoff`.
+- **Settle disagreements.** Settle facts from source; when facts agree and
+  acceptability of a behavior change is contested, classify as `tradeoff`.
 
 | Outcome | When |
 | --- | --- |
-| finding | Hot path shown, cost trace confirmed, the cheaper form keeps behavior, the saving is not hidden; the challenge stood or its `falls` was refuted. |
+| finding | Hot path shown, cost trace confirmed, cheaper form keeps behavior, saving is not hidden, and challenge stood (or `falls` refuted). |
 | tradeoff | As a finding, but the cheaper form changes something the team must weigh. |
-| unproven | A step is missing, the hot path has no basis yet, or no challenge was carried out. |
-| rejected | The path is not hot, the work is not done, the cheaper form changes what callers rely on, a larger cost hides the saving, or out of scope. |
+| unproven | Missing trace step, missing hot-path basis, or no challenge run. |
+| rejected | Not hot, work not done, cheaper form breaks relied-on behavior, saving hidden by dominant cost, or out of scope. |
 
-Rank what stood by the work it removes per unit: a change of complexity
-class first, then a round trip, system call or blocking wait per element,
-then an allocation or copy per element, then constant work per request.
-Within a class, the larger multiplier first. Constant work per request is
-reported compactly. A candidate unproven only for want of evidence that its
-path is hot becomes a question to the user in the report. Finish deciding,
-ranking and checking siblings before drafting the report.
+Rank surviving findings by work removed per unit: a change of complexity class
+first, then a round trip, system call or blocking wait per element, then an
+allocation or copy per element, then constant work per request (larger
+multiplier first within a class; constant work reported compactly). Candidates
+unproven solely for want of hotness evidence become questions to the user.
+Finish deciding, ranking, and checking siblings before drafting the report.
 
-## Siblings
+## 6. Check siblings and report
 
-Look for siblings of each finding that stood. Waste written once is often
-written again: the same compilation in another handler, the same query per
-item in another repository method, the same copy in a neighboring loop, the
-read and write paths of one cache. Search the repository for such places.
-Give those in the scope to one fresh reader with that finding's lens, the
-finding as the pattern to test and the places as its files. This is the one
-task that gets a known finding. A sibling needs its own hot path, trace and
-challenge; one outside the change is reported once as pre-existing. A
-sibling in code the user's narrowing left out gets no reader or challenge:
-name it in one line with its location and the finding it repeats. Decide
-siblings as above.
+Search the repository for siblings of each surviving finding (same compilation,
+query-per-item, copy, or read/write cache pattern elsewhere). Give in-scope
+siblings to one fresh reader with that finding's lens, the finding as pattern,
+and those files (the sole task that receives a known finding); each sibling
+still needs its own hot path, trace, challenge, and decision (pre-existing if
+outside the change). A sibling in code the user's narrowing left out gets no
+reader or challenge: list it in one line with location and repeated finding.
 
-## Report
-
-Use [the report template](../assets/report-template.md). Report every
-finding and tradeoff that stood; do not cut the list to fit a length. A
-reader that returned nothing is unread coverage, not a clean result. No
-findings is a valid outcome; say what was read, and do not claim the code
-is fast.
+Deliver [the report template](../assets/report-template.md) with every
+surviving finding and tradeoff (never truncate to fit length). A reader
+returning nothing is unread coverage, not a clean pass. Zero findings is a
+valid outcome: state what was read without claiming the code is fast.

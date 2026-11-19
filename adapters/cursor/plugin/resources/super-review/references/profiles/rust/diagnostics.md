@@ -16,16 +16,15 @@ and why, without opening the code?
   layer names its own operation and subject.
 - An error is logged in a form that drops its causes, such as an
   `anyhow::Error` through `{}` or `%err` (anyhow's formatting rules).
-- An `expect` message restates the failure instead of why the value should be
-  there (std's guidance on `expect` messages). Whether that path should return
-  an error is a decision outside this profile; the message is not.
+- An error event is logged locally while the same error is returned to a caller
+  that reports it again, duplicating the output operators read.
 - One field is spelled differently across the changed events, so a search for
   it misses events. This is house consistency, not a tracing convention.
 
-The [error crates](../../rust/errors.md) and [tracing](../../rust/tracing.md)
-notes cover `Display` versus `source`, message form, event fields and which layer
-reports a failure; apply them where implicated. This profile adds the reader's
-view: whether the text that comes out identifies the failure.
+Apply the `rationale with diagnostics` sections of
+[error crates](../../rust/errors.md) and [tracing](../../rust/tracing.md) where
+those crates are implicated (`expect`/`assert!`/`unreachable!` invariant wording
+already sits in this profile's owner, `rationale`).
 
 Error text can be a contract. Callers may match `Display` output, and alerts and
 log queries may match event messages or fields. Inspect available consumers

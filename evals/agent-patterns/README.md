@@ -20,8 +20,12 @@ animations, unpartialized synchronous `localStorage` persistence with coarse
 per-row store subscriptions on streaming UIs, one-shot `isVisible()`
 false-green UI tests, and Rust hot-path blind spots such as `HashMap::entry`
 owned-key allocations on cache hits, `sort_by_key` per-comparison allocations,
-unbuffered `serde_json::from_reader`, `Mutex`-wrapped connection pools, and
-`match`/`if let` scrutinee lock guards held across Rayon/SQL batch work).
+unbuffered `serde_json::from_reader`, `Mutex`-wrapped connection pools,
+`match`/`if let` scrutinee lock guards held across Rayon/SQL batch work,
+quadratic front `Vec::drain(..frame_len)` shifts, `serde_json::json!({...})`
+and owned composite lookup keys, `#[derive(Clone)]` `Arc` refcount contention
+with `DashMap::len()` / held `Ref` guards in `rayon::par_iter()`, and
+unbuffered `writeln!` / chained `stat` / loop-invariant `env::var` calls).
 
 This contrasting corpus exercises those decisions across all four skills
 (`super-review`, `defect-review`, `test-review`, `perf-review`) and all four
@@ -29,7 +33,7 @@ supported languages (`Go`, `TypeScript`, `Rust`, `Java`).
 
 ## Isolation protocol
 
-- `inputs.json` contains neutral single-case packets (`AP01`–`AP42`),
+- `inputs.json` contains neutral single-case packets (`AP01`–`AP50`),
   each with pinned file contents (and an explicit `diff` when the case is a
   change review). Supply at most one input object per fresh agent run together
   with the canonical skill contract, matching language context, assigned lens or
@@ -38,7 +42,10 @@ supported languages (`Go`, `TypeScript`, `Rust`, `Java`).
   contrast pairs (positive finding vs clean retention/rejection control) and
   records the checkable grading criteria.
 - Status is `PARTIAL`. The [Rust performance reader probes](results/2026-11-19-rust-perf/README.md)
-  cover first-assignment routing, derived values, copy-on-write and task lifetime.
-  They exercise one assigned lens at a time. The full corpus and end-to-end
-  review workflow remain unevaluated here. Mechanical checks in
-  `tests/agent-patterns.test.ts` cover packet isolation, pair identities and packaging.
+  cover first-assignment routing, derived values, copy-on-write and task lifetime,
+  and the [Rust performance depth and challenger probes](results/2026-11-19-rust-perf-depth/README.md)
+  cover `AP35`–`AP36`, `AP43`–`AP50`, and six broken-cheaper-form challenger traps.
+  They exercise isolated readers and challengers on synthetic modules. The full
+  corpus and end-to-end production repository workflows remain unevaluated here.
+  Mechanical checks in `tests/agent-patterns.test.ts` cover packet isolation,
+  pair identities and packaging.

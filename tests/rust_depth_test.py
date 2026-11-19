@@ -12,8 +12,9 @@ DELIVERIES = (
     ROOT / "adapters/claude/plugin/resources/super-review",
     ROOT / "adapters/codex/super-review/skills/super-review",
     ROOT / "adapters/cursor/plugin/resources/super-review",
+    ROOT / "adapters/antigravity/plugin/resources/super-review",
 )
-MECHANISMS = ("tokio", "serde", "clap", "axum", "errors", "tracing")
+MECHANISMS = ("tokio", "serde", "clap", "axum", "sqlx", "errors", "tracing")
 TOUCHED = (
     "references/languages.md",
     "references/languages/rust.md",
@@ -28,9 +29,11 @@ TOUCHED = (
     "references/lenses/rust/rationale.md",
     "references/lenses/rust/representation.md",
     "references/profiles/rust/dependency-boundaries.md",
+    "references/profiles/rust/diagnostics.md",
     "references/profiles/rust/error-expression.md",
     "references/profiles/rust/existing-helpers.md",
     "references/profiles/rust/lifecycle-ownership.md",
+    "references/profiles/rust/unused-surface.md",
     *(f"references/rust/{name}.md" for name in MECHANISMS),
 )
 
@@ -85,6 +88,29 @@ class RustDepthIntegrity(unittest.TestCase):
         for name in MECHANISMS:
             self.assertIn(f"../rust/{name}.md", context)
             self.assertTrue((SKILL / f"references/rust/{name}.md").is_file())
+
+    def test_library_context_owners_match_note_headings(self):
+        context = (SKILL / "references/languages/rust.md").read_text()
+        rows = re.findall(
+            r"^\| [^|]+ \| ([^|]+) \| \[[^\]]+\]\(\.\./rust/([a-z]+)\.md\) \|$",
+            context,
+            flags=re.MULTILINE,
+        )
+        self.assertEqual(len(rows), len(MECHANISMS))
+        for owners_cell, name in rows:
+            note = (SKILL / f"references/rust/{name}.md").read_text()
+            headings = set(re.findall(r"^## (.+)$", note, flags=re.MULTILINE))
+            for entry in (part.strip() for part in owners_cell.split(";")):
+                expected = entry.replace("/", " with ") if "/" in entry else entry
+                self.assertIn(
+                    expected,
+                    headings,
+                    f"references/rust/{name}.md missing '## {expected}' for owner '{entry}'",
+                )
+        languages = (SKILL / "references/languages.md").read_text()
+        self.assertIn("rust/*.md", languages)
+        self.assertIn("workspace-internal crates", languages)
+        self.assertIn("publish = false", context)
 
     def test_touched_skill_delivery_is_byte_identical(self):
         for path in TOUCHED:

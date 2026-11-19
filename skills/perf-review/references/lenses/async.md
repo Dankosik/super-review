@@ -5,66 +5,54 @@ together?**
 
 ## Expect
 
-- Code on an executor thread reaches its next `.await` soon. Blocking I/O,
-  sleeping, waiting on a contended blocking lock and long CPU work run
-  elsewhere: `spawn_blocking`, a dedicated thread, a compute pool.
-- Awaits whose inputs do not depend on each other run concurrently, with a
-  bound when their number comes from input.
-- A lock guard held across an `.await` on a hot path guards something that
-  needs the wait inside the critical section.
-- A spawned task carries enough work to be worth the spawn.
+- Code on an executor or event-loop thread reaches its next yield point soon.
+  Blocking I/O, sleeping, contended blocking locks, and long CPU work run off
+  the executor on a blocking or compute pool.
+- Independent waits run concurrently, with a concurrency bound when their count
+  comes from input.
+- A lock guard held across an `.await` on a hot path guards state that needs
+  the wait inside the critical section.
+- A spawned task carries enough work to justify scheduling it, and does not
+  outlive its sole consumer needlessly.
 
 ## Look for
 
-On each async hot path, list the calls that can take long without yielding
-and the awaits that do not use each other's results.
+On each async or event-driven hot path, list calls that can block without
+yielding, independent waits serialized in order, and tasks or timers outliving
+their need.
 
-- Blocking call on an async executor, event loop or non-blocking scheduler:
-  `std::fs`, `std::net`, Node `*Sync` I/O, synchronous crypto/compression or
-  data-parallel pools (`par_iter`) blocking an async worker thread, blocking
-  JDBC/HTTP on a reactive thread, virtual-thread carrier pinning on older
-  runtimes, `std::thread::sleep`, `block_on` inside async code, synchronous
-  canvas/image encoding or storage writes on a UI thread, or
-  parsing/serializing large payloads inline on a shared event loop.
-- Sequential awaits for independent operations: two lookups awaited one after
-  the other, an `await` placed before a branch or streaming boundary that does
-  not read its result, client mount-then-fetch chains where parent Effects gate
-  child fetches, or a loop that awaits each item's request before sending
-  the next, where `join!`, `try_join!`, `JoinSet`, `FuturesUnordered`,
-  `buffer_unordered`, bounded `Promise.all`, `errgroup` or structured
-  concurrency would overlap them.
-- Uncoalesced sub-frame events, uncancelled superseded reads, or idle loops:
-  running per-frame work on raw sub-frame input or multiple uncoordinated event
-  sources within one frame without coalescing, leaving superseded in-flight
-  reads downloading and parsing on rapid input, keeping an animation or timer
-  loop active after work settles or while offscreen/hidden, or recreating
-  timers and stateful secondary futures on every turn of a hot `select!` loop.
-- Lock held across `.await` or async suspension: an async `Mutex`, `RwLock` or
-  semaphore permit alive across a network call, so every caller queues behind
-  one request's latency.
-- Task or goroutine per tiny item: a spawned task, goroutine or virtual thread
-  per element for work smaller than scheduling it, or spawned and joined at
-  once.
-- `spawn_blocking` per element in a tight loop, where one blocking task for
-  the batch would do.
+- **Blocking work on an async executor or event loop**: synchronous file,
+  network, storage, crypto, compression, large serialization, or data-parallel
+  pool calls running inline on worker or UI threads, or carrier-thread pinning.
+- **Sequential independent waits**: awaits that do not depend on each other's
+  results, awaits placed before a branch that ignores them, mount-then-fetch
+  waterfalls, or per-item loops awaiting each remote call before starting the
+  next.
+- **Uncoalesced events, stale work, and recreated timers**: running multiple
+  passes per paint on raw sub-frame input, leaving superseded reads running on
+  rapid input, keeping idle animation/timer loops running when settled or
+  offscreen, recreating timers or stateful futures every turn of a hot `select`
+  loop, or detached spawned tasks (dropped `JoinHandle`) continuing work after
+  their sole consumer times out or cancels.
+- **Lock held across an async suspension**: an async lock or permit kept alive
+  across a network or disk wait, queueing concurrent callers behind one wait.
+- **Task or offload per tiny item**: spawning a task, goroutine, or blocking
+  pool hand-off per element where batching or inline work avoids scheduling
+  overhead.
 
 ## Not a finding
 
-- A blocking call that already runs off the executor: inside
-  `spawn_blocking`, on a dedicated thread, before the runtime serves
-  requests, or under `block_in_place`. Check which thread runs it.
-- A `std::sync::Mutex` held briefly with no `.await` inside. The Tokio
-  documentation prefers it to the async mutex there; switching to the async
-  one adds cost.
-- Sequential awaits where one needs the other's result, or where the order
-  is required: a transaction, a protocol, a rate limit.
-- Overlapping awaits against something that serializes them anyway, such as
-  one connection or a pool of one: the wait does not shrink.
-- Overlapping operations that have effects, offered as a plain gain. Run
-  sequentially, the second never starts when the first fails; overlapped
-  with `try_join!` or a `JoinSet`, it has started and may have taken
-  effect. That is a tradeoff.
-- Delaying user-visible updates via `debounce`, `throttle`, `startTransition`
-  or `useDeferredValue`, or turning a synchronous call into an async `Worker`
-  message, offered as a plain gain: each changes observable timing or the call
-  contract, so it is a tradeoff.
+- Blocking work that already runs off the executor (blocking pool, dedicated
+  thread, startup before serving, or `block_in_place` on a multi-threaded
+  runtime; never propose `block_in_place` where a `current_thread` runtime can
+  run it). Verify which thread runs it.
+- A brief synchronous lock with no `.await` inside: switching it to an async
+  lock adds overhead.
+- Sequential waits required by data dependency, ordering, transactions,
+  protocols, or rate limits, or overlapping waits against a resource that
+  serializes them anyway (one connection or pool of one).
+- Overlapping operations with side effects offered as a plain gain: when the
+  first fails, the second has already started. That is a tradeoff.
+- Delaying user-visible updates (debounce, throttle, deferred transitions) or
+  turning a synchronous call into an async message offered as a plain gain:
+  each changes observable timing or the call contract, so it is a tradeoff.

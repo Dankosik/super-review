@@ -1,8 +1,10 @@
 # Rust context
 
 **Compatibility.** Read the owning crate's `Cargo.toml` at H and resolve explicitly
-inherited `edition` and `rust-version` through its workspace, including
-`package.workspace` when present. The supported minimum Rust version (MSRV), not
+inherited `edition`, `rust-version`, `publish` status, and committed `[lints]` /
+`[workspace.lints]` / `clippy.toml` policy through its workspace, including
+`package.workspace` when present. Record that resolved baseline in each task packet
+so specialists do not re-derive manifest state. The supported minimum Rust version (MSRV), not
 a newer local toolchain or a sibling crate, bounds syntax and library advice
 and also defines what `std` already stabilizes for this crate, so check whether
 types and methods stabilized within that MSRV replace handwritten mechanics or
@@ -15,7 +17,9 @@ depends on them. Missing baseline or feature context limits that recommendation;
 it does not authorize an upgrade.
 
 **Library context.** Resolve the actual dependency version and enabled features
-for the owning crate before using a mechanism below. A dependency elsewhere in a
+for the owning crate before selecting a mechanism below; include implicated notes
+in the matching owner's `selected resource paths` during planning, and consult any
+newly implicated note for your assigned owner during reading. A dependency elsewhere in a
 workspace is not an applicability signal by itself, though workspace-declared
 crates inform dependency-cost tradeoffs when `existing-helpers` evaluates custom
 mechanics. These are conditional reference notes, not new profiles, rule IDs,
@@ -26,11 +30,12 @@ preservation context, not authority to review another lens.
 | Mechanism | Existing owners | Reference |
 | --- | --- | --- |
 | Tokio task groups, shutdown, selection, state notifications or waiting for a condition | data-flow/lifecycle-ownership; control-flow | [Tokio](../rust/tokio.md) |
-| Serde wire shape, deserialization lifetime or two-step `Value` plumbing | representation; api-clarity; duplication | [Serde](../rust/serde.md) |
+| Serde wire shape, deserialization lifetime, two-step `Value` plumbing or repeated `with` adapters | representation; api-clarity; duplication | [Serde](../rust/serde.md) |
 | clap argument grammar or repeated command knowledge | api-clarity; change-locality | [clap](../rust/clap.md) |
-| Axum HTTP contract, middleware state or adapter/application boundary | api-clarity; function-cohesion/effects-separation | [Axum](../rust/axum.md) |
-| thiserror or anyhow error types, conversions or context chains | control-flow/error-expression; api-clarity | [error crates](../rust/errors.md) |
-| tracing spans, events or instrumentation | function-cohesion/effects-separation; control-flow/error-expression | [tracing](../rust/tracing.md) |
+| Axum HTTP contract, Tower/Axum middleware, state or adapter/application boundary | api-clarity; function-cohesion/effects-separation | [Axum](../rust/axum.md) |
+| SQLx row decoding, connection/transaction executors or database error classification | representation; api-clarity; duplication/existing-helpers; control-flow/error-expression | [SQLx](../rust/sqlx.md) |
+| thiserror or anyhow error types, conversions, context chains or error formatting | control-flow/error-expression; api-clarity; rationale/diagnostics | [error crates](../rust/errors.md) |
+| tracing spans, events, instrumentation or error reporting | function-cohesion/effects-separation; control-flow/error-expression; rationale/diagnostics | [tracing](../rust/tracing.md) |
 
 For a proposed API, distinguish stabilization of the operation, const use and
 syntax position. A dependency's advertised MSRV does not establish the minimum
@@ -77,24 +82,33 @@ an evidence gap.
 **Preservation.** Check only properties implicated by a proposed transformation:
 borrowing versus consuming, aliasing and mutation, accepted inputs, error types,
 sources and first-error precedence, short-circuiting and eager/lazy evaluation,
-cancellation and drop/guard lifetime, time precision, and wire or stored bytes.
+cancellation and drop/guard lifetime (including `if let` and `match` scrutinee
+temporaries, which stay alive through matched arms, and through an `if let`'s
+`else` branch before Edition 2024), time precision, and wire or stored bytes.
 `Clone` need not create independent data; cloning an `Arc` preserves shared
 ownership. A
 collection can deliberately snapshot data or end a borrow. Public signatures,
 trait implementations, auto traits, lifetime captures, serialization and FFI
 layouts can constrain a local simplification. Inspect available consumers;
-absence from literal search does not prove no downstream use. Visibility bounds
+absence from literal search does not prove no downstream use (in Rust, `pub use
+... as ...` re-exports, blanket or cross-module trait impls, and `?`/`From`
+conversions can satisfy callers without naming the item directly). Visibility bounds
 that doubt: a private or `pub(crate)` item has no consumer outside its module or
-crate, so the complete crate at the snapshot, across its targets, features and
-`cfg` branches, settles its uses. Apply the shared
+crate, and a `pub` item in a workspace-internal crate (`publish = false` or
+`publish = []`, with no external consumer contract) has its complete consumer set
+across the workspace at the snapshot, across targets, features and `cfg` branches. Apply the shared
 contract's compatibility judgment without claiming compilation, equivalence or soundness.
 
 **Production scope.** Path and generated-header filtering is not a Rust parser or
 Cargo target resolver. Use manifests and declarations to exclude custom test or
 benchmark targets and test-only modules/items (`cfg(test)`, `#[test]`, and
 framework test attributes). Mixed files remain reviewable for production items;
-incidental test text in a window or search match is not reviewed coverage. Do not
-exclude a production file merely because it contains a test module. Explain any
+inline `#[cfg(test)]` modules frequently exceed production code in length, so size
+review partitions by production lines and read `#[cfg(test)]` selectively only when
+checking affected callers. Incidental test text in a window or search match is not
+reviewed coverage. Do not exclude a production file merely because it contains a
+test module. Keep vertical call spines (`entry -> domain -> store`) intact across
+workspace-internal crate boundaries rather than slicing by crate. Explain any
 ambiguous target, macro or conditional boundary that limits coverage.
 
 Use [language routing](../languages.md) to select the Rust implementation of the

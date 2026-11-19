@@ -28,9 +28,16 @@ coverage. Record language, applicable baseline, selected resource paths, and
 language-scoped rules in each task packet. Parent verification uses that same
 language context. Missing language resources are a coverage gap, not a Go fallback.
 
-Rust crate/workspace manifests establish edition, MSRV, target and feature context
-under [Rust context](languages/rust.md). Exclude Rust test-only targets/items and
-known generated source, but retain production declarations in mixed files. Path/header filtering does not establish item-level coverage.
+Rust crate/workspace manifests establish edition, MSRV, target, `publish`, feature,
+and committed lint context under [Rust context](languages/rust.md). When a crate's
+manifest and included source implicate a conditional Rust library note (`rust/*.md`),
+include that note in the matching owner's selected resource paths alongside the
+resolved baseline so specialists do not rely on self-discovery alone. Keep vertical
+call spines intact across workspace-internal crates rather than partitioning by crate
+boundary, and size partitions by production lines rather than inline `#[cfg(test)]`
+modules. Exclude Rust test-only targets/items and known generated source, but retain
+production declarations in mixed files. Path/header filtering does not establish
+item-level coverage.
 
 ## Lens resources
 

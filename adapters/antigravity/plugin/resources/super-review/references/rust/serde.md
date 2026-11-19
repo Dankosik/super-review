@@ -8,10 +8,9 @@ derives, and `no_std`/`alloc`/`rc` features without executing procedural macros.
 
 - **Direct wire adaptation**: replace boilerplate visitors with `rename`,
   `transparent` (Serde wire shape only, never Rust/FFI layout), or
-  `from`/`try_from` when both serialize and deserialize contracts match; share
-  repeated crate-local `with`/`serde_with` wire rules across modules. Eliminate
-  two-pass deserialization through intermediate `String`/`Cow<str>`/`Value` when
-  the target type or field adapter parses directly, and conversely use direct
+  `from`/`try_from` when both serialize and deserialize contracts match.
+  Eliminate two-pass deserialization through intermediate `String`/`Cow<str>`/`Value`
+  when the target type or field adapter parses directly, and conversely use direct
   `Value` map access rather than a one-off `#[derive(Deserialize)]` struct to
   read or strip a single key from an already-parsed `Value`.
 - **Keep when**: a custom visitor preserves legacy inputs, diagnostics, or
@@ -29,6 +28,15 @@ derives, and `no_std`/`alloc`/`rc` features without executing procedural macros.
   (`Cow<'de, str>` borrows only when field attributes and format escapes allow;
   an owned `String` often removes more caller lifetime ceremony than borrowing
   saves).
+
+## duplication
+
+- **Shared wire adapters**: consolidate crate-local `#[serde(with = "...")]`
+  modules or `serde_with` wire rules repeated across types that encode the same
+  wire format, and delegate standard timestamp/hex/duration wire rules to already
+  declared `serde_with` or format-crate helpers rather than rewriting per-field
+  serializers. Keep separate wire modules when two types merely look alike while
+  evolving under independent wire contracts.
 
 Sources: [container attributes](https://serde.rs/container-attrs.html),
 [field attributes](https://serde.rs/field-attrs.html),

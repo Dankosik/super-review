@@ -25,21 +25,25 @@ Take each claim through all four.
 2. **The work is not done.** Walk the trace yourself from one unit and note
    what each line does. Is every quoted line there? Do your counts before
    and after match the claim's? For an operation the form makes cheaper,
-   does the basis for its cost say what the claim says? Does the callee or
-   dependency, at the version the lockfile resolves, already avoid the
-   work: capacity reserved, a borrow returned, a buffer or cache inside,
-   a reference count where the claim saw a copy? A claim about what the
-   compiler, the hardware or a database does needs a profile, a benchmark,
-   a query plan or a documented guarantee, from you as from the reader.
+   does the basis for its cost say what the claim says? Check on-disk
+   standard library, runtime, and locked dependency source rather than memory:
+   does the callee or dependency already avoid the work (capacity reserved, a
+   borrow returned, a buffer or cache inside, a reference count where the
+   claim saw a copy)? A claim about what the compiler, the hardware or a
+   database does needs a profile, a benchmark, a query plan or a documented
+   guarantee, from you as from the reader.
 3. **The cheaper form changes behavior.** Run the sketch through the inputs
-   the entry admits: empty, one, duplicates, a failure halfway, a dropped
-   future, a panic while a lock is held. Does it keep results, their order,
-   errors and when they surface, what has happened when something fails,
-   drop timing, `Send` and `Sync`, the public API, and what other callers
-   observe of locking and timing? Does an item now wait longer for a batch
-   or a buffer? Does it build within the project's `rust-version`, features
-   and targets? A change the team could accept makes the claim a tradeoff;
-   one callers rely on, or a form that does not build, makes it fall.
+   the entry admits: empty, one, duplicates, malformed or uncapped lengths,
+   a failure halfway, a dropped future, a panic while a lock is held. Verify
+   the cheaper form's calls in on-disk standard library or locked dependency
+   source whenever edge-case, framing, or runtime behavior could diverge. Does
+   it keep results, their order, errors and when they surface, what has
+   happened when something fails, drop timing, `Send` and `Sync`, the public
+   API, and what other callers observe of locking and timing? Does an item
+   now wait longer for a batch or a buffer? Does it build within the
+   project's `rust-version`, features and targets? A change the team could
+   accept makes the claim a tradeoff; one callers rely on, or a form that
+   does not build, makes it fall.
 4. **A larger cost swallows the saving (Amdahl).** Find the largest cost on
    the same path for the same resource. Does it bound the resource whatever
    the saving does, so no caller or operator sees a change? A network wait

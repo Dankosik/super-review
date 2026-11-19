@@ -35,10 +35,16 @@ not to start a separate concurrency-defect audit.
 Cleanup that can fail, block or must be awaited has no way to report from
 `Drop`. An explicit `close`, `flush` or `shutdown` that returns its outcome
 shows the caller where completion happens, with `Drop` as the best-effort
-fallback. A guard that lives to the end of a long function because nothing
-scopes it leaves the reader to work out where the lock or borrow is needed; a
-block, or a helper that returns the value, shows the critical section. Keep the
-updates that must change together under one guard when narrowing it.
+fallback. A spawned task + channel + shutdown loop created only as an RPC
+facade over simple synchronous state introduces a background lifecycle where
+plain ownership suffices; keep an actor task when it owns autonomous background
+work or a non-`Sync` resource. A guard that lives to the end of a long function
+because nothing scopes it leaves the reader to work out where the lock or borrow
+is needed; a block, or a helper that returns the value, shows the critical
+section. Remember that a temporary guard created inside an `if let` or `match`
+scrutinee stays held across matched arms (and across an `if let`'s `else` branch
+before Edition 2024). Keep the updates that must change together under one guard
+when narrowing it.
 
 Explain the reading benefit and preserve affected drop, transfer and cancellation
 boundaries. Do not turn this profile into a search for leaks, deadlocks, races

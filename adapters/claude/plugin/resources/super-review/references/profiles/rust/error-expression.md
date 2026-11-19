@@ -41,9 +41,16 @@ An error that wraps another either returns it from `source` or renders it in
 a path or a line number serves callers and reports better as a field than
 formatted into the message. Messages compose when they are concise lowercase
 text without trailing punctuation. Code that logs an error and also returns it
-has the layers above report the same failure again; one owner reports it.
+to a caller that reports it again duplicates failure handling; one boundary
+owns reporting. When `.ok()` or `unwrap_or_default()` discards a distinct
+`Result` failure into absence or a default where callers may need to distinguish
+absence from failure, keep the observation and leave any behavioral change
+`unresolved` unless inspected code already treats both identically.
 
-An existing canonical `From` can make propagation direct. A local `map_err` that
-captures a path, operation or identifier expresses context that `From` alone does
-not know. Retain owned diagnostic data and the underlying source when required;
-`Display` text is not a substitute for the error's source/downcasting contract.
+An existing canonical `From` can make propagation direct, while a blanket `From`
+(manual or derived) on a broad shared error type such as `io::Error` or a
+database error erases which path, query, or operation failed whenever `?` runs
+from multiple sites: carry operation context in variant fields via local
+`map_err` instead. Retain owned diagnostic data and the underlying source when
+required; `Display` text is not a substitute for the error's source/downcasting
+contract.
