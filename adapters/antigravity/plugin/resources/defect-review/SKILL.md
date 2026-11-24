@@ -3,7 +3,7 @@ name: defect-review
 description: "Explicit Defect Review of Go, TypeScript, Rust, or Java PRs or local source to find bugs by reading, or help using that review."
 disable-model-invocation: true
 metadata:
-  version: "0.16.0"
+  version: "0.16.1"
 ---
 
 # Defect Review

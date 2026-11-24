@@ -81,6 +81,14 @@ it to show the improvement. Do not replace it with only a pattern name, or expan
 a clear local edit into a design exercise. A full patch or new feature design is unnecessary.
 Repeat for **every** accepted recommendation, including merged contributions.
 
+### Optional polish
+
+Include this optional subsection only when minor local renames or purely
+stylistic improvements survived verification and the caller did not ask to omit
+polish. Mark every item here explicitly non-blocking so automated or interactive
+callers do not trigger an extra fix and CI round for taste alone; omit the
+heading when empty.
+
 ## Implementation order
 
 State only real dependencies, independent accepted changes, or labeled alternatives.

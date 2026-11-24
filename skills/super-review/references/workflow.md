@@ -1,10 +1,13 @@
 # Workflow
 
 Once the review target and scope are identified, load
-[the contract](review-contract.md) and read the shared resources for the active
-phase and language in full (summaries never replace required resources). Keep
-[verification](verification.md), [the report template](../assets/report-template.md),
-and [continuation guidance](continuation.md) out of specialist packets.
+[the contract](review-contract.md), this workflow, the active adapter, and the
+shared resources for the active phase and language in full before spawning any
+child task (summaries never replace required resources, and never launch
+preliminary exploratory child passes before the snapshot, policy, and lens plan
+are fixed). Keep [verification](verification.md),
+[the report template](../assets/report-template.md), and
+[continuation guidance](continuation.md) out of specialist packets.
 
 ## Fix the evidence
 
@@ -42,14 +45,18 @@ disabled rules, unresolved conflicts, and policy revisions, and pass only the
 applicable rules and labeled code-reference locations to affected specialists.
 
 **Aspect plan.** Build the plan with [contextual aspects](aspects.md). Unless
-the user narrows scope, keep all eight base lenses for every included area (a
-small diff or clean first impression never drops a base question) and select
-conditional lenses and owner profiles from source signals, recording selections
-and omissions. Honor user scope without requesting unchosen questions. Announce
-the scope, selected lenses/profiles with their source reasons, and total task
-count before dispatch (asking whether to narrow or proceed if a whole-project
-review would start more than forty tasks) and report periodic progress as tasks
-finish.
+the user narrows scope or explicitly requests a [follow-up delta review](#follow-up-delta-review),
+keep all eight base lenses for every included area (a small diff or clean first
+impression never drops a base question) and select conditional lenses and owner
+profiles from source signals, recording selections and omissions. Honor user
+scope without requesting unchosen questions. When an automated or non-interactive
+caller asks for impact or severity labels (such as `High`/`Medium`/`Low`), apply
+them as maintenance-impact labels on accepted recommendations without dropping
+the eight base lenses, running project checks, shifting into a defect/security
+audit, or issuing a merge-gate verdict. Announce the scope, selected
+lenses/profiles with their source reasons, and total task count before dispatch
+(asking whether to narrow or proceed if a whole-project review would start more
+than forty tasks) and report periodic progress as tasks finish.
 
 | Lens | Question |
 | --- | --- |
@@ -188,6 +195,21 @@ about 1,000 lines reviewed whole; larger areas keep one lens per task):
 Run any lens whose partner is unselected alone. A paired specialist executes
 each lens's full pass and reports each lens's coverage separately, and the
 report marks the pair. Whether pairing costs attention is unverified, so single-lens tasks remain the default.
+
+## Follow-up delta review
+
+Use this scoped path only when the user explicitly requests a follow-up check
+after fixes from a prior review, supplying the prior report (or prior reviewed
+commit) and subsequent fix commits (`prior_head..new_head`). Pin both endpoints,
+scope strictly to files and symbols touched in the fix delta plus affected call
+seams, and verify two things: whether previously accepted recommendations landed
+cleanly, and whether the fix delta introduced new clarity or structural burdens.
+
+Keep previously rejected or deferred candidates closed unless the fix delta
+invalidated an assumption they depended on; do not re-audit unchanged files from
+scratch. On small fix deltas (about 300 changed production lines or fewer),
+[compact pairs](#compact-pairs) may be used by default while keeping separate
+per-lens coverage reporting.
 
 ## Supported continuation
 

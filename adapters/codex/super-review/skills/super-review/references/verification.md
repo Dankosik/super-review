@@ -119,10 +119,13 @@ read-only source:
 Each specialist answered one question; you see the code with all of them, so you
 decide what it becomes. Aim for the version a strong engineer in this language
 would write today, with behavior and the project's conventions held fixed: clean,
-simple, a pleasure to read, its structure mirroring the problem it solves. Writing
-it costs nothing here, so the size of an edit is never a reason to settle for less.
-The only bar is that the result is better to read and to change than what is there
-now. Taste is welcome when you can name what the reader gains.
+simple, a pleasure to read, its structure mirroring the problem it solves. Do
+not reject a coherent structural fix merely because it touches several call
+sites, while avoiding cosmetic churn whose gain does not repay another
+verification cycle. Keep core recommendations grounded in concrete reading or
+maintenance burdens; place minor local renames or purely stylistic improvements
+under `optional polish` so callers know they need not trigger an extra fix round
+for taste alone.
 
 Candidates are material, not the agenda. Rewrite a workable remedy when you see a
 better one. Where several touch the same code, design it once. When they share a

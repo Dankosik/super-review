@@ -3,7 +3,7 @@ name: test-review
 description: "Explicit Test Review of Go, TypeScript, Rust, or Java tests in PRs or local source by reading, or help using that review."
 disable-model-invocation: true
 metadata:
-  version: "0.15.0"
+  version: "0.15.1"
 ---
 
 # Test Review

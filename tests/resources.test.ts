@@ -59,3 +59,14 @@ test("agent-facing instructions contain no em-dashes", () => {
     expect(read(path), path).not.toContain("—");
   }
 });
+
+test("Super Review supports follow-up delta review, pre-dispatch loading, and optional polish separation", () => {
+  const workflow = read("skills/super-review/references/workflow.md");
+  expect(workflow).toContain("before spawning any");
+  expect(workflow).toContain("maintenance-impact labels");
+  expect(workflow).toContain("## Follow-up delta review");
+  expect(workflow).toContain("Keep previously rejected or deferred candidates closed");
+  const report = read("skills/super-review/assets/report-template.md");
+  expect(report).toContain("### Optional polish");
+  expect(report).toContain("non-blocking");
+});

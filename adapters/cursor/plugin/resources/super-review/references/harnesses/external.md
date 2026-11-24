@@ -18,8 +18,9 @@ request may name only some lenses or tasks; the rest stay native.
 ## Launch
 
 Use the non-interactive mode, model, working-directory and permission flags the
-installed CLI documents, not flags from memory. Typical entry points, subject to
-what it documents:
+installed CLI documents, not flags from memory. Never probe or invoke another
+harness CLI (such as OpenCode or auxiliary wrappers) unless the user explicitly
+named it for this review. Typical entry points, subject to what it documents:
 
 - OpenCode: `opencode run --agent super-review-specialist --model provider/model`
   with `OPENCODE_CONFIG_DIR` set to the extracted Super Review OpenCode package
@@ -29,7 +30,8 @@ what it documents:
   as a model variant, `provider/model#variant`: cached model metadata may omit
   variants that exist, and an unknown one fails the first launch, so do not probe
   metadata or run trial tasks. Never load the user's own OpenCode configuration.
-- Codex: `codex exec` with a read-only sandbox, `-C <source root>` and `-m`.
+- Codex: `codex exec` with a read-only sandbox (`-s read-only`), `--ephemeral`,
+  `-C <source root>`, and `-m` (plus `-c model_reasoning_effort=...` when set).
 - Claude Code: `claude -p` with read/search tools only and `--model`.
 - Cursor: `cursor-agent -p` with `--model`.
 

@@ -71,9 +71,10 @@ has no presumption of superiority, and small clarity gains are valid; fewer
 lines, a pattern name, or a metric threshold are not gains alone, and a shorter
 form that hides ordering, ownership, or failure cause is a loss.
 
-Judge lasting reading and maintenance cost rather than patch effort: a coding
-agent applies the edit, so a rename, helper, type, or cross-file change costs
-only what it leaves for readers afterwards. Prefer a sufficient, coherent
+Judge lasting reading and maintenance cost rather than typing effort, while
+accounting for verification and churn cost: every accepted change triggers
+another edit, test, and review round, so keep each recommendation grounded in a
+real burden rather than cosmetic preference. Prefer a sufficient, coherent
 improvement over a smaller tweak that leaves the burden in place, and present
 recommendations as advice rather than merge gates, with no finding cap or quota.
 

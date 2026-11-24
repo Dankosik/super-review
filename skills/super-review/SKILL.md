@@ -3,7 +3,7 @@ name: super-review
 description: "Explicit Super Review of Go, TypeScript, Rust, or Java PRs or local source for readability and maintainability, or help using that review."
 disable-model-invocation: true
 metadata:
-  version: "3.36.6"
+  version: "3.37.0"
 ---
 
 # Super Review
@@ -32,13 +32,14 @@ in another installed harness, launch them there through
 
 ## Review and deliver
 
-Follow [the contract](references/review-contract.md) and
-[workflow](references/workflow.md) for source pinning, team policy,
-[language](references/languages.md) and aspect selection, neutral task packets,
-and completion. Keep all eight base questions unless the user narrows scope;
+Follow [the contract](references/review-contract.md), [workflow](references/workflow.md),
+and the active adapter in full before spawning any child for source pinning, team
+policy, [language](references/languages.md) and aspect selection, neutral task
+packets, and completion. Keep all eight base questions unless the user narrows scope
+or explicitly requests a [follow-up delta review](references/workflow.md#follow-up-delta-review);
 profiles deepen their owner lens. Give each fresh specialist one lens, or a
 related pair only when the user explicitly asks for a compact review of a small
-change.
+change or a small follow-up fix delta.
 
 Decide every candidate and what the code becomes with
 [verification](references/verification.md), then deliver the complete report
