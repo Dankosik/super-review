@@ -5,8 +5,16 @@ independent-review steps below apply only to an actual review with an
 identifiable target; help does not require reading a repository.
 
 Run orchestration in the current task, preserving the user's model and reasoning
-effort. Use [native source access](source-access.md) and the workflow's neutral
-task packet.
+effort. In non-interactive `codex exec` runs, load `SKILL.md`, the contract, and
+the workflow in full before spawning any child: never launch preliminary ad-hoc
+area passes or run project checks, and keep read-only review authority intact.
+Use [native source access](source-access.md) and the workflow's neutral task
+packet.
+
+Unless the user explicitly requests another harness, run native Codex child
+spawns directly: never probe external harness CLIs (such as OpenCode) or
+auxiliary review tools, and never attempt to write external launcher logs in a
+read-only sandbox.
 
 Use one lens, or a compact pair the workflow allows, per fresh native child
 context, without inherited conversation or

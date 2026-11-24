@@ -88,7 +88,7 @@ not switch the orchestrator to it. See [selection evidence](antigravity-model-se
 Role files retain `model: inherit` because CLI 1.5.9 rejects the Hydrogen slug in
 subagent frontmatter. Inherit only from a Hydrogen High parent, or apply that
 profile through a supported native child selector. `flash`, `pro` and composite
-Orchestrator modes do not prove a Hydrogen High selection. If the model or
+Orchestrator (Neon/Carbon/Argon) modes do not prove a Hydrogen High selection. If the model or
 selection capability is missing, stop affected launches and ask for explicit
 selection; never silently inherit another model or change the parent.
 

@@ -1,6 +1,9 @@
 # Codex
 
-Orchestrate in the current task, keeping the user's model and effort.
+Orchestrate in the current task, keeping the user's model and effort. In
+non-interactive `codex exec` runs, load `SKILL.md`, the contract, and the
+workflow in full before spawning any child, and never probe external harness
+CLIs (such as OpenCode) or auxiliary launchers unless explicitly requested.
 
 Start each specialist as a fresh native child with no inherited
 conversation. Spawn it as the default agent: omit `agent_type`, because a

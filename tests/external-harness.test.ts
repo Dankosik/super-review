@@ -14,11 +14,21 @@ test("an explicit user request can route specialists to another harness", () => 
   for (const phrase of ["explicitly asks", "cannot.", "do not fall back silently", "fresh process per task", "../workflow.md#resolve-policy-and-coverage"]) {
     expect(external).toContain(phrase);
   }
-  for (const adapter of ["claude", "codex", "cursor"]) {
+  for (const adapter of ["claude", "codex", "cursor", "antigravity"]) {
     expect(read(`skills/super-review/references/harnesses/${adapter}.md`)).toContain("(external.md)");
   }
   expect(read("adapters/claude/orchestrator.md")).toContain("references/harnesses/external.md");
   expect(read("adapters/opencode/agents/super-review.md")).toContain("references/harnesses/external.md");
+});
+
+test("Codex adapters stay native unless an external harness is requested and Antigravity covers Orchestrator (Neon)", () => {
+  for (const skill of ["super-review", "defect-review", "test-review", "perf-review"]) {
+    const codex = read(`skills/${skill}/references/harnesses/codex.md`);
+    expect(codex).toContain("codex exec");
+    expect(codex).toContain("never probe external harness");
+    const agy = read(`skills/${skill}/references/harnesses/antigravity.md`);
+    expect(agy).toContain("Orchestrator (Neon/Carbon/Argon)");
+  }
 });
 
 test("the external-harness reference reaches every generated package unchanged", () => {

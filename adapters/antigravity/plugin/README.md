@@ -76,8 +76,10 @@ the adapter requires a live native child selector that explicitly supports
 Hydrogen High; the current CLI's documented tier-only configuration does not
 provide that guarantee. A missing capability stops affected launches for a user
 choice. The adapter never switches the parent itself or silently uses Flash,
-Pro, an arbitrary inherited model or an Orchestrator composite. A child prompt
-cannot select a model.
+Pro, an arbitrary inherited model or an Orchestrator (Neon/Carbon/Argon)
+composite. A child prompt cannot select a model. An explicit user request may
+route specialists to another installed harness (such as read-only local
+`codex exec`); follow `references/harnesses/external.md`.
 
 This choice is the Google counterpart to our Sonnet/medium and Terra/high worker
 profiles by intended role, without a claim of equal review quality. The research

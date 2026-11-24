@@ -26,7 +26,7 @@ models. Apply the child selection through supported native configuration.
 Roles retain `model: inherit`: CLI 1.5.9 rejects a Hydrogen slug in role
 frontmatter. Inheritance meets the default only from a Hydrogen High parent;
 otherwise the live native selector must explicitly request Hydrogen High for
-the child. `flash`, `pro` and Orchestrator (Carbon/Argon) are not confirmed
+the child. `flash`, `pro` and Orchestrator (Neon/Carbon/Argon) are not confirmed
 mappings to Hydrogen High. If the model is unavailable or its model/effort cannot
 be selected, stop affected launches and ask the user to select Hydrogen High
 for this chat or explicitly choose an available specialist profile. Never

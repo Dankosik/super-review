@@ -33,7 +33,11 @@ tiers in role frontmatter and rejects the Hydrogen slug. Native inheritance
 meets the default only when the parent is selected as Hydrogen High. Otherwise,
 launch only if the live native selector can explicitly request Hydrogen High
 for that child. The documented `flash` and `pro` tiers do not establish that
-mapping. Orchestrator (Carbon/Argon) is a composite mode, not Hydrogen High.
+mapping. Orchestrator (Neon/Carbon/Argon) is a composite mode, not Hydrogen High.
+
+An explicit user request to run specialists in another installed harness (such as
+local `codex exec` in a read-only sandbox) replaces native child routing for the
+affected tasks; follow [external specialists](external.md).
 
 If Hydrogen is absent from the host's available models, or its model/effort
 cannot be selected for the child, stop affected launches and explain the gap.
