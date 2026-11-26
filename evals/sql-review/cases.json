@@ -1,62 +1,78 @@
 {
   "kind": "evaluator-only",
   "status": "NOT RUN",
-  "baseline_revision": "b56e903c2b791aea20a0ac03acf2bb4b5e40e20a",
+  "baseline_revision": "301af15ba6b8e9af8868a93dbf9cae8e62e66e20",
   "contrast_pairs": [
     ["SQL01", "SQL02"],
     ["SQL03", "SQL04"],
     ["SQL05", "SQL06"],
     ["SQL07", "SQL08"],
     ["SQL09", "SQL10"],
-    ["SQL11", "SQL12"]
+    ["SQL11", "SQL12"],
+    ["SQL13", "SQL14"],
+    ["SQL15", "SQL16"],
+    ["SQL17", "SQL18"],
+    ["SQL19", "SQL20"],
+    ["SQL21", "SQL22"],
+    ["SQL23", "SQL24"],
+    ["SQL25", "SQL26"],
+    ["SQL27", "SQL28"],
+    ["SQL29", "SQL30"]
   ],
   "cases": [
     {
       "id": "SQL01",
       "polarity": "report",
-      "decision": "inexact SQLite DECIMAL float storage and missing NOT NULL on currency",
+      "expected_outcome": "finding",
+      "decision": "inexact SQLite DECIMAL float storage and caller-violated nullable currency",
       "checks": [
         "Identifies that SQLite DECIMAL(12, 2) uses NUMERIC affinity and stores fractional monetary values as IEEE-754 REAL floats",
-        "Proposes scaled INTEGER minor units and NOT NULL currency with a valid SQLite schema sketch"
+        "Traces db/ledger.ts calling row.currency.toUpperCase() against nullable currency TEXT and proposes scaled INTEGER minor units, NOT NULL currency, and STRICT without inventing NOT NULL for optional memo"
       ]
     },
     {
       "id": "SQL02",
       "polarity": "retain",
-      "decision": "strict SQLite integer-cents schema with constraints and outside-tx pragmas is clean",
+      "expected_outcome": "retain",
+      "decision": "strict SQLite integer-cents schema with constraints, optional memo, and outside-tx pragmas is clean",
       "checks": [
-        "Reports no finding against the STRICT integer-cents schema and connection-open PRAGMA setup"
+        "Reports no finding against the STRICT integer-cents schema and connection-open PRAGMA setup",
+        "Does not invent NOT NULL or CHECK on optional memo when db/ledger.ts explicitly handles row.memo ?? ''"
       ]
     },
     {
       "id": "SQL03",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "blocking PostgreSQL 16 SET NOT NULL and non-concurrent CREATE INDEX without lock_timeout",
       "checks": [
         "Traces ACCESS EXCLUSIVE table scan on ALTER COLUMN external_ref SET NOT NULL and write lock on CREATE INDEX on a live 12M-row PG 16 table",
-        "Proposes PG 16 lock-safe NOT VALID CHECK plus VALIDATE CONSTRAINT in separate transactions with SET LOCAL lock_timeout, and CREATE INDEX CONCURRENTLY outside a transaction block"
+        "Proposes PG 16 lock-safe NOT VALID CHECK plus VALIDATE CONSTRAINT in separate transactions with SET LOCAL lock_timeout, and CREATE INDEX CONCURRENTLY under -- atlas:txmode none using session SET/RESET lock_timeout rather than SET LOCAL"
       ]
     },
     {
       "id": "SQL04",
       "polarity": "retain",
+      "expected_outcome": "retain",
       "decision": "PG 16 lock-safe separate-transaction NOT VALID check validation and non-transactional CONCURRENTLY index build is clean",
       "checks": [
-        "Reports no migration lock finding when NOT VALID, VALIDATE CONSTRAINT, and SET NOT NULL run in separate transactions with SET LOCAL lock_timeout and CONCURRENTLY runs under atlas:txmode none"
+        "Reports no migration lock finding when NOT VALID, VALIDATE CONSTRAINT, and SET NOT NULL run in separate transactions with SET LOCAL lock_timeout and CONCURRENTLY runs under atlas:txmode none with SET/RESET lock_timeout"
       ]
     },
     {
       "id": "SQL05",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "MySQL NOT IN nullable subquery returning zero rows and non-deterministic LIMIT without ORDER BY",
       "checks": [
-        "Traces three-valued NULL logic where nullable voided_invoices.invoice_id makes NOT IN return zero rows",
-        "Flags non-deterministic LIMIT 50 without ORDER BY and proposes NOT EXISTS with deterministic tie-breaking ORDER BY"
+        "Traces three-valued NULL logic where nullable voided_invoices.invoice_id makes NOT IN return zero rows and flags non-deterministic LIMIT 50 without ORDER BY",
+        "Does not dismiss or route these statically provable query bugs to needs confirmation for lacking EXPLAIN output or table size"
       ]
     },
     {
       "id": "SQL06",
       "polarity": "retain",
+      "expected_outcome": "retain",
       "decision": "MySQL NOT EXISTS with deterministic tie-breaker ORDER BY is clean",
       "checks": [
         "Reports no query bug and does not falsely flag NOT EXISTS as an O(N*M) correlated subquery on MySQL 8.0.36"
@@ -65,40 +81,45 @@
     {
       "id": "SQL07",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "PostgreSQL check-then-act lost update and transaction held open across external HTTP fraud check",
       "checks": [
         "Traces concurrent read-modify-write lost update on wallets.balance_cents under default READ COMMITTED without row lock or atomic update",
-        "Traces open DB transaction held across outbound risk.Check HTTP call and proposes running the risk check before an atomic conditional UPDATE that preserves missing-wallet vs insufficient-funds errors"
+        "Traces open DB transaction held across documented outbound HTTP risk.Check call and proposes running the idempotent risk check before an atomic conditional UPDATE preserving ErrWalletNotFound vs ErrInsufficientFunds"
       ]
     },
     {
       "id": "SQL08",
       "polarity": "retain",
+      "expected_outcome": "retain",
       "decision": "outbound HTTP check outside transaction followed by atomic conditional UPDATE preserving error semantics is clean",
       "checks": [
-        "Reports no race, long-held transaction, or error-misclassification finding on the atomic conditional UPDATE with pre-call risk check"
+        "Reports no race, long-held transaction, or error-misclassification finding on the atomic conditional UPDATE with pre-call idempotent risk check"
       ]
     },
     {
       "id": "SQL09",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "non-sargable DATE_TRUNC wrapping indexed created_at column on 50M-row table",
       "checks": [
         "Traces that DATE_TRUNC('day', created_at, 'UTC') = $1::timestamptz prevents using idx_events_created_at_id on the documented 50M-row table",
-        "Proposes a sargable half-open range predicate on created_at preserving UTC day-bucket semantics"
+        "Proposes a sargable half-open UTC range predicate using INTERVAL '24 hours' (DST-safe regardless of session TimeZone)"
       ]
     },
     {
       "id": "SQL10",
       "polarity": "retain",
-      "decision": "sargable half-open range predicate aligned with (created_at, id) index is clean",
+      "expected_outcome": "retain",
+      "decision": "sargable DST-safe UTC half-open range predicate aligned with (created_at, id) index is clean",
       "checks": [
-        "Reports no indexing finding and does not falsely flag backwards scan on (created_at, id)"
+        "Reports no indexing finding and does not falsely flag backwards scan on (created_at, id) when using INTERVAL '24 hours'"
       ]
     },
     {
       "id": "SQL11",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "SQL string interpolation of status and dynamic ORDER BY plus N+1 query loop",
       "checks": [
         "Identifies SQL injection via interpolated status and unallowlisted sortColumn identifier in listOrdersByStatus",
@@ -108,9 +129,183 @@
     {
       "id": "SQL12",
       "polarity": "retain",
-      "decision": "parameterized query with closed sort allowlist and batched ANY lookup is clean",
+      "expected_outcome": "retain",
+      "decision": "parameterized query with closed sort allowlist, bounded inputs, and batched ANY lookup is clean",
       "checks": [
-        "Reports no SQL injection or N+1 finding when values are bound, sort keys pass a closed allowlist, and IDs are fetched in one batched query"
+        "Reports no SQL injection, unbounded batch, or N+1 finding when values are bound, sort keys pass a closed allowlist, limit and ids are capped, and IDs are fetched in one batched query"
+      ]
+    },
+    {
+      "id": "SQL13",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "CONCURRENTLY inside Atlas transactional migration and SET LOCAL lock_timeout outside transaction",
+      "checks": [
+        "Traces that migration 0009 omits -- atlas:txmode none so Atlas wraps CREATE INDEX CONCURRENTLY in a transaction block where PostgreSQL rejects it",
+        "Traces that migration 0010 runs SET LOCAL lock_timeout under -- atlas:txmode none where PostgreSQL emits a warning and ignores lock_timeout, and proposes session SET/RESET lock_timeout"
+      ]
+    },
+    {
+      "id": "SQL14",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "non-transactional Atlas CONCURRENTLY index migrations with session SET and RESET lock_timeout are clean",
+      "checks": [
+        "Reports no runner-mode or lock_timeout finding when both migrations declare -- atlas:txmode none and wrap CREATE INDEX CONCURRENTLY in SET lock_timeout and RESET lock_timeout"
+      ]
+    },
+    {
+      "id": "SQL15",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "blocking PostgreSQL 18 SET NOT NULL on live 8M-row table with known Atlas runner mode",
+      "checks": [
+        "Traces ACCESS EXCLUSIVE table scan on live 8M-row subscriptions table under pinned PostgreSQL 18.0",
+        "Proposes PG 18 lock-safe ADD CONSTRAINT ... NOT NULL external_key NOT VALID plus separate-transaction VALIDATE CONSTRAINT with SET LOCAL lock_timeout"
+      ]
+    },
+    {
+      "id": "SQL16",
+      "polarity": "calibrate",
+      "expected_outcome": "needs confirmation",
+      "decision": "SET NOT NULL with unstated PostgreSQL version, live-traffic status, and runner tx mode routes to needs confirmation",
+      "checks": [
+        "Routes the claim to needs confirmation rather than emitting an unqualified finding or dropping it",
+        "Names the exact deciding facts needed: pinned PostgreSQL major version (PG 18 NOT NULL NOT VALID vs pre-18 CHECK NOT VALID), live-traffic or maintenance-window status, and migration runner transactional mode"
+      ]
+    },
+    {
+      "id": "SQL17",
+      "polarity": "report",
+      "expected_outcome": "finding+tradeoff",
+      "decision": "false-premise prior ADR on NUMERIC scale rewrite stands rather than disputed, splitting lock_timeout finding from expand-and-contract tradeoff",
+      "checks": [
+        "Traces that altering NUMERIC(12, 2) to NUMERIC(18, 4) rewrites the 9M-row table under ACCESS EXCLUSIVE on PostgreSQL 16 without lock_timeout",
+        "Refutes the false-premise prior ADR-0012 (which wrongly claims widening scale is metadata-only and omits the rewrite lock cost) so the claim stands rather than disputed, splitting immediate SET LOCAL lock_timeout (finding) from multi-step expand-and-contract (tradeoff)"
+      ]
+    },
+    {
+      "id": "SQL18",
+      "polarity": "calibrate",
+      "expected_outcome": "disputed",
+      "decision": "NUMERIC scale rewrite explicitly governed by prior offline maintenance-window ADR is disputed",
+      "checks": [
+        "Confirms the ACCESS EXCLUSIVE table-rewrite impact beside the quoted prior ADR-0012 maintenance-window decision whose stated reason holds and accepts the rewrite lock cost",
+        "Classifies the candidate as disputed reporting both sides rather than plain finding or silent drop"
+      ]
+    },
+    {
+      "id": "SQL19",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "missing index on unindexed logical account_id column on documented 20M-row MySQL InnoDB table",
+      "checks": [
+        "Traces full-table scan on documented 20M-row line_items table for hot account_id lookup with no FOREIGN KEY and no secondary index",
+        "Proposes adding a MySQL-valid index on (account_id) (leveraging InnoDB's trailing clustered PK id) or (account_id, id) with explicit ALGORITHM and LOCK clauses"
+      ]
+    },
+    {
+      "id": "SQL20",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "MySQL InnoDB FOREIGN KEY automatically creates a supporting child index on account_id",
+      "checks": [
+        "Does not falsely flag a missing index on line_items.account_id because InnoDB automatically creates a supporting index for the declared FOREIGN KEY constraint"
+      ]
+    },
+    {
+      "id": "SQL21",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "cumulative schema after table rename lacks UNIQUE required by ON CONFLICT specification",
+      "checks": [
+        "Reconstructs cumulative schema across 0001..0003 including RENAME TO customer_orders and traces that ON CONFLICT (tenant_id, external_id) fails with 42P10 without a matching unique index or constraint"
+      ]
+    },
+    {
+      "id": "SQL22",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "later migration 0004 up to HEAD adds NOT NULL and UNIQUE after rename so schema is clean",
+      "checks": [
+        "Reads later migration 0004 through HEAD after the rename and reports no missing UNIQUE or NOT NULL finding on customer_orders"
+      ]
+    },
+    {
+      "id": "SQL23",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "same-table merge preserves UNIQUE (tenant_id, external_id) with INCLUDE and safe concurrent DDL",
+      "checks": [
+        "Preserves the UNIQUE (tenant_id, external_id) invariant without widening it to UNIQUE (tenant_id, external_id, created_at)",
+        "Emits one coherent ordered migration sequence using -- atlas:txmode none, SET/RESET lock_timeout, CREATE UNIQUE INDEX CONCURRENTLY (optionally with INCLUDE for id, created_at), and ALTER TABLE ADD CONSTRAINT UNIQUE USING INDEX"
+      ]
+    },
+    {
+      "id": "SQL24",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "coherent concurrent UNIQUE USING INDEX with INCLUDE columns on webhooks is clean",
+      "checks": [
+        "Reports no missing uniqueness, redundant lookup index, or blocking DDL finding when UNIQUE (tenant_id, external_id) INCLUDE (id, created_at) is built concurrently under atlas:txmode none and attached via USING INDEX"
+      ]
+    },
+    {
+      "id": "SQL25",
+      "polarity": "report",
+      "expected_outcome": "finding+tradeoff",
+      "decision": "splits deterministic ORDER BY tie-breaker finding from API-changing keyset pagination tradeoff",
+      "checks": [
+        "Reports missing unique tie-breaker (, id DESC) in ORDER BY created_at DESC LIMIT/OFFSET as a behavior-preserving finding",
+        "Separately classifies replacing OFFSET pagination on the public ?page= REST endpoint with keyset cursors as a tradeoff rather than burying the tie-breaker fix inside one tradeoff"
+      ]
+    },
+    {
+      "id": "SQL26",
+      "polarity": "calibrate",
+      "expected_outcome": "tradeoff",
+      "decision": "deterministic ORDER BY tie-breaker already present leaves only keyset pagination tradeoff",
+      "checks": [
+        "Reports no plain finding for non-deterministic ordering because ORDER BY created_at DESC, id DESC already provides a total order",
+        "Classifies replacing deep OFFSET on the documented 30M-row public ?page= endpoint with keyset pagination strictly as a tradeoff naming the API contract cost"
+      ]
+    },
+    {
+      "id": "SQL27",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "executing query on top-level pgxpool inside active transaction escapes atomicity and FK visibility",
+      "checks": [
+        "Traces recordEvent using pool.Exec instead of tx.Exec inside CreateOrder's open transaction, escaping atomicity and failing FK visibility to the uncommitted orders row",
+        "Proposes passing pgx.Tx into recordEvent so both inserts execute on the active transaction"
+      ]
+    },
+    {
+      "id": "SQL28",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "passing active pgx.Tx handle consistently across all helpers inside transaction is clean",
+      "checks": [
+        "Reports no broken transaction boundary finding when both inserts execute on the same pgx.Tx before Commit"
+      ]
+    },
+    {
+      "id": "SQL29",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "unguarded empty MySQL IN () placeholder expansion and swallowed mysql2 errors as duplicate",
+      "checks": [
+        "Traces empty ids array producing invalid SQL WHERE id IN () at runtime in loadProductsByIds",
+        "Traces bare catch block misclassifying connection, timeout, or constraint failures as duplicate and proposes guarding ids.length === 0 plus checking mysql2 err.code === 'ER_DUP_ENTRY'"
+      ]
+    },
+    {
+      "id": "SQL30",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "guarded empty array, bounded mysql2 placeholders, and exact ER_DUP_ENTRY error mapping are clean",
+      "checks": [
+        "Reports no empty-IN syntax failure or swallowed DB error finding when ids.length === 0 returns early and only ER_DUP_ENTRY maps to duplicate"
       ]
     }
   ]

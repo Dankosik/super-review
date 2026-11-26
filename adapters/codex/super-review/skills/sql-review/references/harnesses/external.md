@@ -20,12 +20,13 @@ installed CLI documents.
   provider/model`, with `OPENCODE_DISABLE_PROJECT_CONFIG=1` and
   `OPENCODE_CONFIG_CONTENT` defining `sql-reader` for this process only:
   `{"agent":{"sql-reader":{"mode":"primary","prompt":"<role>","permission":{"*":"deny","read":"allow","glob":"allow","grep":"allow","bash":"allow","external_directory":"allow"}}}}`.
-  Pass effort as a model variant, `provider/model#variant`: cached model
-  metadata may omit variants that exist, and an unknown one fails the first
-  launch, so do not probe metadata or run trial tasks. Never load the user's
-  own OpenCode configuration.
 - Codex: `codex exec` with a read-only sandbox, `-C <source root>` and `-m`.
 - Claude Code: `claude -p` with read and search tools only and `--model`.
+
+For OpenCode, pass effort as a model variant (`provider/model#variant`): cached
+model metadata may omit variants that exist, and an unknown one fails the first
+launch, so do not probe metadata or run trial tasks, and never load the user's
+own OpenCode configuration.
 
 One fresh process per task, run in the source root. The role text is: read the
 files at the given paths, find and read source only, never connect to a

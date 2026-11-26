@@ -33,10 +33,11 @@ application service/repository boundaries.
   waits, holding row locks, exhausting connection pools, and blocking MVCC
   cleanup.
 - **Broken transaction and session boundaries**: multi-step invariants running
-  in autocommit without a transaction; transaction-scoped settings executed
-  outside an explicit transaction; swallowing a statement error inside a
-  transaction without rolling back or using a savepoint; or implicit DDL
-  commits splitting a transaction.
+  in autocommit; issuing a query on the top-level `pool`/`db` handle inside an
+  active transaction instead of the `tx` handle (escaping atomicity or
+  self-deadlocking on locks/pool slots); transaction-scoped settings run outside
+  a tx; swallowed errors without rollback/savepoint; or implicit DDL commits.
+  Verify ORM/driver tx defaults in locked dependency source on disk.
 - **Unhandled concurrency conflicts and queue contention**: higher isolation
   levels lacking retry handling for serialization or deadlock errors, or worker
   queues polling rows without row-skipping locks so workers contend or double

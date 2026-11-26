@@ -3,7 +3,7 @@ name: sql-review
 description: "Explicit SQL Review of PostgreSQL, MySQL, or SQLite schemas, migrations, queries, transactions, indexes, and database boundaries in PRs or local source by reading, or help using that review."
 disable-model-invocation: true
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # SQL Review

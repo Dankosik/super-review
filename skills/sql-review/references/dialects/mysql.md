@@ -1,37 +1,33 @@
 # MySQL context
 
-PostgreSQL, MySQL (InnoDB primary baseline), and SQLite have dialect contexts
-in this review. Unsupported dialects are listed as excluded, not reviewed by
-analogy.
-
 ## Where MySQL projects state their baseline
 
 Server version and fork in Docker/Compose images (`mysql:<tag>` or
 `mariadb:<tag>`), CI services, cloud manifests, and `my.cnf` (`sql_mode`,
 `transaction_isolation`, `default_storage_engine`, `lower_case_table_names`).
-Cumulative schema in `mysqldump` snapshots, ordered migrations, and ORM
-configs. Runtime evidence in committed `EXPLAIN FORMAT=TREE` or
-`EXPLAIN ANALYZE` plans and driver DSN/lockfiles (`go.sum`, `Cargo.lock`,
-JS/TS or JVM lockfiles). InnoDB is the primary baseline; when a project runs
-MariaDB, verify MariaDB divergences against the repo's pinned version and docs.
+Cumulative schema in `mysqldump` snapshots, ordered migrations, declarative or
+ORM schemas, and migration runner configs. Runtime evidence in committed
+`EXPLAIN FORMAT=TREE` or `EXPLAIN ANALYZE` plans and driver DSN/lockfiles.
+InnoDB is the primary baseline; for MariaDB, verify divergences against the
+repo's pinned version and docs.
 
 ## Verify in source and baseline
 
 Pin MySQL or MariaDB version, storage engine, `sql_mode`, default
-charset/collation, and DSN flags (`parseTime`, `multiStatements`, strict mode)
-from workspace files, never memory. Inspect locked driver or ORM source on disk
-before claiming pooling, timezone, or statement behavior. Verify both current
-SQL and proposed safer forms against the pinned version. When missing server
-version or `sql_mode` decides the claim, route to `needs confirmation` or mark
-the step unproven.
+charset/collation, migration runner behavior, and DSN flags (`parseTime`,
+`multiStatements`, strict mode) from workspace files, never memory. Inspect
+locked driver or ORM source on disk (per the contract) before claiming pooling,
+timezone, error-code, or statement behavior. Verify both current SQL and
+proposed safer forms against the pinned version; route missing deciding config
+to `needs confirmation` or mark absent source `unproven`.
 
 ## Questions to settle before claiming
 
 - **Online DDL, locks, and implicit commits**: Does `ALTER TABLE` omit explicit
-  `ALGORITHM=` and `LOCK=` clauses, risking silent table-copy locks? Check
-  `ALGORITHM=INSTANT` limits (64 row-version ceiling on 8.0.29+ and FK
-  restrictions), remember DDL implicitly commits enclosing transactions on
-  mid-file failure, and verify `CHECK` enforcement (ignored pre-8.0.16).
+  `ALGORITHM=` and `LOCK=` clauses, risking silent table-copy locks? Verify
+  `ALGORITHM=INSTANT` limits (row-version ceiling and FK restrictions) and
+  `CHECK` constraint enforcement against the pinned server version; remember DDL
+  implicitly commits enclosing transactions on mid-file failure.
 - **Silent coercion and unsafe write clauses**: Does non-strict `sql_mode`
   allow silent truncation or zero dates? Does `ON DUPLICATE KEY UPDATE` match
   any unique key rather than only the intended one? Does `REPLACE INTO` delete
@@ -47,9 +43,11 @@ the step unproven.
   gap/next-key or shared source locks causing deadlocks? Does a table omit an
   explicit `PRIMARY KEY` or use random UUID strings as clustered PK on
   write-heavy tables (bloating every secondary index leaf)?
-- **Planner skip scans and semi-joins**: Check server version and `EXPLAIN`
-  before flagging omitted low-cardinality leading columns (Index Skip Scan in
-  8.0.13+) or correlated `EXISTS`/`IN` semi-joins (decorrelated in 8.0.16+).
+- **SQL mode, `GROUP BY`, and fork divergences**: Does `sql_mode` omit
+  `ONLY_FULL_GROUP_BY` so queries return arbitrary non-aggregated column values?
+  Verify pinned MySQL vs MariaDB divergences (online DDL clauses, `CHECK`
+  enforcement, JSON types, optimizer transforms) against the project's version
+  and docs before citing engine rules.
 
 ## MySQL boundaries
 
@@ -65,9 +63,13 @@ the step unproven.
 
 ## Not a finding in MySQL
 
-- Standard `EXISTS`/`IN` semi-joins (MySQL 8.0.16+) or omitted low-cardinality
-  leading index columns (MySQL 8.0.13+) without `EXPLAIN`, and uniform-direction
-  B-tree reverse scans.
+- Missing child foreign-key index in InnoDB (InnoDB automatically creates a
+  supporting index on child FK columns unless an existing index already has them
+  as a leading prefix).
+- Unbacked `O(N*M)` claims on `EXISTS`/`IN` semi-joins, `NOT EXISTS` antijoins
+  (added separately from `EXISTS` semi-joins in MySQL 8.0; verify pinned
+  version), or omitted low-cardinality leading columns (Index Skip Scan) lacking
+  `EXPLAIN`.
 - Default InnoDB `REPEATABLE READ` isolation when no gap-lock, next-key, or
   deadlock anomaly is traced.
 - Narrowing integer widths (`TINYINT` vs `INT`) on small tables without

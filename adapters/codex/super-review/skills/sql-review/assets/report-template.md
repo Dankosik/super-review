@@ -33,19 +33,17 @@ text. For a change review, the link to the change, or `pre-existing`.
 **Basis and impact.** The basis (`written`, `schema`, or `engine`) and the
 concrete effect and affected party.
 
-**Safer form.** The minimal dialect-valid and version-valid sketch, what it
-keeps, and whether multiple findings on the same table, migration, or query
-apply cleanly together.
+**Safer form.** The minimal dialect-, version-, and runner-valid sketch, what it
+keeps, and when multiple findings touch the same table, migration, or query, one
+coherent ordered migration sequence confirming they apply cleanly together.
 
 **Challenge.** What the challenger tested and why the claim stood.
 
 ### Schema-evolution fragility
 
-Findings for provable schema-evolution fragility (`SELECT *` in production
-queries or views, columnless `INSERT`, positional `ORDER BY`/`GROUP BY`,
-unqualified multi-table columns, implicit comma joins), compactly at the end of
-Findings, one row each: location, quoted line, concrete column-evolution
-breakage, safer form, and that the challenge stood.
+Findings for provable schema-evolution fragility (per the `queries` lens),
+compactly at the end of Findings, one row each: location, quoted line, concrete
+column-evolution breakage, safer form, and that the challenge stood.
 
 ## Tradeoffs
 
@@ -65,10 +63,11 @@ reason, and its accepted cost. Report both sides without prescribing the choice.
 ## Needs your confirmation
 
 Candidates whose static mechanism held except for an unconfirmed dialect
-version, live table size or cardinality, maintenance window, or runtime query
-plan. One line each: the location, the mechanism, and the exact check that
-settles it (server version, table cardinality, or `EXPLAIN (ANALYZE, BUFFERS)` /
-`EXPLAIN QUERY PLAN` output).
+version, migration runner tx mode, live-traffic or maintenance window, live
+table size or cardinality, or runtime query plan. One line each: the location,
+the mechanism, and the exact check that settles it (server version, runner
+config, table cardinality, or `EXPLAIN (ANALYZE, BUFFERS)` / `EXPLAIN QUERY
+PLAN` output).
 
 ## Outside the scope
 

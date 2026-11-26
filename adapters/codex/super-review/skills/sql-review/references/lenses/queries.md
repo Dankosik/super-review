@@ -37,19 +37,19 @@ builders against the cumulative schema.
   `WHERE` clause or guarded by a tautology; bulk mutations that silently
   truncate values, discard constraint errors, or fire unintended delete
   cascades.
-- **Provable schema-evolution fragility** (reported compactly at the end of
-  Findings): `SELECT *` in production queries or views where positional mapping
-  or new columns break callers, columnless `INSERT`, positional `ORDER BY 1` or
-  `GROUP BY 1`, unqualified multi-table columns, or implicit comma joins.
+- **Provable schema-evolution fragility** (reported compactly): `SELECT *` in
+  production queries or views where positional mapping or new columns break
+  callers, columnless `INSERT`, positional `ORDER BY 1` or `GROUP BY 1`,
+  unqualified multi-table columns, or implicit comma joins.
 
 ## Not a finding
 
 - Cosmetic SQL formatting, keyword casing, indentation, alias naming, or CTE
   versus subquery style without a semantic or fragility trace.
-- Correlated `EXISTS` or `IN` subqueries claimed as `O(N*M)` without an
-  `EXPLAIN` plan (optimizers decorrelate standard semi-joins; flag only
-  non-decorrelatable scalar subqueries, correlated aggregates, or inner
-  `LIMIT`, or route to `needs confirmation`).
+- Correlated `EXISTS`, `IN`, or `NOT EXISTS` subqueries claimed as `O(N*M)`
+  without an `EXPLAIN` plan (optimizers decorrelate standard semi-joins and
+  antijoins; flag only non-decorrelatable scalar subqueries, correlated
+  aggregates, or inner `LIMIT`, or route to `needs confirmation`).
 - `SELECT *` inside `EXISTS (...)` or inside an audited name-mapped dynamic
   passthrough helper whose contract intentionally forwards all columns.
 - `UNION` versus `UNION ALL` unless duplicates are provably impossible or
