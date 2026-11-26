@@ -10,12 +10,12 @@ builds, and tests. Never confuse those scopes.
   `references/review-contract.md`, domain decisions in `references/lenses/` and
   `references/languages/`, orchestration in `references/workflow.md`, synthesis
   in `references/verification.md`, and output fields in `assets/`.
-- **Sibling skills (`defect-review`, `test-review`, `perf-review`):** separate
-  read-only skills with independent contracts, versions, and zero runtime
-  cross-dependency. Read [the family design](docs/review-family.md) before
-  changing boundaries or proof bars across skills. Keep criteria isolated: a
-  defect is not readability, a weak test is not a defect, and slow code is not
-  a defect.
+- **Sibling skills (`defect-review`, `test-review`, `perf-review`, `sql-review`):**
+  separate read-only skills with independent contracts, versions, and zero
+  runtime cross-dependency. Read [the family design](docs/review-family.md)
+  before changing boundaries or proof bars across skills. Keep criteria
+  isolated: a defect is not readability, a weak test is not a defect, slow code
+  is not a defect, and cosmetic SQL style is not a SQL failure.
 - **Adapters (`adapters/`):** own native tool allowlists, model selection, and
   result collection, never a second review policy. Version 3 ships no custom
   runtime. Generated trees under `adapters/*/plugin` and
@@ -60,7 +60,7 @@ Never turn instructions into an API encyclopedia.
   (3) branch-only files (`harnesses/*.md`, conditional profiles/library notes,
   `#compact-pairs`) behind sharp pointers (front-loaded leading term, one
   trigger per branch, no repeated identity).
-- **User-invoked skills:** all four review skills set
+- **User-invoked skills:** all five review skills set
   `disable-model-invocation: true` (`allow_implicit_invocation: false` in
   `agents/openai.yaml`). Keep descriptions single-sentence and human-facing
   (adding an explicit-request gate only where a host lacks

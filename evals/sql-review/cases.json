@@ -1,0 +1,117 @@
+{
+  "kind": "evaluator-only",
+  "status": "NOT RUN",
+  "baseline_revision": "b56e903c2b791aea20a0ac03acf2bb4b5e40e20a",
+  "contrast_pairs": [
+    ["SQL01", "SQL02"],
+    ["SQL03", "SQL04"],
+    ["SQL05", "SQL06"],
+    ["SQL07", "SQL08"],
+    ["SQL09", "SQL10"],
+    ["SQL11", "SQL12"]
+  ],
+  "cases": [
+    {
+      "id": "SQL01",
+      "polarity": "report",
+      "decision": "inexact SQLite DECIMAL float storage and missing NOT NULL on currency",
+      "checks": [
+        "Identifies that SQLite DECIMAL(12, 2) uses NUMERIC affinity and stores fractional monetary values as IEEE-754 REAL floats",
+        "Proposes scaled INTEGER minor units and NOT NULL currency with a valid SQLite schema sketch"
+      ]
+    },
+    {
+      "id": "SQL02",
+      "polarity": "retain",
+      "decision": "strict SQLite integer-cents schema with constraints and outside-tx pragmas is clean",
+      "checks": [
+        "Reports no finding against the STRICT integer-cents schema and connection-open PRAGMA setup"
+      ]
+    },
+    {
+      "id": "SQL03",
+      "polarity": "report",
+      "decision": "blocking PostgreSQL 16 SET NOT NULL and non-concurrent CREATE INDEX without lock_timeout",
+      "checks": [
+        "Traces ACCESS EXCLUSIVE table scan on ALTER COLUMN external_ref SET NOT NULL and write lock on CREATE INDEX on a live 12M-row PG 16 table",
+        "Proposes PG 16 lock-safe NOT VALID CHECK plus VALIDATE CONSTRAINT in separate transactions with SET LOCAL lock_timeout, and CREATE INDEX CONCURRENTLY outside a transaction block"
+      ]
+    },
+    {
+      "id": "SQL04",
+      "polarity": "retain",
+      "decision": "PG 16 lock-safe separate-transaction NOT VALID check validation and non-transactional CONCURRENTLY index build is clean",
+      "checks": [
+        "Reports no migration lock finding when NOT VALID, VALIDATE CONSTRAINT, and SET NOT NULL run in separate transactions with SET LOCAL lock_timeout and CONCURRENTLY runs under atlas:txmode none"
+      ]
+    },
+    {
+      "id": "SQL05",
+      "polarity": "report",
+      "decision": "MySQL NOT IN nullable subquery returning zero rows and non-deterministic LIMIT without ORDER BY",
+      "checks": [
+        "Traces three-valued NULL logic where nullable voided_invoices.invoice_id makes NOT IN return zero rows",
+        "Flags non-deterministic LIMIT 50 without ORDER BY and proposes NOT EXISTS with deterministic tie-breaking ORDER BY"
+      ]
+    },
+    {
+      "id": "SQL06",
+      "polarity": "retain",
+      "decision": "MySQL NOT EXISTS with deterministic tie-breaker ORDER BY is clean",
+      "checks": [
+        "Reports no query bug and does not falsely flag NOT EXISTS as an O(N*M) correlated subquery on MySQL 8.0.36"
+      ]
+    },
+    {
+      "id": "SQL07",
+      "polarity": "report",
+      "decision": "PostgreSQL check-then-act lost update and transaction held open across external HTTP fraud check",
+      "checks": [
+        "Traces concurrent read-modify-write lost update on wallets.balance_cents under default READ COMMITTED without row lock or atomic update",
+        "Traces open DB transaction held across outbound risk.Check HTTP call and proposes running the risk check before an atomic conditional UPDATE that preserves missing-wallet vs insufficient-funds errors"
+      ]
+    },
+    {
+      "id": "SQL08",
+      "polarity": "retain",
+      "decision": "outbound HTTP check outside transaction followed by atomic conditional UPDATE preserving error semantics is clean",
+      "checks": [
+        "Reports no race, long-held transaction, or error-misclassification finding on the atomic conditional UPDATE with pre-call risk check"
+      ]
+    },
+    {
+      "id": "SQL09",
+      "polarity": "report",
+      "decision": "non-sargable DATE_TRUNC wrapping indexed created_at column on 50M-row table",
+      "checks": [
+        "Traces that DATE_TRUNC('day', created_at, 'UTC') = $1::timestamptz prevents using idx_events_created_at_id on the documented 50M-row table",
+        "Proposes a sargable half-open range predicate on created_at preserving UTC day-bucket semantics"
+      ]
+    },
+    {
+      "id": "SQL10",
+      "polarity": "retain",
+      "decision": "sargable half-open range predicate aligned with (created_at, id) index is clean",
+      "checks": [
+        "Reports no indexing finding and does not falsely flag backwards scan on (created_at, id)"
+      ]
+    },
+    {
+      "id": "SQL11",
+      "polarity": "report",
+      "decision": "SQL string interpolation of status and dynamic ORDER BY plus N+1 query loop",
+      "checks": [
+        "Identifies SQL injection via interpolated status and unallowlisted sortColumn identifier in listOrdersByStatus",
+        "Identifies N+1 per-id query loop in loadOrdersByIds and proposes bound parameters, closed allowlist, and batched ANY($1::bigint[])"
+      ]
+    },
+    {
+      "id": "SQL12",
+      "polarity": "retain",
+      "decision": "parameterized query with closed sort allowlist and batched ANY lookup is clean",
+      "checks": [
+        "Reports no SQL injection or N+1 finding when values are bound, sort keys pass a closed allowlist, and IDs are fetched in one batched query"
+      ]
+    }
+  ]
+}

@@ -52,7 +52,7 @@ test("agent-facing instructions contain no em-dashes", () => {
     .flatMap(entry => entry.isDirectory() ? walkMd(resolve(dir, entry.name))
       : entry.name.endsWith(".md") ? [relative(root, resolve(dir, entry.name)).replaceAll("\\", "/")] : []);
   const targets = ["AGENTS.md"];
-  for (const skill of ["super-review", "defect-review", "test-review", "perf-review"]) {
+  for (const skill of ["super-review", "defect-review", "test-review", "perf-review", "sql-review"]) {
     targets.push(`skills/${skill}/SKILL.md`, ...walkMd(resolve(root, `skills/${skill}/references`)));
   }
   for (const path of targets) {

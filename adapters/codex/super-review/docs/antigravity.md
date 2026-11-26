@@ -1,9 +1,11 @@
 # Google Antigravity
 
-The native plugin provides `/super-review`, `/defect-review`, `/test-review` and
-`/perf-review` in the Antigravity App and CLI. All four skills cover Go,
-TypeScript, Rust and Java: readability, bugs, tests and performance
-respectively. Each keeps its own contract and report format.
+The native plugin provides `/super-review`, `/defect-review`, `/test-review`,
+`/perf-review` and `/sql-review` in the Antigravity App and CLI. The first four
+skills cover Go, TypeScript, Rust and Java (readability, bugs, tests and
+performance); SQL Review covers PostgreSQL, MySQL and SQLite schemas,
+migrations, queries, transactions, indexes and database boundaries. Each keeps
+its own contract and report format.
 
 ## Install
 
@@ -28,6 +30,7 @@ a review does not install or rewrite configuration.
 /defect-review Проверь этот Rust PR на ошибки.
 /test-review Review the tests for this Rust module.
 /perf-review Review the hot paths in this Rust module.
+/sql-review Review these PostgreSQL migrations and queries.
 ```
 
 Antigravity discovers skills automatically as well as through slash commands.
@@ -38,8 +41,8 @@ usage without reading source or launching agents.
 
 ## Native execution and boundaries
 
-The current chat orchestrates and keeps its model and effort. Six custom roles
-provide independent specialists/readers and separate defect/performance
+The current chat orchestrates and keeps its model and effort. Eight custom roles
+provide independent specialists/readers and separate defect, performance and SQL
 challengers. Each uses `model: inherit`, `mainAgent: false`, `subagent: true`,
 `commandExecutionPolicy: off`, and only `view_file` and `grep_search` in its tool
 allowlist. No shell, editor, delegation tool or MCP server is configured for a
@@ -96,7 +99,7 @@ enforcement in every Antigravity version.
 
 ## Maintainer evidence
 
-Edit `adapters/antigravity/*.md`, `adapters/antigravity/agents/*.md` and the four
+Edit `adapters/antigravity/*.md`, `adapters/antigravity/agents/*.md` and the five
 canonical `references/harnesses/antigravity.md` files; regenerate with
 `bun run build`. Build, validation, package tests and native
 `agy plugin validate --strict adapters/antigravity/plugin` check delivery and

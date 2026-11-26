@@ -51,10 +51,10 @@ agy plugin validate --strict ./adapters/antigravity/plugin
 agy plugin install ./adapters/antigravity/plugin
 ```
 
-Start a new chat and use `/super-review`, `/defect-review`, `/test-review` or
-`/perf-review`. The existing chat orchestrates; fresh custom agents read and
-search source with native model inheritance. Child roles have no shell or write
-tools configured. See [installation, capabilities and evidence](antigravity.md).
+Start a new chat and use `/super-review`, `/defect-review`, `/test-review`,
+`/perf-review` or `/sql-review`. The existing chat orchestrates; fresh custom
+agents read and search source with native model inheritance. Child roles have no
+shell or write tools configured. See [installation, capabilities and evidence](antigravity.md).
 
 ## Migration from 2.x
 
