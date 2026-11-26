@@ -6,8 +6,10 @@
 whole-project source and any narrower scope. Review the selected Go, TypeScript,
 Rust, and Java production source, reading full affected declarations and
 relevant callers. In a change review, every recommendation must arise from the
-change; another file may participate in that refactoring, while unrelated
-untouched code stays outside scope. In a whole-project review, every included
+change; another file or an unchanged domain or error type whose loose shape
+directly imposes a reading or coordinated-change burden in the changed code may
+participate in that refactoring (anchored in the changed consumer), while
+unrelated untouched code stays outside scope. In a whole-project review, every included
 production file is a target, and lens, profile, or aspect wording about changed
 source or a diff applies to that included source. Draft, closed, and merged PRs
 remain reviewable when their source exists.
@@ -19,10 +21,13 @@ established test directories; Rust test-only targets and items), generated files
 (including Java `target/generated-sources` and `build/generated` roots), vendor
 trees, binaries, and unsupported languages, using [language routing](languages.md)
 for extensions and context boundaries. Effects and contracts are context for
-advice, not a correctness or security audit: when a remedy would change a
-decision the code makes (what it accepts, rejects, retries, or permits, or how
-it classifies an outcome), keep the observation and leave that remedy
-`unresolved`. Read only: never recommend missing tests, edit reviewed source,
+advice, not a correctness, security, or product-requirements audit: validating
+whether business requirements are right is outside scope, while making
+already-implemented business rules, invariants, state transitions, and domain
+vocabulary explicit, local, and compiler-checked is in scope. When a remedy
+would change a decision the code makes (what it accepts, rejects, retries, or
+permits, or how it classifies an outcome), keep the observation and leave that
+remedy `unresolved`. Read only: never recommend missing tests, edit reviewed source,
 execute project code or checks, inspect authentication files, transfer tokens,
 or publish externally. Editing or another review category requires a separate
 workflow.
@@ -64,7 +69,10 @@ every extra layer, wrapper, pass, branch, parameter, clone, or guard that is not
 **load-bearing** (removing it breaks no contract and spreads no knowledge across
 callers) is a burden, as is an unexpressed relationship between values, fields,
 or arguments that callers must keep aligned by hand, or custom mechanics where
-an existing owner already holds the rule. Bug prevention alone is outside scope.
+an existing owner already holds the rule. Bug prevention alone is outside scope;
+making an already-implemented rule, invariant, or state transition explicit in
+types or control flow so readers and the next change do not reconstruct it by
+hand is in scope.
 Compare the resulting code with the current code: what becomes explicit, what
 coordinated editing disappears, and what obligations remain? The current design
 has no presumption of superiority, and small clarity gains are valid; fewer

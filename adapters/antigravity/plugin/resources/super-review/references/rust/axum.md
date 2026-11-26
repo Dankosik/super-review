@@ -19,16 +19,15 @@ prescribing a web stack or executing procedural macros.
 
 ## function-cohesion with effects-separation
 
-- **Adapter vs operation**: separate HTTP extraction/response mapping from a
-  domain operation only when the extracted call drops HTTP knowledge (keep short
-  cohesive handlers flat rather than adding service/mapper layers). Use `FromRef`
-  substates or `middleware::from_fn_with_state` to avoid passing whole app state
-  or per-request state-cloning closures around `from_fn`, while avoiding bespoke
-  per-handler state wrappers. Replace hand-written `tower::Layer`/`Service` plus
-  `Pin<Box<dyn Future>>` middleware whose `poll_ready` simply delegates to
-  `self.inner.poll_ready(cx)` with `middleware::from_fn` / `from_fn_with_state`
-  (or an already declared `tower_http` layer) when it handles Axum `Request`/
-  `Response` with `Error = Infallible`.
+- **Thin HTTP adapters**: keep handlers as thin adapters (extract inputs, call
+  the domain/application operation, map outcomes/errors to responses) when
+  non-trivial business rules live inside the handler, while keeping short CRUD
+  handlers flat without 1:1 service/mapper layers.
+- **State and middleware**: use `FromRef` substates or
+  `middleware::from_fn_with_state` over whole-state threading or bespoke state
+  wrappers; replace pass-through `tower::Layer`/`Service` plus boxed-future
+  middleware (where `poll_ready` merely delegates and `Error = Infallible`) with
+  `middleware::from_fn` / `from_fn_with_state` or a declared `tower_http` layer.
 - **Keep when**: a custom `tower::Service` implements genuine `poll_ready`
   backpressure or readiness state, stays generic over non-Axum body/error types,
   or avoids `from_fn`'s boxed future or `Clone + Sync` inner-service bounds.

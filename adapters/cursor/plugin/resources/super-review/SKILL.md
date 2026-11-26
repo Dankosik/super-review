@@ -3,7 +3,7 @@ name: super-review
 description: "Explicit Super Review of Go, TypeScript, Rust, or Java PRs or local source for readability and maintainability, or help using that review."
 disable-model-invocation: true
 metadata:
-  version: "3.38.0"
+  version: "3.39.0"
 ---
 
 # Super Review
@@ -12,8 +12,10 @@ metadata:
 local or structural, and retain code when changing it offers no supported benefit.
 Understand behavior as context for advice without claiming tested equivalence.
 The review reads only: never edit reviewed source, post comments, or run project
-code, tests, builds, linters, hooks, or installers. Bugs, security, test
-coverage, and business requirements belong to separate reviews.
+code, tests, builds, linters, hooks, or installers. Validating bugs, security,
+test coverage, and product requirements belongs to separate reviews; making
+already-implemented business rules, invariants, and state transitions explicit
+and easy to evolve is core scope.
 
 ## Start or explain
 

@@ -59,7 +59,12 @@ A contextual profile is not a new rule namespace. Use its declared owner as
 `Lens` and apply that owner's effective rules, including the profile's named
 `Rule`. A disable, override, or conflict follows the rule into its profiles;
 loading extra guidance never restores the default. Resolve policy before a
-newly selected lens/profile runs. User exclusions remain outside style policy.
+newly selected lens/profile runs. A team rule under a conditional lens or a
+profile's owner lens may also require selecting that conditional lens or
+profile whenever matching paths are in scope (for example, pinning
+`representation`, `logic`, and `effects-separation` on domain modules), while
+explicit user exclusions still take precedence. User exclusions remain outside
+style policy.
 
 Supported actions:
 

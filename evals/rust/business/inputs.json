@@ -1,0 +1,289 @@
+{
+  "inputs": [
+    {
+      "id": "RB01",
+      "lens": "representation",
+      "profiles": [],
+      "request": "Review this order cancellation change for clarity and maintainability.",
+      "scope": "All production declarations across the vertical order cancellation spine (src/lib.rs, src/domain.rs, src/repo.rs, src/usecase.rs, src/handler.rs).",
+      "context": "Workspace-internal order service crate (publish = false, edition 2021, MSRV 1.80). No external Rust callers. The PR added cancel_order and refund_summary over existing OrderRow.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"order_cancel_anemic\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod domain;\npub mod handler;\npub mod repo;\npub mod usecase;\n",
+        "src/domain.rs": "#[derive(Debug, Clone, PartialEq, Eq)]\npub struct OrderRow {\n    pub id: u64,\n    pub status: String,\n    pub total_cents: i64,\n    pub paid_at: Option<i64>,\n    pub cancelled_at: Option<i64>,\n    pub customer_note: String,\n}\n",
+        "src/repo.rs": "use crate::domain::OrderRow;\n\npub struct OrderRepo {\n    stored: OrderRow,\n}\n\nimpl OrderRepo {\n    pub fn new(stored: OrderRow) -> Self {\n        Self { stored }\n    }\n\n    pub fn load(&self, id: u64) -> Option<OrderRow> {\n        (self.stored.id == id).then(|| self.stored.clone())\n    }\n\n    pub fn save(&mut self, row: OrderRow) {\n        self.stored = row;\n    }\n}\n",
+        "src/usecase.rs": "use crate::repo::OrderRepo;\n\n#[derive(Debug, PartialEq, Eq)]\npub enum CancelResult {\n    Cancelled { refund_cents: i64 },\n    AlreadyCancelled,\n    Expired,\n    NotFound,\n}\n\npub fn cancel_order(\n    repo: &mut OrderRepo,\n    order_id: u64,\n    now_secs: i64,\n    window_secs: i64,\n) -> CancelResult {\n    let Some(mut row) = repo.load(order_id) else {\n        return CancelResult::NotFound;\n    };\n    if row.status == \"cancelled\" {\n        return CancelResult::AlreadyCancelled;\n    }\n    let refund_cents = if row.status == \"paid\" {\n        let paid_at = row.paid_at.unwrap_or(0);\n        if now_secs - paid_at > window_secs {\n            return CancelResult::Expired;\n        }\n        row.total_cents\n    } else {\n        0\n    };\n    row.status = \"cancelled\".to_string();\n    row.cancelled_at = Some(now_secs);\n    repo.save(row);\n    CancelResult::Cancelled { refund_cents }\n}\n\npub fn refund_summary(repo: &OrderRepo, order_id: u64) -> Option<String> {\n    let row = repo.load(order_id)?;\n    if row.status == \"cancelled\" {\n        let ts = row.cancelled_at.unwrap_or(0);\n        Some(format!(\"cancelled at {ts}: {}\", row.customer_note))\n    } else {\n        Some(format!(\"status {}: {}\", row.status, row.customer_note))\n    }\n}\n",
+        "src/handler.rs": "use crate::repo::OrderRepo;\nuse crate::usecase::{cancel_order, CancelResult};\n\npub fn handle_cancel(repo: &mut OrderRepo, order_id: u64, now_secs: i64) -> u16 {\n    match cancel_order(repo, order_id, now_secs, 3600) {\n        CancelResult::Cancelled { .. } => 200,\n        CancelResult::AlreadyCancelled => 409,\n        CancelResult::Expired => 422,\n        CancelResult::NotFound => 404,\n    }\n}\n"
+      }
+    },
+    {
+      "id": "RB02",
+      "lens": "representation",
+      "profiles": [],
+      "request": "Review this order cancellation change for clarity and maintainability.",
+      "scope": "All production declarations across the vertical order cancellation spine (src/lib.rs, src/domain.rs, src/repo.rs, src/usecase.rs, src/handler.rs).",
+      "context": "Workspace-internal order service crate (publish = false, edition 2021, MSRV 1.80). No external Rust callers. Orders are persisted in storage and loaded into heterogeneous collections.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"order_cancel_modeled\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod domain;\npub mod handler;\npub mod repo;\npub mod usecase;\n",
+        "src/domain.rs": "#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub struct OrderId(pub u64);\n\n#[derive(Debug, Clone, PartialEq, Eq)]\npub enum OrderState {\n    Draft,\n    Paid { paid_at: i64, total_cents: i64 },\n    Cancelled { cancelled_at: i64 },\n}\n\n#[derive(Debug, Clone, PartialEq, Eq)]\npub enum CancelOutcome {\n    Cancelled { refund_cents: i64 },\n    AlreadyCancelled,\n    Expired,\n}\n\n#[derive(Debug, Clone, PartialEq, Eq)]\npub struct Order {\n    id: OrderId,\n    state: OrderState,\n    customer_note: String,\n}\n\nimpl Order {\n    pub fn new(id: OrderId, state: OrderState, customer_note: String) -> Self {\n        Self { id, state, customer_note }\n    }\n\n    pub fn id(&self) -> OrderId {\n        self.id\n    }\n\n    pub fn state(&self) -> &OrderState {\n        &self.state\n    }\n\n    pub fn customer_note(&self) -> &str {\n        &self.customer_note\n    }\n\n    pub fn cancel(&mut self, now_secs: i64, window_secs: i64) -> CancelOutcome {\n        match self.state {\n            OrderState::Cancelled { .. } => CancelOutcome::AlreadyCancelled,\n            OrderState::Draft => {\n                self.state = OrderState::Cancelled { cancelled_at: now_secs };\n                CancelOutcome::Cancelled { refund_cents: 0 }\n            }\n            OrderState::Paid { paid_at, total_cents } => {\n                if now_secs - paid_at > window_secs {\n                    return CancelOutcome::Expired;\n                }\n                self.state = OrderState::Cancelled { cancelled_at: now_secs };\n                CancelOutcome::Cancelled { refund_cents: total_cents }\n            }\n        }\n    }\n}\n",
+        "src/repo.rs": "use crate::domain::{Order, OrderId, OrderState};\n\n#[derive(Debug, Clone)]\nstruct StoredOrderRow {\n    id: u64,\n    status: String,\n    total_cents: i64,\n    paid_at: Option<i64>,\n    cancelled_at: Option<i64>,\n    customer_note: String,\n}\n\npub struct OrderRepo {\n    row: StoredOrderRow,\n}\n\nimpl OrderRepo {\n    pub fn from_domain(order: &Order) -> Self {\n        Self { row: encode(order) }\n    }\n\n    pub fn load(&self, id: OrderId) -> Option<Order> {\n        if self.row.id != id.0 {\n            return None;\n        }\n        decode(&self.row)\n    }\n\n    pub fn save(&mut self, order: &Order) {\n        self.row = encode(order);\n    }\n}\n\nfn decode(row: &StoredOrderRow) -> Option<Order> {\n    let state = match row.status.as_str() {\n        \"draft\" => OrderState::Draft,\n        \"paid\" => OrderState::Paid {\n            paid_at: row.paid_at?,\n            total_cents: row.total_cents,\n        },\n        \"cancelled\" => OrderState::Cancelled {\n            cancelled_at: row.cancelled_at?,\n        },\n        _ => return None,\n    };\n    Some(Order::new(OrderId(row.id), state, row.customer_note.clone()))\n}\n\nfn encode(order: &Order) -> StoredOrderRow {\n    let (status, total_cents, paid_at, cancelled_at) = match *order.state() {\n        OrderState::Draft => (\"draft\", 0, None, None),\n        OrderState::Paid { paid_at, total_cents } => (\"paid\", total_cents, Some(paid_at), None),\n        OrderState::Cancelled { cancelled_at } => (\"cancelled\", 0, None, Some(cancelled_at)),\n    };\n    StoredOrderRow {\n        id: order.id().0,\n        status: status.to_string(),\n        total_cents,\n        paid_at,\n        cancelled_at,\n        customer_note: order.customer_note().to_string(),\n    }\n}\n",
+        "src/usecase.rs": "use crate::domain::{CancelOutcome, OrderId};\nuse crate::repo::OrderRepo;\n\npub fn cancel_order(\n    repo: &mut OrderRepo,\n    id: OrderId,\n    now_secs: i64,\n    window_secs: i64,\n) -> Option<CancelOutcome> {\n    let mut order = repo.load(id)?;\n    let outcome = order.cancel(now_secs, window_secs);\n    if matches!(outcome, CancelOutcome::Cancelled { .. }) {\n        repo.save(&order);\n    }\n    Some(outcome)\n}\n",
+        "src/handler.rs": "use crate::domain::{CancelOutcome, OrderId};\nuse crate::repo::OrderRepo;\nuse crate::usecase::cancel_order;\n\npub fn handle_cancel(repo: &mut OrderRepo, order_id: u64, now_secs: i64) -> u16 {\n    match cancel_order(repo, OrderId(order_id), now_secs, 3600) {\n        Some(CancelOutcome::Cancelled { .. }) => 200,\n        Some(CancelOutcome::AlreadyCancelled) => 409,\n        Some(CancelOutcome::Expired) => 422,\n        None => 404,\n    }\n}\n"
+      }
+    },
+    {
+      "id": "RB03",
+      "lens": "function-cohesion",
+      "profiles": [
+        "effects-separation"
+      ],
+      "request": "Review the subscription renewal implementation for clarity and maintainability.",
+      "scope": "All production declarations across src/lib.rs, src/store.rs, src/gateway.rs, and src/renewal.rs.",
+      "context": "Workspace-internal billing crate (publish = false, edition 2021, MSRV 1.80). Renewals compute tiered discounts, proration, and grace periods alongside database reads, payment calls, and wall-clock lookups.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"sub_renewal_mixed\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod gateway;\npub mod renewal;\npub mod store;\n",
+        "src/store.rs": "#[derive(Debug, Clone)]\npub struct Subscription {\n    pub id: u64,\n    pub base_price_cents: i64,\n    pub seats: u32,\n    pub period_end_secs: i64,\n    pub loyal_months: u32,\n    pub paused: bool,\n}\n\npub struct Store {\n    sub: Subscription,\n    pub saved_charges: Vec<(u64, i64, i64)>,\n}\n\nimpl Store {\n    pub fn new(sub: Subscription) -> Self {\n        Self { sub, saved_charges: Vec::new() }\n    }\n\n    pub fn load_sub(&self, id: u64) -> Result<Subscription, &'static str> {\n        if self.sub.id == id {\n            Ok(self.sub.clone())\n        } else {\n            Err(\"not found\")\n        }\n    }\n\n    pub fn record_renewal(&mut self, id: u64, amount_cents: i64, next_end_secs: i64) -> Result<(), &'static str> {\n        self.sub.period_end_secs = next_end_secs;\n        self.saved_charges.push((id, amount_cents, next_end_secs));\n        Ok(())\n    }\n}\n",
+        "src/gateway.rs": "pub struct PaymentGateway {\n    pub charged: Vec<(u64, i64)>,\n}\n\nimpl PaymentGateway {\n    pub fn new() -> Self {\n        Self { charged: Vec::new() }\n    }\n\n    pub fn charge(&mut self, sub_id: u64, cents: i64) -> Result<(), &'static str> {\n        self.charged.push((sub_id, cents));\n        Ok(())\n    }\n}\n\nimpl Default for PaymentGateway {\n    fn default() -> Self {\n        Self::new()\n    }\n}\n",
+        "src/renewal.rs": "use std::time::{SystemTime, UNIX_EPOCH};\n\nuse crate::gateway::PaymentGateway;\nuse crate::store::Store;\n\nconst GRACE_SECS: i64 = 7 * 86_400;\nconst PERIOD_SECS: i64 = 30 * 86_400;\n\npub fn run_renewal(\n    store: &mut Store,\n    gateway: &mut PaymentGateway,\n    sub_id: u64,\n    coupon_pct: u32,\n) -> Result<Option<i64>, &'static str> {\n    let sub = store.load_sub(sub_id)?;\n    if sub.paused {\n        return Ok(None);\n    }\n    let now_secs = SystemTime::now()\n        .duration_since(UNIX_EPOCH)\n        .map(|d| d.as_secs() as i64)\n        .unwrap_or(0);\n    if now_secs < sub.period_end_secs {\n        return Ok(None);\n    }\n    let overdue = now_secs - sub.period_end_secs;\n    if overdue > GRACE_SECS {\n        return Err(\"grace period exceeded\");\n    }\n    let gross = sub.base_price_cents * i64::from(sub.seats);\n    let volume_pct = if sub.seats >= 25 {\n        15\n    } else if sub.seats >= 10 {\n        10\n    } else {\n        0\n    };\n    let loyalty_pct = if sub.loyal_months >= 24 { 10 } else if sub.loyal_months >= 12 { 5 } else { 0 };\n    let total_pct = (volume_pct + loyalty_pct + coupon_pct).min(30);\n    let due_cents = gross - (gross * i64::from(total_pct)) / 100;\n    let next_end = now_secs + PERIOD_SECS;\n    if due_cents > 0 {\n        gateway.charge(sub.id, due_cents)?;\n    }\n    store.record_renewal(sub.id, due_cents, next_end)?;\n    Ok(Some(due_cents))\n}\n"
+      }
+    },
+    {
+      "id": "RB04",
+      "lens": "function-cohesion",
+      "profiles": [
+        "effects-separation"
+      ],
+      "request": "Review the billing contact update change for clarity and maintainability.",
+      "scope": "All production declarations across src/lib.rs, src/store.rs, and src/contact.rs.",
+      "context": "Workspace-internal billing crate (publish = false, edition 2021, MSRV 1.80). update_billing_email holds an exclusive row lock guard across load, check, and update to guarantee read-after-write consistency.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"billing_contact_crud\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod contact;\npub mod store;\n",
+        "src/store.rs": "use std::sync::{Mutex, MutexGuard};\n\n#[derive(Debug, Clone)]\npub struct CustomerRecord {\n    pub id: u64,\n    pub email: String,\n    pub version: u64,\n}\n\npub struct CustomerStore {\n    inner: Mutex<CustomerRecord>,\n}\n\nimpl CustomerStore {\n    pub fn new(rec: CustomerRecord) -> Self {\n        Self { inner: Mutex::new(rec) }\n    }\n\n    pub fn lock_row(&self) -> Result<MutexGuard<'_, CustomerRecord>, &'static str> {\n        self.inner.lock().map_err(|_| \"store poisoned\")\n    }\n}\n",
+        "src/contact.rs": "use crate::store::CustomerStore;\n\npub fn update_billing_email(\n    store: &CustomerStore,\n    customer_id: u64,\n    new_email: &str,\n) -> Result<u64, &'static str> {\n    let trimmed = new_email.trim();\n    if trimmed.is_empty() || !trimmed.contains('@') {\n        return Err(\"invalid email\");\n    }\n    let mut row = store.lock_row()?;\n    if row.id != customer_id {\n        return Err(\"customer not found\");\n    }\n    if row.email == trimmed {\n        return Ok(row.version);\n    }\n    row.email = trimmed.to_string();\n    row.version += 1;\n    Ok(row.version)\n}\n"
+      }
+    },
+    {
+      "id": "RB05",
+      "lens": "logic",
+      "profiles": [],
+      "request": "Review the refund authorization rules for clarity and maintainability.",
+      "scope": "All production declarations across src/lib.rs, src/domain.rs, src/policy.rs, and src/handler.rs.",
+      "context": "Workspace-internal refunds crate (publish = false, edition 2021, MSRV 1.80). Authorization depends on Role, OrderState, and RefundReason.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"refund_policy_nested\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod domain;\npub mod handler;\npub mod policy;\n",
+        "src/domain.rs": "#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub enum Role {\n    Customer,\n    Support,\n    Finance,\n}\n\n#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub enum OrderState {\n    Paid,\n    Shipped,\n    Delivered,\n}\n\n#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub enum RefundReason {\n    ChangedMind,\n    Damaged,\n}\n\n#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub enum Approval {\n    Allowed,\n    NeedsManager,\n    Denied,\n}\n",
+        "src/policy.rs": "use crate::domain::{Approval, OrderState, RefundReason, Role};\n\npub fn authorize_refund(\n    role: Role,\n    state: OrderState,\n    reason: RefundReason,\n    amount_cents: i64,\n) -> Approval {\n    if amount_cents > 50_000 && role != Role::Finance {\n        return Approval::NeedsManager;\n    }\n    if role == Role::Finance {\n        return Approval::Allowed;\n    }\n    if role == Role::Support {\n        if reason == RefundReason::Damaged {\n            return Approval::Allowed;\n        } else if state == OrderState::Paid {\n            return Approval::Allowed;\n        } else if state == OrderState::Shipped {\n            return Approval::NeedsManager;\n        } else {\n            return Approval::NeedsManager;\n        }\n    }\n    if role == Role::Customer {\n        if state == OrderState::Paid {\n            if reason == RefundReason::ChangedMind {\n                return Approval::Allowed;\n            } else {\n                return Approval::Allowed;\n            }\n        } else if state == OrderState::Delivered && reason == RefundReason::Damaged {\n            return Approval::NeedsManager;\n        }\n    }\n    Approval::Denied\n}\n",
+        "src/handler.rs": "use crate::domain::{Approval, OrderState, RefundReason, Role};\nuse crate::policy::authorize_refund;\n\npub fn refund_status_code(\n    role: Role,\n    state: OrderState,\n    reason: RefundReason,\n    amount_cents: i64,\n) -> u16 {\n    match authorize_refund(role, state, reason, amount_cents) {\n        Approval::Allowed => 200,\n        Approval::NeedsManager => 202,\n        Approval::Denied => 403,\n    }\n}\n"
+      }
+    },
+    {
+      "id": "RB06",
+      "lens": "logic",
+      "profiles": [],
+      "request": "Review the refund authorization rules for clarity and maintainability.",
+      "scope": "All production declarations across src/lib.rs, src/domain.rs, src/policy.rs, and src/handler.rs.",
+      "context": "Workspace-internal refunds crate (publish = false, edition 2021, MSRV 1.80). Authorization depends on Role, OrderState, RefundReason, and an independent high-value threshold.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"refund_policy_table\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod domain;\npub mod handler;\npub mod policy;\n",
+        "src/domain.rs": "#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub enum Role {\n    Customer,\n    Support,\n    Finance,\n}\n\n#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub enum OrderState {\n    Paid,\n    Shipped,\n    Delivered,\n}\n\n#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub enum RefundReason {\n    ChangedMind,\n    Damaged,\n}\n\n#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub enum Approval {\n    Allowed,\n    NeedsManager,\n    Denied,\n}\n",
+        "src/policy.rs": "use crate::domain::{Approval, OrderState, RefundReason, Role};\n\nconst MANAGER_THRESHOLD_CENTS: i64 = 50_000;\n\npub fn authorize_refund(\n    role: Role,\n    state: OrderState,\n    reason: RefundReason,\n    amount_cents: i64,\n) -> Approval {\n    if amount_cents > MANAGER_THRESHOLD_CENTS && role != Role::Finance {\n        return Approval::NeedsManager;\n    }\n    match (role, state, reason) {\n        (Role::Finance, _, _) => Approval::Allowed,\n        (Role::Support, _, RefundReason::Damaged)\n        | (Role::Support, OrderState::Paid, RefundReason::ChangedMind) => Approval::Allowed,\n        (Role::Support, OrderState::Shipped | OrderState::Delivered, RefundReason::ChangedMind) => {\n            Approval::NeedsManager\n        }\n        (Role::Customer, OrderState::Paid, _) => Approval::Allowed,\n        (Role::Customer, OrderState::Delivered, RefundReason::Damaged) => Approval::NeedsManager,\n        (Role::Customer, OrderState::Shipped, _)\n        | (Role::Customer, OrderState::Delivered, RefundReason::ChangedMind) => Approval::Denied,\n    }\n}\n",
+        "src/handler.rs": "use crate::domain::{Approval, OrderState, RefundReason, Role};\nuse crate::policy::authorize_refund;\n\npub fn refund_status_code(\n    role: Role,\n    state: OrderState,\n    reason: RefundReason,\n    amount_cents: i64,\n) -> u16 {\n    match authorize_refund(role, state, reason, amount_cents) {\n        Approval::Allowed => 200,\n        Approval::NeedsManager => 202,\n        Approval::Denied => 403,\n    }\n}\n"
+      }
+    },
+    {
+      "id": "RB07",
+      "lens": "control-flow",
+      "profiles": [
+        "error-expression"
+      ],
+      "request": "Review the payout execution change for clarity and error handling structure.",
+      "scope": "All production declarations across src/lib.rs, src/error.rs, src/usecase.rs, and src/handler.rs.",
+      "context": "Workspace-internal payouts crate (publish = false, edition 2021, MSRV 1.80). The PR added execute_payout and handle_payout using existing AppError.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"payout_god_error\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod error;\npub mod handler;\npub mod usecase;\n",
+        "src/error.rs": "#[derive(Debug, PartialEq, Eq)]\npub enum AppError {\n    InsufficientBalance { available: i64, requested: i64 },\n    AlreadySettled,\n    DbUnavailable(String),\n    GatewayTimeout,\n    InvalidWebhookSignature,\n    TemplateMissing(String),\n}\n",
+        "src/usecase.rs": "use crate::error::AppError;\n\npub struct Account {\n    pub balance_cents: i64,\n    pub settled: bool,\n}\n\npub fn execute_payout(\n    account: &mut Account,\n    amount_cents: i64,\n    db_online: bool,\n) -> Result<i64, AppError> {\n    if !db_online {\n        return Err(AppError::DbUnavailable(\"primary offline\".into()));\n    }\n    if account.settled {\n        return Err(AppError::AlreadySettled);\n    }\n    if account.balance_cents < amount_cents {\n        return Err(AppError::InsufficientBalance {\n            available: account.balance_cents,\n            requested: amount_cents,\n        });\n    }\n    account.balance_cents -= amount_cents;\n    account.settled = true;\n    Ok(account.balance_cents)\n}\n",
+        "src/handler.rs": "use crate::error::AppError;\nuse crate::usecase::{execute_payout, Account};\n\n#[derive(Debug, PartialEq, Eq)]\npub struct HttpReply {\n    pub status: u16,\n    pub retryable: bool,\n}\n\npub fn handle_payout(account: &mut Account, amount_cents: i64, db_online: bool) -> HttpReply {\n    match execute_payout(account, amount_cents, db_online) {\n        Ok(_) => HttpReply { status: 200, retryable: false },\n        Err(AppError::InsufficientBalance { .. }) => HttpReply { status: 422, retryable: false },\n        Err(AppError::AlreadySettled) => HttpReply { status: 409, retryable: false },\n        Err(AppError::DbUnavailable(_)) | Err(AppError::GatewayTimeout) => {\n            HttpReply { status: 503, retryable: true }\n        }\n        Err(AppError::InvalidWebhookSignature) | Err(AppError::TemplateMissing(_)) => {\n            HttpReply { status: 500, retryable: false }\n        }\n    }\n}\n"
+      }
+    },
+    {
+      "id": "RB08",
+      "lens": "control-flow",
+      "profiles": [
+        "error-expression"
+      ],
+      "request": "Review the payout execution change for clarity and error handling structure.",
+      "scope": "All production declarations across src/lib.rs, src/error.rs, src/usecase.rs, and src/handler.rs.",
+      "context": "Workspace-internal payouts crate (publish = false, edition 2021, MSRV 1.80). Domain outcomes are separated from infrastructure faults; ApiError is only used at the outer reporting boundary.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"payout_scoped_outcome\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod error;\npub mod handler;\npub mod usecase;\n",
+        "src/error.rs": "#[derive(Debug, PartialEq, Eq)]\npub enum InfraError {\n    DbUnavailable(String),\n}\n\n#[derive(Debug, PartialEq, Eq)]\npub struct HttpReply {\n    pub status: u16,\n    pub retryable: bool,\n}\n",
+        "src/usecase.rs": "use crate::error::InfraError;\n\npub struct Account {\n    pub balance_cents: i64,\n    pub settled: bool,\n}\n\n#[derive(Debug, PartialEq, Eq)]\npub enum PayoutOutcome {\n    Settled { remaining_cents: i64 },\n    AlreadySettled,\n    InsufficientBalance { available: i64, requested: i64 },\n}\n\npub fn execute_payout(\n    account: &mut Account,\n    amount_cents: i64,\n    db_online: bool,\n) -> Result<PayoutOutcome, InfraError> {\n    if !db_online {\n        return Err(InfraError::DbUnavailable(\"primary offline\".into()));\n    }\n    if account.settled {\n        return Ok(PayoutOutcome::AlreadySettled);\n    }\n    if account.balance_cents < amount_cents {\n        return Ok(PayoutOutcome::InsufficientBalance {\n            available: account.balance_cents,\n            requested: amount_cents,\n        });\n    }\n    account.balance_cents -= amount_cents;\n    account.settled = true;\n    Ok(PayoutOutcome::Settled {\n        remaining_cents: account.balance_cents,\n    })\n}\n",
+        "src/handler.rs": "use crate::error::{HttpReply, InfraError};\nuse crate::usecase::{execute_payout, Account, PayoutOutcome};\n\npub fn handle_payout(account: &mut Account, amount_cents: i64, db_online: bool) -> HttpReply {\n    match execute_payout(account, amount_cents, db_online) {\n        Ok(PayoutOutcome::Settled { .. }) => HttpReply { status: 200, retryable: false },\n        Ok(PayoutOutcome::AlreadySettled) => HttpReply { status: 409, retryable: false },\n        Ok(PayoutOutcome::InsufficientBalance { .. }) => HttpReply { status: 422, retryable: false },\n        Err(InfraError::DbUnavailable(_)) => HttpReply { status: 503, retryable: true },\n    }\n}\n"
+      }
+    },
+    {
+      "id": "RB09",
+      "lens": "placement",
+      "profiles": [],
+      "request": "Review the newly added invoice modules for module placement and organization.",
+      "scope": "All production declarations across src/lib.rs, src/catalog/, src/handlers/, src/services/, src/validators/, src/dtos/, and src/utils/.",
+      "context": "Workspace-internal commerce crate (publish = false, edition 2021, MSRV 1.80). Existing sibling features (catalog) are organized vertically by business capability; the PR added invoice across horizontal layer directories and utils/.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"invoice_scattered\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod catalog;\npub mod dtos;\npub mod handlers;\npub mod services;\npub mod utils;\npub mod validators;\n",
+        "src/catalog/mod.rs": "pub struct Product { pub id: u64, pub price_cents: i64 }\npub fn unit_price(p: &Product) -> i64 { p.price_cents }\n",
+        "src/dtos/mod.rs": "pub struct InvoiceInput { pub line_totals: Vec<i64>, pub tax_bps: u32 }\n",
+        "src/validators/mod.rs": "use crate::dtos::InvoiceInput;\npub fn validate_invoice(input: &InvoiceInput) -> Result<(), &'static str> {\n    if input.line_totals.is_empty() { return Err(\"empty invoice\"); }\n    Ok(())\n}\n",
+        "src/utils/mod.rs": "pub fn apply_invoice_tax(subtotal: i64, tax_bps: u32) -> i64 {\n    subtotal + (subtotal * i64::from(tax_bps)) / 10_000\n}\n",
+        "src/services/mod.rs": "use crate::dtos::InvoiceInput;\nuse crate::utils::apply_invoice_tax;\nuse crate::validators::validate_invoice;\npub fn issue_invoice(input: &InvoiceInput) -> Result<i64, &'static str> {\n    validate_invoice(input)?;\n    let subtotal: i64 = input.line_totals.iter().sum();\n    Ok(apply_invoice_tax(subtotal, input.tax_bps))\n}\n",
+        "src/handlers/mod.rs": "use crate::dtos::InvoiceInput;\nuse crate::services::issue_invoice;\npub fn handle_issue(input: &InvoiceInput) -> Result<i64, &'static str> {\n    issue_invoice(input)\n}\n"
+      }
+    },
+    {
+      "id": "RB10",
+      "lens": "placement",
+      "profiles": [],
+      "request": "Review the newly added invoice module for module placement and organization.",
+      "scope": "All production declarations across src/lib.rs, src/catalog/, and src/invoice/.",
+      "context": "Workspace-internal commerce crate (publish = false, edition 2021, MSRV 1.80). Existing sibling features (catalog) are organized vertically by business capability.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"invoice_vertical\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod catalog;\npub mod invoice;\n",
+        "src/catalog/mod.rs": "pub struct Product { pub id: u64, pub price_cents: i64 }\npub fn unit_price(p: &Product) -> i64 { p.price_cents }\n",
+        "src/invoice/mod.rs": "pub mod rules;\n\npub struct InvoiceInput {\n    pub line_totals: Vec<i64>,\n    pub tax_bps: u32,\n}\n\npub fn issue_invoice(input: &InvoiceInput) -> Result<i64, &'static str> {\n    rules::compute_total(&input.line_totals, input.tax_bps)\n}\n",
+        "src/invoice/rules.rs": "pub fn compute_total(line_totals: &[i64], tax_bps: u32) -> Result<i64, &'static str> {\n    if line_totals.is_empty() {\n        return Err(\"empty invoice\");\n    }\n    let subtotal: i64 = line_totals.iter().sum();\n    Ok(subtotal + (subtotal * i64::from(tax_bps)) / 10_000)\n}\n"
+      }
+    },
+    {
+      "id": "RB11",
+      "lens": "naming",
+      "profiles": [],
+      "request": "Review the seat reservation module for naming clarity.",
+      "scope": "All production declarations across src/lib.rs, src/domain.rs, and src/service.rs.",
+      "context": "Workspace-internal workspace-seats crate (publish = false, edition 2021, MSRV 1.80). No external Rust callers.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"seat_naming_murky\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod domain;\npub mod service;\n",
+        "src/domain.rs": "use std::collections::BTreeMap;\n\npub struct OrgSeats {\n    pub tenant_id: u64,\n    pub seats_vec: BTreeMap<u64, bool>,\n    pub not_suspended: bool,\n}\n\nimpl OrgSeats {\n    pub fn into_summary(&self) -> (u64, usize) {\n        (self.tenant_id, self.seats_vec.len())\n    }\n}\n",
+        "src/service.rs": "use crate::domain::OrgSeats;\n\npub fn reserve_for_account(org: &mut OrgSeats, user_id: u64, elapsed_secs: i64) -> Result<(), &'static str> {\n    if !org.not_suspended {\n        return Err(\"suspended\");\n    }\n    if elapsed_secs > 86_400 {\n        return Err(\"hold expired\");\n    }\n    org.seats_vec.insert(user_id, true);\n    Ok(())\n}\n"
+      }
+    },
+    {
+      "id": "RB12",
+      "lens": "naming",
+      "profiles": [],
+      "request": "Review the seat reservation module for naming clarity.",
+      "scope": "All production declarations across src/lib.rs, src/domain.rs, and src/service.rs.",
+      "context": "Workspace-internal workspace-seats crate (publish = false, edition 2021, MSRV 1.80). No external Rust callers.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"seat_naming_clear\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod domain;\npub mod service;\n",
+        "src/domain.rs": "use std::collections::BTreeMap;\n\npub struct TenantSeats {\n    pub tenant_id: u64,\n    pub seats_by_user: BTreeMap<u64, bool>,\n    pub is_active: bool,\n}\n\nimpl TenantSeats {\n    pub fn summary(&self) -> (u64, usize) {\n        (self.tenant_id, self.seats_by_user.len())\n    }\n}\n",
+        "src/service.rs": "use crate::domain::TenantSeats;\n\nconst HOLD_WINDOW_SECS: i64 = 86_400;\n\npub fn reserve_for_tenant(ts: &mut TenantSeats, uid: u64, elapsed_secs: i64) -> Result<(), &'static str> {\n    if !ts.is_active {\n        return Err(\"suspended\");\n    }\n    if elapsed_secs > HOLD_WINDOW_SECS {\n        return Err(\"hold expired\");\n    }\n    ts.seats_by_user.insert(uid, true);\n    Ok(())\n}\n"
+      }
+    },
+    {
+      "id": "RB13",
+      "lens": "conventions",
+      "profiles": [],
+      "request": "Review the newly added refunds module for consistency with established crate conventions.",
+      "scope": "Changed file src/refunds.rs with crate context in src/lib.rs, src/money.rs, src/billing.rs, and src/orders.rs.",
+      "context": "Workspace-internal billing crate (publish = false, edition 2021, MSRV 1.80). Existing modules consistently represent currency with Money and pass explicit UnixSecs timestamps.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"conventions_diverged\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod billing;\npub mod money;\npub mod orders;\npub mod refunds;\n",
+        "src/money.rs": "#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub struct Money {\n    pub cents: i64,\n}\n\n#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub struct UnixSecs(pub i64);\n",
+        "src/orders.rs": "use crate::money::{Money, UnixSecs};\n\npub fn order_total(unit: Money, qty: i64, _created_at: UnixSecs) -> Money {\n    Money { cents: unit.cents * qty }\n}\n",
+        "src/billing.rs": "use crate::money::{Money, UnixSecs};\n\npub fn charge_fee(subtotal: Money, _charged_at: UnixSecs) -> Money {\n    Money { cents: subtotal.cents / 20 }\n}\n",
+        "src/refunds.rs": "use std::time::{SystemTime, UNIX_EPOCH};\n\npub struct RefundReceipt {\n    pub amount_dollars: f64,\n    pub issued_epoch: u64,\n}\n\npub fn compute_refund(paid_dollars: f64, restock_pct: f64) -> RefundReceipt {\n    let issued_epoch = SystemTime::now()\n        .duration_since(UNIX_EPOCH)\n        .map(|d| d.as_secs())\n        .unwrap_or(0);\n    let amount_dollars = paid_dollars * (1.0 - restock_pct / 100.0);\n    RefundReceipt { amount_dollars, issued_epoch }\n}\n"
+      }
+    },
+    {
+      "id": "RB14",
+      "lens": "conventions",
+      "profiles": [],
+      "request": "Review the newly added refunds and bank CSV export modules for consistency with crate conventions.",
+      "scope": "Changed files src/refunds.rs and src/csv_export.rs with crate context in src/lib.rs, src/money.rs, src/billing.rs, and src/orders.rs.",
+      "context": "Workspace-internal billing crate (publish = false, edition 2021, MSRV 1.80). Existing modules use Money and UnixSecs; the external bank CSV spec requires a formatted decimal string.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"conventions_aligned\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod billing;\npub mod csv_export;\npub mod money;\npub mod orders;\npub mod refunds;\n",
+        "src/money.rs": "#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub struct Money {\n    pub cents: i64,\n}\n\n#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub struct UnixSecs(pub i64);\n",
+        "src/orders.rs": "use crate::money::{Money, UnixSecs};\n\npub fn order_total(unit: Money, qty: i64, _created_at: UnixSecs) -> Money {\n    Money { cents: unit.cents * qty }\n}\n",
+        "src/billing.rs": "use crate::money::{Money, UnixSecs};\n\npub fn charge_fee(subtotal: Money, _charged_at: UnixSecs) -> Money {\n    Money { cents: subtotal.cents / 20 }\n}\n",
+        "src/refunds.rs": "use crate::money::{Money, UnixSecs};\n\npub struct RefundReceipt {\n    pub amount: Money,\n    pub issued_at: UnixSecs,\n}\n\npub fn compute_refund(paid: Money, restock_bps: i64, now: UnixSecs) -> RefundReceipt {\n    let fee = (paid.cents * restock_bps) / 10_000;\n    RefundReceipt {\n        amount: Money { cents: paid.cents - fee },\n        issued_at: now,\n    }\n}\n",
+        "src/csv_export.rs": "use crate::refunds::RefundReceipt;\n\n// Clearinghouse batch CSV requires major.minor decimal strings.\npub fn format_bank_csv_line(receipt: &RefundReceipt) -> String {\n    let whole = receipt.amount.cents / 100;\n    let frac = (receipt.amount.cents % 100).abs();\n    format!(\"{whole}.{frac:02},{}\", receipt.issued_at.0)\n}\n"
+      }
+    },
+    {
+      "id": "RB15",
+      "lens": "rationale",
+      "profiles": [
+        "diagnostics"
+      ],
+      "request": "Review the ledger posting change for rationale comments, suppressions, and diagnostics.",
+      "scope": "All production declarations across src/lib.rs, src/ledger.rs, and src/handler.rs.",
+      "context": "Workspace-internal ledger crate (publish = false, edition 2021, MSRV 1.80).",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"ledger_diag_noisy\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod handler;\npub mod ledger;\n",
+        "src/ledger.rs": "#[derive(Debug)]\npub struct PostError(pub String);\n\n// Reject postings after 22:00 UTC.\n#[allow(clippy::too_many_arguments)]\npub fn post_entry(\n    ledger_id: u64,\n    debit_acct: u64,\n    credit_acct: u64,\n    cents: i64,\n    utc_hour: u8,\n    batch: u32,\n    operator: u64,\n    dry_run: bool,\n) -> Result<(), PostError> {\n    if utc_hour >= 23 {\n        let err = PostError(\"failed\".to_string());\n        eprintln!(\"post_entry failed: {err:?}\");\n        return Err(err);\n    }\n    let _ = (ledger_id, debit_acct, credit_acct, cents, batch, operator, dry_run);\n    Ok(())\n}\n",
+        "src/handler.rs": "use crate::ledger::post_entry;\n\npub fn handle_post(ledger_id: u64, utc_hour: u8) -> u16 {\n    match post_entry(ledger_id, 1, 2, 500, utc_hour, 1, 9, false) {\n        Ok(()) => 200,\n        Err(err) => {\n            eprintln!(\"request failed for ledger {ledger_id}: {err:?}\");\n            422\n        }\n    }\n}\n"
+      }
+    },
+    {
+      "id": "RB16",
+      "lens": "rationale",
+      "profiles": [
+        "diagnostics"
+      ],
+      "request": "Review the ledger posting change for rationale comments, suppressions, and diagnostics.",
+      "scope": "All production declarations across src/lib.rs, src/ledger.rs, and src/handler.rs.",
+      "context": "Workspace-internal ledger crate (publish = false, edition 2021, MSRV 1.80).",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"ledger_diag_clean\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod handler;\npub mod ledger;\n",
+        "src/ledger.rs": "#[derive(Debug)]\npub struct Posting {\n    pub ledger_id: u64,\n    pub debit_acct: u64,\n    pub credit_acct: u64,\n    pub cents: i64,\n}\n\n#[derive(Debug)]\npub enum PostError {\n    AfterCutoff { ledger_id: u64, utc_hour: u8 },\n}\n\n// Clearinghouse settlement closes at 23:00 UTC; later postings roll to next day.\npub fn post_entry(posting: &Posting, utc_hour: u8) -> Result<(), PostError> {\n    if utc_hour >= 23 {\n        return Err(PostError::AfterCutoff {\n            ledger_id: posting.ledger_id,\n            utc_hour,\n        });\n    }\n    let _ = (posting.debit_acct, posting.credit_acct, posting.cents);\n    Ok(())\n}\n",
+        "src/handler.rs": "use crate::ledger::{post_entry, Posting};\n\npub fn handle_post(posting: &Posting, utc_hour: u8) -> u16 {\n    match post_entry(posting, utc_hour) {\n        Ok(()) => 200,\n        Err(err) => {\n            eprintln!(\"ledger posting rejected: {err:?}\");\n            422\n        }\n    }\n}\n"
+      }
+    },
+    {
+      "id": "RB17",
+      "lens": "change-locality",
+      "profiles": [],
+      "request": "Review the shipment status transitions across handlers for change locality.",
+      "scope": "All production declarations across src/lib.rs, src/model.rs, src/dispatch.rs, src/cancel.rs, and src/audit.rs.",
+      "context": "Workspace-internal fulfillment crate (publish = false, edition 2021, MSRV 1.80). Adding a new ShipmentStatus variant currently requires searching scattered handlers and wildcard matches.",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"shipment_scattered\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod audit;\npub mod cancel;\npub mod dispatch;\npub mod model;\n",
+        "src/model.rs": "#[derive(Debug, Clone, Copy, PartialEq, Eq)]\npub enum ShipmentStatus {\n    Pending,\n    Packed,\n    Dispatched,\n    Cancelled,\n}\n\npub struct Shipment {\n    pub id: u64,\n    pub status: ShipmentStatus,\n    pub tracking: Option<String>,\n}\n",
+        "src/dispatch.rs": "use crate::model::{Shipment, ShipmentStatus};\n\npub fn dispatch_shipment(s: &mut Shipment, tracking: String) -> Result<(), &'static str> {\n    match s.status {\n        ShipmentStatus::Packed => {\n            s.status = ShipmentStatus::Dispatched;\n            s.tracking = Some(tracking);\n            Ok(())\n        }\n        _ => Err(\"cannot dispatch\"),\n    }\n}\n",
+        "src/cancel.rs": "use crate::model::{Shipment, ShipmentStatus};\n\npub fn cancel_shipment(s: &mut Shipment) -> Result<(), &'static str> {\n    match s.status {\n        ShipmentStatus::Pending | ShipmentStatus::Packed => {\n            s.status = ShipmentStatus::Cancelled;\n            s.tracking = None;\n            Ok(())\n        }\n        _ => Err(\"cannot cancel\"),\n    }\n}\n",
+        "src/audit.rs": "use crate::model::ShipmentStatus;\n\npub fn is_terminal(status: ShipmentStatus) -> bool {\n    match status {\n        ShipmentStatus::Dispatched | ShipmentStatus::Cancelled => true,\n        _ => false,\n    }\n}\n"
+      }
+    },
+    {
+      "id": "RB18",
+      "lens": "change-locality",
+      "profiles": [],
+      "request": "Review the shipment status transitions for change locality.",
+      "scope": "All production declarations across src/lib.rs, src/shipment.rs, and src/api.rs.",
+      "context": "Workspace-internal fulfillment crate (publish = false, edition 2021, MSRV 1.80).",
+      "files": {
+        "Cargo.toml": "[package]\nname = \"shipment_localized\"\nversion = \"0.1.0\"\nedition = \"2021\"\nrust-version = \"1.80\"\npublish = false\n",
+        "src/lib.rs": "pub mod api;\npub mod shipment;\n",
+        "src/shipment.rs": "#[derive(Debug, Clone, PartialEq, Eq)]\npub enum ShipmentState {\n    Pending,\n    Packed,\n    Dispatched { tracking: String },\n    Cancelled,\n}\n\npub struct Shipment {\n    id: u64,\n    state: ShipmentState,\n}\n\nimpl Shipment {\n    pub fn new(id: u64, state: ShipmentState) -> Self {\n        Self { id, state }\n    }\n\n    pub fn id(&self) -> u64 {\n        self.id\n    }\n\n    pub fn is_terminal(&self) -> bool {\n        match self.state {\n            ShipmentState::Pending | ShipmentState::Packed => false,\n            ShipmentState::Dispatched { .. } | ShipmentState::Cancelled => true,\n        }\n    }\n\n    pub fn dispatch(&mut self, tracking: String) -> Result<(), &'static str> {\n        match self.state {\n            ShipmentState::Packed => {\n                self.state = ShipmentState::Dispatched { tracking };\n                Ok(())\n            }\n            ShipmentState::Pending\n            | ShipmentState::Dispatched { .. }\n            | ShipmentState::Cancelled => Err(\"cannot dispatch\"),\n        }\n    }\n\n    pub fn cancel(&mut self) -> Result<(), &'static str> {\n        match self.state {\n            ShipmentState::Pending | ShipmentState::Packed => {\n                self.state = ShipmentState::Cancelled;\n                Ok(())\n            }\n            ShipmentState::Dispatched { .. } | ShipmentState::Cancelled => {\n                Err(\"cannot cancel\")\n            }\n        }\n    }\n}\n",
+        "src/api.rs": "use crate::shipment::Shipment;\n\npub fn handle_dispatch(shipment: &mut Shipment, tracking: String) -> u16 {\n    match shipment.dispatch(tracking) {\n        Ok(()) => 200,\n        Err(_) => 409,\n    }\n}\n\npub fn handle_cancel(shipment: &mut Shipment) -> u16 {\n    match shipment.cancel() {\n        Ok(()) => 200,\n        Err(_) => 409,\n    }\n}\n"
+      }
+    }
+  ]
+}
