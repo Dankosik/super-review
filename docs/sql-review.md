@@ -75,9 +75,11 @@ The orchestrator walks every trace itself and decides each candidate as
   `search_path`, and unbounded `UPDATE`/`DELETE` missing `WHERE`.
 - **Static proof vs runtime confirmation:** SQL Review never connects to a
   database or runs `EXPLAIN`. Claims depending on unconfirmed server versions,
-  table sizes, skewed cardinality, skip-scan profitability, or HOT-update loss
-  route to `Needs your confirmation` with the exact check or `EXPLAIN` output
-  that settles them. User-supplied or committed `EXPLAIN` plans are evidence.
+  migration runner transactional mode, live-traffic or maintenance-window
+  status, table sizes, skewed cardinality, skip-scan profitability, or
+  HOT-update loss route to `Needs your confirmation` with the exact check or
+  `EXPLAIN` output that settles them. User-supplied or committed `EXPLAIN` plans
+  are evidence.
 
 ## Current limits
 
@@ -87,5 +89,5 @@ The orchestrator walks every trace itself and decides each candidate as
 - Dialect contexts cover PostgreSQL, MySQL (InnoDB primary baseline), and
   SQLite; MariaDB projects require checking MariaDB-specific divergences
   against the repository baseline.
-- Version 0.1.0 has no live model evaluation runs yet; contrasting fixture
+- Version 0.2.0 has no live model evaluation runs yet; contrasting fixture
   packets in `evals/sql-review/` are `NOT RUN`.

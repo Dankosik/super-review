@@ -12,10 +12,12 @@ Both roles allow only `view_file` and `grep_search`: no shell, writing or
 delegation tools or MCP servers are configured. The parent acquires source
 read-only as the workflow allows, without cloning, copying, checking out, or
 connecting to a database. Give children revision-specific contents, the
-cumulative schema snapshot, the `D..H` diff with removed lines, dialect and
-version baseline files, and any needed out-of-workspace driver excerpts where
-their tools cannot read them directly (resolving missing external driver steps
-from local caches before the challenge); unavailable source is unread coverage.
+cumulative schema snapshot, the ordered migration manifest and per-table
+migration chains (including renames and post-snapshot deltas), the `D..H` diff
+with removed lines, dialect/version and migration runner baseline files, and any
+needed out-of-workspace driver excerpts where their tools cannot read them
+directly (resolving missing external driver steps from local caches before the
+challenge); unavailable source is unread coverage.
 User-supplied or committed `EXPLAIN` plans are evidence; do not run queries or
 database CLIs.
 

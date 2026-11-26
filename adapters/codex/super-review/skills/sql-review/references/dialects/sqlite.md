@@ -1,26 +1,20 @@
 # SQLite context
 
-PostgreSQL, MySQL (InnoDB primary baseline), and SQLite have dialect contexts
-in this review. Unsupported dialects are listed as excluded, not reviewed by
-analogy.
-
 ## Where SQLite projects state their baseline
 
-Bundled or target SQLite version in lockfiles and manifests (`Cargo.lock`,
-`go.sum`, JS/TS or JVM lockfiles), connection-open hooks executing `PRAGMA`
-statements, ordered migrations, `.schema` dumps, and committed
-`EXPLAIN QUERY PLAN` outputs.
+Bundled or target SQLite version in lockfiles and manifests, connection-open
+hooks executing `PRAGMA` statements, ordered migrations, `.schema` dumps,
+migration runner configs, and committed `EXPLAIN QUERY PLAN` outputs.
 
 ## Verify in source and baseline
 
 Pin the bundled or runtime SQLite version and inspect every connection
 initialization path: SQLite resets per-connection `PRAGMA` settings on each new
 connection unless an open hook applies them. Inspect locked driver source on
-disk (`vendor/`, `~/.cargo/registry/src`, `node_modules/`, `GOMODCACHE`) for
-transaction defaults, busy handlers, and pool sizing. Verify both current SQL
-and proposed safer forms against the pinned SQLite version. When version or
-connection `PRAGMA` configuration is absent and decides the claim, route to
-`needs confirmation` or mark the step unproven.
+disk (per the contract) for transaction defaults, busy handlers, error codes,
+and pool sizing. Verify both current SQL and proposed safer forms against the
+pinned SQLite version; route missing deciding version or `PRAGMA` setup to
+`needs confirmation` or mark absent source `unproven`.
 
 ## Questions to settle before claiming
 
@@ -36,17 +30,16 @@ connection `PRAGMA` configuration is absent and decides the claim, route to
   a write lock under concurrency returns `SQLITE_BUSY` immediately, bypassing
   `busy_timeout`. Write transactions need `BEGIN IMMEDIATE` paired with
   `PRAGMA busy_timeout` and `PRAGMA journal_mode = WAL`.
-- **Type affinity, `STRICT`, and exact decimals**: Does the schema store money
-  or exact decimals in `NUMERIC` or `DECIMAL` columns? SQLite stores fractional
+- **Type affinity and exact decimals**: Does the schema store money or exact
+  decimals in `NUMERIC` or `DECIMAL` columns? SQLite stores fractional
   `NUMERIC`/`DECIMAL` values as 64-bit IEEE-754 `REAL` floats; exact decimals
   need scaled `INTEGER` minor units or a dedicated decimal representation.
-  Without `STRICT` tables (3.37.0+) or `CHECK` constraints, SQLite accepts any
-  value type in any column.
-- **Version gates and query plans**: Verify pinned SQLite version before using
-  `STRICT` (3.37.0+), `RETURNING` or `DROP COLUMN` (3.35.0+), or
-  `IS DISTINCT FROM` (3.39.0+; earlier versions use `IS NOT`). Check `ANALYZE`
-  and `EXPLAIN QUERY PLAN` before flagging omitted low-cardinality leading
-  index columns (skip scan applies post-`ANALYZE`) or `EXISTS`/`IN` semi-joins.
+  Without `STRICT` tables (verify pinned version) or `CHECK` constraints, SQLite
+  accepts any value type in any column.
+- **Version-gated SQL/DDL and query plans**: Verify the pinned SQLite version
+  before proposing newer clauses (`RETURNING`, `DROP COLUMN`, or `IS DISTINCT
+  FROM`, where older SQLite uses `IS NOT`). Check `EXPLAIN QUERY PLAN` before
+  flagging `EXISTS`/`IN` semi-joins or planner index choices.
 
 ## SQLite boundaries
 
@@ -67,5 +60,5 @@ connection `PRAGMA` configuration is absent and decides the claim, route to
 - Omitting `AUTOINCREMENT` on `INTEGER PRIMARY KEY` (`INTEGER PRIMARY KEY`
   already auto-increments via rowid; `AUTOINCREMENT` adds overhead and is only
   needed when deleted rowids must never be reused).
-- Uniform-direction B-tree reverse scans, or omitted low-cardinality leading
-  index columns on analyzed tables without `EXPLAIN QUERY PLAN`.
+- Omitted low-cardinality leading index columns on analyzed tables without
+  `EXPLAIN QUERY PLAN`.

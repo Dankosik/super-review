@@ -20,10 +20,10 @@ Inspect cumulative table, view, routine, trigger, and ORM/declarative schema
 definitions at the pinned revision.
 
 - **Missing or weak integrity constraints**: tables without a `PRIMARY KEY`,
-  nullable columns that every caller assumes non-null, missing `UNIQUE` on
-  natural or idempotency keys, missing `CHECK` on bounded ranges or states, or
-  soft-delete uniqueness that either blocks re-creation or allows duplicate
-  active rows.
+  nullable columns that callers or docs assume non-null, missing `UNIQUE` on
+  traced natural or idempotency keys, missing `CHECK` on documented bounded
+  ranges or states, or soft-delete uniqueness that either blocks re-creation or
+  allows duplicate active rows.
 - **Inexact or lossy column types**: binary floating-point types storing exact
   monetary or decimal quantities, timezone-ambiguous timestamps for instants,
   narrow integer keys risking overflow on high-churn tables, or string-encoded
@@ -46,5 +46,7 @@ definitions at the pinned revision.
   integrity or correctness consequence.
 - Omitted foreign keys across separate databases, services, or sharded
   partitions where cross-node referential enforcement is impossible.
+- Inventing `NOT NULL`, `UNIQUE`, or `CHECK` constraints solely from a column
+  name when neither callers, docs, nor domain rules establish that invariant.
 - Academic normal-form refactoring when no update anomaly, duplication hazard,
   or invariant violation is traced.

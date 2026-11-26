@@ -20,10 +20,12 @@ outage or corruption?**
 Read ordered migration files together with the base and head application code
 and migration runner configuration.
 
-- **Blocking DDL without lock bounds**: altering column types, setting
-  `NOT NULL`, adding `FOREIGN KEY` or `CHECK` constraints, or creating indexes
-  on live tables without lock timeouts or non-blocking dialect mechanisms.
-  Check both child and parent table locks when adding foreign keys.
+- **Blocking DDL without lock bounds or matching runner mode**: altering column
+  types, setting `NOT NULL`, adding `FOREIGN KEY` or `CHECK` constraints, or
+  creating indexes on live tables without lock timeouts or non-blocking dialect
+  mechanisms (check both child and parent FK locks). Verify migration runner tx
+  mode and opt-out syntax before proposing `CONCURRENTLY` (use `SET`/`RESET
+  lock_timeout` outside tx, not `SET LOCAL`) or separate-tx `NOT VALID`/`VALIDATE`.
 - **Rolling-deploy (`D -> H`) contract breaks**: dropping or renaming columns,
   tables, or enum values still read or written by the base commit's code;
   adding a `NOT NULL` column with no safe default while old writers remain
@@ -41,7 +43,8 @@ and migration runner configuration.
 
 - Blocking DDL on a brand-new empty table created in the same migration or an
   explicitly greenfield/offline database (route to `needs confirmation` when
-  live-traffic status is unstated).
+  live-traffic status, maintenance window, or runner tx mode is unstated and
+  decides the claim).
 - Missing down-migrations when the project documents forward-only migrations.
 - Multi-step expand-and-contract migrations proposed against a team's
   documented maintenance window (classify as `tradeoff` or `disputed`).

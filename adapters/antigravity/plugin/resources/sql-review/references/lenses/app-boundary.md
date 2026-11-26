@@ -20,10 +20,12 @@ and handle DB errors safely?**
 Inspect embedded SQL, query builders, ORM hooks, repository methods, pool
 configuration, and locked driver source in Go, TypeScript, Rust, and Java.
 
-- **Broken parameterization and identifier injection**: interpolating or
-  concatenating untrusted values into SQL literals, `IN (...)` lists, or
-  dynamic `ORDER BY`/column/table fragments without bound parameters or a
-  closed allowlist.
+- **Broken parameterization, generated SQL, and empty-list hazards**:
+  interpolating untrusted values into SQL literals, `IN (...)` lists, ORM raw
+  escape hatches, or dynamic identifiers without bound parameters or closed
+  allowlists; or inspecting what SQL an ORM/query builder actually emits,
+  including unguarded empty `IN ()` or empty-array bindings that fail at runtime
+  or alter predicate semantics.
 - **N+1 round trips and unbounded reads**: running a query, write, or lazy ORM
   relation load per item inside a loop where a batch query, join, or bulk
   upsert preserves behavior; or fetching an unbounded table/user-grown dataset
@@ -38,7 +40,9 @@ configuration, and locked driver source in Go, TypeScript, Rust, and Java.
   session features incompatible with the project's transaction-mode pooler.
 - **Misclassified or swallowed DB errors**: mapping constraint, serialization,
   or connection failures to "not found" or silent success, or relying on
-  implicit ORM auto-flush behavior that hides partial failures.
+  implicit ORM auto-flush behavior that hides partial failures. Verify exact
+  driver error types, SQLSTATE/vendor codes, and pool or timeout defaults in
+  locked dependency source on disk before claiming misclassification or leaks.
 
 ## Not a finding
 

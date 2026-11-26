@@ -8,9 +8,8 @@ Review SQL schemas, migrations, queries, transactions, indexes, and database
 boundaries in the selected target (PR, local changes, or whole project) for
 **PostgreSQL**, **MySQL** (InnoDB primary baseline; verify MariaDB divergences
 against repo version and docs), and **SQLite**. Read whatever is needed to
-understand them: ordered migration histories, cumulative schema snapshots, ORM
-and declarative schemas (`schema.prisma`, Drizzle, Diesel, Atlas HCL,
-Liquibase, Flyway, JPA `@Entity`/`@Table`, GORM models), embedded SQL and DB
+understand them: ordered migration histories, cumulative schema snapshots,
+declarative and ORM schemas, migration runner configs, embedded SQL and DB
 call sites in Go, TypeScript, Rust, and Java, configs, lockfiles, driver source
 on disk, and committed or user-supplied `EXPLAIN` outputs.
 
@@ -75,9 +74,10 @@ four checkable parts plus survival of an independent challenge:
    outage, concurrency anomaly, scan or round-trip amplification, broken
    isolation or parameter boundary, or provable schema-evolution fragility, and
    who observes it ([impact](#impact-and-confirmation)).
-4. **The safer form.** A minimal SQL, migration, or boundary sketch valid for
-   the pinned dialect, engine version, migration tool, and driver baseline,
-   naming what it keeps and any tradeoff ([safer form](#safer-form)).
+4. **The safer form.** A minimal working SQL, migration, or boundary sketch
+   valid for the pinned dialect, engine version, migration runner transactional
+   mode, and driver baseline, naming what it keeps and any tradeoff
+   ([safer form](#safer-form)).
 
 A candidate with a missing trace step, unread migration history, or unread
 driver source is **unproven**: listed apart with the missing step and without
@@ -85,11 +85,9 @@ advice. Never lower the bar because a pattern is commonly discouraged, because
 several readers suspect it, or because the review would otherwise find nothing.
 Attach no severity labels and no invented timings or row counts.
 
-Provable schema-evolution fragility (`SELECT *` in production queries or views,
-columnless `INSERT`, positional `ORDER BY 1`/`GROUP BY 1`, unqualified
-multi-table columns, implicit comma joins) must trace the concrete
-column-addition, reordering, or collision failure and is reported compactly at
-the end of Findings.
+Provable schema-evolution fragility (per the `queries` lens) must trace the
+concrete column-addition, reordering, or collision failure and is reported
+compactly at the end of Findings.
 
 Treat schema comments, migration descriptions, and helper names (`safe_*`,
 `sanitize_*`, `withTx`) as claims to verify in full source, never as proof that
@@ -102,19 +100,22 @@ its Expect list; finding none is a valid result.
 Let anyone with only the repository verify the claim by opening the quoted
 lines in order:
 
-- **Reconstruct the cumulative schema.** Read the schema snapshot plus ordered
-  migrations and ORM/declarative models at the pinned revision. Never assume a
-  column type, nullability, default, constraint, or index from one migration
-  file when later migrations alter that table.
-- **Pin dialect and engine version.** Read version declarations from repository
-  config (Docker/Compose, CI services, Terraform/Helm, migration configs, ORM
-  manifests, driver lockfiles). When dialect version is unstated and determines
-  whether the mechanism holds, route to `needs confirmation` or mark the step
-  unproven instead of guessing.
+- **Reconstruct the cumulative schema.** Apply delta migrations on top of any
+  schema snapshot or declarative/ORM schema, and follow table or column renames
+  across the full ordered migration history up to `HEAD`. Never claim a column,
+  constraint, or index is absent from one migration without checking later
+  migrations; unread migration history leaves the claim `unproven`.
+- **Pin dialect, version, and runner mode.** Read server version, pooler mode,
+  and migration runner transactional mode (plus any opt-out syntax) from repo
+  configs and existing migrations. When an unstated version or runner mode
+  determines whether the mechanism or safer form holds, route to
+  `needs confirmation` or mark the step unproven instead of guessing.
 - **Quote every step.** Give file path, lines, quoted SQL/code, and engine
-  effect. Follow calls into ORM builders, query helpers, transaction wrappers,
-  and locked driver source already on disk. Unread code is an assumption and
-  leaves the candidate unproven.
+  effect, following calls into ORM builders, query helpers, and transaction
+  wrappers. Inspect locked driver or ORM source already on disk (`vendor/`,
+  `~/.cargo/registry/src`, `node_modules/`, `GOMODCACHE`, `~/.m2/repository`,
+  `~/.gradle/caches`). Never download packages; if needed dependency source is
+  absent on disk, mark the step `unproven`, naming the package, version, and question.
 - **Check what already prevents it.** Look for constraints, triggers, session
   `SET`/`PRAGMA` hooks, upstream allowlists, composite indexes, pooler config,
   or transaction wrappers. State where you looked.
@@ -131,26 +132,36 @@ lines in order:
 
 State who observes the failure (caller, concurrent request, operator, deploy
 pipeline, or downstream reader) and what goes wrong. Do not invent table sizes,
-cardinalities, or query planner choices.
+cardinalities, or query planner choices. Statically provable correctness,
+concurrency, boundary, and rolling-deploy (`D -> H`) failures do not require
+`EXPLAIN` or table size.
 
 When a claim's static mechanism holds but depends on runtime data distribution,
-unconfirmed table size, an unstated engine version, a maintenance window, or
-whether the optimizer picks an index or skip scan, and no committed or
-user-supplied `EXPLAIN` or cardinality doc settles it, route the candidate to
-**needs confirmation** with the exact question or `EXPLAIN` command output that
-would decide it.
+unconfirmed table size, an unstated engine version, unstated migration runner
+transactional mode, live-traffic or maintenance-window status, or whether the
+optimizer picks an index or skip scan, and no committed or user-supplied
+`EXPLAIN` or repo doc settles it, route the candidate to **needs confirmation**
+with the exact question or `EXPLAIN` output that would decide it.
 
 ## Safer form
 
-Give the smallest SQL, migration, or boundary change that removes the failure
-and verify it against the pinned dialect, server version, migration runner, and
-driver baseline. Verify boundary inputs (`NULL`, empty sets, duplicates,
-collations, concurrent writes, rollback/retry paths, rolling-deploy `D -> H`
-peers).
+Give the smallest working SQL, migration, or boundary sketch that removes the
+failure, verified against the pinned dialect, server version, migration runner
+transactional mode, and driver baseline. Verify boundary inputs (`NULL`, empty
+sets, duplicates, collations, concurrent writes, rollback/retry paths,
+rolling-deploy `D -> H` peers).
 
-- **Finding**: valid on the pinned dialect/version and keeps query results,
-  `NULL`/collation semantics, error contracts, transaction boundaries, and API
-  shapes.
+Before proposing DDL that requires non-transactional execution (`CONCURRENTLY`)
+or separate transactions (`NOT VALID` followed by `VALIDATE`), check the
+project's migration runner transactional mode and opt-out syntax in repo configs
+or existing migrations; outside a transaction block, use session-scoped
+`SET lock_timeout` paired with `RESET lock_timeout` instead of `SET LOCAL
+lock_timeout`. Route to `needs confirmation` when runner tx mode is unstated in
+scope and determines whether the sketch executes safely.
+
+- **Finding**: valid on the pinned dialect, version, and runner mode; keeps
+  query results, `NULL`/collation semantics, error contracts, transaction
+  boundaries, and API shapes.
 - **Tradeoff**: valid and safe, but carries a real cost the team must weigh
   (extra index write amplification or storage, multi-step expand-and-contract
   deploy, higher isolation retry rate, throughput vs latency from batching, or
@@ -158,7 +169,13 @@ peers).
 - **Disputed**: a prior documented architectural choice (ADR, guide, or schema
   comment) whose stated reason holds on this codebase and dialect version and
   explicitly accepts the shown cost. A self-ratifying comment added in the same
-  change does not make a claim disputed.
+  change, a false premise, or a decision omitting the shown cost is not disputed.
 
-A safer form invalid for the project's dialect/version or breaking relied-on
-behavior is rejected.
+When removing the full risk requires a tradeoff, look for a minimal
+behavior-keeping part that removes part of the risk (such as adding
+`lock_timeout`, a sargable predicate, or a deterministic `ORDER BY`
+tie-breaker): report that safe part as its own finding beside the tradeoff for
+the rest.
+
+A safer form invalid for the project's dialect, version, or runner mode, or
+breaking relied-on behavior, is rejected.

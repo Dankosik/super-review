@@ -28,7 +28,7 @@ sorts, foreign keys, and any committed or supplied `EXPLAIN` outputs.
   in source, docs, or `EXPLAIN`.
 - **Composite column-order and sort mismatches**: range predicate placed before
   equality on high-cardinality columns; omitted high-cardinality leading column
-  where skip scan cannot apply; or mixed `ASC`/`DESC` or `NULLS` ordering
+  where the dialect cannot skip-scan; or mixed `ASC`/`DESC` or `NULLS` ordering
   defeating an index-ordered `LIMIT` scan.
 - **Redundant, duplicate, or invalid indexes**: exact duplicate indexes,
   strict prefix indexes `(a)` beside `(a, b)` when none of the `Keep when`
@@ -51,5 +51,9 @@ sorts, foreign keys, and any committed or supplied `EXPLAIN` outputs.
 - **Unestablished scale or selectivity**: adding an index on a small or
   unmeasured table trades write overhead and storage for unconfirmed read gain
   (route to `needs confirmation` or `tradeoff`).
+- **Reflexive foreign-key indexes**: demanding a child index on every foreign
+  key when no parent `DELETE`/`UPDATE` of the referenced key or child join or
+  lookup on that FK is traced (in MySQL/InnoDB, verify whether InnoDB already
+  auto-creates a supporting child index).
 - **Heap-only tuple (HOT) or planner speculation**: claiming HOT-update loss or
   index-versus-sequential choice without `EXPLAIN` is never a static finding.

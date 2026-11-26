@@ -17,12 +17,11 @@ For the orchestrator. Readers and challengers work from
      readers that commit, not the branch name.
    - Before writing the final report on a local tree, re-check `HEAD` and the
      status of scoped files; list any files that changed mid-review.
-2. **Pin dialect, engine version, and database evidence once.**
-   - Inspect deployment and DB config files (Dockerfiles, Compose, CI,
-     Terraform/Helm, `postgresql.conf`, `pgbouncer.ini`, `my.cnf`, migration
-     and ORM configs), driver lockfiles (`Cargo.lock`, `go.sum`, JS/TS or JVM
-     lockfiles), and on-disk driver source roots (`vendor/`,
-     `~/.cargo/registry/src`, `node_modules/`, `GOMODCACHE`, `~/.m2/repository`).
+2. **Pin dialect, engine version, runner mode, and database evidence once.**
+   - Inspect deployment and DB config files (containers, CI, DB/pooler configs,
+     migration runner configs, and existing migrations for transactional mode
+     and opt-out syntax), driver lockfiles, and the contract's on-disk driver
+     source roots.
    - Collect any committed or user-supplied `EXPLAIN` outputs, schema dumps,
      ADRs, or table-size/SLO docs. Hand this baseline to every reader and
      challenger as context only, never as a list of suspected issues.
@@ -30,8 +29,13 @@ For the orchestrator. Readers and challengers work from
    - Identify standalone `.sql` files (migrations in execution order, views,
      routines, triggers, named queries, backfills), declarative/ORM schemas,
      and embedded SQL or DB call sites in Go, TypeScript, Rust, and Java.
-   - List unsupported dialects (SQL Server/T-SQL, Oracle, ClickHouse, BigQuery,
-     Snowflake, DuckDB, NoSQL) as excluded.
+   - Pair any schema snapshot or declarative/ORM schema with newer delta
+     migrations after it. Over a long migration history without a snapshot,
+     build an ordered migration manifest and per-table file chains (tracking
+     table and column renames) so every table in scope is traced through `HEAD`,
+     including migrations `> N` after any reviewed migration `N`.
+   - List any unsupported dialects (outside PostgreSQL, MySQL/MariaDB, and
+     SQLite) as excluded.
    - **Early stop:** When the scope contains no SQL, schema, migration, or
      database call site in a supported dialect, start no readers; report the
      excluded or unsupported targets and stop.
@@ -64,11 +68,12 @@ Readers overlap on purpose; you merge their outputs.
 
 Start each reader in a fresh context with no conversation history and no peer
 results. Supply: target and pinned revision, assigned lens or pair, exact
-files, ordered migration and schema snapshot paths (plus the `D..H` diff with
-removed lines inline, cumulative schema snapshot, baseline config, and needed
-driver excerpts when readers lack Git/shell access), pinned dialect/version
-baseline, located `EXPLAIN`/cardinality docs, and paths to
-[the contract](contract.md), its assigned lens(es), the matching dialect
+files, ordered migration manifest and per-table file chains (including renames
+and post-snapshot delta migrations), plus the `D..H` diff with removed lines
+inline, cumulative schema snapshot, baseline config (including migration runner
+tx mode), and needed driver excerpts when readers lack Git or shell access,
+pinned dialect/version baseline, located `EXPLAIN`/cardinality docs, and paths
+to [the contract](contract.md), its assigned lens(es), the matching dialect
 context ([PostgreSQL](dialects/postgresql.md), [MySQL](dialects/mysql.md), or
 [SQLite](dialects/sqlite.md)), and
 [the result format](../assets/finding-template.md). Never supply suspected
@@ -103,30 +108,41 @@ You own every decision. Confidence, tone, or agreement between agents is not
 evidence.
 
 - **Walk each trace yourself.** Confirm every quoted line against the
-  cumulative schema, pinned dialect/version baseline, and locked driver source.
-  Any step resting on unread migrations, configs, or driver source is unproven;
-  read missing local files yourself without rewriting the claim.
-- **Check dialect validity and runtime evidence.** Verify the safer form is
-  valid syntax and safe locking behavior on the pinned dialect and version, and
-  walk `NULL`, empty, duplicate, rollback, and rolling-deploy `D -> H` cases.
-  Route claims waiting only on an unstated engine version, table cardinality,
-  maintenance window, or `EXPLAIN` plan to `needs confirmation`.
-- **Check findings on the same table, migration, or query together.** Confirm
-  proposed indexes do not duplicate each other and combined DDL/query edits
-  stay compatible.
-- **Weigh the challenge as an argument, not a ruling.** Verify quoted
-  counter-evidence on `falls` (when `falls` rests only on unconfirmed server
-  version, scale, cardinality, or missing `EXPLAIN` while the static mechanism
-  holds, route to `needs confirmation`), reject unbacked `stands`, verify prior
-  documented rationale and accepted cost on `disputed`, and name both sides on
-  `tradeoff`.
+  cumulative schema (including renames and later migrations `> N` up to `HEAD`),
+  pinned dialect/version baseline, migration runner tx mode, and locked driver
+  source. Any step resting on unread migrations, configs, or absent on-disk
+  driver source is `unproven`; read missing local files yourself without
+  rewriting the claim.
+- **Check dialect validity, runner mode, and safe-part splitting.** Verify the
+  safer form is a minimal working sketch on the pinned dialect, version, and
+  migration runner tx mode (`CONCURRENTLY` outside a tx with `SET`/`RESET
+  lock_timeout`, separate-tx `NOT VALID` + `VALIDATE`), and walk `NULL`, empty,
+  duplicate, rollback, and `D -> H` cases. When full removal is a `tradeoff`,
+  split any behavior-keeping safe part into its own `finding` beside it.
+- **Check findings on the same table, migration, or query together.** Preserve
+  uniqueness invariants (never widen `UNIQUE (a, b)` into `UNIQUE (a, b, c)` for
+  lookups or sorts): let `UNIQUE (a, b)` cover prefix lookups, use `INCLUDE`
+  where supported for projection-only index-only scans, absorb strictly covered
+  non-unique indexes, or keep distinct predicates separate with an explicit
+  write-amplification `tradeoff`.
+- **Emit one coherent DDL sequence.** Apply safe-DDL rules (`lock_timeout`,
+  non-transactional `CONCURRENTLY` + `USING INDEX` where supported, separate-tx
+  `NOT VALID` + `VALIDATE`, runner tx mode) to every proposed schema or index
+  DDL on the same table, and combine compatible changes into one ordered
+  migration sequence.
+- **Weigh the challenge as an argument, not a ruling.** Verify counter-evidence
+  on `falls`. When `falls` rests only on unconfirmed server version, runner tx
+  mode, live-traffic status, scale, cardinality, or missing `EXPLAIN` while the
+  static mechanism holds, route to `needs confirmation`; refute `falls` asking
+  for `EXPLAIN` or scale on statically provable bugs. Reject unbacked `stands`;
+  verify true reason and accepted cost on `disputed`.
 
 | Outcome | When |
 | --- | --- |
 | finding | Mechanism confirmed on pinned dialect/version, valid safer form keeps semantics, and challenge stood (or `falls` refuted). |
 | tradeoff | Confirmed failure whose safer form carries a real cost or behavior change the team must weigh. |
 | disputed | Confirmed impact backed by a prior documented choice whose reason holds and whose cost was accepted. |
-| needs confirmation | Static mechanism holds except for an unconfirmed dialect version, table size/cardinality, maintenance window, or `EXPLAIN` plan. |
+| needs confirmation | Static mechanism holds except for an unconfirmed dialect version, runner tx mode, live-traffic/maintenance window, table size/cardinality, or `EXPLAIN` plan. |
 | unproven | Missing trace step, unread schema/migration/driver source, or no challenge run. |
 | rejected | Mechanism false on this dialect/version, prevented upstream, safer form invalid or breaks relied-on behavior, or out of scope. |
 
