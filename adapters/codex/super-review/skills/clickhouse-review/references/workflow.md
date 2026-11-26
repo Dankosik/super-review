@@ -19,11 +19,10 @@ For the orchestrator. Readers and challengers work from
      status of scoped files; list any files that changed mid-review.
 2. **Pin ClickHouse version, deployment mode, and runtime evidence once.**
    - Inspect deployment and ClickHouse config files (Dockerfiles, Compose, CI,
-     Helm/Altinity Operator `ClickHouseInstallation` CRDs, Terraform,
-     `config.xml`, `users.xml`, `remote_servers.xml`, migration runner configs),
-     client lockfiles (`go.sum`, `Cargo.lock`, JS/TS, JVM, or Python
-     lockfiles), and on-disk client source roots (`vendor/`, `GOMODCACHE`,
-     `~/.cargo/registry/src`, `node_modules/`, `~/.m2/repository`, virtualenvs).
+     Helm/Operator CRDs, Terraform, `config.xml`, `users.xml`, SQL settings
+     profiles, `remote_servers.xml`, migration runner configs), lockfiles, and
+     on-disk client source (`vendor/`, `GOMODCACHE`, `~/.cargo/registry/src`,
+     `node_modules/`, `~/.m2/repository`, `~/.gradle/caches`, virtualenvs).
    - Determine whether the deployment is **self-managed** (OSS/Altinity with
      Keeper/ZooKeeper) or **ClickHouse Cloud** (`SharedMergeTree`/`Shared` DB),
      or note `unstated` when missing.
@@ -33,10 +32,12 @@ For the orchestrator. Readers and challengers work from
      every reader and challenger as context only, never as a list of suspected
      issues.
 3. **Locate ClickHouse sources and cumulative schema.**
-   - Identify standalone `.sql` files (ordered migrations, table/MV/projection/
-     `Distributed` DDL, named queries, backfills), ClickHouse XML/YAML configs,
-     and embedded ClickHouse SQL or ingestion/query call sites in Go,
-     TypeScript, Rust, Java, and Python.
+   - Identify standalone `.sql` files (ordered migrations up to `HEAD` including
+     `MODIFY SETTING`, `MODIFY QUERY`, `EXCHANGE TABLES`, and renames, plus
+     table/MV/projection/`Distributed` DDL, named queries, and backfills), XML/
+     YAML configs, and embedded SQL or client call sites in Go, TypeScript,
+     Rust, Java, and Python. Map `local -> Distributed` and `source -> MV ->
+     target` dependency chains.
    - List non-ClickHouse databases (PostgreSQL, MySQL, SQLite, SQL Server,
      Oracle, BigQuery, Snowflake, DuckDB, NoSQL) as excluded.
    - **Early stop:** When the scope contains no ClickHouse DDL, migration,
@@ -73,12 +74,13 @@ Readers overlap on purpose; you merge their outputs.
 Start each reader in a fresh context with no conversation history and no peer
 results. Supply: target and pinned revision, assigned lens or pair, exact
 files, ordered migration and schema snapshot paths (plus the `D..H` diff with
-removed lines inline, cumulative schema snapshot, cluster configs, and needed
-client library excerpts when readers lack Git/shell access), pinned ClickHouse
-version and deployment baseline, located `EXPLAIN indexes = 1` / `system.parts`
-/ `system.query_log` / capacity docs, and paths to
-[the contract](contract.md), its assigned lens(es), the matching deployment
-context ([Self-managed](deployments/self-managed.md) or
+removed lines inline, cumulative schema up to `HEAD`, effective settings
+profiles, `local -> Distributed` and `source -> MV -> target` dependency maps,
+cluster configs, and needed driver excerpts when readers lack Git/shell
+access), pinned ClickHouse version and deployment baseline, located
+`EXPLAIN indexes = 1` / `system.parts` / `system.query_log` / capacity docs,
+and paths to [the contract](contract.md), its assigned lens(es), the matching
+deployment context ([Self-managed](deployments/self-managed.md) or
 [ClickHouse Cloud](deployments/cloud.md), or both when deployment is unstated
 or hybrid), and [the result format](../assets/finding-template.md). Never
 supply suspected issues, prior findings, decisions to respect, or severity.
@@ -112,26 +114,33 @@ mark the candidate unproven.
 You own every decision. Confidence, tone, or agreement between agents is not
 evidence.
 
-- **Walk each trace yourself.** Confirm every quoted line against the
-  cumulative schema, pinned ClickHouse version and deployment, server configs,
-  and locked client library source. Any step resting on unread migrations,
-  configs, or client source is unproven; read missing local files yourself
-  without rewriting the claim.
-- **Check version, deployment, and runtime evidence.** Verify the safer form on
-  the pinned version and deployment (`self-managed` vs `cloud`), walking `NULL`/
-  default, empty-block, retry-deduplication, tombstone, cross-partition, and
-  `D -> H` cases. Route claims waiting only on unstated version/deployment,
-  volume, cardinality, ingest rate, or `EXPLAIN indexes = 1` / `system.parts` /
-  `system.query_log` output to `needs confirmation`.
-- **Check findings on the same table, view, pipeline, or query together.**
-  Confirm proposed keys, skipping indexes, MVs, and client settings stay
-  compatible and do not duplicate work.
-- **Weigh the challenge as an argument, not a ruling.** Verify quoted
-  counter-evidence on `falls` (when `falls` rests only on unconfirmed server
-  version, deployment mode, volume, cardinality, ingest rate, or missing
-  `EXPLAIN indexes = 1` / `system.parts` / `system.query_log` while the static
-  mechanism holds, route to `needs confirmation`); reject unbacked `stands`,
-  verify documented rationale on `disputed`, and name both sides on `tradeoff`.
+- **Walk each trace yourself.** Confirm every quoted line against cumulative
+  schema up to `HEAD` (later migrations `> N`, `MODIFY SETTING`, `MODIFY QUERY`,
+  `EXCHANGE TABLES`/renames, effective settings profiles, `local -> Distributed`
+  and `source -> MV -> target` chains) and locked client source. Mark only steps
+  relying on unread migrations, configs, or absent driver internals `unproven`;
+  never mark code-visible SQL/DDL/setting bugs `unproven` for absent caches.
+- **Check executability, runtime evidence, and safe-part splitting.** Verify
+  the safer form is syntactically and operationally valid on the pinned version,
+  deployment, and runner (type wrappers, table vs query `SETTINGS`, `ORDER BY`
+  mutability, `D -> H` and boundary cases). Split cheap behavior-keeping fixes
+  (`finding`) from heavy rebuilds (`tradeoff`, such as `EXCHANGE TABLES`
+  backfill or engine rewrite); route unconfirmed runtime claims to confirmation.
+- **Emit one coherent per-table/pipeline DDL sequence.** Check findings on the
+  same table, MV chain, or `Distributed` wrapper together so proposed keys,
+  projections, skipping indexes, settings, and client options stay compatible.
+  Combine compatible changes into one coherent ordered migration sequence
+  respecting `local -> Distributed`, `source -> MV -> target`, and `D -> H`.
+- **Weigh the challenge as an argument, not a ruling.** Verify quoted evidence
+  on `falls`: refute `falls` demanding `EXPLAIN` or `system.parts` on static
+  correctness, replication, boundary, or `D -> H` bugs; when `falls` rests only
+  on unconfirmed server version, deployment mode, volume, cardinality, ingest
+  rate, or missing `EXPLAIN indexes = 1` / `system.parts` / `system.query_log`
+  while the static mechanism holds, route to `needs confirmation`.
+- **Verify `stands`, `tradeoff`, and `disputed` verdicts.** Reject unbacked
+  `stands`, name both sides on `tradeoff`, and confirm on `disputed` that the
+  prior documented reason is true on this codebase and ClickHouse baseline and
+  explicitly accepts the shown cost (a false-premise ADR `stands`).
 
 | Outcome | When |
 | --- | --- |

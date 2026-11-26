@@ -36,9 +36,9 @@ change, or `pre-existing`.
 **Basis and impact.** The basis (`written`, `schema`, or `engine`) and the
 concrete effect and affected party.
 
-**Safer form.** The minimal version-valid and deployment-valid sketch, what it
-keeps, and whether multiple findings on the same table, view, pipeline, or
-query apply cleanly together.
+**Safer form.** The minimal version-valid, deployment-valid, and runner-valid
+sketch, what it keeps, and one coherent ordered DDL/migration sequence when
+multiple findings touch the same table, MV chain, or `Distributed` wrapper.
 
 **Challenge.** What the challenger tested and why the claim stood.
 
@@ -55,17 +55,20 @@ Distributed-wrapper breakage, safer form, and that the challenge stood.
 ### T-001: <the improvement and what it costs>
 
 As for a finding, then the operational or behavior cost the team must weigh
-(storage/write overhead from projections or skipping indexes, `EXCHANGE TABLES`
-re-sort migration, `wait_for_async_insert = 1` or `insert_distributed_sync = 1`
-latency vs durability, approximate vs exact state, or client batching latency)
-and who would notice. Report both sides without prescribing the team's choice.
+(heavy `EXCHANGE TABLES` backfill or engine rewrite, storage/write overhead
+from projections or skipping indexes, `wait_for_async_insert = 1` or
+`insert_distributed_sync = 1` latency vs durability, approximate vs exact
+state, or client batching latency) and who would notice. When a cheap
+behavior-keeping fix was split out, link its `CH-NNN` finding beside this
+tradeoff. Report both sides without prescribing the team's choice.
 
 ## Disputed
 
 ### D-001: <the traced impact beside the documented decision>
 
 The confirmed mechanism and impact beside the prior quoted decision, its stated
-reason, and its accepted cost. Report both sides without prescribing the choice.
+reason (verified true on this codebase and ClickHouse baseline), and its
+explicitly accepted cost. Report both sides without prescribing the choice.
 
 ## Needs your confirmation
 

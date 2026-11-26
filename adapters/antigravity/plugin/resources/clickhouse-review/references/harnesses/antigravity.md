@@ -13,12 +13,16 @@ Both roles allow only `view_file` and `grep_search`: no shell, writing or
 delegation tools or MCP servers are configured. The parent acquires source
 read-only as the workflow allows, without cloning, copying, checking out, or
 connecting to ClickHouse. Give children revision-specific contents, the
-cumulative schema snapshot, the ordered migration manifest and per-table
-migration chains (including `EXCHANGE TABLES`/renames and post-snapshot deltas),
-the `D..H` diff with removed lines, ClickHouse version/deployment configs, and
-any needed out-of-workspace driver excerpts where their tools cannot read them
-directly (resolving missing external driver steps from local caches before the
-challenge); unavailable source is unread coverage. User-supplied or committed `EXPLAIN indexes = 1`, `system.parts`, and
+cumulative schema up to `HEAD`, the ordered migration manifest and per-table
+migration chains (including `MODIFY SETTING`, `MODIFY QUERY`, `EXCHANGE TABLES`/
+renames, and post-snapshot deltas), effective settings profiles (`users.xml`/
+`config.xml`/SQL profiles), `local -> Distributed` and `source -> MV -> target`
+dependency maps, the `D..H` diff with removed lines, ClickHouse version/
+deployment configs, and any needed out-of-workspace driver excerpts where their
+tools cannot read them directly (resolving missing external driver steps from
+local caches before the challenge, without marking code-visible SQL/setting
+bugs unproven if caches are absent); unavailable source is unread coverage.
+User-supplied or committed `EXPLAIN indexes = 1`, `system.parts`, and
 `system.query_log` outputs are evidence; do not run queries or ClickHouse CLIs.
 
 Use **Gemini 4 Hydrogen with High reasoning** (`gemini-4-hydrogen-high`) for

@@ -1,19 +1,28 @@
 {
   "kind": "evaluator-only",
   "status": "NOT RUN",
-  "baseline_revision": "98e8688f36bfecafe0f6155764c2e2920ddca081",
+  "baseline_revision": "1ff15f2eb6edc5538c416a72bd5b0e58bc123af4",
   "contrast_pairs": [
     ["CH01", "CH02"],
     ["CH03", "CH04"],
     ["CH05", "CH06"],
     ["CH07", "CH08"],
     ["CH09", "CH10"],
-    ["CH11", "CH12"]
+    ["CH11", "CH12"],
+    ["CH13", "CH14"],
+    ["CH15", "CH16"],
+    ["CH17", "CH18"],
+    ["CH19", "CH20"],
+    ["CH21", "CH22"],
+    ["CH23", "CH24"],
+    ["CH25", "CH26"],
+    ["CH27", "CH28"]
   ],
   "cases": [
     {
       "id": "CH01",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "high-cardinality PARTITION BY user_id part explosion and bloom_filter GRANULARITY 8192 granule-vs-row bug",
       "checks": [
         "Traces that PARTITION BY user_id over 1.4M users explodes active partitions/parts (backed by supplied system.parts excerpt) and proposes coarse time partitioning such as toYYYYMM(event_time)",
@@ -23,6 +32,7 @@
     {
       "id": "CH02",
       "polarity": "retain",
+      "expected_outcome": "retain",
       "decision": "monthly toYYYYMM partitioning with GRANULARITY 1 bloom filter and verified EXPLAIN pruning is clean",
       "checks": [
         "Reports no storage-keys finding when PARTITION BY toYYYYMM(event_time), ORDER BY (tenant_id, event_time, user_id), and GRANULARITY 1 match healthy system.parts and EXPLAIN indexes = 1 evidence"
@@ -31,6 +41,7 @@
     {
       "id": "CH03",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "per-message ALTER TABLE UPDATE mutation loop under async mutations_sync = 0 and partial-part TTL rewrites",
       "checks": [
         "Traces that calling ALTER TABLE billing_events UPDATE per Kafka status update triggers full-part rewrites on a 500M-row table and violates immediate read-after-write expectation under default mutations_sync = 0",
@@ -40,6 +51,7 @@
     {
       "id": "CH04",
       "polarity": "retain",
+      "expected_outcome": "retain",
       "decision": "batched Native inserts into partition-aligned ReplicatedReplacingMergeTree with ttl_only_drop_parts = 1 is clean",
       "checks": [
         "Reports no mutations-lifecycle finding on batched PrepareBatch inserts into ReplicatedReplacingMergeTree(updated_at, is_deleted) with immutable partition-key created_at and ttl_only_drop_parts = 1"
@@ -48,6 +60,7 @@
     {
       "id": "CH05",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "incremental MV POPULATE race plus finalized avg/uniq written to ReplicatedMergeTree without -State/-Merge",
       "checks": [
         "Traces that incremental MV runs per inserted block so writing avg(latency_ms) and uniq(user_id) into ReplicatedMergeTree corrupts multi-block rollups and unmerged SELECT reads partial rows",
@@ -57,6 +70,7 @@
     {
       "id": "CH06",
       "polarity": "retain",
+      "expected_outcome": "retain",
       "decision": "ReplicatedAggregatingMergeTree TO target with -State/-Merge and separate bounded backfill is clean",
       "checks": [
         "Reports no views-projections finding when MV uses TO telemetry.daily_route_metrics with AggregateFunction -State columns on ReplicatedAggregatingMergeTree, separate bounded backfill, and -Merge queries with GROUP BY"
@@ -65,6 +79,7 @@
     {
       "id": "CH07",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "join_use_nulls = 0 broken IS NULL anti-join, non-GLOBAL N^2 distributed IN, max(is_deleted) tombstone bug, and wide SELECT *",
       "checks": [
         "Traces that default join_use_nulls = 0 fills unmatched non-Nullable UInt64 s.account_id with 0 so WHERE s.account_id IS NULL returns zero rows",
@@ -74,6 +89,7 @@
     {
       "id": "CH08",
       "polarity": "retain",
+      "expected_outcome": "retain",
       "decision": "LEFT ANTI JOIN, bounded GLOBAL IN with argMax(is_deleted, updated_at), explicit columns, and deterministic ORDER BY LIMIT is clean",
       "checks": [
         "Reports no queries-distributed finding on LEFT ANTI JOIN, bounded GLOBAL IN using argMax(is_deleted, updated_at) = 0, explicit columns, deterministic ORDER BY LIMIT, and query_log-backed resource bounds"
@@ -82,6 +98,7 @@
     {
       "id": "CH09",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "ClickHouse Cloud ON CLUSTER and manual ReplicatedMergeTree DDL, redundant Distributed wrapper, and MV-breaking DROP COLUMN",
       "checks": [
         "Identifies invalid/redundant ON CLUSTER, manual ReplicatedMergeTree Keeper paths, and redundant Distributed table on ClickHouse Cloud SharedMergeTree / Shared database",
@@ -91,6 +108,7 @@
     {
       "id": "CH10",
       "polarity": "retain",
+      "expected_outcome": "retain",
       "decision": "ClickHouse Cloud plain MergeTree without ON CLUSTER and additive column migration is clean",
       "checks": [
         "Reports no cluster-ddl finding on plain MergeTree without ON CLUSTER in ClickHouse Cloud and additive ADD COLUMN IF NOT EXISTS keeping v1 writers and mv_hourly_referrers compatible"
@@ -99,6 +117,7 @@
     {
       "id": "CH11",
       "polarity": "report",
+      "expected_outcome": "finding",
       "decision": "wait_for_async_insert = 0 silent loss on durable audit table, missing deduplication token, SQL interpolation, unbounded JSON buffering, and unconsumed ResultSet leak",
       "checks": [
         "Traces that async_insert = 1 with wait_for_async_insert = 0 risks silent drop of acknowledged financial audit rows on server restart/validation error and missing async_insert_deduplicate / insert_deduplication_token allows retry duplicates",
@@ -108,9 +127,166 @@
     {
       "id": "CH12",
       "polarity": "retain",
+      "expected_outcome": "retain",
       "decision": "wait_for_async_insert = 1 with deduplication token, query_params, closed sort allowlist, timeouts, bounded stream consumption, and finally resultSet.close() is clean",
       "checks": [
         "Reports no ingestion-client finding when durable Cloud writes use wait_for_async_insert = 1 with async_insert_deduplicate = 1 and deterministic insert_deduplication_token, bound query_params, Map allowlist, pre-query limit validation with SQL LIMIT/max_execution_time/max_memory_usage, and complete resultSet.stream() consumption inside finally resultSet.close()"
+      ]
+    },
+    {
+      "id": "CH13",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "invalid Nullable(LowCardinality(String)) wrapper order, implicit TZ DateTime partition key, and CollapsingMergeTree corruption under concurrent writers",
+      "checks": [
+        "Flags statically invalid Nullable(LowCardinality(String)) wrapper order and proposes LowCardinality(Nullable(String)) without requiring runtime diagnostics",
+        "Traces implicit server timezone in session_started_at DateTime with PARTITION BY toYYYYMM(session_started_at) across regional TZ/DST hosts and ReplicatedCollapsingMergeTree corruption on out-of-order multi-threaded +1/-1 inserts, proposing DateTime('UTC') and ReplicatedVersionedCollapsingMergeTree(..., sign, version)"
+      ]
+    },
+    {
+      "id": "CH14",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "LowCardinality(Nullable(String)), explicit DateTime('UTC') partition key, and ReplicatedVersionedCollapsingMergeTree are clean",
+      "checks": [
+        "Reports no storage-keys finding when column uses LowCardinality(Nullable(String)), session_started_at uses DateTime('UTC'), and concurrent +1/-1 inserts target ReplicatedVersionedCollapsingMergeTree with explicit sign and version"
+      ]
+    },
+    {
+      "id": "CH15",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "static lightweight UPDATE failures (key column update and missing block-tracking table settings) plus obsolete query-level lightweight_mutation_projection_mode",
+      "checks": [
+        "Traces static lightweight UPDATE failures on ClickHouse 25.8: updating sorting key column region on sales.orders and omitting required table settings enable_block_number_column = 1 and enable_block_offset_column = 1",
+        "Flags obsolete query-level SETTINGS lightweight_mutation_projection_mode = 'rebuild' on DELETE FROM sales.order_archive against a table with PROJECTION prj_order_id and proposes configuring it as a table-level setting"
+      ]
+    },
+    {
+      "id": "CH16",
+      "polarity": "calibrate",
+      "expected_outcome": "needs confirmation",
+      "decision": "non-key lightweight UPDATE on a projection-free table with valid block-tracking settings and table-level delete projection mode routes to needs confirmation on unstated 25.x version and batch row share",
+      "checks": [
+        "Reports no static failure on DELETE FROM sales.order_archive (which sets table-level lightweight_mutation_projection_mode = 'rebuild') and routes the non-key lightweight UPDATE on sales.orders to needs confirmation rather than emitting an unqualified finding or dropping it",
+        "Names the exact deciding checks: SELECT version() (25.8+ default-on vs 25.5 experimental vs unsupported) and the affected row fraction per batch_id (selective <=10% vs bulk rewrite)"
+      ]
+    },
+    {
+      "id": "CH17",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "PROJECTION on ReplicatedReplacingMergeTree missing deduplicate_merge_projection_mode, implicit .inner MV storage, and multi-MV retry divergence",
+      "checks": [
+        "Traces that PROJECTION prj_by_email on ReplicatedReplacingMergeTree fails on ClickHouse 24.8+ default deduplicate_merge_projection_mode = 'throw' unless set to 'drop' or 'rebuild'",
+        "Flags implicit .inner storage on mv_route_counts (missing TO target_table) and multi-MV partial failure retry divergence under default deduplicate_blocks_in_dependent_materialized_views = 0 on 25.3"
+      ]
+    },
+    {
+      "id": "CH18",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "deduplicate_merge_projection_mode = 'rebuild', explicit TO MV targets, and deduplicate_blocks_in_dependent_materialized_views = 1 are clean",
+      "checks": [
+        "Reports no views-projections finding when user_profiles sets deduplicate_merge_projection_mode = 'rebuild', both MVs write to explicit TO target tables, and users.xml enables deduplicate_blocks_in_dependent_materialized_views = 1"
+      ]
+    },
+    {
+      "id": "CH19",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "ARRAY JOIN empty-array drop, 1-arg ReplacingMergeTree FINAL missing tombstone filter, FLAT dict sparse key failure with dictGet, and non-swappable USING subquery LEFT JOIN",
+      "checks": [
+        "Traces ARRAY JOIN dropping rows with empty tags = [] (proposing LEFT ARRAY JOIN) and 1-arg ReplicatedReplacingMergeTree(updated_at) FINAL failing to filter plain is_deleted tombstones (unlike 2-arg (updated_at, is_deleted))",
+        "Flags LAYOUT(FLAT()) exceeding MAX_ARRAY_SIZE / exhausting RAM on sparse UInt64 keys up to 10^12 with dictGet silently returning '' instead of dictGetOrNull, and large subquery LEFT JOIN USING bypassing auto-swap without a 25.8-valid spill threshold (grace_hash + max_bytes_in_join, or rewriting USING/subquery to ON)"
+      ]
+    },
+    {
+      "id": "CH20",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "LEFT ARRAY JOIN, 2-arg ReplacingMergeTree FINAL, HASHED dict with dictGetOrNull, and 25.8 analyzer auto-swapped LEFT JOIN ON are clean",
+      "checks": [
+        "Reports no queries-distributed finding on LEFT ARRAY JOIN, 2-arg ReplicatedReplacingMergeTree(updated_at, is_deleted) FINAL, bounded HASHED dictionary with dictGetOrNull, and does not falsely claim 25.8+ analyzer LEFT JOIN ... ON never auto-swaps when EXPLAIN PLAN confirms the swap"
+      ]
+    },
+    {
+      "id": "CH21",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "in-place MODIFY ORDER BY reordering existing columns fails and local ADD COLUMN drifts from Distributed wrapper",
+      "checks": [
+        "Traces that ALTER TABLE ops.metrics_local MODIFY ORDER BY (region, tenant_id, ts) reorders existing columns in place (rejected by ClickHouse; requires EXCHANGE TABLES expand-and-swap)",
+        "Traces that migration 0002 adds region to ops.metrics_local without adding it to ops.metrics_dist Distributed wrapper"
+      ]
+    },
+    {
+      "id": "CH22",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "same-ALTER append of brand-new defaultless ADD COLUMN to ORDER BY plus later HEAD migration syncing Distributed wrapper and MODIFY SETTING is clean",
+      "checks": [
+        "Does not falsely flag ALTER TABLE ... ADD COLUMN region LowCardinality(String), MODIFY ORDER BY (tenant_id, ts, region) because appending a brand-new defaultless column in the same ALTER is valid in ClickHouse",
+        "Reconstructs cumulative schema up to HEAD through migration 0003 confirming ops.metrics_dist adds region and ops.metrics_local enables ttl_only_drop_parts = 1"
+      ]
+    },
+    {
+      "id": "CH23",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "26.2-only deduplicate_insert on ClickHouse 25.3, reused constant insert_deduplication_token dropping distinct batches, and Kafka direct SELECT with default poison-pill stall",
+      "checks": [
+        "Traces that deduplicate_insert fails with UNKNOWN_SETTING on ClickHouse 25.3 (landed in 26.2; use async_insert_deduplicate = 1) and reusing constant insert_deduplication_token 'daily-import' across distinct batches in the same partition silently drops distinct rows",
+        "Flags direct SELECT from Kafka engine webhooks_kafka (fails under default stream_like_engine_allow_direct_select = 0 or when an MV is attached, and risks consuming or committing offsets when enabled) and kafka_handle_error_mode = 'default' stalling consumers on malformed JSON poison pills"
+      ]
+    },
+    {
+      "id": "CH24",
+      "polarity": "retain",
+      "expected_outcome": "retain",
+      "decision": "async_insert_deduplicate = 1 with unique per-batch token and Kafka engine with error_mode = 'stream' plus MV/DLQ targets are clean",
+      "checks": [
+        "Reports no ingestion-client finding when 25.3 producer sets async_insert_deduplicate = 1 with unique batch.batchId token and Kafka engine uses kafka_handle_error_mode = 'stream' feeding explicit TO MVs (including DLQ) with no direct SELECT"
+      ]
+    },
+    {
+      "id": "CH25",
+      "polarity": "report",
+      "expected_outcome": "finding",
+      "decision": "false-premise prior ADR claiming wait_for_async_insert = 0 is durable on ClickHouse Cloud stands rather than disputed",
+      "checks": [
+        "Traces that wait_for_async_insert = 0 acknowledges financial billing_audits writes before flushing to object storage, risking silent data loss on replica restart or parse error",
+        "Refutes false-premise ADR-0004 (which wrongly claims Cloud SharedMergeTree persists the async_insert buffer to S3 before HTTP 200 and never accepts data loss) so the claim stands as a finding rather than disputed"
+      ]
+    },
+    {
+      "id": "CH26",
+      "polarity": "calibrate",
+      "expected_outcome": "disputed",
+      "decision": "wait_for_async_insert = 0 on best-effort frontend click telemetry backed by a true prior ADR explicitly accepting bounded loss is disputed",
+      "checks": [
+        "Confirms the silent-loss impact of wait_for_async_insert = 0 beside quoted ADR-0004 whose latency-vs-durability rationale holds and explicitly accepts bounded loss on best-effort ui_clicks",
+        "Classifies the candidate as disputed reporting both sides rather than plain finding or silent drop"
+      ]
+    },
+    {
+      "id": "CH27",
+      "polarity": "report",
+      "expected_outcome": "finding+tradeoff",
+      "decision": "splits cheap in-place MODIFY SETTING ttl_only_drop_parts = 1 finding from live-table EXCHANGE TABLES ORDER BY rebuild tradeoff with coherent DDL",
+      "checks": [
+        "Reports missing ttl_only_drop_parts = 1 on monthly partitioned analytics.events as a cheap behavior-keeping finding (ALTER TABLE ... MODIFY SETTING ttl_only_drop_parts = 1)",
+        "Separately classifies fixing leading UUID event_id in ORDER BY (event_id, tenant_id, event_time) on the live 400M-row table via EXCHANGE TABLES backfill as a tradeoff and keeps both changes coherent in one ordered DDL sequence"
+      ]
+    },
+    {
+      "id": "CH28",
+      "polarity": "calibrate",
+      "expected_outcome": "tradeoff",
+      "decision": "ttl_only_drop_parts = 1 already present leaves only the EXCHANGE TABLES ORDER BY rebuild tradeoff",
+      "checks": [
+        "Reports no plain finding for TTL retention because ttl_only_drop_parts = 1 is already configured on analytics.events",
+        "Classifies re-sorting the live 400M-row table from ORDER BY (event_id, tenant_id, event_time) to (tenant_id, event_time, event_id) via EXCHANGE TABLES strictly as a tradeoff naming backfill and migration cost"
       ]
     }
   ]

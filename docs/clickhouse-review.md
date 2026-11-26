@@ -26,12 +26,12 @@ project code or connects to a database.
 
 | Lens | Focus |
 | --- | --- |
-| `storage-keys` | MergeTree engine choice, `PARTITION BY` cardinality and part explosion, `ORDER BY`/`PRIMARY KEY` alignment, column types, and skipping index `GRANULARITY` (granules, not rows) and materialization. |
-| `mutations-lifecycle` | Frequent `ALTER TABLE ... UPDATE`/`DELETE` rewrite storms, async `mutations_sync` drift, 25.7+ lightweight update patch-part constraints, projection compatibility, and `ttl_only_drop_parts` retention. |
-| `views-projections` | Incremental MV per-block trigger physics, `AggregatingMergeTree` `-State`/`-Merge` and `SimpleAggregateFunction`, `POPULATE` live-ingest gaps, MV `JOIN` left-table asymmetry, chained MVs, refreshable MVs, and projections. |
-| `queries-distributed` | `ReplacingMergeTree` `FINAL`/`argMax` and `argMax(is_deleted, ver)` tombstones, `join_use_nulls = 0` outer-join traps, right-side `JOIN` RAM and 24.12+ auto-swap, `GLOBAL IN`/`JOIN` vs N^2 distributed fan-out, monotonic key pruning, wide `SELECT *`. |
-| `cluster-ddl` | `DatabaseReplicated` vs `ON CLUSTER`, Keeper path macros, `internal_replication`, `insert_distributed_sync`, sharding-key alignment, ClickHouse Cloud `SharedMergeTree` conventions, and rolling-deploy (`D -> H`) MV/`Distributed` safety. |
-| `ingestion-client` | Client batching vs `TOO_MANY_PARTS`, `async_insert` with `wait_for_async_insert` and `insert_deduplication_token`, `Native`/`RowBinary` vs `JSONEachRow`, `{name:Type}` query parameters, identifier allowlists, timeouts, and stream/batch lifecycle. |
+| `storage-keys` | MergeTree engine choice (`Replacing*`, `Summing*`, `VersionedCollapsing*`), `PARTITION BY` cardinality and explicit timezones, `ORDER BY`/`PRIMARY KEY` alignment, valid type wrappers (`LowCardinality(Nullable(T))`), and skipping index `GRANULARITY` (granules, not rows) and materialization. |
+| `mutations-lifecycle` | Frequent `ALTER TABLE ... UPDATE`/`DELETE` rewrite storms, async `mutations_sync` vs `lightweight_deletes_sync` drift, 25.8+ lightweight update patch-part constraints, table-level `lightweight_mutation_projection_mode`, and `ttl_only_drop_parts` retention. |
+| `views-projections` | Incremental MV per-block trigger physics, `AggregatingMergeTree` `-State`/`-Merge` and `SimpleAggregateFunction`, `POPULATE` gaps, implicit `.inner` storage, multi-MV retry dedup (`deduplicate_blocks_in_dependent_materialized_views`), MV `JOIN` asymmetry, refreshable MVs, and `deduplicate_merge_projection_mode`. |
+| `queries-distributed` | 1-arg vs 2-arg `ReplacingMergeTree` `FINAL`/`argMax` tombstones, `join_use_nulls = 0` outer joins, `ARRAY JOIN` empty-array drops, right-side `JOIN` RAM and 24.12+/25.8+ auto-swap, `GLOBAL IN`/`JOIN` vs N^2 fan-out, dictionary layouts/`dictGet`, monotonic pruning, wide `SELECT *`. |
+| `cluster-ddl` | `DatabaseReplicated` vs `ON CLUSTER`, Keeper path macros, `internal_replication`, `insert_distributed_sync`, sharding-key alignment, ClickHouse Cloud `SharedMergeTree`, `MODIFY ORDER BY` mutability rules, and rolling-deploy (`D -> H`) MV/`Distributed` safety. |
+| `ingestion-client` | Client batching vs `TOO_MANY_PARTS`, `async_insert` durability and version-valid dedup (`async_insert_deduplicate` vs 26.2+ `deduplicate_insert`, per-partition `insert_deduplication_token`), `Native`/`RowBinary` vs `JSONEachRow`, `Kafka`/`Buffer` engines, `{name:Type}` parameters, and stream/batch lifecycle. |
 
 For a small change (~300 changed lines or fewer in one area), related lenses
 are paired while keeping query semantics and client ingestion isolated:
@@ -56,10 +56,13 @@ challenge:
 
 An independent challenger receives each claim without the reader's reasoning
 and attacks it on four lines: ClickHouse version/deployment mechanism,
-trigger/data-dependent evidence (including missing `EXPLAIN indexes = 1`,
-`system.parts`, or `system.query_log`), safer-form validity and tradeoffs, and
-prior documented intent or `Not a finding` guards. The orchestrator walks every
-trace itself and decides each candidate as `finding`, `tradeoff`, `disputed`,
+trigger/data-dependent evidence (never dismissing statically provable
+correctness, replication, boundary, or `D -> H` bugs for lacking `EXPLAIN` or
+`system.parts`), safer-form executability and safe/tradeoff splits, and prior
+documented intent (rejecting false-premise ADRs from `disputed`) or `Not a
+finding` guards. The orchestrator walks every trace against cumulative schema
+up to `HEAD`, emits one coherent ordered DDL sequence per table or pipeline,
+and decides each candidate as `finding`, `tradeoff`, `disputed`,
 `needs confirmation`, `unproven`, or `rejected`.
 
 ## Scope boundaries
@@ -89,5 +92,5 @@ trace itself and decides each candidate as `finding`, `tradeoff`, `disputed`,
   Antigravity (`/clickhouse-review`). Cursor ships Super Review only.
 - Deployment contexts cover Self-managed ClickHouse (v24-25+) and ClickHouse
   Cloud (`SharedMergeTree`).
-- Version 0.1.0 has no live model evaluation runs yet; contrasting fixture
+- Version 0.2.0 has no live model evaluation runs yet; contrasting fixture
   packets in `evals/clickhouse-review/` are `NOT RUN`.

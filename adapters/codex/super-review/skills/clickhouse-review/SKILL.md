@@ -3,7 +3,7 @@ name: clickhouse-review
 description: "Explicit ClickHouse Review of MergeTree schemas, parts, mutations, materialized views, projections, columnar and Distributed queries, cluster DDL, and client ingestion in PRs or local source by reading, or help using that review."
 disable-model-invocation: true
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # ClickHouse Review

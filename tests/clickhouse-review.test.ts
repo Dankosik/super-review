@@ -42,6 +42,30 @@ test("the workflow's lens table and lens resources name the same six lenses with
   expect(viewsProj).not.toContain("JOIN/WHERE");
   expect(viewsProj).toContain("filtered projections");
   expect(viewsProj).toContain("needs confirmation");
+  const mutationsLife = flat("skills/clickhouse-review/references/lenses/mutations-lifecycle.md");
+  expect(mutationsLife).toContain("25.8+");
+  expect(mutationsLife).toContain("needs confirmation");
+  expect(mutationsLife).toContain("tradeoff");
+  const queriesDist = flat("skills/clickhouse-review/references/lenses/queries-distributed.md");
+  expect(queriesDist).toContain("25.8+");
+  expect(queriesDist).toContain("UNKNOWN_SETTING");
+  expect(queriesDist).not.toContain("alters output order");
+  expect(queriesDist).toContain("needs confirmation");
+  const ingestionClient = flat("skills/clickhouse-review/references/lenses/ingestion-client.md");
+  expect(ingestionClient).not.toContain("skip MVs attached only to");
+  expect(ingestionClient).toContain("attach MVs to the destination");
+  const storageKeys = flat("skills/clickhouse-review/references/lenses/storage-keys.md");
+  expect(storageKeys).toContain("tradeoff");
+  expect(storageKeys).toContain("needs confirmation");
+  const clusterDdl = flat("skills/clickhouse-review/references/lenses/cluster-ddl.md");
+  expect(clusterDdl).toContain("tradeoff");
+  for (const path of [
+    ...files(skill).filter(file => file.endsWith(".md")).map(file => relative(root, file)),
+    "docs/clickhouse-review.md",
+    "docs/review-family.md",
+  ]) {
+    expect({ path, hasStale257: read(path).includes("25.7+") }).toEqual({ path, hasStale257: false });
+  }
 });
 
 test("deployment contexts use the five-section baseline template and keep anti-encyclopedia bounds", () => {
@@ -72,12 +96,22 @@ test("deployment contexts use the five-section baseline template and keep anti-e
       expect(bulletLines).toBeLessThanOrEqual(6);
     }
   }
-  expect(flat("skills/clickhouse-review/references/deployments/self-managed.md")).toContain("DatabaseReplicated");
-  expect(flat("skills/clickhouse-review/references/deployments/self-managed.md")).toContain("internal_replication");
-  expect(flat("skills/clickhouse-review/references/deployments/self-managed.md")).toContain("query_plan_join_swap_table");
-  expect(flat("skills/clickhouse-review/references/deployments/self-managed.md")).toContain("filtered projections");
-  expect(flat("skills/clickhouse-review/references/deployments/cloud.md")).toContain("SharedMergeTree");
-  expect(flat("skills/clickhouse-review/references/deployments/cloud.md")).toContain("wait_for_async_insert");
+  const selfManaged = flat("skills/clickhouse-review/references/deployments/self-managed.md");
+  expect(selfManaged).toContain("DatabaseReplicated");
+  expect(selfManaged).toContain("internal_replication");
+  expect(selfManaged).toContain("query_plan_join_swap_table");
+  expect(selfManaged).toContain("filtered projections");
+  const selfManagedNotFinding = read("skills/clickhouse-review/references/deployments/self-managed.md").split("## Not a finding in Self-managed ClickHouse")[1] ?? "";
+  expect(selfManagedNotFinding).not.toContain("FINAL");
+  expect(selfManagedNotFinding).not.toContain("Monotonic functions");
+  const cloud = flat("skills/clickhouse-review/references/deployments/cloud.md");
+  expect(cloud).toContain("SharedMergeTree");
+  expect(cloud).toContain("wait_for_async_insert");
+  expect(cloud).toContain("CREATE SETTINGS PROFILE");
+  expect(cloud).toContain("insert_quorum");
+  const cloudNotFinding = read("skills/clickhouse-review/references/deployments/cloud.md").split("## Not a finding in ClickHouse Cloud")[1] ?? "";
+  expect(cloudNotFinding).not.toContain("FINAL");
+  expect(cloudNotFinding).not.toContain("skipping-index");
 });
 
 test("a finding requires four checkable parts, explicit bases, passive diagnostics evidence, and clean scope boundaries", () => {
@@ -111,6 +145,15 @@ test("a finding requires four checkable parts, explicit bases, passive diagnosti
   expect(flatContract).toContain("broken query parameterization");
   expect(flatContract).toContain("schema-evolution fragility");
   expect(flatContract).toContain("never reviewed by analogy");
+  expect(flatContract).toContain("Statically provable correctness, replication, boundary, and rolling-deploy (`D -> H`) failures do not require `EXPLAIN indexes = 1`, `system.parts`, or `system.query_log`");
+  expect(flatContract).toContain("A self-ratifying comment added in the same change, a false premise, or a decision omitting the shown cost is not disputed.");
+  expect(flatContract).toContain("split any minimal behavior-keeping fix");
+  expect(flatContract).toContain("up to `HEAD`");
+  expect(flatContract).toContain("~/.gradle/caches");
+  expect(flatContract).toContain("never code-visible SQL, DDL, or explicit setting failures");
+  expect(read("skills/clickhouse-review/assets/finding-template.md")).toContain("- Confirmation (if runtime-dependent):");
+  expect(flat("skills/clickhouse-review/references/harnesses/antigravity.md")).toContain("effective settings profiles");
+  expect(flat("skills/clickhouse-review/references/harnesses/antigravity.md")).toContain("`local -> Distributed` and `source -> MV -> target` dependency maps");
 });
 
 test("the challenge is independent and the orchestrator owns all six decision outcomes", () => {
@@ -133,6 +176,7 @@ test("the challenge is independent and the orchestrator owns all six decision ou
   expect(challenge).toContain("Doubt is not a verdict.");
   expect(challenge).toContain("return `falls` naming the missing check");
   expect(challenge).toContain("filtered projections");
+  expect(challenge).toContain("does not make a claim `disputed`: it `stands`");
   const challengeItems = read("skills/clickhouse-review/references/challenge.md").split(/\n(?=\d+\. )/).slice(1);
   expect(challengeItems.length).toBe(4);
   for (const item of challengeItems) {
@@ -143,7 +187,9 @@ test("the challenge is independent and the orchestrator owns all six decision ou
   const flatWorkflow = flat("skills/clickhouse-review/references/workflow.md");
   expect(flatWorkflow).toContain("Strip the reader's reasoning");
   expect(workflow).toContain("**Walk each trace yourself.**");
+  expect(workflow).toContain("**Emit one coherent per-table/pipeline DDL sequence.**");
   expect(workflow).toContain("**Weigh the challenge as an argument, not a ruling.**");
+  expect(flatWorkflow).toContain("refute `falls` demanding `EXPLAIN` or `system.parts` on static correctness, replication, boundary, or `D -> H` bugs");
   expect(flatWorkflow).toContain("when `falls` rests only on unconfirmed server version, deployment mode, volume, cardinality, ingest rate, or missing `EXPLAIN indexes = 1` / `system.parts` / `system.query_log` while the static mechanism holds, route to `needs confirmation`");
   for (const outcome of ["| finding |", "| tradeoff |", "| disputed |", "| needs confirmation |", "| unproven |", "| rejected |"]) {
     expect(workflow).toContain(outcome);
@@ -169,27 +215,39 @@ test("the report template keeps compact fragility, confirmation questions, and z
   for (const evidence of ["EXPLAIN indexes = 1", "system.parts", "system.query_log"]) {
     expect(report).toContain(evidence);
   }
-  for (const file of files(skill).filter(path => path.endsWith(".md"))) {
-    const content = read(relative(root, file));
-    expect({ file: relative(root, file), hasEmDash: content.includes("—") }).toEqual({
-      file: relative(root, file),
-      hasEmDash: false,
-    });
-    expect({ file: relative(root, file), hasLatexMath: /\$N\^2\$/.test(content) }).toEqual({
-      file: relative(root, file),
-      hasLatexMath: false,
-    });
-    if (file.includes("/references/")) {
-      const bullets = content.split(/\n(?=- )/).slice(1);
-      for (const bullet of bullets) {
-        const bulletLines = bullet.split(/\n\n/)[0]!.split("\n").length;
-        expect({ file: relative(root, file), bulletLines, head: bullet.slice(0, 60) }).toEqual({
-          file: relative(root, file),
-          bulletLines: Math.min(bulletLines, 6),
-          head: bullet.slice(0, 60),
-        });
+  const mdTargets = [
+    ...files(skill).filter(path => path.endsWith(".md")).map(path => relative(root, path)),
+    ...roles.map(role => `adapters/claude/${role}.md`),
+    "adapters/claude/clickhouse-skill.md",
+    ...["clickhouse-review", "clickhouse-reader", "clickhouse-challenger"].map(role => `adapters/opencode/agents/${role}.md`),
+    "adapters/opencode/commands/clickhouse-review.md",
+    "adapters/antigravity/clickhouse-review.md",
+    "adapters/antigravity/agents/clickhouse-reader.md",
+    "adapters/antigravity/agents/clickhouse-challenger.md",
+  ];
+  for (const rel of mdTargets) {
+    const content = read(rel);
+    expect({ file: rel, hasEmDash: content.includes("—") }).toEqual({ file: rel, hasEmDash: false });
+    expect({ file: rel, hasLatexMath: /\$N\^2\$/.test(content) }).toEqual({ file: rel, hasLatexMath: false });
+    // Every bullet or numbered item stays within the 6-line AGENTS.md bound.
+    let itemStart = -1;
+    let itemLines = 0;
+    const lines = content.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i]!;
+      if (/^\s*(?:- |\d+\. )/.test(line)) {
+        if (itemStart !== -1) expect({ file: rel, line: itemStart, itemLines }).toEqual({ file: rel, line: itemStart, itemLines: Math.min(itemLines, 6) });
+        itemStart = i + 1;
+        itemLines = 1;
+      } else if (itemStart !== -1 && line.trim() !== "" && !line.startsWith("#") && !line.startsWith("|")) {
+        itemLines++;
+      } else {
+        if (itemStart !== -1) expect({ file: rel, line: itemStart, itemLines }).toEqual({ file: rel, line: itemStart, itemLines: Math.min(itemLines, 6) });
+        itemStart = -1;
+        itemLines = 0;
       }
     }
+    if (itemStart !== -1) expect({ file: rel, line: itemStart, itemLines }).toEqual({ file: rel, line: itemStart, itemLines: Math.min(itemLines, 6) });
   }
 });
 
@@ -245,25 +303,28 @@ test("delivery copies are identical across supported hosts and absent in Cursor"
   for (const role of ["clickhouse-review", "clickhouse-reader", "clickhouse-challenger"]) expect(existsSync(resolve(root, `adapters/opencode/agents/${role}.md`))).toBe(true);
   expect(read("scripts/package.py")).toContain('"clickhouse-review"');
   const skillMeta = metadata("skills/clickhouse-review/SKILL.md");
-  expect(skillMeta.metadata.version).toBe("0.1.0");
+  expect(skillMeta.metadata.version).toBe("0.2.0");
   expect(skillMeta["disable-model-invocation"]).toBe(true);
   const openAi = Bun.YAML.parse(read("skills/clickhouse-review/agents/openai.yaml")) as any;
   expect(openAi.policy.allow_implicit_invocation).toBe(false);
 });
 
-test("clickhouse-review evaluator packets are isolated, symmetric, syntactically valid, and stay out of packaged plugins", () => {
+test("clickhouse-review evaluator packets are isolated, symmetric across all lenses, deployments and outcomes, syntactically valid, and stay out of packaged plugins", () => {
+  type Outcome = "finding" | "finding+tradeoff" | "tradeoff" | "disputed" | "needs confirmation" | "retain";
   type Packet = {
     id: string;
     skill: string;
     deployment: string;
     lens: string;
+    lenses?: string[];
     request: string;
     scope: string;
     files: Record<string, string>;
   };
   type GraderCase = {
     id: string;
-    polarity: "report" | "retain";
+    polarity: "report" | "retain" | "calibrate";
+    expected_outcome: Outcome;
     decision: string;
     checks: string[];
   };
@@ -286,14 +347,27 @@ test("clickhouse-review evaluator packets are isolated, symmetric, syntactically
 
   expect(new Set(inputs.map(item => item.lens))).toEqual(new Set(lenses));
   expect(new Set(inputs.map(item => item.deployment))).toEqual(new Set(deployments));
+  expect(new Set(suite.cases.map(item => item.expected_outcome))).toEqual(
+    new Set(["finding", "finding+tradeoff", "tradeoff", "disputed", "needs confirmation", "retain"]),
+  );
 
   const byId = new Map(suite.cases.map(item => [item.id, item]));
   const inputById = new Map(inputs.map(item => [item.id, item]));
-  for (const [positive, negative] of suite.contrast_pairs) {
-    expect(byId.get(positive)?.polarity).toBe("report");
-    expect(byId.get(negative)?.polarity).toBe("retain");
-    expect(inputById.get(positive)?.lens).toBe(inputById.get(negative)?.lens);
-    expect(inputById.get(positive)?.deployment).toBe(inputById.get(negative)?.deployment);
+  for (const [positive, contrast] of suite.contrast_pairs) {
+    const pos = byId.get(positive)!;
+    const neg = byId.get(contrast)!;
+    expect(pos.polarity).toBe("report");
+    expect(["finding", "finding+tradeoff"]).toContain(pos.expected_outcome);
+    if (neg.expected_outcome === "retain") {
+      expect(neg.polarity).toBe("retain");
+    } else {
+      expect(neg.polarity).toBe("calibrate");
+      expect(["tradeoff", "disputed", "needs confirmation"]).toContain(neg.expected_outcome);
+    }
+    expect(pos.expected_outcome).not.toBe(neg.expected_outcome);
+    expect(inputById.get(positive)?.lens).toBe(inputById.get(contrast)?.lens);
+    expect(inputById.get(positive)?.lenses).toEqual(inputById.get(contrast)?.lenses);
+    expect(inputById.get(positive)?.deployment).toBe(inputById.get(contrast)?.deployment);
   }
 
   const scratch = mkdtempSync(join(tmpdir(), "clickhouse-eval-verify-"));
@@ -301,6 +375,11 @@ test("clickhouse-review evaluator packets are isolated, symmetric, syntactically
     for (const packet of inputs) {
       expect(packet.id).toMatch(/^CH\d{2}$/);
       expect(packet.skill).toBe("clickhouse-review");
+      if (packet.lenses) {
+        expect(packet.lenses.length).toBeGreaterThan(1);
+        expect(packet.lenses).toContain(packet.lens);
+        for (const extraLens of packet.lenses) expect(lenses).toContain(extraLens);
+      }
       expect(Object.keys(packet.files).length).toBeGreaterThan(0);
       for (const [filePath, content] of Object.entries(packet.files)) {
         expect(posix.isAbsolute(filePath)).toBe(false);
@@ -311,27 +390,69 @@ test("clickhouse-review evaluator packets are isolated, symmetric, syntactically
         writeFileSync(dest, content);
 
         if (filePath.endsWith(".sql")) {
-          // Verify balanced parens/quotes, semicolon termination, and valid statement starts.
+          // Strip -- and /* */ comments outside single quotes, then verify balanced parens/quotes and quote-aware statements.
+          let current = "";
+          const statements: string[] = [];
           let depth = 0;
           let inQuote = false;
+          let endsWithSemicolon = false;
           for (let i = 0; i < content.length; i++) {
             const ch = content[i];
-            if (ch === "'" && content[i - 1] !== "\\") inQuote = !inQuote;
-            else if (!inQuote && ch === "(") depth++;
-            else if (!inQuote && ch === ")") depth--;
+            if (!inQuote && ch === "-" && content[i + 1] === "-") {
+              while (i < content.length && content[i] !== "\n") i++;
+              current += "\n";
+              continue;
+            }
+            if (!inQuote && ch === "/" && content[i + 1] === "*") {
+              const closeIdx = content.indexOf("*/", i + 2);
+              expect(closeIdx).toBeGreaterThan(-1);
+              i = closeIdx + 1;
+              current += " ";
+              continue;
+            }
+            if (ch === "'") {
+              if (inQuote && content[i + 1] === "'") {
+                current += "''";
+                i++;
+                continue;
+              }
+              let backslashes = 0;
+              for (let j = i - 1; j >= 0 && content[j] === "\\"; j--) backslashes++;
+              if (backslashes % 2 === 0) inQuote = !inQuote;
+            } else if (!inQuote && ch === "(") {
+              depth++;
+            } else if (!inQuote && ch === ")") {
+              depth--;
+            } else if (!inQuote && ch === ";") {
+              const trimmed = current.trim();
+              if (trimmed) statements.push(trimmed);
+              current = "";
+              endsWithSemicolon = true;
+              continue;
+            }
             expect(depth).toBeGreaterThanOrEqual(0);
+            if (ch && !/\s/.test(ch)) endsWithSemicolon = false;
+            current += ch;
           }
           expect(inQuote).toBe(false);
           expect(depth).toBe(0);
-          expect(content.trimEnd().endsWith(";")).toBe(true);
-          // ClickHouse forbids combining TO [db.]table with POPULATE in CREATE MATERIALIZED VIEW.
-          expect(content).not.toMatch(/CREATE\s+MATERIALIZED\s+VIEW[\s\S]*\bTO\b[\s\S]*\bPOPULATE\b/i);
-          const statements = content.split(";").map(s => s.trim()).filter(Boolean);
+          expect(endsWithSemicolon).toBe(true);
+          expect(current.trim()).toBe("");
           expect(statements.length).toBeGreaterThan(0);
           for (const stmt of statements) {
-            expect(stmt).toMatch(/^(?:CREATE|ALTER|SELECT|INSERT|DROP|ATTACH|DETACH|EXCHANGE)\b/i);
+            expect(stmt).toMatch(/^(?:CREATE|ALTER|SELECT|INSERT|UPDATE|DELETE|DROP|ATTACH|DETACH|EXCHANGE|SYSTEM|SET)\b/i);
+            // ClickHouse forbids combining TO [db.]table with POPULATE in a single CREATE MATERIALIZED VIEW statement.
+            expect(stmt).not.toMatch(/^CREATE\s+MATERIALIZED\s+VIEW[\s\S]*\bTO\b[\s\S]*\bPOPULATE\b/i);
           }
-          if (packet.deployment === "self-managed" && byId.get(packet.id)?.polarity === "retain") {
+          const polarity = byId.get(packet.id)?.polarity;
+          if (polarity === "retain" || polarity === "calibrate") {
+            expect({ packet: packet.id, filePath, invalidTypeWrapper: /Nullable\s*\(\s*LowCardinality\s*\(/i.test(content) }).toEqual({
+              packet: packet.id,
+              filePath,
+              invalidTypeWrapper: false,
+            });
+          }
+          if (packet.deployment === "self-managed" && (polarity === "retain" || polarity === "calibrate")) {
             for (const match of content.matchAll(/Replicated\w*MergeTree\(\s*'([^']+)'/g)) {
               expect({ packet: packet.id, filePath, path: match[1] }).toEqual({
                 packet: packet.id,
@@ -340,6 +461,21 @@ test("clickhouse-review evaluator packets are isolated, symmetric, syntactically
               });
             }
           }
+          if (packet.deployment === "self-managed") {
+            const xmlContent = Object.entries(packet.files).filter(([k]) => k.endsWith(".xml")).map(([, v]) => v).join("\n");
+            for (const match of content.matchAll(/\bON\s+CLUSTER\s+([A-Za-z0-9_]+)/gi)) {
+              const cluster = match[1]!;
+              expect({ packet: packet.id, filePath, cluster, declaredInXml: xmlContent.includes(`<${cluster}>`) }).toEqual({
+                packet: packet.id,
+                filePath,
+                cluster,
+                declaredInXml: true,
+              });
+            }
+          }
+        }
+        if (filePath.endsWith(".json")) {
+          expect(() => JSON.parse(content)).not.toThrow();
         }
         if (filePath.endsWith(".md")) {
           for (const match of content.matchAll(/`(EXPLAIN [^`]+)`/g)) {
@@ -357,7 +493,7 @@ test("clickhouse-review evaluator packets are isolated, symmetric, syntactically
           expect({ packet: packet.id, filePath, status: xmlCheck.status, stderr: xmlCheck.stderr }).toEqual({ packet: packet.id, filePath, status: 0, stderr: "" });
         }
       }
-      for (const forbidden of ["polarity", "decision", "checks", "contrast_pairs"]) {
+      for (const forbidden of ["polarity", "expected_outcome", "decision", "checks", "contrast_pairs"]) {
         expect(Object.hasOwn(packet, forbidden)).toBe(false);
       }
       const grader = byId.get(packet.id)!;
@@ -380,7 +516,16 @@ test("clickhouse-review evaluator packets are isolated, symmetric, syntactically
           "}",
         ].join("\n"));
         writeFileSync(join(dir, "tsconfig.json"), JSON.stringify({
-          compilerOptions: { strict: true, noEmit: true, target: "ES2022", module: "ESNext", moduleResolution: "bundler", skipLibCheck: true },
+          compilerOptions: {
+            strict: true,
+            noUnusedLocals: true,
+            noUnusedParameters: true,
+            noEmit: true,
+            target: "ES2022",
+            module: "ESNext",
+            moduleResolution: "bundler",
+            skipLibCheck: true,
+          },
           include: ["src/**/*.ts", "clickhouse-client.d.ts"],
         }));
         const tsc = spawnSync(resolve(root, "node_modules/.bin/tsc"), ["-p", join(dir, "tsconfig.json")], { encoding: "utf8" });
