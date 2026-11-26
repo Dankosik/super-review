@@ -9,9 +9,11 @@ part-rewrite storms, projection conflicts, and silent async drift?**
   mutations that rewrite multi-gigabyte parts and starve the background merge
   pool.
 - Callers do not assume immediate read-after-write visibility after async
-  mutations (`mutations_sync = 0`).
-- Selective lightweight deletes/updates respect version prerequisites, key
-  immutability, and projection compatibility (`lightweight_mutation_projection_mode`).
+  mutations (`mutations_sync = 0`) and distinguish `mutations_sync` from
+  `lightweight_deletes_sync`.
+- Selective lightweight deletes and updates respect pinned version support,
+  engine and key immutability, block-tracking table settings, and table-level
+  `lightweight_mutation_projection_mode`.
 - Retention and bulk purges drop whole partitions (`DROP PARTITION` or
   `ttl_only_drop_parts = 1`) rather than scrubbing individual rows across parts.
 
@@ -26,11 +28,18 @@ evidence, and client code issuing `UPDATE`, `DELETE`, or `ALTER TABLE`.
   merges.
 - **Silent async mutation drift**: code executing `ALTER TABLE ... UPDATE`/
   `DELETE` under default `mutations_sync = 0` and immediately querying the
-  mutated state or chaining dependent steps assuming completion.
-- **Misused lightweight updates and deletes**: using lightweight `UPDATE` patch
-  parts on bulk >10% table rewrites, attempting to update primary or partition
-  key columns, omitting `enable_block_number_column`/`enable_block_offset_column`,
-  or running lightweight deletes on tables with incompatible projections.
+  mutated state or chaining steps; distinguish `mutations_sync` (default `0`)
+  from `lightweight_deletes_sync` (`2` self-managed, `1` Cloud).
+- **Static lightweight update failures**: lightweight `UPDATE` attempting to
+  modify primary or partition key columns, targeting unsupported engines
+  (`Summing*`/`Aggregating*`/`Graphite*` or `UNIQUE KEY`), or omitting required
+  `enable_block_number_column` and `enable_block_offset_column` table settings.
+- **Bulk patch parts and projection conflicts**: lightweight `UPDATE` patch
+  parts (experimental in `25.5`, default-on in `25.8+`) degrade on bulk (`>10%`)
+  rewrites (`needs confirmation` or `tradeoff` unless `WHERE` is statically
+  bulk/unbounded) and bypass projections while patch parts exist; lightweight
+  deletes on tables with projections require table-level
+  `lightweight_mutation_projection_mode` (query-level setting is obsolete).
 - **Partial-part TTL rewrites**: `TTL` expiration rules on time-partitioned
   retention tables omitting `ttl_only_drop_parts = 1` (causing continuous
   background rewrite mutations) or misaligned with `PARTITION BY`.
@@ -42,10 +51,10 @@ evidence, and client code issuing `UPDATE`, `DELETE`, or `ALTER TABLE`.
 
 - Scheduled, low-frequency bulk compliance purges (such as nightly or weekly
   GDPR `ALTER TABLE ... DELETE` batches) when documented as offline/bounded.
-- Lightweight `UPDATE` patch parts on a supporting pinned version configured
-  with block-number and block-offset columns for selective (<= ~10%) non-key
-  edits.
+- Selective non-key lightweight `UPDATE` patch parts on a supporting pinned
+  version (`25.8+` default-on) configured with `enable_block_number_column` and
+  `enable_block_offset_column` table settings.
 - Metadata-only `ALTER TABLE ... DROP PARTITION` / `DETACH PARTITION` for
   whole-window retention cleanup.
-- `ALTER TABLE ... UPDATE` / `DELETE` when explicitly accepted by a prior ADR
-  for low-churn tables (`disputed`).
+- `ALTER TABLE ... UPDATE` / `DELETE` when explicitly accepted by a verified
+  prior ADR for low-churn tables (`disputed`).

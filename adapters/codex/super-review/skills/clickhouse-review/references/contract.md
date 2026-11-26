@@ -115,25 +115,25 @@ finding none is a valid result.
 Let anyone with only the repository verify the claim by opening the quoted
 lines in order:
 
-- **Reconstruct the cumulative schema.** Read `SHOW CREATE TABLE` snapshots,
-  ordered migrations, table engines, `ORDER BY`/`PRIMARY KEY`/`PARTITION BY`,
-  skipping indexes, projections, TTLs, dependent materialized views, and
-  `Distributed` wrappers at the pinned revision. Never assume a table engine,
-  setting, or column definition from one file when later `ALTER` statements
-  modify it.
-- **Pin ClickHouse version and deployment.** Read server version and topology
-  (`self-managed` vs `cloud` `SharedMergeTree`, `Atomic` vs `DatabaseReplicated`
-  vs `Shared` DB, `remote_servers.xml`, `users.xml`) from Dockerfiles, Compose,
-  CI, Helm/Operator CRDs, Terraform, migration configs, and client lockfiles.
-  When an unstated version or deployment decides the mechanism, route to
-  `needs confirmation` or mark the step unproven instead of guessing.
-- **Quote every step.** Give file path, lines, quoted DDL/SQL/config/code, and
-  ClickHouse engine effect. Follow calls into query builders, batching wrappers,
-  and locked client library source already on disk. Unread code is an assumption
-  and leaves the candidate unproven.
-- **Check what already prevents it.** Look for server/user settings profiles
-  (`users.xml`, `config.xml`), client-side batching buffers, `async_insert`
-  settings, `FINAL` / `argMax`, `GLOBAL`, `join_use_nulls`, allowlists, or
+- **Reconstruct the cumulative schema.** Apply ordered migrations up to `HEAD`
+  (later migrations `> N`, `MODIFY SETTING`, `MODIFY QUERY`, `EXCHANGE TABLES`,
+  renames) over any `SHOW CREATE TABLE` snapshot, tracing `local -> Distributed`
+  and `source -> MV -> target` chains. Never claim a table, setting, or view is
+  broken from one file without checking later migrations up to `HEAD`.
+- **Pin ClickHouse version, deployment, and profiles.** Read server version,
+  topology (`self-managed` vs `cloud`), migration runner rules, and effective
+  settings profiles (`users.xml`, `config.xml`, SQL profiles) from workspace
+  manifests and lockfiles. When an unstated version, deployment, or profile
+  decides the mechanism, route to `needs confirmation` instead of guessing.
+- **Quote every step.** Give file path, lines, quoted source, and engine effect;
+  inspect locked client source on disk (`vendor/`, `GOMODCACHE`, `node_modules/`,
+  `~/.cargo/registry/src`, `~/.m2/repository`, `~/.gradle/caches`, virtualenvs)
+  for driver defaults (batching, compression, format, retries, stream close).
+  Never download code; mark only steps relying on absent driver internals
+  `unproven`, never code-visible SQL, DDL, or explicit setting failures.
+- **Check what already prevents it.** Look for effective settings profiles
+  (`users.xml`, `config.xml`, SQL profiles), client batching, deduplication
+  settings, `FINAL`/`argMax`, `GLOBAL`, `join_use_nulls`, allowlists, or
   `ttl_only_drop_parts`. State where you looked.
 
 ## Basis
@@ -149,7 +149,9 @@ lines in order:
 State who observes the failure (ingestion producer, analytical caller,
 background merge pool, ClickHouse Keeper, replica, or operator) and what goes
 wrong. Do not invent table sizes, cardinalities, ingest rates, part counts, or
-planner choices.
+planner choices. Statically provable correctness, replication, boundary, and
+rolling-deploy (`D -> H`) failures do not require `EXPLAIN indexes = 1`,
+`system.parts`, or `system.query_log`.
 
 When a claim's static mechanism holds but depends on runtime data distribution,
 unconfirmed table or right-side join volume, column cardinality, ingest QPS,
@@ -162,27 +164,34 @@ exact query output or config fact that would decide it.
 ## Safer form
 
 Give the smallest ClickHouse SQL, DDL/migration, config, or client-boundary
-change that removes the failure and verify it against the pinned ClickHouse
-version, deployment (`self-managed` vs `cloud`), migration runner, and client
-library baseline. Verify boundary inputs (`NULL`/type defaults, empty blocks,
-duplicate retries, out-of-order versions, re-inserted tombstones,
-cross-partition updates, `D -> H` rolling producers and MVs).
+change that removes the failure and verify syntactic and operational
+executability against the pinned ClickHouse version, deployment (`self-managed`
+vs `cloud`), migration runner, and client library baseline: type wrapper order
+(`LowCardinality(Nullable(T))`), table-level vs query-level `SETTINGS`,
+deployment DDL rules, and `ORDER BY` mutability limits. Verify boundary inputs
+(`NULL`/type defaults, empty blocks, duplicate retries, out-of-order versions,
+re-inserted tombstones, cross-partition updates, `D -> H` peers and MVs).
 
-- **Finding**: valid on the pinned ClickHouse version and deployment and keeps
-  query results, deduplication/aggregation semantics, durability contracts,
-  cluster portability, and client API shapes.
+- **Finding**: a cheap, behavior-keeping fix valid on the pinned ClickHouse
+  version, deployment, and runner baseline that keeps query results,
+  deduplication/aggregation semantics, durability contracts, cluster
+  portability, and client API shapes.
 - **Tradeoff**: valid and safe, but carries a real cost the team must weigh
-  (extra storage or write amplification from projections/indexes/MVs,
-  `EXCHANGE TABLES` re-sort migration, `wait_for_async_insert = 1` or
-  `insert_distributed_sync = 1` write latency vs durability, approximate vs
-  exact aggregation state, or client batching latency vs throughput). Name both
-  sides clearly.
+  (heavy schema or cluster rebuild such as `EXCHANGE TABLES` backfill or engine
+  rewrite, storage or write amplification from projections/indexes/MVs, latency
+  vs durability, approximate vs exact state, or client batching latency). Name
+  both sides clearly.
 - **Disputed**: a prior documented architectural choice (ADR, ops guide, or
   schema comment) whose stated reason holds on this codebase and ClickHouse
-  baseline and explicitly accepts the shown cost (for example, loss-tolerant
-  metrics with `wait_for_async_insert = 0`). A self-ratifying comment added in
-  the same change does not make a claim disputed.
+  baseline and explicitly accepts the shown cost. A self-ratifying comment added
+  in the same change, a false premise, or a decision omitting the shown cost is
+  not disputed.
 
-A safer form invalid for the project's ClickHouse version or deployment (such
-as `ON CLUSTER` inside `DatabaseReplicated`/Cloud or `SharedMergeTree` on OSS)
-or breaking relied-on behavior is rejected.
+When removing the full risk requires a tradeoff (such as an `EXCHANGE TABLES`
+rebuild or engine rewrite), split any minimal behavior-keeping fix (such as
+`ttl_only_drop_parts = 1`, explicit columns, or query limits) into its own
+finding beside the tradeoff for the rest.
+
+A safer form invalid for the project's ClickHouse version, deployment (such as
+`ON CLUSTER` inside `DatabaseReplicated`/Cloud or `SharedMergeTree` on OSS), or
+migration runner, or breaking relied-on behavior, is rejected.

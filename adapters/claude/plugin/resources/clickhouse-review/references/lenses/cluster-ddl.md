@@ -37,9 +37,13 @@ Inspect ordered migrations, `CREATE`/`ALTER`/`DROP` DDL, `remote_servers.xml`,
   silently in `DistributedFilesToSend`.
 - **Rolling-deploy (`D -> H`) and wrapper drift**: altering or dropping columns
   on a local table without updating dependent `Distributed` wrappers or
-  `MATERIALIZED VIEW` target tables; dropping/renaming columns while old
-  producers still insert them; attempting in-place changes to immutable
-  `ORDER BY`/`PARTITION BY` instead of expand-and-swap (`EXCHANGE TABLES`).
+  `MATERIALIZED VIEW` target tables; dropping or renaming columns while old
+  producers still insert them.
+- **Key-mutability DDL failures**: `PARTITION BY`, `PRIMARY KEY`, and sort
+  directions on retained columns are immutable; `MODIFY ORDER BY` permits only
+  appending brand-new `ADD COLUMN`s without `DEFAULT`/`MATERIALIZED`/`ALIAS` in
+  the same `ALTER`. Reordering, removing, or adding existing columns fails
+  in-place and requires expand-and-swap (`EXCHANGE TABLES`, a `tradeoff`).
 
 ## Not a finding
 
@@ -49,7 +53,8 @@ Inspect ordered migrations, `CREATE`/`ALTER`/`DROP` DDL, `remote_servers.xml`,
 - Argless `ReplicatedMergeTree()` when `default_replica_path`/
   `default_replica_name` or `DatabaseReplicated` defaults are configured in the
   pinned server config.
-- `EXCHANGE TABLES` atomic table swap on `Atomic`, `Replicated`, or `Shared`
-  databases.
+- Appending a brand-new defaultless `ADD COLUMN` to `ORDER BY` in the same
+  `ALTER TABLE`, or `EXCHANGE TABLES` atomic swap on `Atomic`, `Replicated`, or
+  `Shared` databases.
 - Writing directly to shard local tables (with client-side routing) instead of
   through a `Distributed` table.
