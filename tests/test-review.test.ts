@@ -82,13 +82,14 @@ test("no role in the plugin can write files, and no execution machinery remains"
   }
 });
 
-test("the five reviews keep separate policy: no skill reads another's resources", () => {
+test("the six reviews keep separate policy: no skill reads another's resources", () => {
   const skills: Array<[string, RegExp]> = [
-    ["super-review", /defect-review|Defect Review|test-review|Test Review|perf-review|Performance Review|sql-review|SQL Review/],
-    ["defect-review", /resources\/super-review|skills\/super-review|Super Review|test-review|Test Review|perf-review|Performance Review|sql-review|SQL Review/],
-    ["test-review", /resources\/super-review|skills\/super-review|Super Review|defect-review|Defect Review|perf-review|Performance Review|sql-review|SQL Review/],
-    ["perf-review", /resources\/super-review|skills\/super-review|Super Review|defect-review|Defect Review|test-review|Test Review|sql-review|SQL Review/],
-    ["sql-review", /resources\/super-review|skills\/super-review|Super Review|defect-review|Defect Review|test-review|Test Review|perf-review|Performance Review/],
+    ["super-review", /defect-review|Defect Review|test-review|Test Review|perf-review|Performance Review|sql-review|SQL Review|clickhouse-review|ClickHouse Review/],
+    ["defect-review", /resources\/super-review|skills\/super-review|Super Review|test-review|Test Review|perf-review|Performance Review|sql-review|SQL Review|clickhouse-review|ClickHouse Review/],
+    ["test-review", /resources\/super-review|skills\/super-review|Super Review|defect-review|Defect Review|perf-review|Performance Review|sql-review|SQL Review|clickhouse-review|ClickHouse Review/],
+    ["perf-review", /resources\/super-review|skills\/super-review|Super Review|defect-review|Defect Review|test-review|Test Review|sql-review|SQL Review|clickhouse-review|ClickHouse Review/],
+    ["sql-review", /resources\/super-review|skills\/super-review|Super Review|defect-review|Defect Review|test-review|Test Review|perf-review|Performance Review|clickhouse-review|ClickHouse Review/],
+    ["clickhouse-review", /resources\/super-review|skills\/super-review|Super Review|defect-review|Defect Review|test-review|Test Review|perf-review|Performance Review|sql-review|SQL Review/],
   ];
   for (const [name, forbidden] of skills) {
     for (const file of files(resolve(root, "skills", name)).filter(file => file.endsWith(".md"))) {

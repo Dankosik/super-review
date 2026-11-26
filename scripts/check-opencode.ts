@@ -19,6 +19,7 @@ const reviews: Record<string, string[]> = {
   "test-review": ["test-reader"],
   "perf-review": ["perf-reader", "perf-challenger"],
   "sql-review": ["sql-reader", "sql-challenger"],
+  "clickhouse-review": ["clickhouse-reader", "clickhouse-challenger"],
 };
 const primaries = Object.keys(reviews);
 const children = Object.values(reviews).flat();

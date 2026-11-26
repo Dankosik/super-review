@@ -1,0 +1,6 @@
+interface:
+  display_name: "ClickHouse Review"
+  short_description: "Review ClickHouse MergeTree schemas, parts, mutations, views, projections, Distributed queries, cluster DDL, and client ingestion by reading, verified by an independent challenge"
+  default_prompt: "Use $clickhouse-review to review ClickHouse schemas, migrations, materialized views, queries, cluster DDL, and ingestion paths in this PR or local source."
+policy:
+  allow_implicit_invocation: false

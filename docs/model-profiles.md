@@ -12,9 +12,10 @@ and effort when the host exposes them; a requested profile is not proof of use.
 | Cursor IDE | Current Agent chat's selected model/settings | `inherit`; an explicit user subagent choice takes precedence where native per-call selection supports it |
 | Google Antigravity App/CLI | Current chat's model and effort | Gemini 4 Hydrogen / High (`gemini-4-hydrogen-high`), through supported native selection or inheritance from that profile |
 
-Super Review, Defect Review, Test Review, Performance Review and SQL Review
-share these defaults. None of them picks an Opus- or Fable-class model for a
-child; the orchestrator runs on whatever the user chose for the session.
+Super Review, Defect Review, Test Review, Performance Review, SQL Review and
+ClickHouse Review share these defaults. None of them picks an Opus- or
+Fable-class model for a child; the orchestrator runs on whatever the user chose
+for the session.
 
 ## Codex: Terra at high effort
 
@@ -78,7 +79,7 @@ Native end-to-end Cursor model routing has not been measured by this project.
 
 ## Google Antigravity
 
-All eight child roles request **Gemini 4 Hydrogen / High**, slug
+All ten child roles request **Gemini 4 Hydrogen / High**, slug
 `gemini-4-hydrogen-high`. This is our Google worker-profile counterpart to
 Sonnet/medium and Terra/high, based on Hydrogen's intended role as a fast
 agentic coding model. It is a profile choice, not measured equivalence in review

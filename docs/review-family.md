@@ -1,7 +1,7 @@
 # The review family
 
-This repository holds five reviews. Each asks one question, and each is a
-skill, not a runtime. All five read the code and run nothing.
+This repository holds six reviews. Each asks one question, and each is a
+skill, not a runtime. All six read the code and run nothing.
 
 | Review | Question | Object |
 | --- | --- | --- |
@@ -9,7 +9,8 @@ skill, not a runtime. All five read the code and run nothing.
 | Defect Review | Where does the code do the wrong thing? | Bugs in production code |
 | Test Review | Would the tests notice a plausible mistake? | Promised behavior no test pins |
 | Performance Review | Where does the code do work it does not need, on a path that runs often? | Unneeded work on hot paths |
-| SQL Review | Does this SQL and schema hold up on correctness, safe evolution, concurrency, and indexable execution? | SQL schemas, migrations, queries, transactions, indexes, and DB boundaries |
+| SQL Review | Does this SQL and schema hold up on correctness, safe evolution, concurrency, and indexable execution? | OLTP SQL schemas, migrations, queries, transactions, indexes, and DB boundaries |
+| ClickHouse Review | Does this ClickHouse schema, query, view, cluster DDL, or ingestion path respect MergeTree physics, cluster topology, and columnar execution? | ClickHouse MergeTree schemas, parts, mutations, MVs/projections, columnar/Distributed queries, cluster DDL, and client ingestion |
 
 ## Why separate reviews
 
@@ -52,12 +53,14 @@ identify source -> independent readers -> proof by trace
   check that would tell the mistake from the original. For a performance
   finding, why the path runs often, the work it does per unit as quoted
   lines with what multiplies it, and a cheaper form that keeps behavior.
-- **Independent challenge.** In Defect Review, Performance Review and SQL
-  Review a second agent, which has not seen the reader's reasoning, follows the
-  claim through the source itself and tries to show it is wrong. None of these
-  reviews runs code or connects to a database, so this is what holds false
-  positives down: bugs that are not bugs, savings on cold code, and SQL advice
-  that fails on the project's dialect baseline or lacks a query plan.
+- **Independent challenge.** In Defect Review, Performance Review, SQL Review
+  and ClickHouse Review a second agent, which has not seen the reader's
+  reasoning, follows the claim through the source itself and tries to show it
+  is wrong. None of these reviews runs code or connects to a database, so this
+  is what holds false positives down: bugs that are not bugs, savings on cold
+  code, SQL advice that fails on the project's dialect baseline, and ClickHouse
+  folklore that contradicts the pinned version, deployment topology, or
+  `EXPLAIN indexes = 1` / `system.parts` / `system.query_log` evidence.
 - **The orchestrator checks.** It opens every quoted line, walks each trace,
   and treats the challenger's verdict as an argument to verify.
 
@@ -135,12 +138,44 @@ Boundary with sibling skills:
   counts (N+1 round trips, JDBC batching, ORM over-hydration, locks held across
   network calls), while explicitly leaving database query plans and schema or
   index design to supplied `EXPLAIN` output or SQL Review.
-- **SQL Review (`skills/sql-review/`):** owns database correctness, migration
-  and rolling-deploy safety, SQL query semantics and provable schema-evolution
-  fragility, DB transactions and locking, index alignment, and SQL-specific
-  boundary safety (parameterization, identifier allowlists, pooler/session
-  state, DB error handling) without touching cosmetic SQL formatting or general
-  application readability.
+- **SQL Review (`skills/sql-review/`):** owns OLTP database correctness,
+  migration and rolling-deploy safety, SQL query semantics and provable
+  schema-evolution fragility, DB transactions and locking, index alignment, and
+  SQL-specific boundary safety (parameterization, identifier allowlists,
+  pooler/session state, DB error handling) for PostgreSQL, MySQL, and SQLite
+  without touching cosmetic SQL formatting or general application readability.
+- **ClickHouse Review (`skills/clickhouse-review/`):** owns ClickHouse
+  MergeTree storage physics (`ORDER BY`/`PRIMARY KEY`, `PARTITION BY`, parts,
+  skipping indexes), mutations and TTL lifecycle, incremental/refreshable
+  materialized views and projections, columnar and `Distributed` query
+  semantics (`FINAL`/`argMax`, `join_use_nulls`, right-side `JOIN` RAM,
+  `GLOBAL IN`/`JOIN`), cluster DDL (`DatabaseReplicated` vs `ON CLUSTER`,
+  `SharedMergeTree`), and client ingestion boundaries (`async_insert`, wire
+  formats, `{name:Type}` parameters) without importing OLTP B-tree, foreign
+  key, or row-lock assumptions.
+
+## How ClickHouse Review proves a MergeTree or cluster failure
+
+ClickHouse Review stays strictly separate from OLTP SQL Review because
+ClickHouse physics invert many OLTP defaults: tables store immutable sorted
+parts rather than mutable heap pages, primary keys are sparse granule indexes
+instead of uniqueness-enforcing B-trees, `ALTER TABLE ... UPDATE`/`DELETE`
+rewrites whole parts asynchronously instead of taking row locks, incremental
+materialized views trigger only per inserted block rather than maintaining full
+relational views, `LEFT JOIN` fills unmatched columns with type defaults unless
+`join_use_nulls = 1`, and self-managed `ON CLUSTER` / `ReplicatedMergeTree`
+rules invert under `DatabaseReplicated` and ClickHouse Cloud `SharedMergeTree`.
+
+A finding requires the same four checkable parts plus survival of an
+independent four-line challenge: a traced or quoted **mechanism** grounded in
+the cumulative schema, cluster configs, client source, and pinned ClickHouse
+version and deployment (`self-managed` vs `cloud`); a **basis** (`written`,
+`schema`, or `engine`); a concrete **impact**; and a minimal **safer form**
+valid for that ClickHouse version and deployment. User-supplied or committed
+`EXPLAIN indexes = 1`, `EXPLAIN PLAN`, `system.parts`, and `system.query_log`
+outputs serve as passive evidence without connecting to a cluster; claims
+waiting on unconfirmed version, deployment, volume, cardinality, ingest rate,
+or pruning route to `Needs your confirmation`.
 
 ## Why nothing is run
 
@@ -173,7 +208,7 @@ it.
 No skill depends on another at run time. A user can install one alone.
 Everything that carries a review's judgment stays in that review: its
 contract, lenses or questions, challenge, templates and roles.
-The five share only the plugin they ship in.
+The six share only the plugin they ship in.
 
 ## Decisions
 
@@ -220,6 +255,9 @@ The five share only the plugin they ship in.
 | Small changes in SQL Review | Pair `schema` + `migrations` and `queries` + `transactions`, keeping `indexing` solo and `app-boundary` solo (four readers at most) | Mixing bug/correctness and indexing/performance in one reader | Keeps correctness judgment separate from performance/index judgment in each reader window |
 | Runtime-dependent SQL claims | Route claims lacking server version, table size, cardinality, or `EXPLAIN` proof to `needs confirmation` | Static findings about skip scans, HOT updates, or index selectivity from folklore | Modern engines (PG 18, MySQL 8.0.13+, analyzed SQLite) decorrelate semi-joins and run skip scans; static guesses create false positives |
 | Security seam in SQL Review | Exclude broad security/compliance audits; keep source-provable SQL contract failures (SQLi, unallowlisted dynamic identifiers, broken declared RLS/tenant isolation, `SECURITY DEFINER` missing pinned `search_path`, unbounded `UPDATE`/`DELETE`) | Blanket security exclusion; or full security audit | These failures are directly provable from SQL and schema source without guessing threat models or auth architecture |
+| ClickHouse as its own review skill | Separate `clickhouse-review` skill built around MergeTree, parts, mutations, MVs/projections, Distributed queries, cluster DDL, and client ingestion | Adding ClickHouse as a fourth dialect inside OLTP `sql-review` | ClickHouse physics invert OLTP defaults (no B-tree unique constraints or row-lock transactions; sparse granule keys, immutable parts, per-block MV triggers, `join_use_nulls = 0`, `SharedMergeTree`); sharing lenses dilutes both reviews |
+| Small changes in ClickHouse Review | Pair `storage-keys` + `mutations-lifecycle` and `views-projections` + `cluster-ddl`, keeping `queries-distributed` solo and `ingestion-client` solo (four readers at most) | Mixing query correctness, client ingestion, and storage/DDL in one reader | Keeps analytical query semantics and ingestion/client boundaries isolated in their own reader windows |
+| Data-dependent ClickHouse claims | Route claims lacking server version, deployment mode, volume, cardinality, ingest QPS, or `EXPLAIN indexes = 1` / `system.parts` / `system.query_log` evidence to `needs confirmation` | Static folklore against `FINAL`, `LowCardinality`, monotonic primary-key functions, or 24.12+ `INNER JOIN` table order | Modern ClickHouse (24-25+ parallel `FINAL`, 24.12+ `query_plan_join_swap_table`, monotonic range pruning, 25.7+ lightweight update patch parts) makes static guesses high-false-positive |
 
 ## What a model run is for
 

@@ -1,0 +1,117 @@
+{
+  "kind": "evaluator-only",
+  "status": "NOT RUN",
+  "baseline_revision": "98e8688f36bfecafe0f6155764c2e2920ddca081",
+  "contrast_pairs": [
+    ["CH01", "CH02"],
+    ["CH03", "CH04"],
+    ["CH05", "CH06"],
+    ["CH07", "CH08"],
+    ["CH09", "CH10"],
+    ["CH11", "CH12"]
+  ],
+  "cases": [
+    {
+      "id": "CH01",
+      "polarity": "report",
+      "decision": "high-cardinality PARTITION BY user_id part explosion and bloom_filter GRANULARITY 8192 granule-vs-row bug",
+      "checks": [
+        "Traces that PARTITION BY user_id over 1.4M users explodes active partitions/parts (backed by supplied system.parts excerpt) and proposes coarse time partitioning such as toYYYYMM(event_time)",
+        "Traces that GRANULARITY 8192 counts granules (8192 * 8192 rows per index block) causing zero granules skipped in supplied EXPLAIN indexes = 1, and proposes GRANULARITY 1"
+      ]
+    },
+    {
+      "id": "CH02",
+      "polarity": "retain",
+      "decision": "monthly toYYYYMM partitioning with GRANULARITY 1 bloom filter and verified EXPLAIN pruning is clean",
+      "checks": [
+        "Reports no storage-keys finding when PARTITION BY toYYYYMM(event_time), ORDER BY (tenant_id, event_time, user_id), and GRANULARITY 1 match healthy system.parts and EXPLAIN indexes = 1 evidence"
+      ]
+    },
+    {
+      "id": "CH03",
+      "polarity": "report",
+      "decision": "per-message ALTER TABLE UPDATE mutation loop under async mutations_sync = 0 and partial-part TTL rewrites",
+      "checks": [
+        "Traces that calling ALTER TABLE billing_events UPDATE per Kafka status update triggers full-part rewrites on a 500M-row table and violates immediate read-after-write expectation under default mutations_sync = 0",
+        "Identifies missing ttl_only_drop_parts = 1 on monthly partitioned TTL and proposes batched inserts into partition-aligned ReplacingMergeTree(updated_at, is_deleted) with ttl_only_drop_parts = 1"
+      ]
+    },
+    {
+      "id": "CH04",
+      "polarity": "retain",
+      "decision": "batched Native inserts into partition-aligned ReplicatedReplacingMergeTree with ttl_only_drop_parts = 1 is clean",
+      "checks": [
+        "Reports no mutations-lifecycle finding on batched PrepareBatch inserts into ReplicatedReplacingMergeTree(updated_at, is_deleted) with immutable partition-key created_at and ttl_only_drop_parts = 1"
+      ]
+    },
+    {
+      "id": "CH05",
+      "polarity": "report",
+      "decision": "incremental MV POPULATE race plus finalized avg/uniq written to ReplicatedMergeTree without -State/-Merge",
+      "checks": [
+        "Traces that incremental MV runs per inserted block so writing avg(latency_ms) and uniq(user_id) into ReplicatedMergeTree corrupts multi-block rollups and unmerged SELECT reads partial rows",
+        "Flags POPULATE dropping live inserts on active http_requests and proposes ReplicatedAggregatingMergeTree with avgState/uniqCombined64State, explicit TO target, separate bounded backfill, and avgMerge/uniqCombined64Merge with GROUP BY"
+      ]
+    },
+    {
+      "id": "CH06",
+      "polarity": "retain",
+      "decision": "ReplicatedAggregatingMergeTree TO target with -State/-Merge and separate bounded backfill is clean",
+      "checks": [
+        "Reports no views-projections finding when MV uses TO telemetry.daily_route_metrics with AggregateFunction -State columns on ReplicatedAggregatingMergeTree, separate bounded backfill, and -Merge queries with GROUP BY"
+      ]
+    },
+    {
+      "id": "CH07",
+      "polarity": "report",
+      "decision": "join_use_nulls = 0 broken IS NULL anti-join, non-GLOBAL N^2 distributed IN, max(is_deleted) tombstone bug, and wide SELECT *",
+      "checks": [
+        "Traces that default join_use_nulls = 0 fills unmatched non-Nullable UInt64 s.account_id with 0 so WHERE s.account_id IS NULL returns zero rows",
+        "Traces non-GLOBAL IN against active_accounts_dist under distributed_product_mode = 'allow' causing N^2 fan-out across 4 shards, max(is_deleted) hiding reactivated accounts instead of argMax(is_deleted, updated_at), and wide SELECT * with unordered LIMIT"
+      ]
+    },
+    {
+      "id": "CH08",
+      "polarity": "retain",
+      "decision": "LEFT ANTI JOIN, bounded GLOBAL IN with argMax(is_deleted, updated_at), explicit columns, and deterministic ORDER BY LIMIT is clean",
+      "checks": [
+        "Reports no queries-distributed finding on LEFT ANTI JOIN, bounded GLOBAL IN using argMax(is_deleted, updated_at) = 0, explicit columns, deterministic ORDER BY LIMIT, and query_log-backed resource bounds"
+      ]
+    },
+    {
+      "id": "CH09",
+      "polarity": "report",
+      "decision": "ClickHouse Cloud ON CLUSTER and manual ReplicatedMergeTree DDL, redundant Distributed wrapper, and MV-breaking DROP COLUMN",
+      "checks": [
+        "Identifies invalid/redundant ON CLUSTER, manual ReplicatedMergeTree Keeper paths, and redundant Distributed table on ClickHouse Cloud SharedMergeTree / Shared database",
+        "Traces rolling-deploy D -> H breakage where DROP COLUMN referrer breaks live v1 producers and analytics.mv_hourly_referrers"
+      ]
+    },
+    {
+      "id": "CH10",
+      "polarity": "retain",
+      "decision": "ClickHouse Cloud plain MergeTree without ON CLUSTER and additive column migration is clean",
+      "checks": [
+        "Reports no cluster-ddl finding on plain MergeTree without ON CLUSTER in ClickHouse Cloud and additive ADD COLUMN IF NOT EXISTS keeping v1 writers and mv_hourly_referrers compatible"
+      ]
+    },
+    {
+      "id": "CH11",
+      "polarity": "report",
+      "decision": "wait_for_async_insert = 0 silent loss on durable audit table, missing deduplication token, SQL interpolation, unbounded JSON buffering, and unconsumed ResultSet leak",
+      "checks": [
+        "Traces that async_insert = 1 with wait_for_async_insert = 0 risks silent drop of acknowledged financial audit rows on server restart/validation error and missing async_insert_deduplicate / insert_deduplication_token allows retry duplicates",
+        "Identifies SQL injection via interpolated tenantId and unallowlisted sortBy, missing LIMIT/max_execution_time/max_memory_usage with unbounded resultSet.json() buffering before slice, and early return after client.query() leaking an unconsumed ResultSet without resultSet.close()"
+      ]
+    },
+    {
+      "id": "CH12",
+      "polarity": "retain",
+      "decision": "wait_for_async_insert = 1 with deduplication token, query_params, closed sort allowlist, timeouts, bounded stream consumption, and finally resultSet.close() is clean",
+      "checks": [
+        "Reports no ingestion-client finding when durable Cloud writes use wait_for_async_insert = 1 with async_insert_deduplicate = 1 and deterministic insert_deduplication_token, bound query_params, Map allowlist, pre-query limit validation with SQL LIMIT/max_execution_time/max_memory_usage, and complete resultSet.stream() consumption inside finally resultSet.close()"
+      ]
+    }
+  ]
+}

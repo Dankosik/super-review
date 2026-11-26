@@ -24,6 +24,12 @@
     },
     "sql-challenger": {
       "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
+    },
+    "clickhouse-reader": {
+      "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
+    },
+    "clickhouse-challenger": {
+      "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
     }
   }
 }

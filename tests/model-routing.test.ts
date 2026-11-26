@@ -37,7 +37,7 @@ test("active adapters expose the selected model family and native effort control
     expect(role.model).toBe(model);
     expect(role.effort).toBe(effort);
   }
-  for (const skill of ["defect-review", "test-review", "perf-review", "sql-review"]) {
+  for (const skill of ["defect-review", "test-review", "perf-review", "sql-review", "clickhouse-review"]) {
     expect(read(`skills/${skill}/references/harnesses/codex.md`)).toContain("`gpt-6.1-terra` with `high` reasoning effort");
     expect(read(`skills/${skill}/references/harnesses/claude.md`)).toContain("default to `sonnet` at `medium` effort");
   }

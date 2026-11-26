@@ -47,6 +47,7 @@ const openCodeRoles: Record<string, string[]> = {
   "test-review": ["test-reader"],
   "perf-review": ["perf-reader", "perf-challenger"],
   "sql-review": ["sql-reader", "sql-challenger"],
+  "clickhouse-review": ["clickhouse-reader", "clickhouse-challenger"],
 };
 for (const [primary, children] of Object.entries(openCodeRoles)) {
   for (const role of [primary, ...children]) {
@@ -139,13 +140,14 @@ for (const directory of ["skills/super-review", "adapters/claude/plugin", "adapt
 for (const file of [".codex-plugin/plugin.json", "adapters/codex/super-review/.codex-plugin/plugin.json", "adapters/cursor/plugin/.cursor-plugin/plugin.json"]) {
   if (JSON.parse(await readFile(join(root, file), "utf8")).mcpServers) errors.push("Legacy server declaration in " + file);
 }
-// Defect Review, Test Review, Performance Review and SQL Review: separate skills with their own contracts, versions and roles.
+// Defect Review, Test Review, Performance Review, SQL Review and ClickHouse Review: separate skills with their own contracts, versions and roles.
 // All read only: no role may hold Write or Edit.
 for (const [name, command, title, reader, challenger] of [
   ["defect-review", "defects", "Defect Review", "specialist", true],
   ["test-review", "tests", "Test Review", "specialist", false],
   ["perf-review", "perf", "Performance Review", "reader", true],
   ["sql-review", "sql", "SQL Review", "reader", true],
+  ["clickhouse-review", "clickhouse", "ClickHouse Review", "reader", true],
 ] as const) {
   const skillRoot = join(root, "skills", name);
   const files = await walk(skillRoot);
