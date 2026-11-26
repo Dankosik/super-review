@@ -1,7 +1,7 @@
 # The review family
 
-This repository holds four reviews. Each asks one question, and each is a
-skill, not a runtime. All four read the code and run nothing.
+This repository holds five reviews. Each asks one question, and each is a
+skill, not a runtime. All five read the code and run nothing.
 
 | Review | Question | Object |
 | --- | --- | --- |
@@ -9,6 +9,7 @@ skill, not a runtime. All four read the code and run nothing.
 | Defect Review | Where does the code do the wrong thing? | Bugs in production code |
 | Test Review | Would the tests notice a plausible mistake? | Promised behavior no test pins |
 | Performance Review | Where does the code do work it does not need, on a path that runs often? | Unneeded work on hot paths |
+| SQL Review | Does this SQL and schema hold up on correctness, safe evolution, concurrency, and indexable execution? | SQL schemas, migrations, queries, transactions, indexes, and DB boundaries |
 
 ## Why separate reviews
 
@@ -51,11 +52,12 @@ identify source -> independent readers -> proof by trace
   check that would tell the mistake from the original. For a performance
   finding, why the path runs often, the work it does per unit as quoted
   lines with what multiplies it, and a cheaper form that keeps behavior.
-- **Independent challenge.** In Defect Review and Performance Review a
-  second agent, which has not seen the reader's reasoning, follows the claim
-  through the source itself and tries to show it is wrong. Neither review
-  runs anything, so this is what holds false positives down: bugs that are
-  not bugs, and savings on cold code or on work a library already avoids.
+- **Independent challenge.** In Defect Review, Performance Review and SQL
+  Review a second agent, which has not seen the reader's reasoning, follows the
+  claim through the source itself and tries to show it is wrong. None of these
+  reviews runs code or connects to a database, so this is what holds false
+  positives down: bugs that are not bugs, savings on cold code, and SQL advice
+  that fails on the project's dialect baseline or lacks a query plan.
 - **The orchestrator checks.** It opens every quoted line, walks each trace,
   and treats the challenger's verdict as an argument to verify.
 
@@ -96,6 +98,50 @@ the report ends with what to do before applying anything: check the
 predicted counts first, then measure time where the saving is time, in the
 way the saved resource demands, and keep a change only if the gain shows.
 
+## How SQL Review proves a database failure
+
+SQL Review checks PostgreSQL, MySQL (InnoDB primary baseline), and SQLite
+across standalone `.sql` files, declarative/ORM schemas, and embedded SQL or DB
+call sites in Go, TypeScript, Rust, and Java. A finding requires four checkable
+parts plus survival of an independent four-line challenge: a traced or quoted
+**mechanism** grounded in the reconstructed cumulative schema and pinned
+dialect/version baseline; a **basis** (`written`, `schema`, or `engine`); a
+concrete **impact**; and a minimal **safer form** valid on that baseline.
+
+Unlike Defect Review, which forbids designing fixes, SQL Review requires a
+safer form as part of the proof. In SQL and DDL, dialect and version rules
+decide whether an issue is actually preventable without a tradeoff: MySQL lacks
+`IS DISTINCT FROM` and transactional DDL, PostgreSQL 18 adds lock-safe
+`NOT NULL NOT VALID` and B-tree skip scans while earlier versions require a
+`NOT VALID` `CHECK` constraint, `ADD FOREIGN KEY ... NOT VALID` still takes
+`SHARE ROW EXCLUSIVE` on both parent and child tables, and SQLite ignores
+`PRAGMA foreign_keys = ON` inside a transaction. Checking a minimal safer form
+against the pinned baseline separates real findings from dialect-invalid advice
+and genuine engineering tradeoffs (write amplification, multi-step
+expand-and-contract deploys, isolation retries).
+
+Boundary with sibling skills:
+
+- **Super Review (`skills/super-review/references/rust/sqlx.md`):** owns
+  application-code readability and maintainability at persistence boundaries
+  (such as `sqlx` `FromRow` derives, `Executor` vs `&mut Conn`, and error
+  translation), never schema integrity, DDL lock safety, or query plans.
+- **Defect Review (`skills/defect-review/references/languages/go.md`):** owns
+  general host-language runtime bugs (including Go iterator patterns such as
+  `sql.Rows.Err()` alongside `bufio.Scanner.Err()`), never cumulative SQL
+  schema reconstruction or dialect engine semantics.
+- **Performance Review (`skills/perf-review/references/lenses/io.md`,
+  `skills/perf-review/references/languages/java.md`):** owns hot-path host I/O
+  counts (N+1 round trips, JDBC batching, ORM over-hydration, locks held across
+  network calls), while explicitly leaving database query plans and schema or
+  index design to supplied `EXPLAIN` output or SQL Review.
+- **SQL Review (`skills/sql-review/`):** owns database correctness, migration
+  and rolling-deploy safety, SQL query semantics and provable schema-evolution
+  fragility, DB transactions and locking, index alignment, and SQL-specific
+  boundary safety (parameterization, identifier allowlists, pooler/session
+  state, DB error handling) without touching cosmetic SQL formatting or general
+  application readability.
+
 ## Why nothing is run
 
 Earlier versions of Defect Review and Test Review built the project in a
@@ -127,7 +173,7 @@ it.
 No skill depends on another at run time. A user can install one alone.
 Everything that carries a review's judgment stays in that review: its
 contract, lenses or questions, challenge, templates and roles.
-The four share only the plugin they ship in.
+The five share only the plugin they ship in.
 
 ## Decisions
 
@@ -170,6 +216,10 @@ The four share only the plugin they ship in.
 | Small changes in Performance Review | Lenses paired, three readers: complexity with allocation, async with contention, I/O with repeated work | Six readers for a small change | As in Defect Review; whether pairing costs attention is unverified |
 | Small changes in Super Review | One lens per specialist by default; related pairs (six at most) only when the user asks for a compact review of a small change | Pairing by default, as in Defect and Performance Review | Super Review rests on one reader per question; pairing becomes the default only after a comparison shows no lens loses annotated improvements |
 | Large scopes in Super Review | Split a lens by area when its files are more than one specialist can read in full; announce the task count, and ask before a whole-project review starts more than forty | Coherent areas left to judgment, no bound on task count | A specialist that skims loses lines; a whole project could otherwise start an unbounded number of tasks |
+| Safer form in SQL Review | Required as the fourth part of every finding, verified against the pinned dialect, version, and rolling-deploy baseline | Forbidding fixes, as in Defect Review | Dialect and version rules determine whether an alternative exists without breaking semantics or creating a tradeoff; an invalid SQL sketch exposes a flawed claim |
+| Small changes in SQL Review | Pair `schema` + `migrations` and `queries` + `transactions`, keeping `indexing` solo and `app-boundary` solo (four readers at most) | Mixing bug/correctness and indexing/performance in one reader | Keeps correctness judgment separate from performance/index judgment in each reader window |
+| Runtime-dependent SQL claims | Route claims lacking server version, table size, cardinality, or `EXPLAIN` proof to `needs confirmation` | Static findings about skip scans, HOT updates, or index selectivity from folklore | Modern engines (PG 18, MySQL 8.0.13+, analyzed SQLite) decorrelate semi-joins and run skip scans; static guesses create false positives |
+| Security seam in SQL Review | Exclude broad security/compliance audits; keep source-provable SQL contract failures (SQLi, unallowlisted dynamic identifiers, broken declared RLS/tenant isolation, `SECURITY DEFINER` missing pinned `search_path`, unbounded `UPDATE`/`DELETE`) | Blanket security exclusion; or full security audit | These failures are directly provable from SQL and schema source without guessing threat models or auth architecture |
 
 ## What a model run is for
 

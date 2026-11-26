@@ -99,6 +99,7 @@ test("multi-language contexts exist in all four skills and agent-patterns stays 
     "skills/defect-review",
     "skills/test-review",
     "skills/perf-review",
+    "skills/sql-review",
     "adapters/claude/plugin",
     "adapters/codex/super-review",
     "adapters/cursor/plugin",

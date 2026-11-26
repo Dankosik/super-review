@@ -35,7 +35,7 @@ test("Antigravity archive preserves the complete plugin and relocatable resource
     const names = files(plugin).map(file => relative(plugin, file));
     expect(files(installed).map(file => relative(installed, file))).toEqual(names);
     for (const path of names) expect(readFileSync(join(installed, path))).toEqual(readFileSync(join(plugin, path)));
-    for (const name of ["super-review", "defect-review", "test-review", "perf-review"]) {
+    for (const name of ["super-review", "defect-review", "test-review", "perf-review", "sql-review"]) {
       const entry = join(installed, "skills", name, "SKILL.md");
       const links = [...readFileSync(entry, "utf8").matchAll(/\]\(([^)]+)\)/g)]
         .map(match => resolve(dirname(entry), match[1]));

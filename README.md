@@ -18,9 +18,10 @@
   <a href="#quick-start">Quick start</a> ·
   <a href="#what-it-reviews">What it reviews</a> ·
   <a href="#how-it-works">How it works</a> ·
-  <a href="#defect-review-experimental-rust">Defect Review</a> ·
-  <a href="#test-review-experimental-rust">Test Review</a> ·
-  <a href="#performance-review-experimental-rust">Performance Review</a> ·
+  <a href="#defect-review-experimental">Defect Review</a> ·
+  <a href="#test-review-experimental">Test Review</a> ·
+  <a href="#performance-review-experimental">Performance Review</a> ·
+  <a href="#sql-review-experimental">SQL Review</a> ·
   <a href="#faq">FAQ</a>
 </p>
 
@@ -34,17 +35,19 @@ verified recommendations.
 It only reads. It never edits, builds or runs your code, and it never posts
 comments on your PR.
 
-## Four reviews, one plugin
+## Five reviews, one plugin
 
-| Review | Question it answers | Languages |
+| Review | Question it answers | Scope |
 | --- | --- | --- |
 | **Super Review** | Is this code easy to read and safe to change? | Go, TypeScript, Rust, Java |
 | **[Defect Review](#defect-review-experimental)** · experimental | Where is the bug, and can you trace it through the code? | Go, TypeScript, Rust, Java |
 | **[Test Review](#test-review-experimental)** · experimental | Would the tests fail if a plausible bug appeared? | Go, TypeScript, Rust, Java |
 | **[Performance Review](#performance-review-experimental)** · experimental | Where does a hot path do work it does not need? | Go, TypeScript, Rust, Java |
+| **[SQL Review](#sql-review-experimental)** · experimental | Does this SQL and schema hold up on correctness, safe evolution, concurrency, and indexable execution? | PostgreSQL, MySQL, SQLite (`.sql`, ORM/declarative schemas, embedded Go/TS/Rust/Java) |
 
-The four share no policy. A readability review never reports bugs, a bug
-hunt never comments on style, and slow code is not a bug.
+The five share no policy. A readability review never reports bugs, a bug
+hunt never comments on style, slow code is not a bug, and cosmetic SQL style
+is not a SQL failure.
 [The family design](docs/review-family.md) explains why.
 
 ## Quick start
@@ -73,7 +76,7 @@ Marketplace listing is a separate Cursor review.
 
 **Google Antigravity App/CLI**: install the [native plugin](docs/antigravity.md)
 with `agy plugin install ./adapters/antigravity/plugin` from this checkout.
-It includes all four review skills and their read-only custom roles.
+It includes all five review skills and their read-only custom roles.
 
 **Any agent that reads skills**: download the skill archive from
 [Releases](https://github.com/Dankosik/super-review/releases).
@@ -341,13 +344,56 @@ Code, Codex, OpenCode and Antigravity for Go, TypeScript, Rust and Java. See
 [the design](docs/review-family.md#how-performance-review-shows-a-cost) and
 [the contract](skills/perf-review/references/contract.md).
 
+## SQL Review (experimental)
+
+A fifth skill reviews PostgreSQL, MySQL (InnoDB primary baseline) and SQLite
+schemas, migrations, queries, transactions, indexes and application database
+boundaries across standalone `.sql` files, declarative/ORM schemas and embedded
+SQL in Go, TypeScript, Rust and Java.
+
+```text
+/super-review:sql Review the migrations and queries in this PR.
+$sql-review Check db/migrations and src/orders-repo.ts for PostgreSQL issues.
+/sql-review Review these PostgreSQL migrations and queries.   (OpenCode / Antigravity)
+```
+
+Independent readers each take one lens, or a safe pair for a small change
+(`schema` + `migrations`, `queries` + `transactions`, with `indexing` and
+`app-boundary` kept solo): schema, migrations, queries, transactions, indexing
+and app boundary. A finding needs:
+
+- a **mechanism**, traced or quoted through the reconstructed cumulative schema,
+  ordered migrations, callers and locked driver source under the project's
+  pinned dialect and engine version;
+- a **basis** (`written`, `schema`, or `engine`) and a concrete **impact**;
+- a minimal **safer form** valid on the pinned dialect, version and
+  rolling-deploy (`D -> H`) baseline;
+- survival of an **independent challenge** on four lines (dialect/version
+  mechanism, trigger/runtime evidence, safer-form validity/tradeoffs, prior
+  documented intent or `Not a finding` guards).
+
+Cosmetic SQL formatting and broad security/compliance audits are out of scope;
+provable schema-evolution fragility (`SELECT *`, columnless `INSERT`,
+positional `ORDER BY`, unqualified multi-table columns, implicit comma joins)
+and concrete SQL contract failures whose harm is security (broken
+parameterization/SQL injection, unallowlisted dynamic identifiers, broken
+declared RLS/tenant isolation, `SECURITY DEFINER` missing `search_path`,
+unbounded `UPDATE`/`DELETE`) stay in scope. Claims that wait on an unstated
+server version, table cardinality or `EXPLAIN` plan come back under
+`Needs your confirmation`.
+
+It never connects to a database or runs database CLIs; user-supplied or
+committed `EXPLAIN` plans are evidence. Available in Claude Code, Codex,
+OpenCode and Antigravity. See [the design](docs/sql-review.md) and
+[the contract](skills/sql-review/references/contract.md).
+
 ## FAQ
 
 <details>
 <summary><b>Does Super Review change or run my code?</b></summary>
 
-No. All four reviews only read. They do not clone, copy, build or run your
-project, run its checks or benchmarks, or post comments on a PR.
+No. All five reviews only read. They do not clone, copy, build or run your
+project, connect to a database, run checks or benchmarks, or post comments on a PR.
 
 </details>
 
@@ -358,7 +404,9 @@ Super Review does not: it assesses readability and maintainability only, not
 bugs, security, product requirements or test coverage. For bugs, use the
 experimental [Defect Review](#defect-review-experimental); for gaps in tests,
 [Test Review](#test-review-experimental); for unneeded work on hot paths,
-[Performance Review](#performance-review-experimental).
+[Performance Review](#performance-review-experimental); for database schemas,
+migrations, queries, transactions, indexes and SQL boundaries,
+[SQL Review](#sql-review-experimental).
 
 </details>
 
@@ -374,16 +422,19 @@ is tested to be equivalent.
 <details>
 <summary><b>Which languages and file types are supported?</b></summary>
 
-Go, TypeScript/TSX, Rust and Java across all four reviews (Cursor ships
-Super Review only; Claude Code, Codex, OpenCode and Antigravity ship all four).
-Tests, generated and vendored code are excluded from
-Super Review. JavaScript/JSX, CSS and MDX are not standalone targets.
+Go, TypeScript/TSX, Rust and Java across Super Review, Defect Review, Test
+Review and Performance Review. SQL Review supports PostgreSQL, MySQL (InnoDB
+primary baseline) and SQLite across standalone `.sql` files, declarative/ORM
+schemas and embedded SQL in Go, TypeScript, Rust and Java. Cursor ships Super
+Review only; Claude Code, Codex, OpenCode and Antigravity ship all five. Tests,
+generated and vendored code are excluded from Super Review. JavaScript/JSX, CSS
+and MDX are not standalone targets.
 
 </details>
 
 ## Documentation
 
-- [Design](docs/design.md) and [the review family](docs/review-family.md)
+- [Design](docs/design.md), [the review family](docs/review-family.md) and [SQL Review](docs/sql-review.md)
 - [Model profiles](docs/model-profiles.md) and [native integrations](docs/native-integrations.md)
 - [Cursor](docs/cursor.md), [OpenCode](docs/opencode.md) and [Antigravity](docs/antigravity.md) adapters
 - [Validation](docs/validation.md): package checks kept apart from model evidence

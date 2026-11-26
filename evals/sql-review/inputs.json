@@ -1,0 +1,174 @@
+{
+  "description": "Neutral single-case packets for SQL Review decisions across all six lenses and three v1 dialects. Supply at most one input object per fresh run.",
+  "inputs": [
+    {
+      "id": "SQL01",
+      "skill": "sql-review",
+      "dialect": "sqlite",
+      "lens": "schema",
+      "request": "Review the assigned SQLite schema through the schema lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "Whole-module review of db/schema.sql and db/open.ts in a local billing ledger service.",
+      "files": {
+        "package.json": "{\n  \"name\": \"ledger-svc\",\n  \"private\": true,\n  \"dependencies\": { \"better-sqlite3\": \"11.7.0\" }\n}\n",
+        "docs/runtime.md": "Runtime uses SQLite 3.47.2 bundled with better-sqlite3 11.7.0.\n",
+        "db/open.ts": "import Database from \"better-sqlite3\";\n\nexport function openLedgerDb(path: string): Database.Database {\n  const db = new Database(path);\n  db.pragma(\"foreign_keys = ON\");\n  db.pragma(\"journal_mode = WAL\");\n  db.pragma(\"busy_timeout = 5000\");\n  return db;\n}\n",
+        "db/schema.sql": "CREATE TABLE accounts (\n  id INTEGER PRIMARY KEY,\n  owner_id TEXT NOT NULL\n);\n\nCREATE TABLE ledger_entries (\n  id INTEGER PRIMARY KEY,\n  account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,\n  amount DECIMAL(12, 2) NOT NULL,\n  currency TEXT,\n  created_at TEXT NOT NULL\n);\n\nCREATE INDEX idx_ledger_entries_account_id ON ledger_entries (account_id);\n"
+      }
+    },
+    {
+      "id": "SQL02",
+      "skill": "sql-review",
+      "dialect": "sqlite",
+      "lens": "schema",
+      "request": "Review the assigned SQLite schema through the schema lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "Whole-module review of db/schema.sql and db/open.ts in a local billing ledger service.",
+      "files": {
+        "package.json": "{\n  \"name\": \"ledger-svc\",\n  \"private\": true,\n  \"dependencies\": { \"better-sqlite3\": \"11.7.0\" }\n}\n",
+        "docs/runtime.md": "Runtime uses SQLite 3.47.2 bundled with better-sqlite3 11.7.0.\n",
+        "db/open.ts": "import Database from \"better-sqlite3\";\n\nexport function openLedgerDb(path: string): Database.Database {\n  const db = new Database(path);\n  db.pragma(\"foreign_keys = ON\");\n  db.pragma(\"journal_mode = WAL\");\n  db.pragma(\"busy_timeout = 5000\");\n  return db;\n}\n",
+        "db/schema.sql": "CREATE TABLE accounts (\n  id INTEGER PRIMARY KEY,\n  owner_id TEXT NOT NULL CHECK (length(owner_id) > 0)\n) STRICT;\n\nCREATE TABLE ledger_entries (\n  id INTEGER PRIMARY KEY,\n  account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,\n  amount_cents INTEGER NOT NULL CHECK (amount_cents <> 0),\n  currency TEXT NOT NULL CHECK (length(currency) = 3),\n  created_at_epoch_ms INTEGER NOT NULL CHECK (created_at_epoch_ms > 0)\n) STRICT;\n\nCREATE INDEX idx_ledger_entries_account_id ON ledger_entries (account_id);\n"
+      }
+    },
+    {
+      "id": "SQL03",
+      "skill": "sql-review",
+      "dialect": "postgresql",
+      "lens": "migrations",
+      "request": "Review the new migration through the migrations lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "PR adding migrations/0014_enforce_external_ref.sql on a live zero-downtime PostgreSQL 16 orders database (12M rows in orders).",
+      "files": {
+        "docker-compose.yml": "services:\n  db:\n    image: postgres:16.4\n",
+        "docs/db-ops.md": "The orders table holds 12 million rows under continuous production traffic. Migrations must avoid blocking live reads and writes. Atlas wraps each migration file in a single transaction unless marked with -- atlas:txmode none.\n",
+        "migrations/0001_init.sql": "CREATE TABLE orders (\n  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  customer_id BIGINT NOT NULL,\n  external_ref TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n",
+        "migrations/0014_enforce_external_ref.sql": "ALTER TABLE orders ALTER COLUMN external_ref SET NOT NULL;\nCREATE INDEX idx_orders_customer_id ON orders (customer_id);\n"
+      }
+    },
+    {
+      "id": "SQL04",
+      "skill": "sql-review",
+      "dialect": "postgresql",
+      "lens": "migrations",
+      "request": "Review the new migrations through the migrations lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "PR adding migrations 0014 through 0017 after a completed backfill on PostgreSQL 16 (12M rows in orders).",
+      "files": {
+        "docker-compose.yml": "services:\n  db:\n    image: postgres:16.4\n",
+        "docs/db-ops.md": "The orders table holds 12 million rows under continuous production traffic. Migration 0013 already backfilled external_ref for all rows and all live writers populate external_ref. Atlas wraps each migration file in a single transaction unless marked with -- atlas:txmode none.\n",
+        "migrations/0001_init.sql": "CREATE TABLE orders (\n  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  customer_id BIGINT NOT NULL,\n  external_ref TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n",
+        "migrations/0014_add_external_ref_check.sql": "SET LOCAL lock_timeout = '2s';\nALTER TABLE orders ADD CONSTRAINT orders_external_ref_nn CHECK (external_ref IS NOT NULL) NOT VALID;\n",
+        "migrations/0015_validate_external_ref_check.sql": "SET LOCAL lock_timeout = '2s';\nALTER TABLE orders VALIDATE CONSTRAINT orders_external_ref_nn;\n",
+        "migrations/0016_enforce_external_ref_not_null.sql": "SET LOCAL lock_timeout = '2s';\nALTER TABLE orders ALTER COLUMN external_ref SET NOT NULL;\nALTER TABLE orders DROP CONSTRAINT orders_external_ref_nn;\n",
+        "migrations/0017_orders_customer_idx.sql": "-- atlas:txmode none\nSET lock_timeout = '2s';\nCREATE INDEX CONCURRENTLY idx_orders_customer_id ON orders (customer_id);\nRESET lock_timeout;\n"
+      }
+    },
+    {
+      "id": "SQL05",
+      "skill": "sql-review",
+      "dialect": "mysql",
+      "lens": "queries",
+      "request": "Review the assigned MySQL query through the queries lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "Review of sql/active_invoices.sql against schema.sql on MySQL 8.0.36 InnoDB.",
+      "files": {
+        "docker-compose.yml": "services:\n  mysql:\n    image: mysql:8.0.36\n",
+        "sql/schema.sql": "CREATE TABLE invoices (\n  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,\n  account_id BIGINT UNSIGNED NOT NULL,\n  total_cents BIGINT NOT NULL,\n  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  KEY idx_invoices_account_created (account_id, created_at, id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n\nCREATE TABLE voided_invoices (\n  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,\n  invoice_id BIGINT UNSIGNED NULL,\n  reason VARCHAR(255) NOT NULL,\n  KEY idx_voided_invoice_id (invoice_id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n",
+        "sql/active_invoices.sql": "SELECT i.id, i.total_cents, i.created_at\nFROM invoices i\nWHERE i.account_id = ?\n  AND i.id NOT IN (SELECT invoice_id FROM voided_invoices)\nLIMIT 50;\n"
+      }
+    },
+    {
+      "id": "SQL06",
+      "skill": "sql-review",
+      "dialect": "mysql",
+      "lens": "queries",
+      "request": "Review the assigned MySQL query through the queries lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "Review of sql/active_invoices.sql against schema.sql on MySQL 8.0.36 InnoDB.",
+      "files": {
+        "docker-compose.yml": "services:\n  mysql:\n    image: mysql:8.0.36\n",
+        "sql/schema.sql": "CREATE TABLE invoices (\n  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,\n  account_id BIGINT UNSIGNED NOT NULL,\n  total_cents BIGINT NOT NULL,\n  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  KEY idx_invoices_account_created (account_id, created_at, id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n\nCREATE TABLE voided_invoices (\n  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,\n  invoice_id BIGINT UNSIGNED NULL,\n  reason VARCHAR(255) NOT NULL,\n  KEY idx_voided_invoice_id (invoice_id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n",
+        "sql/active_invoices.sql": "SELECT i.id, i.total_cents, i.created_at\nFROM invoices i\nWHERE i.account_id = ?\n  AND NOT EXISTS (\n    SELECT 1 FROM voided_invoices v WHERE v.invoice_id = i.id\n  )\nORDER BY i.created_at DESC, i.id DESC\nLIMIT 50;\n"
+      }
+    },
+    {
+      "id": "SQL07",
+      "skill": "sql-review",
+      "dialect": "postgresql",
+      "lens": "transactions",
+      "request": "Review the wallet debit workflow through the transactions lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "Review of internal/wallet/debit.go against db/schema.sql on PostgreSQL 16.",
+      "files": {
+        "docker-compose.yml": "services:\n  db:\n    image: postgres:16.4\n",
+        "go.mod": "module billing\n\ngo 1.23\n\nrequire github.com/jackc/pgx/v5 v5.7.1\n",
+        "db/schema.sql": "CREATE TABLE wallets (\n  id BIGINT PRIMARY KEY,\n  balance_cents BIGINT NOT NULL CHECK (balance_cents >= 0)\n);\n",
+        "internal/wallet/debit.go": "package wallet\n\nimport (\n\t\"context\"\n\t\"errors\"\n\t\"github.com/jackc/pgx/v5\"\n\t\"github.com/jackc/pgx/v5/pgxpool\"\n)\n\nvar (\n\tErrInvalidAmount     = errors.New(\"amount must be positive\")\n\tErrWalletNotFound    = errors.New(\"wallet not found\")\n\tErrInsufficientFunds = errors.New(\"insufficient funds\")\n)\n\ntype RiskChecker interface {\n\tCheck(ctx context.Context, walletID, amountCents int64) error\n}\n\nfunc Debit(ctx context.Context, pool *pgxpool.Pool, risk RiskChecker, walletID, amountCents int64) (int64, error) {\n\tif amountCents <= 0 {\n\t\treturn 0, ErrInvalidAmount\n\t}\n\ttx, err := pool.Begin(ctx)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\tdefer tx.Rollback(ctx)\n\n\tvar balance int64\n\terr = tx.QueryRow(ctx, `SELECT balance_cents FROM wallets WHERE id = $1`, walletID).Scan(&balance)\n\tif errors.Is(err, pgx.ErrNoRows) {\n\t\treturn 0, ErrWalletNotFound\n\t}\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\tif balance < amountCents {\n\t\treturn 0, ErrInsufficientFunds\n\t}\n\tif err := risk.Check(ctx, walletID, amountCents); err != nil {\n\t\treturn 0, err\n\t}\n\tnewBalance := balance - amountCents\n\tif _, err := tx.Exec(ctx, `UPDATE wallets SET balance_cents = $1 WHERE id = $2`, newBalance, walletID); err != nil {\n\t\treturn 0, err\n\t}\n\tif err := tx.Commit(ctx); err != nil {\n\t\treturn 0, err\n\t}\n\treturn newBalance, nil\n}\n"
+      }
+    },
+    {
+      "id": "SQL08",
+      "skill": "sql-review",
+      "dialect": "postgresql",
+      "lens": "transactions",
+      "request": "Review the wallet debit workflow through the transactions lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "Review of internal/wallet/debit.go against db/schema.sql on PostgreSQL 16.",
+      "files": {
+        "docker-compose.yml": "services:\n  db:\n    image: postgres:16.4\n",
+        "go.mod": "module billing\n\ngo 1.23\n\nrequire github.com/jackc/pgx/v5 v5.7.1\n",
+        "db/schema.sql": "CREATE TABLE wallets (\n  id BIGINT PRIMARY KEY,\n  balance_cents BIGINT NOT NULL CHECK (balance_cents >= 0)\n);\n",
+        "internal/wallet/debit.go": "package wallet\n\nimport (\n\t\"context\"\n\t\"errors\"\n\t\"github.com/jackc/pgx/v5\"\n\t\"github.com/jackc/pgx/v5/pgxpool\"\n)\n\nvar (\n\tErrInvalidAmount     = errors.New(\"amount must be positive\")\n\tErrWalletNotFound    = errors.New(\"wallet not found\")\n\tErrInsufficientFunds = errors.New(\"insufficient funds\")\n)\n\ntype RiskChecker interface {\n\tCheck(ctx context.Context, walletID, amountCents int64) error\n}\n\nfunc Debit(ctx context.Context, pool *pgxpool.Pool, risk RiskChecker, walletID, amountCents int64) (int64, error) {\n\tif amountCents <= 0 {\n\t\treturn 0, ErrInvalidAmount\n\t}\n\tif err := risk.Check(ctx, walletID, amountCents); err != nil {\n\t\treturn 0, err\n\t}\n\tvar newBalance int64\n\terr := pool.QueryRow(\n\t\tctx,\n\t\t`UPDATE wallets SET balance_cents = balance_cents - $1 WHERE id = $2 AND balance_cents >= $1 RETURNING balance_cents`,\n\t\tamountCents,\n\t\twalletID,\n\t).Scan(&newBalance)\n\tif errors.Is(err, pgx.ErrNoRows) {\n\t\tvar exists bool\n\t\tif checkErr := pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM wallets WHERE id = $1)`, walletID).Scan(&exists); checkErr != nil {\n\t\t\treturn 0, checkErr\n\t\t}\n\t\tif !exists {\n\t\t\treturn 0, ErrWalletNotFound\n\t\t}\n\t\treturn 0, ErrInsufficientFunds\n\t}\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\treturn newBalance, nil\n}\n"
+      }
+    },
+    {
+      "id": "SQL09",
+      "skill": "sql-review",
+      "dialect": "postgresql",
+      "lens": "indexing",
+      "request": "Review the events lookup query and indexes through the indexing lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "Review of sql/daily_events.sql against db/schema.sql on a documented 50M-row PostgreSQL 16 events table.",
+      "files": {
+        "docker-compose.yml": "services:\n  db:\n    image: postgres:16.4\n",
+        "docs/scale.md": "The events table holds 50 million rows and serves 400 requests/second on the daily activity endpoint. Parameter $1 is a UTC midnight TIMESTAMPTZ.\n",
+        "db/schema.sql": "CREATE TABLE events (\n  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  account_id BIGINT NOT NULL,\n  kind TEXT NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL\n);\nCREATE INDEX idx_events_created_at_id ON events (created_at, id);\n",
+        "sql/daily_events.sql": "SELECT id, account_id, kind, created_at\nFROM events\nWHERE DATE_TRUNC('day', created_at, 'UTC') = $1::timestamptz\nORDER BY created_at DESC, id DESC\nLIMIT $2;\n"
+      }
+    },
+    {
+      "id": "SQL10",
+      "skill": "sql-review",
+      "dialect": "postgresql",
+      "lens": "indexing",
+      "request": "Review the events lookup query and indexes through the indexing lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "Review of sql/daily_events.sql against db/schema.sql on a documented 50M-row PostgreSQL 16 events table.",
+      "files": {
+        "docker-compose.yml": "services:\n  db:\n    image: postgres:16.4\n",
+        "docs/scale.md": "The events table holds 50 million rows and serves 400 requests/second on the daily activity endpoint. Parameter $1 is a UTC midnight TIMESTAMPTZ.\n",
+        "db/schema.sql": "CREATE TABLE events (\n  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  account_id BIGINT NOT NULL,\n  kind TEXT NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL\n);\nCREATE INDEX idx_events_created_at_id ON events (created_at, id);\n",
+        "sql/daily_events.sql": "SELECT id, account_id, kind, created_at\nFROM events\nWHERE created_at >= $1::timestamptz\n  AND created_at < $1::timestamptz + INTERVAL '1 day'\nORDER BY created_at DESC, id DESC\nLIMIT $2;\n"
+      }
+    },
+    {
+      "id": "SQL11",
+      "skill": "sql-review",
+      "dialect": "postgresql",
+      "lens": "app-boundary",
+      "request": "Review the TypeScript order repository through the app-boundary lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "Review of src/orders-repo.ts against db/schema.sql on PostgreSQL 16.",
+      "files": {
+        "docker-compose.yml": "services:\n  db:\n    image: postgres:16.4\n",
+        "package.json": "{\n  \"name\": \"orders-api\",\n  \"private\": true,\n  \"dependencies\": { \"pg\": \"8.13.1\" }\n}\n",
+        "db/schema.sql": "CREATE TABLE orders (\n  id BIGINT PRIMARY KEY,\n  status TEXT NOT NULL,\n  total_cents BIGINT NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL\n);\nCREATE INDEX idx_orders_status_created ON orders (status, created_at, id);\nCREATE INDEX idx_orders_status_total ON orders (status, total_cents, id);\n",
+        "src/orders-repo.ts": "import type { Pool } from \"pg\";\n\nexport type OrderRow = {\n  id: string;\n  status: string;\n  total_cents: string;\n  created_at: Date;\n};\n\nexport async function listOrdersByStatus(pool: Pool, status: string, sortColumn: string, limit: number): Promise<OrderRow[]> {\n  const sql = `SELECT id, status, total_cents, created_at FROM orders WHERE status = '${status}' ORDER BY ${sortColumn} DESC, id DESC LIMIT $1`;\n  const result = await pool.query<OrderRow>(sql, [limit]);\n  return result.rows;\n}\n\nexport async function loadOrdersByIds(pool: Pool, ids: readonly string[]): Promise<OrderRow[]> {\n  const out: OrderRow[] = [];\n  for (const id of ids) {\n    const res = await pool.query<OrderRow>(\"SELECT id, status, total_cents, created_at FROM orders WHERE id = $1\", [id]);\n    if (res.rows[0]) out.push(res.rows[0]);\n  }\n  return out;\n}\n"
+      }
+    },
+    {
+      "id": "SQL12",
+      "skill": "sql-review",
+      "dialect": "postgresql",
+      "lens": "app-boundary",
+      "request": "Review the TypeScript order repository through the app-boundary lens. Do not connect to a database, execute SQL, or edit files.",
+      "scope": "Review of src/orders-repo.ts against db/schema.sql on PostgreSQL 16.",
+      "files": {
+        "docker-compose.yml": "services:\n  db:\n    image: postgres:16.4\n",
+        "package.json": "{\n  \"name\": \"orders-api\",\n  \"private\": true,\n  \"dependencies\": { \"pg\": \"8.13.1\" }\n}\n",
+        "db/schema.sql": "CREATE TABLE orders (\n  id BIGINT PRIMARY KEY,\n  status TEXT NOT NULL,\n  total_cents BIGINT NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL\n);\nCREATE INDEX idx_orders_status_created ON orders (status, created_at, id);\nCREATE INDEX idx_orders_status_total ON orders (status, total_cents, id);\n",
+        "src/orders-repo.ts": "import type { Pool } from \"pg\";\n\nexport type OrderRow = {\n  id: string;\n  status: string;\n  total_cents: string;\n  created_at: Date;\n};\n\nconst ORDER_BY_SQL = new Map<string, string>([\n  [\"created_at\", \"created_at DESC, id DESC\"],\n  [\"total_cents\", \"total_cents DESC, id DESC\"],\n]);\n\nexport async function listOrdersByStatus(pool: Pool, status: string, sortColumn: string, limit: number): Promise<OrderRow[]> {\n  const orderBy = ORDER_BY_SQL.get(sortColumn);\n  if (!orderBy) throw new RangeError(\"unsupported sort column\");\n  if (!Number.isInteger(limit) || limit < 1 || limit > 200) {\n    throw new RangeError(\"limit must be an integer between 1 and 200\");\n  }\n  const sql = `SELECT id, status, total_cents, created_at FROM orders WHERE status = $1 ORDER BY ${orderBy} LIMIT $2`;\n  const result = await pool.query<OrderRow>(sql, [status, limit]);\n  return result.rows;\n}\n\nexport async function loadOrdersByIds(pool: Pool, ids: readonly string[]): Promise<OrderRow[]> {\n  if (ids.length === 0) return [];\n  const res = await pool.query<OrderRow>(\n    \"SELECT id, status, total_cents, created_at FROM orders WHERE id = ANY($1::bigint[]) ORDER BY id ASC\",\n    [ids],\n  );\n  return res.rows;\n}\n"
+      }
+    }
+  ]
+}

@@ -18,6 +18,12 @@
     },
     "perf-challenger": {
       "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
+    },
+    "sql-reader": {
+      "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
+    },
+    "sql-challenger": {
+      "model": "{env:SUPER_REVIEW_SPECIALIST_MODEL}"
     }
   }
 }
