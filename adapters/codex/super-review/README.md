@@ -22,6 +22,7 @@
   <a href="#test-review-experimental">Test Review</a> ·
   <a href="#performance-review-experimental">Performance Review</a> ·
   <a href="#sql-review-experimental">SQL Review</a> ·
+  <a href="#clickhouse-review-experimental">ClickHouse Review</a> ·
   <a href="#faq">FAQ</a>
 </p>
 
@@ -35,7 +36,7 @@ verified recommendations.
 It only reads. It never edits, builds or runs your code, and it never posts
 comments on your PR.
 
-## Five reviews, one plugin
+## Six reviews, one plugin
 
 | Review | Question it answers | Scope |
 | --- | --- | --- |
@@ -44,10 +45,12 @@ comments on your PR.
 | **[Test Review](#test-review-experimental)** · experimental | Would the tests fail if a plausible bug appeared? | Go, TypeScript, Rust, Java |
 | **[Performance Review](#performance-review-experimental)** · experimental | Where does a hot path do work it does not need? | Go, TypeScript, Rust, Java |
 | **[SQL Review](#sql-review-experimental)** · experimental | Does this SQL and schema hold up on correctness, safe evolution, concurrency, and indexable execution? | PostgreSQL, MySQL, SQLite (`.sql`, ORM/declarative schemas, embedded Go/TS/Rust/Java) |
+| **[ClickHouse Review](#clickhouse-review-experimental)** · experimental | Does this ClickHouse schema, query, view, cluster DDL, or ingestion path respect MergeTree physics, cluster topology, and columnar execution? | Self-managed ClickHouse 24–25+ & ClickHouse Cloud `SharedMergeTree` (`.sql`, configs, Go/TS/Rust/Java/Python clients) |
 
-The five share no policy. A readability review never reports bugs, a bug
-hunt never comments on style, slow code is not a bug, and cosmetic SQL style
-is not a SQL failure.
+The six share no policy. A readability review never reports bugs, a bug
+hunt never comments on style, slow code is not a bug, cosmetic SQL style
+is not a SQL failure, and OLTP relational rules are not ClickHouse MergeTree
+physics.
 [The family design](docs/review-family.md) explains why.
 
 ## Quick start
@@ -76,7 +79,7 @@ Marketplace listing is a separate Cursor review.
 
 **Google Antigravity App/CLI**: install the [native plugin](docs/antigravity.md)
 with `agy plugin install ./adapters/antigravity/plugin` from this checkout.
-It includes all five review skills and their read-only custom roles.
+It includes all six review skills and their read-only custom roles.
 
 **Any agent that reads skills**: download the skill archive from
 [Releases](https://github.com/Dankosik/super-review/releases).
@@ -387,12 +390,52 @@ committed `EXPLAIN` plans are evidence. Available in Claude Code, Codex,
 OpenCode and Antigravity. See [the design](docs/sql-review.md) and
 [the contract](skills/sql-review/references/contract.md).
 
+## ClickHouse Review (experimental)
+
+A sixth skill reviews Self-managed ClickHouse (v24–25+) and ClickHouse Cloud
+(`SharedMergeTree`) schemas, parts, mutations, materialized views, projections,
+columnar and `Distributed` queries, cluster DDL and client ingestion across
+standalone `.sql` files, server/cluster XML and YAML configs, and Go,
+TypeScript, Rust, Java and Python clients.
+
+```text
+/super-review:clickhouse Review the MergeTree schemas, MVs and writers in this PR.
+$clickhouse-review Check ch/migrations and src/audit-store.ts for ClickHouse Cloud issues.
+/clickhouse-review Review these MergeTree tables and Distributed queries.   (OpenCode / Antigravity)
+```
+
+Independent readers each take one lens, or a safe pair for a small change
+(`storage-keys` + `mutations-lifecycle`, `views-projections` + `cluster-ddl`,
+with `queries-distributed` and `ingestion-client` kept solo): storage and keys,
+mutations and lifecycle, views and projections, queries and distributed
+execution, cluster DDL and topology, and ingestion and client boundary. A
+finding needs:
+
+- a **mechanism**, traced or quoted through the reconstructed cumulative schema,
+  MVs, cluster configs, callers and locked client source under the project's
+  pinned ClickHouse version and deployment (`self-managed` vs `cloud`);
+- a **basis** (`written`, `schema`, or `engine`) and a concrete **impact**;
+- a minimal **safer form** valid on the pinned ClickHouse version, deployment
+  and rolling-deploy (`D -> H`) baseline;
+- survival of an **independent challenge** on four lines (ClickHouse version/
+  deployment mechanism, trigger/data-dependent evidence, safer-form validity
+  and tradeoffs, prior documented intent or `Not a finding` guards).
+
+Claims that wait on an unstated ClickHouse version or deployment, table/part
+volume, cardinality, ingest rate, or pruning/memory behavior come back under
+`Needs your confirmation`. It never connects to ClickHouse or runs ClickHouse
+CLIs; user-supplied or committed `EXPLAIN indexes = 1`, `EXPLAIN PLAN`,
+`system.parts`, and `system.query_log` outputs are evidence. Available in
+Claude Code, Codex, OpenCode and Antigravity. See
+[the design](docs/clickhouse-review.md) and
+[the contract](skills/clickhouse-review/references/contract.md).
+
 ## FAQ
 
 <details>
 <summary><b>Does Super Review change or run my code?</b></summary>
 
-No. All five reviews only read. They do not clone, copy, build or run your
+No. All six reviews only read. They do not clone, copy, build or run your
 project, connect to a database, run checks or benchmarks, or post comments on a PR.
 
 </details>
@@ -404,9 +447,11 @@ Super Review does not: it assesses readability and maintainability only, not
 bugs, security, product requirements or test coverage. For bugs, use the
 experimental [Defect Review](#defect-review-experimental); for gaps in tests,
 [Test Review](#test-review-experimental); for unneeded work on hot paths,
-[Performance Review](#performance-review-experimental); for database schemas,
-migrations, queries, transactions, indexes and SQL boundaries,
-[SQL Review](#sql-review-experimental).
+[Performance Review](#performance-review-experimental); for OLTP SQL schemas,
+migrations, queries, transactions, indexes and DB boundaries,
+[SQL Review](#sql-review-experimental); for ClickHouse MergeTree schemas,
+parts, mutations, views, Distributed queries, cluster DDL and ingestion,
+[ClickHouse Review](#clickhouse-review-experimental).
 
 </details>
 
@@ -425,16 +470,19 @@ is tested to be equivalent.
 Go, TypeScript/TSX, Rust and Java across Super Review, Defect Review, Test
 Review and Performance Review. SQL Review supports PostgreSQL, MySQL (InnoDB
 primary baseline) and SQLite across standalone `.sql` files, declarative/ORM
-schemas and embedded SQL in Go, TypeScript, Rust and Java. Cursor ships Super
-Review only; Claude Code, Codex, OpenCode and Antigravity ship all five. Tests,
-generated and vendored code are excluded from Super Review. JavaScript/JSX, CSS
-and MDX are not standalone targets.
+schemas and embedded SQL in Go, TypeScript, Rust and Java. ClickHouse Review
+supports Self-managed ClickHouse (v24–25+) and ClickHouse Cloud
+(`SharedMergeTree`) across `.sql` files, server/cluster configs and Go,
+TypeScript, Rust, Java and Python clients. Cursor ships Super Review only;
+Claude Code, Codex, OpenCode and Antigravity ship all six. Tests, generated and
+vendored code are excluded from Super Review. JavaScript/JSX, CSS and MDX are
+not standalone targets.
 
 </details>
 
 ## Documentation
 
-- [Design](docs/design.md), [the review family](docs/review-family.md) and [SQL Review](docs/sql-review.md)
+- [Design](docs/design.md), [the review family](docs/review-family.md), [SQL Review](docs/sql-review.md) and [ClickHouse Review](docs/clickhouse-review.md)
 - [Model profiles](docs/model-profiles.md) and [native integrations](docs/native-integrations.md)
 - [Cursor](docs/cursor.md), [OpenCode](docs/opencode.md) and [Antigravity](docs/antigravity.md) adapters
 - [Validation](docs/validation.md): package checks kept apart from model evidence

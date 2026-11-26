@@ -2,10 +2,10 @@
 
 Extract the versioned OpenCode ZIP and use its `super-review` launcher, or set
 `OPENCODE_CONFIG_DIR` to that extracted directory and run `/super-review`.
-The package also carries Defect Review, Test Review, Performance Review and
-SQL Review: run `/defect-review`, `/test-review`, `/perf-review` or
-`/sql-review` in the same session. The launcher opens Super Review; the
-command switches to that review's agent.
+The package also carries Defect Review, Test Review, Performance Review,
+SQL Review and ClickHouse Review: run `/defect-review`, `/test-review`,
+`/perf-review`, `/sql-review` or `/clickhouse-review` in the same session. The
+launcher opens Super Review; the command switches to that review's agent.
 The launcher preserves the caller's current directory for local review. It
 works with OpenCode 1 and 2. On OpenCode 2 it starts a private server
 (`--standalone`), because the shared background service ignores the launcher's
@@ -28,7 +28,8 @@ Native read, glob, grep and Bash tools inspect source. Each primary role can
 invoke only its own subagents: `super-review` starts `super-review-specialist`,
 `defect-review` starts `defect-reader` and `defect-challenger`,
 `test-review` starts `test-reader`, `perf-review` starts `perf-reader` and
-`perf-challenger`, and `sql-review` starts `sql-reader` and `sql-challenger`.
+`perf-challenger`, `sql-review` starts `sql-reader` and `sql-challenger`, and
+`clickhouse-review` starts `clickhouse-reader` and `clickhouse-challenger`.
 Subagents cannot delegate and all use the specialist model. All omit
 edit/write tools, but Bash is not a read-only sandbox. The skill limits it to
 source acquisition and inspection. Native task results carry full review reports.

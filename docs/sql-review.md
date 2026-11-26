@@ -1,7 +1,7 @@
 # SQL Review
 
 SQL Review checks schemas, migrations, queries, transactions, indexes, and
-application database boundaries by reading. It is one of five reviews in this
+application database boundaries by reading. It is one of six reviews in this
 repository; [the family design](review-family.md) explains how they relate,
 where SQL Review's boundary meets sibling skills, and why none of them executes
 project code or connects to a database.

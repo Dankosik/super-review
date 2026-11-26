@@ -22,6 +22,7 @@ credential is required by this repository. Missing execution capability means
 | Test Review proof or question rules | [test-review](test-review/README.md): a review of a real repository, with the maintainer checking each mutant and witness by reading |
 | Performance Review hot path, cost trace, challenge or lens rules | A review of a real repository, with the maintainer checking each hot path and cost trace by reading and measuring any finding before applying it; fixture checks do not apply. None has been run yet. |
 | SQL Review contract, dialect contexts, challenge or lens rules | [sql-review](sql-review/README.md): contrasting packets across all six lenses and three dialects (`NOT RUN`), paired with real-repository runs where the maintainer checks traces and `EXPLAIN` / lock behavior; fixture checks do not prove judgment. |
+| ClickHouse Review contract, deployment contexts, challenge or lens rules | [clickhouse-review](clickhouse-review/README.md): contrasting packets across all six lenses and both deployments (`self-managed` and `cloud`, `NOT RUN`), paired with real-repository runs where the maintainer checks traces and `EXPLAIN indexes = 1` / `system.parts` / `system.query_log` behavior; fixture checks do not prove judgment. |
 | Historical routing, model selection or waiting experiments | Their own revision-specific protocols; do not apply a 2.x runtime experiment to 3.x by text substitution. |
 
 Do not run every historical experiment for an unrelated edit. New input should

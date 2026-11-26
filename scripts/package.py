@@ -16,7 +16,7 @@ target = DIST / "opencode"
 if target.exists():
     shutil.rmtree(target)
 shutil.copytree(ROOT / "adapters/opencode", target)
-for name in ["super-review", "defect-review", "test-review", "perf-review", "sql-review"]:
+for name in ["super-review", "defect-review", "test-review", "perf-review", "sql-review", "clickhouse-review"]:
     shutil.copytree(ROOT / "skills" / name, target / "skills" / name)
 for name in ["docs", "examples"]:
     shutil.copytree(ROOT / name, target / name)
@@ -40,8 +40,8 @@ assets = [
     archive(f"super-review-{VERSION}-opencode.zip", opencode_files),
     archive(f"super-review-{VERSION}-skill.zip", skill_files),
 ]
-# Defect Review, Test Review, Performance Review and SQL Review ship as their own standalone skills, under their own versions.
-for name in ["defect-review", "test-review", "perf-review", "sql-review"]:
+# Defect Review, Test Review, Performance Review, SQL Review and ClickHouse Review ship as their own standalone skills, under their own versions.
+for name in ["defect-review", "test-review", "perf-review", "sql-review", "clickhouse-review"]:
     root = ROOT / "skills" / name
     version = re.search(r'^  version: "([^"]+)"$', (root / "SKILL.md").read_text(), re.M).group(1)
     assets.append(archive(f"{name}-{version}-skill.zip", [

@@ -110,7 +110,7 @@ test("hashing follows who fills the table, a small saving is not hidden, and a c
 });
 
 test("every review of the family reads in full and pins a named branch", () => {
-  for (const skill of ["perf-review", "defect-review", "test-review", "sql-review"]) {
+  for (const skill of ["perf-review", "defect-review", "test-review", "sql-review", "clickhouse-review"]) {
     expect(flat(`skills/${skill}/references/contract.md`)).toContain("Read what you review in full, at the revision you are given. A part you did not see, for whatever reason, is not read");
     expect(flat(`skills/${skill}/references/workflow.md`)).toContain("resolve it once to a commit");
   }

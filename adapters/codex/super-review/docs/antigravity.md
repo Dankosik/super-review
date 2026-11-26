@@ -1,11 +1,12 @@
 # Google Antigravity
 
 The native plugin provides `/super-review`, `/defect-review`, `/test-review`,
-`/perf-review` and `/sql-review` in the Antigravity App and CLI. The first four
-skills cover Go, TypeScript, Rust and Java (readability, bugs, tests and
-performance); SQL Review covers PostgreSQL, MySQL and SQLite schemas,
-migrations, queries, transactions, indexes and database boundaries. Each keeps
-its own contract and report format.
+`/perf-review`, `/sql-review` and `/clickhouse-review` in the Antigravity App
+and CLI. The first four skills cover Go, TypeScript, Rust and Java
+(readability, bugs, tests and performance); SQL Review covers PostgreSQL, MySQL
+and SQLite; ClickHouse Review covers ClickHouse MergeTree schemas, parts,
+mutations, views, projections, Distributed queries, cluster DDL and client
+ingestion. Each keeps its own contract and report format.
 
 ## Install
 
@@ -31,6 +32,7 @@ a review does not install or rewrite configuration.
 /test-review Review the tests for this Rust module.
 /perf-review Review the hot paths in this Rust module.
 /sql-review Review these PostgreSQL migrations and queries.
+/clickhouse-review Review these MergeTree tables, MVs and client writers.
 ```
 
 Antigravity discovers skills automatically as well as through slash commands.
@@ -41,14 +43,14 @@ usage without reading source or launching agents.
 
 ## Native execution and boundaries
 
-The current chat orchestrates and keeps its model and effort. Eight custom roles
-provide independent specialists/readers and separate defect, performance and SQL
-challengers. Each uses `model: inherit`, `mainAgent: false`, `subagent: true`,
-`commandExecutionPolicy: off`, and only `view_file` and `grep_search` in its tool
-allowlist. No shell, editor, delegation tool or MCP server is configured for a
-child. The parent uses native read-only inspection for source acquisition and
-passes exact resource paths and revision contents as needed. There is no custom
-runtime, API client or extra model login.
+The current chat orchestrates and keeps its model and effort. Ten custom roles
+provide independent specialists/readers and separate defect, performance, SQL
+and ClickHouse challengers. Each uses `model: inherit`, `mainAgent: false`,
+`subagent: true`, `commandExecutionPolicy: off`, and only `view_file` and
+`grep_search` in its tool allowlist. No shell, editor, delegation tool or MCP
+server is configured for a child. The parent uses native read-only inspection
+for source acquisition and passes exact resource paths and revision contents as
+needed. There is no custom runtime, API client or extra model login.
 
 `invoke_subagent` must support the installed custom roles and fresh contexts.
 Use the existing workspace, avoiding branch/worktree creation. An idle agent
@@ -99,7 +101,7 @@ enforcement in every Antigravity version.
 
 ## Maintainer evidence
 
-Edit `adapters/antigravity/*.md`, `adapters/antigravity/agents/*.md` and the five
+Edit `adapters/antigravity/*.md`, `adapters/antigravity/agents/*.md` and the six
 canonical `references/harnesses/antigravity.md` files; regenerate with
 `bun run build`. Build, validation, package tests and native
 `agy plugin validate --strict adapters/antigravity/plugin` check delivery and

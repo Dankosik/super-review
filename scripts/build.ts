@@ -12,15 +12,16 @@ await mkdir(join(claude, "skills/defects"), { recursive: true });
 await mkdir(join(claude, "skills/tests"), { recursive: true });
 await mkdir(join(claude, "skills/perf"), { recursive: true });
 await mkdir(join(claude, "skills/sql"), { recursive: true });
+await mkdir(join(claude, "skills/clickhouse"), { recursive: true });
 await mkdir(join(claude, "agents"), { recursive: true });
 await cp(join(root, "skills/super-review"), join(claude, "resources/super-review"), { recursive: true });
 await cp(join(root, "adapters/claude/skill.md"), join(claude, "skills/review/SKILL.md"));
-// Defect Review, Test Review, Performance Review and SQL Review are separate skills with their own contracts; they share only the plugin.
-for (const [skill, command] of [["defect-review", "defects"], ["test-review", "tests"], ["perf-review", "perf"], ["sql-review", "sql"]]) {
+// Defect Review, Test Review, Performance Review, SQL Review and ClickHouse Review are separate skills with their own contracts; they share only the plugin.
+for (const [skill, command] of [["defect-review", "defects"], ["test-review", "tests"], ["perf-review", "perf"], ["sql-review", "sql"], ["clickhouse-review", "clickhouse"]]) {
   await cp(join(root, "skills", skill), join(claude, "resources", skill), { recursive: true });
   await cp(join(root, `adapters/claude/${command}-skill.md`), join(claude, `skills/${command}/SKILL.md`));
 }
-for (const role of ["orchestrator", "specialist", "defect-orchestrator", "defect-specialist", "defect-challenger", "test-orchestrator", "test-specialist", "perf-orchestrator", "perf-reader", "perf-challenger", "sql-orchestrator", "sql-reader", "sql-challenger"]) {
+for (const role of ["orchestrator", "specialist", "defect-orchestrator", "defect-specialist", "defect-challenger", "test-orchestrator", "test-specialist", "perf-orchestrator", "perf-reader", "perf-challenger", "sql-orchestrator", "sql-reader", "sql-challenger", "clickhouse-orchestrator", "clickhouse-reader", "clickhouse-challenger"]) {
   await cp(join(root, `adapters/claude/${role}.md`), join(claude, `agents/${role}.md`));
 }
 for (const file of ["LICENSE", "PRIVACY.md", "THIRD_PARTY_NOTICES.md"]) await cp(join(root, file), join(claude, file));
@@ -58,7 +59,7 @@ await writeFile(join(cursor, ".cursor-plugin/plugin.json"), JSON.stringify({
 const antigravity = join(root, "adapters/antigravity/plugin");
 await rm(antigravity, { recursive: true, force: true });
 await mkdir(join(antigravity, "agents"), { recursive: true });
-for (const name of ["super-review", "defect-review", "test-review", "perf-review", "sql-review"]) {
+for (const name of ["super-review", "defect-review", "test-review", "perf-review", "sql-review", "clickhouse-review"]) {
   await cp(join(root, "skills", name), join(antigravity, "resources", name), { recursive: true });
   await mkdir(join(antigravity, "skills", name), { recursive: true });
   await cp(join(root, "adapters/antigravity", `${name}.md`), join(antigravity, "skills", name, "SKILL.md"));

@@ -22,7 +22,7 @@ test("an explicit user request can route specialists to another harness", () => 
 });
 
 test("Codex adapters stay native unless an external harness is requested and Antigravity covers Orchestrator (Neon)", () => {
-  for (const skill of ["super-review", "defect-review", "test-review", "perf-review", "sql-review"]) {
+  for (const skill of ["super-review", "defect-review", "test-review", "perf-review", "sql-review", "clickhouse-review"]) {
     const codex = read(`skills/${skill}/references/harnesses/codex.md`);
     expect(codex).toContain("codex exec");
     expect(codex).toContain("never probe external harness");

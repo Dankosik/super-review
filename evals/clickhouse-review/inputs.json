@@ -1,0 +1,182 @@
+{
+  "description": "Neutral single-case packets for ClickHouse Review decisions across all six lenses and both deployment contexts (self-managed and cloud). Supply at most one input object per fresh run.",
+  "inputs": [
+    {
+      "id": "CH01",
+      "skill": "clickhouse-review",
+      "deployment": "self-managed",
+      "lens": "storage-keys",
+      "request": "Review the ClickHouse events schema, skipping index, and supplied diagnostics through the storage-keys lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "Review of ch/001_events.sql against supplied system.parts and EXPLAIN indexes = 1 outputs on a 200M-row ClickHouse 25.3 cluster.",
+      "files": {
+        "docker-compose.yml": "services:\n  clickhouse:\n    image: clickhouse/clickhouse-server:25.3.2\n",
+        "config/remote_servers.xml": "<clickhouse>\n  <remote_servers>\n    <events_cluster>\n      <shard>\n        <internal_replication>true</internal_replication>\n        <replica><host>ch-01</host><port>9000</port></replica>\n        <replica><host>ch-02</host><port>9000</port></replica>\n      </shard>\n    </events_cluster>\n  </remote_servers>\n</clickhouse>\n",
+        "docs/diagnostics.md": "Table analytics.events holds 200M rows across 1.4M distinct users.\n\n`system.parts` excerpt:\n- distinct active partitions: 142,800\n- active parts total: 318,400 (insert delays triggered on partition bursts)\n\n`EXPLAIN indexes = 1 SELECT event_time, tenant_id, payload FROM analytics.events WHERE tenant_id = 42 AND trace_id = '9a1c...'`:\n- PrimaryKey Parts: 1/318400, Granules: 420/324900\n- Skip idx_trace Parts: 1/1, Granules: 420/420 (0 skipped by idx_trace)\n",
+        "ch/001_events.sql": "CREATE TABLE analytics.events ON CLUSTER events_cluster\n(\n    tenant_id UInt32,\n    user_id UInt64,\n    event_time DateTime64(3, 'UTC'),\n    trace_id String,\n    event_type LowCardinality(String),\n    payload String,\n    INDEX idx_trace trace_id TYPE bloom_filter(0.01) GRANULARITY 8192\n)\nENGINE = ReplicatedMergeTree('/clickhouse/tables/{uuid}/{shard}', '{replica}')\nPARTITION BY user_id\nORDER BY (tenant_id, event_time, user_id)\nTTL toDateTime(event_time) + INTERVAL 180 DAY\nSETTINGS index_granularity = 8192, ttl_only_drop_parts = 1;\n"
+      }
+    },
+    {
+      "id": "CH02",
+      "skill": "clickhouse-review",
+      "deployment": "self-managed",
+      "lens": "storage-keys",
+      "request": "Review the ClickHouse events schema, skipping index, and supplied diagnostics through the storage-keys lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "Review of ch/001_events.sql against supplied system.parts and EXPLAIN indexes = 1 outputs on a 200M-row ClickHouse 25.3 cluster.",
+      "files": {
+        "docker-compose.yml": "services:\n  clickhouse:\n    image: clickhouse/clickhouse-server:25.3.2\n",
+        "config/remote_servers.xml": "<clickhouse>\n  <remote_servers>\n    <events_cluster>\n      <shard>\n        <internal_replication>true</internal_replication>\n        <replica><host>ch-01</host><port>9000</port></replica>\n        <replica><host>ch-02</host><port>9000</port></replica>\n      </shard>\n    </events_cluster>\n  </remote_servers>\n</clickhouse>\n",
+        "docs/diagnostics.md": "Table analytics.events holds 200M rows across 1.4M distinct users.\n\n`system.parts` excerpt:\n- distinct active partitions: 6 (monthly)\n- active parts total: 18 (max 4 active parts per partition)\n\n`EXPLAIN indexes = 1 SELECT event_time, tenant_id, payload FROM analytics.events WHERE tenant_id = 42 AND trace_id = '9a1c...'`:\n- PrimaryKey Parts: 1/18, Granules: 420/24415\n- Skip idx_trace Parts: 1/1, Granules: 2/420\n",
+        "ch/001_events.sql": "CREATE TABLE analytics.events ON CLUSTER events_cluster\n(\n    tenant_id UInt32,\n    user_id UInt64,\n    event_time DateTime64(3, 'UTC'),\n    trace_id String,\n    event_type LowCardinality(String),\n    payload String,\n    INDEX idx_trace trace_id TYPE bloom_filter(0.01) GRANULARITY 1\n)\nENGINE = ReplicatedMergeTree('/clickhouse/tables/{uuid}/{shard}', '{replica}')\nPARTITION BY toYYYYMM(event_time)\nORDER BY (tenant_id, event_time, user_id)\nTTL toDateTime(event_time) + INTERVAL 180 DAY\nSETTINGS index_granularity = 8192, ttl_only_drop_parts = 1;\n"
+      }
+    },
+    {
+      "id": "CH03",
+      "skill": "clickhouse-review",
+      "deployment": "self-managed",
+      "lens": "mutations-lifecycle",
+      "request": "Review the ClickHouse billing status update pipeline and TTL rules through the mutations-lifecycle lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "Review of internal/billing/sync.go and ch/002_billing_events.sql on a 500M-row ClickHouse 24.8 cluster.",
+      "files": {
+        "docker-compose.yml": "services:\n  clickhouse:\n    image: clickhouse/clickhouse-server:24.8.6\n",
+        "config/remote_servers.xml": "<clickhouse>\n  <remote_servers>\n    <billing_cluster>\n      <shard>\n        <internal_replication>true</internal_replication>\n        <replica><host>bill-01</host><port>9000</port></replica>\n        <replica><host>bill-02</host><port>9000</port></replica>\n      </shard>\n    </billing_cluster>\n  </remote_servers>\n</clickhouse>\n",
+        "docs/ops.md": "billing_events holds 500M rows and processes ~3,000 status transitions per minute from Kafka. Callers read updated status immediately after ApplyStatusUpdates returns.\n",
+        "go.mod": "module billingch\n\ngo 1.23\n\nrequire github.com/ClickHouse/clickhouse-go/v2 v2.30.0\n",
+        "ch/002_billing_events.sql": "CREATE TABLE billing_events ON CLUSTER billing_cluster\n(\n    tenant_id UInt32,\n    created_at DateTime64(3, 'UTC'),\n    event_id UUID,\n    status LowCardinality(String),\n    updated_at DateTime64(3, 'UTC'),\n    is_deleted UInt8 DEFAULT 0\n)\nENGINE = ReplicatedMergeTree('/clickhouse/tables/{uuid}/{shard}', '{replica}')\nPARTITION BY toYYYYMM(created_at)\nORDER BY (tenant_id, created_at, event_id)\nTTL toDateTime(created_at) + INTERVAL 90 DAY;\n",
+        "internal/billing/sync.go": "package billing\n\nimport (\n\t\"context\"\n\t\"time\"\n\n\t\"github.com/ClickHouse/clickhouse-go/v2\"\n)\n\ntype StatusUpdate struct {\n\tTenantID  uint32\n\tCreatedAt time.Time\n\tEventID   string\n\tStatus    string\n\tUpdatedAt time.Time\n\tIsDeleted uint8\n}\n\nfunc ApplyStatusUpdates(ctx context.Context, conn clickhouse.Conn, updates []StatusUpdate) error {\n\tfor _, u := range updates {\n\t\terr := conn.Exec(\n\t\t\tctx,\n\t\t\t`ALTER TABLE billing_events UPDATE status = {status:String}, updated_at = {updated_at:DateTime64(3, 'UTC')}, is_deleted = {is_deleted:UInt8} WHERE tenant_id = {tenant_id:UInt32} AND event_id = {event_id:UUID}`,\n\t\t\tclickhouse.Named(\"status\", u.Status),\n\t\t\tclickhouse.Named(\"updated_at\", u.UpdatedAt),\n\t\t\tclickhouse.Named(\"is_deleted\", u.IsDeleted),\n\t\t\tclickhouse.Named(\"tenant_id\", u.TenantID),\n\t\t\tclickhouse.Named(\"event_id\", u.EventID),\n\t\t)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\treturn nil\n}\n"
+      }
+    },
+    {
+      "id": "CH04",
+      "skill": "clickhouse-review",
+      "deployment": "self-managed",
+      "lens": "mutations-lifecycle",
+      "request": "Review the ClickHouse billing status update pipeline and TTL rules through the mutations-lifecycle lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "Review of internal/billing/sync.go and ch/002_billing_events.sql on a 500M-row ClickHouse 24.8 cluster.",
+      "files": {
+        "docker-compose.yml": "services:\n  clickhouse:\n    image: clickhouse/clickhouse-server:24.8.6\n",
+        "config/remote_servers.xml": "<clickhouse>\n  <remote_servers>\n    <billing_cluster>\n      <shard>\n        <internal_replication>true</internal_replication>\n        <replica><host>bill-01</host><port>9000</port></replica>\n        <replica><host>bill-02</host><port>9000</port></replica>\n      </shard>\n    </billing_cluster>\n  </remote_servers>\n</clickhouse>\n",
+        "docs/ops.md": "billing_events holds 500M rows and processes ~3,000 status transitions per minute from Kafka in 10,000-row batches. created_at is immutable per event_id so all versions of an event stay in one monthly partition. Callers read updated status immediately after ApplyStatusUpdates returns; readers query billing_events FINAL with SETTINGS do_not_merge_across_partitions_select_final = 1.\n",
+        "go.mod": "module billingch\n\ngo 1.23\n\nrequire github.com/ClickHouse/clickhouse-go/v2 v2.30.0\n",
+        "ch/002_billing_events.sql": "CREATE TABLE billing_events ON CLUSTER billing_cluster\n(\n    tenant_id UInt32,\n    created_at DateTime64(3, 'UTC'),\n    event_id UUID,\n    status LowCardinality(String),\n    updated_at DateTime64(3, 'UTC'),\n    is_deleted UInt8 DEFAULT 0\n)\nENGINE = ReplicatedReplacingMergeTree('/clickhouse/tables/{uuid}/{shard}', '{replica}', updated_at, is_deleted)\nPARTITION BY toYYYYMM(created_at)\nORDER BY (tenant_id, created_at, event_id)\nTTL toDateTime(created_at) + INTERVAL 90 DAY\nSETTINGS ttl_only_drop_parts = 1;\n",
+        "internal/billing/sync.go": "package billing\n\nimport (\n\t\"context\"\n\t\"time\"\n\n\t\"github.com/ClickHouse/clickhouse-go/v2\"\n)\n\ntype StatusUpdate struct {\n\tTenantID  uint32\n\tCreatedAt time.Time\n\tEventID   string\n\tStatus    string\n\tUpdatedAt time.Time\n\tIsDeleted uint8\n}\n\nfunc ApplyStatusUpdates(ctx context.Context, conn clickhouse.Conn, updates []StatusUpdate) error {\n\tif len(updates) == 0 {\n\t\treturn nil\n\t}\n\tbatch, err := conn.PrepareBatch(ctx, `INSERT INTO billing_events (tenant_id, created_at, event_id, status, updated_at, is_deleted)`)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer func() { _ = batch.Close() }()\n\tfor _, u := range updates {\n\t\tif err := batch.Append(u.TenantID, u.CreatedAt, u.EventID, u.Status, u.UpdatedAt, u.IsDeleted); err != nil {\n\t\t\t_ = batch.Abort()\n\t\t\treturn err\n\t\t}\n\t}\n\treturn batch.Send()\n}\n"
+      }
+    },
+    {
+      "id": "CH05",
+      "skill": "clickhouse-review",
+      "deployment": "self-managed",
+      "lens": "views-projections",
+      "request": "Review the materialized view, target table, and dashboard rollup query through the views-projections lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "Review of ch/003_daily_metrics_mv.sql and sql/dashboard_metrics.sql on an active ClickHouse 25.3 DatabaseReplicated ingestion table.",
+      "files": {
+        "docker-compose.yml": "services:\n  clickhouse:\n    image: clickhouse/clickhouse-server:25.3.2\n",
+        "docs/pipeline.md": "Database telemetry uses ENGINE = Replicated('/clickhouse/databases/telemetry', '{shard}', '{replica}'). Table http_requests receives continuous live traffic (~40,000 rows/sec across multiple concurrent insert blocks).\n",
+        "ch/001_http_requests.sql": "CREATE TABLE telemetry.http_requests\n(\n    ts DateTime64(3, 'UTC'),\n    route LowCardinality(String),\n    user_id UInt64,\n    latency_ms Float64\n)\nENGINE = ReplicatedMergeTree\nPARTITION BY toYYYYMM(ts)\nORDER BY (route, ts);\n",
+        "ch/003_daily_metrics_mv.sql": "CREATE MATERIALIZED VIEW telemetry.mv_daily_route_metrics\nENGINE = ReplicatedMergeTree\nPARTITION BY toYYYYMM(day)\nORDER BY (day, route)\nPOPULATE AS\nSELECT\n    toDate(ts) AS day,\n    route,\n    avg(latency_ms) AS avg_latency,\n    uniq(user_id) AS unique_users\nFROM telemetry.http_requests\nGROUP BY day, route;\n",
+        "sql/dashboard_metrics.sql": "SELECT\n    day,\n    route,\n    avg_latency,\n    unique_users\nFROM telemetry.mv_daily_route_metrics\nWHERE day >= {from:Date}\n  AND day < {to:Date}\nORDER BY day ASC, route ASC\nLIMIT 500;\n"
+      }
+    },
+    {
+      "id": "CH06",
+      "skill": "clickhouse-review",
+      "deployment": "self-managed",
+      "lens": "views-projections",
+      "request": "Review the materialized view, target table, and dashboard rollup query through the views-projections lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "Review of ch/003_daily_metrics_mv.sql, ch/004_backfill_daily_metrics.sql, and sql/dashboard_metrics.sql on an active ClickHouse 25.3 DatabaseReplicated ingestion table.",
+      "files": {
+        "docker-compose.yml": "services:\n  clickhouse:\n    image: clickhouse/clickhouse-server:25.3.2\n",
+        "docs/pipeline.md": "Database telemetry uses ENGINE = Replicated('/clickhouse/databases/telemetry', '{shard}', '{replica}'). Table http_requests receives continuous live traffic (~40,000 rows/sec). Backfill runs once for dates strictly before the MV deployment cutover date.\n",
+        "ch/001_http_requests.sql": "CREATE TABLE telemetry.http_requests\n(\n    ts DateTime64(3, 'UTC'),\n    route LowCardinality(String),\n    user_id UInt64,\n    latency_ms Float64\n)\nENGINE = ReplicatedMergeTree\nPARTITION BY toYYYYMM(ts)\nORDER BY (route, ts);\n",
+        "ch/003_daily_metrics_mv.sql": "CREATE TABLE telemetry.daily_route_metrics\n(\n    day Date,\n    route LowCardinality(String),\n    avg_latency AggregateFunction(avg, Float64),\n    unique_users AggregateFunction(uniqCombined64, UInt64)\n)\nENGINE = ReplicatedAggregatingMergeTree\nPARTITION BY toYYYYMM(day)\nORDER BY (day, route);\n\nCREATE MATERIALIZED VIEW telemetry.mv_daily_route_metrics\nTO telemetry.daily_route_metrics AS\nSELECT\n    toDate(ts) AS day,\n    route,\n    avgState(latency_ms) AS avg_latency,\n    uniqCombined64State(user_id) AS unique_users\nFROM telemetry.http_requests\nGROUP BY day, route;\n",
+        "ch/004_backfill_daily_metrics.sql": "INSERT INTO telemetry.daily_route_metrics (day, route, avg_latency, unique_users)\nSELECT\n    toDate(ts) AS day,\n    route,\n    avgState(latency_ms) AS avg_latency,\n    uniqCombined64State(user_id) AS unique_users\nFROM telemetry.http_requests\nWHERE ts < {mv_cutover:DateTime64(3, 'UTC')}\nGROUP BY day, route;\n",
+        "sql/dashboard_metrics.sql": "SELECT\n    day,\n    route,\n    avgMerge(avg_latency) AS avg_latency,\n    uniqCombined64Merge(unique_users) AS unique_users\nFROM telemetry.daily_route_metrics\nWHERE day >= {from:Date}\n  AND day < {to:Date}\nGROUP BY day, route\nORDER BY day ASC, route ASC\nLIMIT 500;\n"
+      }
+    },
+    {
+      "id": "CH07",
+      "skill": "clickhouse-review",
+      "deployment": "self-managed",
+      "lens": "queries-distributed",
+      "request": "Review the distributed analytical query against the cluster schema and query_log evidence through the queries-distributed lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "Review of sql/active_unsuppressed_events.sql on a 4-shard ClickHouse 24.8 cluster.",
+      "files": {
+        "docker-compose.yml": "services:\n  clickhouse:\n    image: clickhouse/clickhouse-server:24.8.6\n",
+        "config/remote_servers.xml": "<clickhouse>\n  <remote_servers>\n    <analytics_4s>\n      <shard><internal_replication>true</internal_replication><replica><host>s1r1</host><port>9000</port></replica></shard>\n      <shard><internal_replication>true</internal_replication><replica><host>s2r1</host><port>9000</port></replica></shard>\n      <shard><internal_replication>true</internal_replication><replica><host>s3r1</host><port>9000</port></replica></shard>\n      <shard><internal_replication>true</internal_replication><replica><host>s4r1</host><port>9000</port></replica></shard>\n    </analytics_4s>\n  </remote_servers>\n</clickhouse>\n",
+        "docs/schema-notes.md": "events_local has 42 columns (~4B rows across 4 shards, sharded by account_id). The caller renders only event_time, account_id, event_id, and amount_cents. active_accounts_dist holds ~45,000 accounts and supports deletion (is_deleted = 1) followed by later account reactivation (is_deleted = 0 with newer updated_at). suppressed_accounts holds ~2,000 blocked account IDs replicated identically onto every shard via a shared Keeper path. Default profile keeps join_use_nulls = 0.\n",
+        "ch/schema.sql": "CREATE TABLE events_local ON CLUSTER analytics_4s (\n    event_time DateTime64(3, 'UTC'),\n    account_id UInt64,\n    event_id UUID,\n    amount_cents Int64,\n    col_05 String,\n    col_42 String\n) ENGINE = ReplicatedMergeTree('/clickhouse/tables/{uuid}/{shard}', '{replica}')\nPARTITION BY toYYYYMM(event_time)\nORDER BY (account_id, event_time, event_id);\n\nCREATE TABLE events_dist ON CLUSTER analytics_4s AS events_local\nENGINE = Distributed('analytics_4s', currentDatabase(), 'events_local', sipHash64(account_id));\n\nCREATE TABLE active_accounts_local ON CLUSTER analytics_4s (\n    account_id UInt64,\n    updated_at DateTime64(3, 'UTC'),\n    is_deleted UInt8\n) ENGINE = ReplicatedReplacingMergeTree('/clickhouse/tables/{uuid}/{shard}', '{replica}', updated_at, is_deleted)\nORDER BY account_id;\n\nCREATE TABLE active_accounts_dist ON CLUSTER analytics_4s AS active_accounts_local\nENGINE = Distributed('analytics_4s', currentDatabase(), 'active_accounts_local', sipHash64(account_id));\n\nCREATE TABLE suppressed_accounts ON CLUSTER analytics_4s (\n    account_id UInt64\n) ENGINE = ReplicatedMergeTree('/clickhouse/tables/all_shards/{uuid}', '{shard}-{replica}')\nORDER BY account_id;\n",
+        "sql/active_unsuppressed_events.sql": "SELECT e.*\nFROM events_dist AS e\nLEFT JOIN suppressed_accounts AS s\n    ON e.account_id = s.account_id\nWHERE e.event_time >= {from:DateTime64(3, 'UTC')}\n  AND e.event_time < {to:DateTime64(3, 'UTC')}\n  AND s.account_id IS NULL\n  AND e.account_id IN (\n      SELECT account_id\n      FROM active_accounts_dist\n      GROUP BY account_id\n      HAVING max(is_deleted) = 0\n  )\nLIMIT 100\nSETTINGS distributed_product_mode = 'allow';\n"
+      }
+    },
+    {
+      "id": "CH08",
+      "skill": "clickhouse-review",
+      "deployment": "self-managed",
+      "lens": "queries-distributed",
+      "request": "Review the distributed analytical query against the cluster schema and query_log evidence through the queries-distributed lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "Review of sql/active_unsuppressed_events.sql on a 4-shard ClickHouse 24.8 cluster.",
+      "files": {
+        "docker-compose.yml": "services:\n  clickhouse:\n    image: clickhouse/clickhouse-server:24.8.6\n",
+        "config/remote_servers.xml": "<clickhouse>\n  <remote_servers>\n    <analytics_4s>\n      <shard><internal_replication>true</internal_replication><replica><host>s1r1</host><port>9000</port></replica></shard>\n      <shard><internal_replication>true</internal_replication><replica><host>s2r1</host><port>9000</port></replica></shard>\n      <shard><internal_replication>true</internal_replication><replica><host>s3r1</host><port>9000</port></replica></shard>\n      <shard><internal_replication>true</internal_replication><replica><host>s4r1</host><port>9000</port></replica></shard>\n    </analytics_4s>\n  </remote_servers>\n</clickhouse>\n",
+        "docs/schema-notes.md": "events_local has 42 columns (~4B rows across 4 shards, sharded by account_id). The caller renders only event_time, account_id, event_id, and amount_cents. active_accounts_dist holds ~45,000 accounts and supports deletion (is_deleted = 1) followed by later account reactivation (is_deleted = 0 with newer updated_at). suppressed_accounts holds ~2,000 blocked account IDs replicated identically onto every shard via a shared Keeper path. Default profile keeps join_use_nulls = 0.\n\n`system.query_log` excerpt for active_unsuppressed_events.sql: read_rows = 180,400, memory_usage = 94 MiB.\n",
+        "ch/schema.sql": "CREATE TABLE events_local ON CLUSTER analytics_4s (\n    event_time DateTime64(3, 'UTC'),\n    account_id UInt64,\n    event_id UUID,\n    amount_cents Int64,\n    col_05 String,\n    col_42 String\n) ENGINE = ReplicatedMergeTree('/clickhouse/tables/{uuid}/{shard}', '{replica}')\nPARTITION BY toYYYYMM(event_time)\nORDER BY (account_id, event_time, event_id);\n\nCREATE TABLE events_dist ON CLUSTER analytics_4s AS events_local\nENGINE = Distributed('analytics_4s', currentDatabase(), 'events_local', sipHash64(account_id));\n\nCREATE TABLE active_accounts_local ON CLUSTER analytics_4s (\n    account_id UInt64,\n    updated_at DateTime64(3, 'UTC'),\n    is_deleted UInt8\n) ENGINE = ReplicatedReplacingMergeTree('/clickhouse/tables/{uuid}/{shard}', '{replica}', updated_at, is_deleted)\nORDER BY account_id;\n\nCREATE TABLE active_accounts_dist ON CLUSTER analytics_4s AS active_accounts_local\nENGINE = Distributed('analytics_4s', currentDatabase(), 'active_accounts_local', sipHash64(account_id));\n\nCREATE TABLE suppressed_accounts ON CLUSTER analytics_4s (\n    account_id UInt64\n) ENGINE = ReplicatedMergeTree('/clickhouse/tables/all_shards/{uuid}', '{shard}-{replica}')\nORDER BY account_id;\n",
+        "sql/active_unsuppressed_events.sql": "SELECT\n    e.event_time,\n    e.account_id,\n    e.event_id,\n    e.amount_cents\nFROM events_dist AS e\nLEFT ANTI JOIN suppressed_accounts AS s\n    ON e.account_id = s.account_id\nWHERE e.event_time >= {from:DateTime64(3, 'UTC')}\n  AND e.event_time < {to:DateTime64(3, 'UTC')}\n  AND e.account_id GLOBAL IN (\n      SELECT account_id\n      FROM active_accounts_dist\n      GROUP BY account_id\n      HAVING argMax(is_deleted, updated_at) = 0\n  )\nORDER BY e.event_time DESC, e.event_id DESC\nLIMIT 100\nSETTINGS max_execution_time = 15, max_memory_usage = 4000000000;\n"
+      }
+    },
+    {
+      "id": "CH09",
+      "skill": "clickhouse-review",
+      "deployment": "cloud",
+      "lens": "cluster-ddl",
+      "request": "Review the ClickHouse Cloud DDL migrations through the cluster-ddl lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "PR adding migrations/0010_checkout_and_drop_referrer.sql targeting ClickHouse Cloud (SharedMergeTree / Shared database).",
+      "files": {
+        "infra/clickhouse.tf": "resource \"clickhouse_service\" \"analytics\" {\n  name           = \"prod-analytics\"\n  cloud_provider = \"aws\"\n  region         = \"us-east-1\"\n  tier           = \"production\"\n}\n",
+        "docs/deploy.md": "Production runs on a single ClickHouse Cloud service (Shared database engine, SharedMergeTree). Ingestion services roll out gradually (v1 producers still send the referrer column during deploy).\n",
+        "migrations/0001_existing_mv.sql": "CREATE TABLE analytics.pageviews (\n    site_id UInt32,\n    event_time DateTime64(3, 'UTC'),\n    session_id UUID,\n    referrer String\n)\nENGINE = MergeTree\nPARTITION BY toYYYYMM(event_time)\nORDER BY (site_id, event_time, session_id);\n\nCREATE TABLE analytics.hourly_referrers (\n    hour DateTime('UTC'),\n    site_id UInt32,\n    referrer String,\n    views SimpleAggregateFunction(sum, UInt64)\n)\nENGINE = AggregatingMergeTree\nPARTITION BY toYYYYMM(hour)\nORDER BY (site_id, hour, referrer);\n\nCREATE MATERIALIZED VIEW analytics.mv_hourly_referrers\nTO analytics.hourly_referrers AS\nSELECT\n    toStartOfHour(event_time) AS hour,\n    site_id,\n    referrer,\n    count() AS views\nFROM analytics.pageviews\nGROUP BY hour, site_id, referrer;\n",
+        "migrations/0010_checkout_and_drop_referrer.sql": "CREATE TABLE IF NOT EXISTS analytics.checkout_events ON CLUSTER default (\n    site_id UInt32,\n    event_time DateTime64(3, 'UTC'),\n    checkout_id UUID,\n    amount_cents Int64\n)\nENGINE = ReplicatedMergeTree('/clickhouse/tables/{shard}/checkout_events', '{replica}')\nPARTITION BY toYYYYMM(event_time)\nORDER BY (site_id, event_time, checkout_id);\n\nCREATE TABLE IF NOT EXISTS analytics.checkout_events_dist ON CLUSTER default AS analytics.checkout_events\nENGINE = Distributed('default', 'analytics', 'checkout_events', rand());\n\nALTER TABLE analytics.pageviews ON CLUSTER default DROP COLUMN referrer;\n"
+      }
+    },
+    {
+      "id": "CH10",
+      "skill": "clickhouse-review",
+      "deployment": "cloud",
+      "lens": "cluster-ddl",
+      "request": "Review the ClickHouse Cloud DDL migrations through the cluster-ddl lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "PR adding migrations/0010_checkout_and_add_utm.sql targeting ClickHouse Cloud (SharedMergeTree / Shared database).",
+      "files": {
+        "infra/clickhouse.tf": "resource \"clickhouse_service\" \"analytics\" {\n  name           = \"prod-analytics\"\n  cloud_provider = \"aws\"\n  region         = \"us-east-1\"\n  tier           = \"production\"\n}\n",
+        "docs/deploy.md": "Production runs on a single ClickHouse Cloud service (Shared database engine, SharedMergeTree). Ingestion services roll out gradually (v1 producers still send the referrer column during deploy).\n",
+        "migrations/0001_existing_mv.sql": "CREATE TABLE analytics.pageviews (\n    site_id UInt32,\n    event_time DateTime64(3, 'UTC'),\n    session_id UUID,\n    referrer String\n)\nENGINE = MergeTree\nPARTITION BY toYYYYMM(event_time)\nORDER BY (site_id, event_time, session_id);\n\nCREATE TABLE analytics.hourly_referrers (\n    hour DateTime('UTC'),\n    site_id UInt32,\n    referrer String,\n    views SimpleAggregateFunction(sum, UInt64)\n)\nENGINE = AggregatingMergeTree\nPARTITION BY toYYYYMM(hour)\nORDER BY (site_id, hour, referrer);\n\nCREATE MATERIALIZED VIEW analytics.mv_hourly_referrers\nTO analytics.hourly_referrers AS\nSELECT\n    toStartOfHour(event_time) AS hour,\n    site_id,\n    referrer,\n    count() AS views\nFROM analytics.pageviews\nGROUP BY hour, site_id, referrer;\n",
+        "migrations/0010_checkout_and_add_utm.sql": "CREATE TABLE IF NOT EXISTS analytics.checkout_events (\n    site_id UInt32,\n    event_time DateTime64(3, 'UTC'),\n    checkout_id UUID,\n    amount_cents Int64\n)\nENGINE = MergeTree\nPARTITION BY toYYYYMM(event_time)\nORDER BY (site_id, event_time, checkout_id);\n\nALTER TABLE analytics.pageviews\n    ADD COLUMN IF NOT EXISTS utm_source LowCardinality(String) DEFAULT '';\n"
+      }
+    },
+    {
+      "id": "CH11",
+      "skill": "clickhouse-review",
+      "deployment": "cloud",
+      "lens": "ingestion-client",
+      "request": "Review the TypeScript ClickHouse Cloud ingestion and query client through the ingestion-client lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "Review of src/audit-store.ts against ch/payment_audits.sql on ClickHouse Cloud.",
+      "files": {
+        "package.json": "{\n  \"name\": \"payments-audit\",\n  \"private\": true,\n  \"dependencies\": { \"@clickhouse/client\": \"1.11.1\" }\n}\n",
+        "docs/durability.md": "Production runs on ClickHouse Cloud (https://abc123.us-east-1.aws.clickhouse.cloud:8443). payment_audits is a durable financial audit log: acknowledged writes must not be silently dropped on server restart, and producer HTTP retries must not create duplicate audit rows. Stateless API pods (~30 req/s aggregate) use server-side async_insert coalescing.\n",
+        "ch/payment_audits.sql": "CREATE TABLE payment_audits (\n    tenant_id String,\n    created_at DateTime64(3, 'UTC'),\n    audit_id UUID,\n    amount_cents Int64\n)\nENGINE = MergeTree\nPARTITION BY toYYYYMM(created_at)\nORDER BY (tenant_id, created_at, audit_id);\n",
+        "src/audit-store.ts": "import type { ClickHouseClient } from \"@clickhouse/client\";\n\nexport type PaymentAuditEvent = {\n  tenantId: string;\n  createdAt: string;\n  auditId: string;\n  amountCents: string;\n};\n\nexport async function recordPaymentAudit(client: ClickHouseClient, event: PaymentAuditEvent): Promise<void> {\n  await client.insert({\n    table: \"payment_audits\",\n    values: [{\n      tenant_id: event.tenantId,\n      created_at: event.createdAt,\n      audit_id: event.auditId,\n      amount_cents: event.amountCents,\n    }],\n    format: \"JSONEachRow\",\n    clickhouse_settings: {\n      async_insert: 1,\n      wait_for_async_insert: 0,\n    },\n  });\n}\n\nexport async function listPaymentAudits(\n  client: ClickHouseClient,\n  tenantId: string,\n  sortBy: string,\n  limit: number,\n): Promise<PaymentAuditEvent[]> {\n  const resultSet = await client.query({\n    query: `SELECT tenant_id AS tenantId, created_at AS createdAt, audit_id AS auditId, toString(amount_cents) AS amountCents FROM payment_audits WHERE tenant_id = '${tenantId}' ORDER BY ${sortBy} DESC`,\n    format: \"JSONEachRow\",\n  });\n  if (limit <= 0) {\n    return [];\n  }\n  return (await resultSet.json<PaymentAuditEvent>()).slice(0, limit);\n}\n"
+      }
+    },
+    {
+      "id": "CH12",
+      "skill": "clickhouse-review",
+      "deployment": "cloud",
+      "lens": "ingestion-client",
+      "request": "Review the TypeScript ClickHouse Cloud ingestion and query client through the ingestion-client lens. Do not connect to ClickHouse, execute SQL, or edit files.",
+      "scope": "Review of src/audit-store.ts against ch/payment_audits.sql on ClickHouse Cloud.",
+      "files": {
+        "package.json": "{\n  \"name\": \"payments-audit\",\n  \"private\": true,\n  \"dependencies\": { \"@clickhouse/client\": \"1.11.1\" }\n}\n",
+        "docs/durability.md": "Production runs on ClickHouse Cloud (https://abc123.us-east-1.aws.clickhouse.cloud:8443). payment_audits is a durable financial audit log: acknowledged writes must not be silently dropped on server restart, and producer HTTP retries must not create duplicate audit rows. Stateless API pods (~30 req/s aggregate) use server-side async_insert coalescing.\n",
+        "ch/payment_audits.sql": "CREATE TABLE payment_audits (\n    tenant_id String,\n    created_at DateTime64(3, 'UTC'),\n    audit_id UUID,\n    amount_cents Int64\n)\nENGINE = MergeTree\nPARTITION BY toYYYYMM(created_at)\nORDER BY (tenant_id, created_at, audit_id);\n",
+        "src/audit-store.ts": "import type { ClickHouseClient } from \"@clickhouse/client\";\n\nexport type PaymentAuditEvent = {\n  tenantId: string;\n  createdAt: string;\n  auditId: string;\n  amountCents: string;\n};\n\nconst SORT_SQL = new Map<string, string>([\n  [\"created_at\", \"created_at DESC, audit_id DESC\"],\n  [\"amount_cents\", \"amount_cents DESC, audit_id DESC\"],\n]);\n\nexport async function recordPaymentAudit(client: ClickHouseClient, event: PaymentAuditEvent): Promise<void> {\n  await client.insert({\n    table: \"payment_audits\",\n    values: [{\n      tenant_id: event.tenantId,\n      created_at: event.createdAt,\n      audit_id: event.auditId,\n      amount_cents: event.amountCents,\n    }],\n    format: \"JSONEachRow\",\n    clickhouse_settings: {\n      async_insert: 1,\n      wait_for_async_insert: 1,\n      async_insert_deduplicate: 1,\n      insert_deduplication_token: event.auditId,\n    },\n  });\n}\n\nexport async function listPaymentAudits(\n  client: ClickHouseClient,\n  tenantId: string,\n  sortBy: string,\n  limit: number,\n): Promise<PaymentAuditEvent[]> {\n  const orderBy = SORT_SQL.get(sortBy);\n  if (!orderBy) {\n    throw new RangeError(\"unsupported sort column\");\n  }\n  if (!Number.isInteger(limit) || limit < 1 || limit > 500) {\n    throw new RangeError(\"limit must be an integer between 1 and 500\");\n  }\n  const resultSet = await client.query({\n    query: `SELECT tenant_id AS tenantId, created_at AS createdAt, audit_id AS auditId, toString(amount_cents) AS amountCents FROM payment_audits WHERE tenant_id = {tenant_id:String} ORDER BY ${orderBy} LIMIT {limit:UInt32}`,\n    query_params: {\n      tenant_id: tenantId,\n      limit,\n    },\n    format: \"JSONEachRow\",\n    clickhouse_settings: {\n      max_execution_time: 10,\n      max_memory_usage: \"2000000000\",\n    },\n  });\n  const out: PaymentAuditEvent[] = [];\n  try {\n    for await (const rows of resultSet.stream()) {\n      for (const row of rows) {\n        out.push(row.json<PaymentAuditEvent>());\n      }\n    }\n    return out;\n  } finally {\n    resultSet.close();\n  }\n}\n"
+      }
+    }
+  ]
+}
