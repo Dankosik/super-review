@@ -19,12 +19,13 @@ count alone never earns a split.
 ## rust.functions.coherent-purpose
 
 **One story.** Separate mixed responsibilities when one function interleaves
-orchestration with byte, index, or wire arithmetic; switches between unrelated
-bodies on a boolean or mode parameter; threads a Data Clump of parameters across
-calls instead of naming one value; buries inputs inside a long mid-function
-closure's captures; takes `self` without reading it (an associated or free
-function states that directly); or hides I/O or task spawning behind `new` where
-Rust names the effect (`File::open`, `TcpListener::bind`, `thread::spawn`).
+orchestration or I/O with domain decision rules, state transitions, or byte,
+index, or wire arithmetic; switches between unrelated bodies on a boolean or
+mode parameter; threads a Data Clump of parameters across calls instead of
+naming one value; buries inputs inside a long mid-function closure's captures;
+takes `self` without reading it (an associated or free function states that
+directly); or hides I/O or task spawning behind `new` where Rust names the
+effect (`File::open`, `TcpListener::bind`, `thread::spawn`).
 
 **Keep when:** a linear transformation, clear orchestration with `?`, or a long
 flat `match` with parallel arms already tells one story; a single-caller helper

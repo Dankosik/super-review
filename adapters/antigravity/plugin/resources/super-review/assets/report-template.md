@@ -76,9 +76,12 @@ the reading/maintenance task, supported transformation, net benefit, source-supp
 alternative, and relevant preservation constraints. State the observable effect:
 `none`, or what callers, operators or logs will see differently, with any
 precondition. Include affected files and originating candidate IDs. Make the bounded change usable by a coding agent;
-retain the minimal resulting-shape sketch when a structural recommendation needs
-it to show the improvement. Do not replace it with only a pattern name, or expand
-a clear local edit into a design exercise. A full patch or new feature design is unnecessary.
+retain the minimal resulting-shape sketch and a compact `Next change` check (one
+realistic change from existing variation: edit sites before -> after and
+compile-time exhaustiveness where applicable) when a structural or cross-file
+recommendation needs them to show the improvement. Do not replace it with only a
+pattern name, or expand a clear local edit into a design exercise. A full patch
+or new feature design is unnecessary.
 Repeat for **every** accepted recommendation, including merged contributions.
 
 ### Optional polish

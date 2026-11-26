@@ -15,8 +15,9 @@ parameters (`<R: Repo, C: Clock, ...>`) through intermediate structs and
 functions amplifies that burden across every caller. A layer whose methods
 forward arguments and results unchanged, or an internal DTO/error enum mirroring
 another internal layer's fields or variants 1:1 without enforcing an invariant
-or isolating an external wire contract, is a Middle Man. A struct built only to
-invoke one action hides a function, a spawned actor loop (`Command` enum +
+or isolating an external wire contract, is a Middle Man. A struct built only to invoke one action hides a function, an internal event
+bus or command-handler registry built over direct synchronous calls adds
+indirection without decoupling, a spawned actor loop (`Command` enum +
 `oneshot` + forwarding handle) built solely to wrap simple shared state without
 autonomous background work or I/O serialization adds channel and shutdown
 ceremony over plain state or direct methods, and a single-use struct written

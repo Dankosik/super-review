@@ -9,14 +9,14 @@ database/offline `.sqlx` check.
 
 ## representation
 
-- **Typed row decoding**: when `derive` (or `macros`/default features) is
-  enabled, replace repeated manual column indexing (`row.get(0)`) or string-key
-  extraction across queries with `#[derive(FromRow)]` and `query_as`, keeping
-  wire/row projections distinct from domain types when columns require
-  validation or invariant conversion.
-- **Keep when**: custom `FromRow` or manual extraction decodes joined/nested
-  shapes, handles backend-specific type conversions, or preserves schema
-  evolution that derive attributes would obscure.
+- **Typed row decoding and domain boundary**: with `derive` or `macros`
+  enabled, replace manual column indexing (`row.get(0)`) with `#[derive(FromRow)]`
+  and `query_as`. Decode flat nullable storage rows once at the repository
+  boundary into valid domain types or state enums instead of leaking nullable
+  columns into business rules.
+- **Keep when**: custom `FromRow` decodes joined/nested shapes or backend-specific
+  conversions; or a direct `FromRow` struct serves a read-only projection or
+  report DTO with no domain invariants (avoid 1:1 mapping ceremony).
 
 ## api-clarity
 

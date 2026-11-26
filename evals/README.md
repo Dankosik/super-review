@@ -13,7 +13,7 @@ credential is required by this repository. Missing execution capability means
 | Coverage membership, duplicate/stale results and source anchors | [review-integrity](review-integrity/cases.json), with the isolation procedure below |
 | Task/result matching, renamed/deleted anchors, file boundaries | [evidence-boundaries](evidence-boundaries/README.md) |
 | Staged/unstaged/combined views and old/new source anchors | [source-evidence](source-evidence/README.md) |
-| Expression/structure judgment | `quality-judgment/`, plus applicable `go/`, `typescript/`, `rust/`, `java/` and `spring/` cases |
+| Expression/structure judgment | `quality-judgment/`, plus applicable `go/`, `typescript/`, `rust/` (including multi-file business-logic contrasts in [rust/business](rust/business/README.md)), `java/` and `spring/` cases |
 | Duplication across areas and compile-connected copies | [change-together](change-together/README.md) |
 | Factual premises, remaining-scope attention, structural sketches, recommendation compatibility and application | [review-quality](review-quality/README.md) |
 | Agent-pattern blind spots (over-decomposition, unlinked twins, `D -> H` state-in-flight, silent fallbacks, `H -> H` test gaps, hot-path vs cold scans) | [agent-patterns](agent-patterns/README.md), paired with real-repository runs for affected skills |

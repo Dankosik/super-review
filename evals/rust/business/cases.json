@@ -1,0 +1,249 @@
+{
+  "kind": "evaluator-only",
+  "status": "NOT RUN",
+  "baseline_revision": "dd2c61d3e068b7ffb45e6f72dbf86657ce9837bc",
+  "contrast_pairs": [
+    [
+      "RB01",
+      "RB02"
+    ],
+    [
+      "RB03",
+      "RB04"
+    ],
+    [
+      "RB05",
+      "RB06"
+    ],
+    [
+      "RB07",
+      "RB08"
+    ],
+    [
+      "RB09",
+      "RB10"
+    ],
+    [
+      "RB11",
+      "RB12"
+    ],
+    [
+      "RB13",
+      "RB14"
+    ],
+    [
+      "RB15",
+      "RB16"
+    ],
+    [
+      "RB17",
+      "RB18"
+    ]
+  ],
+  "cases": [
+    {
+      "id": "RB01",
+      "polarity": "report",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Flag OrderRow leaking flat status string and phase-coupled Option timestamps (paid_at, cancelled_at) from repo.rs into domain/usecase rules, with cancel_order mutating status and cancelled_at directly.",
+        "Recommend decoding storage rows once at repo.rs into an Order owning a runtime OrderState enum with phase data (Draft, Paid { paid_at, total_cents }, Cancelled { cancelled_at }) and an Order::cancel transition method, without generic typestate ceremony or over-newtyping customer_note."
+      ],
+      "contrasts": [
+        "RB02"
+      ]
+    },
+    {
+      "id": "RB02",
+      "polarity": "retain",
+      "rule": "rust.representation.express-concepts",
+      "expect": [
+        "Retain the runtime OrderState enum, private fields with Order::cancel ownership, boundary decoding in repo.rs, and plain String customer_note; do not demand generic typestate (Order<State>) or newtypes for free-form notes."
+      ],
+      "contrasts": [
+        "RB01"
+      ]
+    },
+    {
+      "id": "RB03",
+      "polarity": "report",
+      "rule": "rust.functions.coherent-purpose",
+      "expect": [
+        "Flag run_renewal interleaving non-trivial renewal eligibility, grace-period, and capped tiered-discount calculations with Store reads/writes, PaymentGateway charges, and ambient SystemTime::now().",
+        "Recommend separating a pure synchronous decision function taking explicit Subscription, coupon_pct, and now_secs and returning the renewal decision/charge plan, while run_renewal stays a thin load -> decide -> charge/persist shell."
+      ],
+      "contrasts": [
+        "RB04"
+      ]
+    },
+    {
+      "id": "RB04",
+      "polarity": "retain",
+      "rule": "rust.functions.coherent-purpose",
+      "expect": [
+        "Retain update_billing_email as one linear CRUD function holding the lock guard across load, check, and update; do not split a trivial CRUD flow into a separate pure-core function or introduce a test-seam trait."
+      ],
+      "contrasts": [
+        "RB03"
+      ]
+    },
+    {
+      "id": "RB05",
+      "polarity": "report",
+      "rule": "rust.logic.fewer-moving-parts",
+      "expect": [
+        "Flag authorize_refund encoding the (Role, OrderState, RefundReason) matrix as nested if/else branches with redundant identical arms (Shipped/Delivered for Support, ChangedMind/Damaged for Customer+Paid) and an implicit fallthrough Denial that bypasses exhaustiveness.",
+        "Recommend collapsing the closed-enum product into an exhaustive match on (role, state, reason) while keeping the independent amount_cents > 50_000 guard clear."
+      ],
+      "contrasts": [
+        "RB06"
+      ]
+    },
+    {
+      "id": "RB06",
+      "polarity": "retain",
+      "rule": "rust.logic.fewer-moving-parts",
+      "expect": [
+        "Retain the exhaustive match on (role, state, reason) and the separate MANAGER_THRESHOLD_CENTS guard; every combination is explicit and compiler-checked without unnecessary indirection."
+      ],
+      "contrasts": [
+        "RB05"
+      ]
+    },
+    {
+      "id": "RB07",
+      "polarity": "report",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Flag execute_payout returning a crate-wide AppError that mixes expected business outcomes (InsufficientBalance, AlreadySettled), infrastructure faults (DbUnavailable, GatewayTimeout), and unrelated variants (InvalidWebhookSignature, TemplateMissing) that execute_payout never produces.",
+        "Recommend separating expected domain outcomes from infrastructure errors (for example Result<PayoutOutcome, InfraError>) so callers handle product outcomes separately from retryable faults and unreachable variants disappear."
+      ],
+      "contrasts": [
+        "RB08"
+      ]
+    },
+    {
+      "id": "RB08",
+      "polarity": "retain",
+      "rule": "rust.flow.show-main-path",
+      "expect": [
+        "Retain Result<PayoutOutcome, InfraError> and the direct outer HTTP response mapping; domain outcomes and retryable infrastructure failures are cleanly separated with no unreachable variants."
+      ],
+      "contrasts": [
+        "RB07"
+      ]
+    },
+    {
+      "id": "RB09",
+      "polarity": "report",
+      "rule": "rust.placement.find-it-where-it-belongs",
+      "expect": [
+        "Flag scattering one new invoice capability across horizontal layer folders (dtos, validators, services, handlers) and placing invoice-specific tax logic in a utils grab-bag while the existing catalog module is vertical.",
+        "Recommend consolidating invoice types, validation, tax rules, and entry point into one vertical invoice module matching catalog."
+      ],
+      "contrasts": [
+        "RB10"
+      ]
+    },
+    {
+      "id": "RB10",
+      "polarity": "retain",
+      "rule": "rust.placement.find-it-where-it-belongs",
+      "expect": [
+        "Retain the vertical invoice module matching catalog, with invoice tax calculation colocated inside invoice/rules.rs rather than split across layer directories."
+      ],
+      "contrasts": [
+        "RB09"
+      ]
+    },
+    {
+      "id": "RB11",
+      "polarity": "report",
+      "rule": "rust.naming.intent",
+      "expect": [
+        "Flag unsettled domain vocabulary mixing Org, tenant, and account for the same concept, misleading seats_vec on a BTreeMap, double-negated !org.not_suspended, bare 86_400 literal, and misleading into_summary taking &self rather than consuming self."
+      ],
+      "contrasts": [
+        "RB12"
+      ]
+    },
+    {
+      "id": "RB12",
+      "polarity": "retain",
+      "rule": "rust.naming.intent",
+      "expect": [
+        "Retain consistent TenantSeats vocabulary, seats_by_user, is_active, summary(&self), HOLD_WINDOW_SECS, and short local parameter names (ts, uid); do not churn clear names for preference."
+      ],
+      "contrasts": [
+        "RB11"
+      ]
+    },
+    {
+      "id": "RB13",
+      "polarity": "report",
+      "rule": "rust.conventions.follow-established-approach",
+      "expect": [
+        "Flag refunds.rs introducing a second approach for money (f64 dollars) and time (ambient SystemTime::now() returning u64) instead of following the crate's established Money minor-unit type and explicit UnixSecs input used across orders.rs and billing.rs."
+      ],
+      "contrasts": [
+        "RB14"
+      ]
+    },
+    {
+      "id": "RB14",
+      "polarity": "retain",
+      "rule": "rust.conventions.follow-established-approach",
+      "expect": [
+        "Retain refunds.rs (aligned with Money and explicit UnixSecs) and csv_export.rs (boundary adapter formatting decimal strings for external bank CSV compatibility)."
+      ],
+      "contrasts": [
+        "RB13"
+      ]
+    },
+    {
+      "id": "RB15",
+      "polarity": "report",
+      "rule": "rust.rationale.explain-constraints",
+      "expect": [
+        "Flag the stale comment (22:00 UTC vs utc_hour >= 23), bare #[allow(clippy::too_many_arguments)] without a reason, context-free 'failed' error message, and double logging across post_entry and handle_post."
+      ],
+      "contrasts": [
+        "RB16"
+      ]
+    },
+    {
+      "id": "RB16",
+      "polarity": "retain",
+      "rule": "rust.rationale.explain-constraints",
+      "expect": [
+        "Retain the accurate clearinghouse rationale comment, structured PostError::AfterCutoff carrying ledger_id and utc_hour, and single-boundary reporting in handle_post."
+      ],
+      "contrasts": [
+        "RB15"
+      ]
+    },
+    {
+      "id": "RB17",
+      "polarity": "report",
+      "rule": "rust.change.localize-existing-variation",
+      "expect": [
+        "Flag shipment transition rules and status mutations scattered across dispatch.rs, cancel.rs, and audit.rs with catch-all wildcards (_) that silently absorb future ShipmentStatus variants.",
+        "Recommend localizing transitions and status queries on impl Shipment / impl ShipmentStatus with exhaustive matches so adding a new state becomes one compiler-guided edit."
+      ],
+      "contrasts": [
+        "RB18"
+      ]
+    },
+    {
+      "id": "RB18",
+      "polarity": "retain",
+      "rule": "rust.change.localize-existing-variation",
+      "expect": [
+        "Retain Shipment owning all state transitions and terminal checks via exhaustive matches in shipment.rs, with thin direct handler calls in api.rs (no event bus or command registry ceremony)."
+      ],
+      "contrasts": [
+        "RB17"
+      ]
+    }
+  ]
+}

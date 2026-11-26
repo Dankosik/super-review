@@ -28,8 +28,14 @@ establish that.
 Read an error type as an API of its own. One enum listing every failure of a
 crate, returned by functions that can each produce two of them, makes callers
 handle variants that cannot occur here; an error scoped to the operation or
-layer says what can fail. Keep a shared type where callers treat its failures
-alike or the type deliberately hides its cases. A `String` error or
+layer says what can fail. Likewise, when a domain operation branches on expected
+business outcomes (insufficient funds, already cancelled, quota exceeded)
+alongside unexpected infrastructure faults (database, network, timeout), mixing
+both in one flat error enum forces callers to entangle product branching with
+retries and fault handling; separate the domain outcome
+(`Result<Outcome, InfraError>`) or scope the domain error cleanly when callers
+act on those outcomes. Keep a shared type where callers treat its failures
+alike, only report/log them, or the type deliberately hides its cases. A `String` error or
 `map_err(|e| e.to_string())` erases the type and the source at that point.
 `Box<dyn Error>` keeps both but leaves a caller only `downcast` to branch on.
 Keep these where the boundary only reports, and name the loss where a caller

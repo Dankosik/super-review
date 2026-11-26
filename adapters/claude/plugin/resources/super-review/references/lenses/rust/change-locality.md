@@ -8,8 +8,12 @@ and identify the Shotgun Surgery a new boundary would remove. Design for
 variation present today; a boundary for hypothetical future plugins or products
 is Speculative Generality.
 
-A module, impl block or domain type can place related knowledge together. Several
-small files are not automatically better than one cohesive module; a new workspace
+A module, impl block or domain type can place related knowledge together. When
+handlers or services each mutate an entity's status fields or repeat its
+transition guards, pulling those transitions onto one owning domain type or
+module makes adding a state or rule one compiler-guided edit (without inventing
+internal event buses or command registries for direct calls). Several small
+files are not automatically better than one cohesive module; a new workspace
 crate may impose more navigation and API obligations than it removes. Compare
 actual dependency direction and uses.
 

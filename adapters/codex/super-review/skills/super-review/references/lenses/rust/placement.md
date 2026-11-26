@@ -23,9 +23,11 @@ Look for:
 - **Colocation**: a type, constant, trait or helper declared far from its
   only user, or a module whose name promises one concept while the change
   puts another one in it.
-- **Layout drift**: the change places code against the layout the crate
-  already uses consistently, by feature or by layer. One precedent or a
-  split without a direction is not a layout.
+- **Layout drift and horizontal scattering**: flag code placed against a
+  consistent crate layout, or one business capability split across horizontal
+  layer folders (`handlers/`, `services/`, `dtos/`, `repositories/`) without a
+  crate-wide mandate where a vertical module (`order::{model, rules, repo}`)
+  keeps its concepts readable together. One precedent is not a layout.
 
 Recommend the move with its destination, the concept that makes that place
 the one a reader would open, and what the reader no longer has to search.

@@ -46,9 +46,11 @@ In Rust, an iterator over an empty collection yields nothing, `sum` and
 `product` start from their identity, and `max`, `min` and `first` return
 `None`, so many empty branches return what the general path would; one that
 returns something else for empty is a decision, not a special case. A slice
-pattern such as `[]`, `[only]` or `[first, rest @ ..]`, or a `match` on a
-tuple of conditions, states a case product the compiler checks for
-exhaustiveness. Integer overflow panics in debug builds and wraps in
+pattern such as `[]`, `[only]` or `[first, rest @ ..]`, or a `match` on a tuple
+of closed domain dimensions such as `(role, state, action)`, turns nested
+condition trees into a rule table the compiler checks for exhaustiveness when a
+new state or role arrives; keep independent guards separate when dimensions do
+not interact. Integer overflow panics in debug builds and wraps in
 release, so a formula that reorders arithmetic can panic where the cases did
 not; trace the intermediate values or keep the crate's `checked_` or
 `saturating_` operations. `windows`, `chunks` and `split_first` already

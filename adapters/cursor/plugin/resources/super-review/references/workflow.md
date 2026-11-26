@@ -31,10 +31,13 @@ are fixed). Keep [verification](verification.md),
 
 **Inventory and pre-read.** Inventory target files, exclusions, languages, and
 owning packages or modules, and apply [language routing](languages.md) to record
-each area's baseline. Read every included declaration in full, inspect needed
-shared context against available source, and then delegate so specialists fetch
-their own lens-specific callers and declarations rather than waiting for you to
-run their passes first.
+each area's baseline. Read every included declaration in full and inspect needed
+shared context against available source. When included files form a multi-file
+call chain (such as `entry -> usecase -> domain -> store`), record a compact
+**neutral call-spine map** (entry points, cross-module call path, and key
+domain types with their read/write sites, strictly factual with no judgments or
+expected findings). Then delegate so specialists fetch their own lens-specific
+callers and declarations rather than waiting for you to run their passes first.
 
 ## Resolve policy and coverage
 
@@ -111,7 +114,7 @@ sections:
 | --- | --- |
 | Review identity | PR or local target, selected comparison and both endpoint identities, source location, instruction identity from the contract, language, selected resource paths, applicable compiler/runtime and build constraints. |
 | Assignment | Task ID, one lens or a compact pair, selected profiles and source signals, exact files/symbols, review extent (changed source or explicitly requested whole source), user exclusions, effective rules/conflicts, known compatibility commitments, permitted context. |
-| Materials | Neutral diff/source anchors; complete resources or source blocks already supplied, identified by path and source revision or trusted instruction identity; locations of still-needed resources and omitted ranges. |
+| Materials | Neutral diff/source anchors; neutral call-spine map when included files span a multi-file flow (factual entry-to-store paths and domain-type read/write sites only, zero conclusions); complete resources or source blocks already supplied, identified by path and source revision or trusted instruction identity; locations of still-needed resources and omitted ranges. |
 
 Each child requires [the contract](review-contract.md), the matching language
 context and assigned lens (or pair) from [language routing](languages.md),
